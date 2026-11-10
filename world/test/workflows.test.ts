@@ -98,3 +98,21 @@ it("schedules new MAR charting in successor coverage and preserves legacy mode",
   expect(legacy.days[0]?.state.today.inbox.P1.handled).toBeLessThanOrEqual(22);
   expect(allTasks(legacy).flatMap(t=>t.choices.administer).every(o=>o.administration?.windowStartMin == null)).toBe(true);
 });
+
+
+it("orders imaging during admitted P5 rounds, using the inpatient synthetic-benchmark priority split", () => {
+  const patients = loadPopulation(FIXTURE_INDEX).patients;
+  const world = generateWorld(17, 30, patients, undefined, {caseMix:"synthetic-hospital"});
+  const imaging = world.days.flatMap(d => d.schedules.P5.tasks.filter(t => t.choices.w6Step === "rounding")
+    .flatMap(t => t.choices.orders.filter(o => o.kind === "imaging").map(o => ({t,o,d}))));
+  expect(imaging.length).toBeGreaterThan(0);
+  for (const {t,o,d} of imaging) {
+    expect(d.state.today.ward.censusAtShiftStart.some(ip => ip.patientId === t.patientId && ip.service === "surgery")).toBe(true);
+    expect(t.day).toBeGreaterThanOrEqual(4);
+    expect(["stat","urgent","routine"]).toContain(o.priority);
+    expect(["chest-xray","ct-abdomen-pelvis"]).toContain(o.code);
+    TaskSchema.parse(t);
+  }
+  const legacy = generateWorld(17,30,patients,undefined,{workflows:"legacy",caseMix:"synthetic-hospital"});
+  expect(allTasks(legacy).filter(t=>t.choices.w6Step === "rounding").flatMap(t=>t.choices.orders).some(o=>o.kind === "imaging")).toBe(false);
+});

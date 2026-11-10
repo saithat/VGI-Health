@@ -67,7 +67,7 @@ deriving instance Lean.ToJson, Lean.FromJson for
   InitInput, StepOutput, StepInput, ViewInput, BatchCase, BatchStep
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  Workflow, OrderKind, W6Step, AdministrationOutcome, AdministrationDecision, OrderChoice, NoteText, TaskChoices, PersonaParams, Op, TraceEvent, TaskMetrics,
+  Workflow, OrderKind, W6Step, AdministrationOutcome, AdministrationDecision, OrderChoice, NoteAuthoring, NoteText, TaskChoices, PersonaParams, Op, TraceEvent, TaskMetrics,
   DayResult, Verdict, Certificate
 
 /-- One simulated task for a persona on a day. -/

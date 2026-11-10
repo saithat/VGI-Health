@@ -222,12 +222,15 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
         for(const reaction of allergy.reaction??[])reaction.severity??=allergy.criticality==='high'?'severe':'moderate';
         add(allergy,p,'patient-context');
       }
-      if(t.workflow==='W2') {
+      if(t.workflow==='W2' && t.todayResources.some(r=>r.resourceType==='Observation')) {
         const observations=t.todayResources.filter(r=>r.resourceType==='Observation');
         const summary=resultSummary(observations);
         for(const o of observations) add(structuredClone(o),p,'patient-context');
         const report=make('DiagnosticReport',`${t.id}-report`,{status:'final',code:{text:'Laboratory results'},subject:patient(t.patientId),performer:[ref(lab)],resultsInterpreter:[ref(providers[p])],result:observations.map(o=>ref(o)),conclusion:summary,issued:stamp(date,SHIFTS[p]+t.startMin)},p,'patient-context');
         inbox.push(make('Task',`${t.id}-result-message`,{status:'requested',intent:'order',code:cc('result-review','Review result'),description:summary,for:patient(t.patientId),requester:ref(lab),owner:ref(providers[p]),focus:ref(report),authoredOn:stamp(date,SHIFTS[p]+t.startMin)},p,'patient-context'));
+      } else if(t.workflow==='W2') {
+        const kind=t.workflowPlan?.kind??'message';
+        inbox.push(make('Communication',`${t.id}-workflow-message`,{status:'completed',category:[cc('workflow-message',title(kind))],subject:patient(t.patientId),sender:patient(t.patientId),recipient:[ref(providers[p])],sent:stamp(date,SHIFTS[p]+t.startMin),payload:[{contentString:`Scenario ${kind}: review and follow-through requested; no laboratory observation supplied.`}]},p,'patient-context'));
       }
       for(const r of t.todayResources.filter(r=>r.resourceType==='Task'&&r.contained?.some(c=>c.resourceType==='MedicationRequest'))) inbox.push(add(enrichRefill(r,{date,pharmacy,owner:ref(providers[p])}),p,'patient-context'));
     }

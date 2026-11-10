@@ -83,17 +83,17 @@ Sources: `docs/audits/realism-wave2-verification-20261108.md` (Owner questions),
 **13. Case mix and imaging priority from Synthetic Hospital**
 - *Change:* draw the department/diagnosis mix within each setting, and the imaging priority split (36% stat / 29% urgent / 35% routine across 1,865 orders), from the dataset.
 - *Type:* data (replaces local draws in A43). *Evidence:* Synthetic Hospital 2026. *Recommend:* **A.** It is better grounded than hand-picked values. Its setting mix (55% outpatient / 31% ED) is not used to resize the personas. *Options:* A) adopt; B) imaging priority only.
-- *Status:* done ([case mix](../methods/synthetic-hospital.md#case-mix-and-imaging-priority-decision-13)); settings under 30 matched encounters keep legacy weights; the inpatient imaging split is unused (no inpatient imaging orders).
+- *Status:* done ([case mix](../methods/synthetic-hospital.md#case-mix-and-imaging-priority-decision-13)); settings under 30 matched encounters keep legacy weights; P5 inpatient rounds now use the inpatient imaging split with [scenario ordering rates](../methods/workflow-phases.md#inpatient-imaging).
 
 **14. Chart and note sizes from Synthetic Hospital**
 - *Change:* replace the fixed-phrase synthetic notes with sections sized from the dataset (~60K sections averaging ~150 characters; a whole note of about 11 sections averages ~1,930 characters; corrected 2026-11-09, owner-approved). This raises reading, scrolling and typing costs.
 - *Type:* sim (A04/A05) + data. *Evidence:* Synthetic Hospital 2026. *Recommend:* **A.** Notes are currently far too short to be realistic. *Options:* A) sizes + text; B) sizes only.
-- *Status:* done ([note text](../methods/synthetic-hospital.md#note-section-text-decision-14)); length-based reading and scrolling are in [wave-3 methods](../methods/wave3-simulation.md#separate-time-on-one-server). The typing discount stays off by default.
+- *Status:* done ([note text](../methods/synthetic-hospital.md#note-section-text-decision-14)); length-based reading and scrolling are in [wave-3 methods](../methods/wave3-simulation.md#separate-time-on-one-server). Verified N18 (2018) pooled origin shares now drive the default [section authoring model](../methods/note-authoring.md), with scenario section/operator assumptions and full-typing opt-outs.
 
 **15. Add the missing workflow phases**
 - *Change:* add chart synthesis and note authoring; pharmacy clarification; dispensing; result follow-through; interleaved ED work-ups; external reconciliation; Rx amend/cancel; caregiver, vaccine and peri-operative coordination. Each runs as a scenario with no calibrated rates.
 - *Type:* sim + workflows. *Evidence:* S8–S13 (structure only). *Recommend:* **A.** Adding real workflows is your default. *Options:* A) add all; B) pick a subset.
-- *Status:* partial ([scope](../methods/workflow-phases.md#scenario-scope)): chart synthesis, note preparation, result follow-through and the other listed phases run as declared scenario phases; full pharmacy exchange, external reconciliation, prescription acknowledgments, ED work-ups, caregiver/vaccine exchange, perioperative coordination and rich note authoring remain.
+- *Status:* partial ([scope](../methods/workflow-phases.md#scenario-scope)): chart synthesis, note preparation, result follow-through and the other listed phases run as declared scenario phases; full pharmacy exchange, external reconciliation, prescription acknowledgments, ED work-ups, caregiver/vaccine exchange, perioperative coordination and a browser note-template widget remain. Section-level authoring effort is now [modeled](../methods/note-authoring.md).
 
 ## Later
 

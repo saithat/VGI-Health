@@ -115,6 +115,9 @@ Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged 
 - Release gates prove retention of reachable field capabilities for the declared workload even when optional features are declined ([contract](docs/methods/workflow-phases.md#release-capabilities)).
 - Chart synthesis, note preparation and result follow-through have explicit scenario phases ([scope and remaining work](docs/methods/workflow-phases.md#scenario-scope); [verification](docs/audits/wave3-workflows-20261109.md)).
 - Synthetic Hospital supplies synthetic-benchmark case mix, imaging priority and note-section text ([method](docs/methods/synthetic-hospital.md)).
+- Dataset notes use section-level template/copy/free-text effort with verified older N18 origin shares and explicit scenario operator costs ([methods](docs/methods/note-authoring.md)).
+- P5 inpatient rounds include scenario imaging orders with Synthetic Hospital priority ([methods](docs/methods/workflow-phases.md#inpatient-imaging)).
+- Library generation defaults to realistic workflows; explicit legacy mode reproduces preserved library snapshots byte-for-byte ([methods](docs/methods/workflow-phases.md#library-default-and-frozen-worlds)).
 
 ## How to run
 

@@ -474,7 +474,7 @@
       "recency": "older-retained",
       "supersedes": [],
       "supersededBy": [],
-      "retention_reason": "Older evidence (2006): Newer Karpman 2021 uses 2009-2019 data; no public matched post-pandemic complete hour×weekday curve established.",
+      "retention_reason": "Older evidence (2006): Newer Karpman 2021 uses 2009-2019 data; no public matched post-pandemic complete hour\u00d7weekday curve established.",
       "metadata_verified": {
         "date": "2026-11-08",
         "method": "Europe PMC/NLM PMID record; authors, publication year, venue and DOI checked"
@@ -1402,7 +1402,7 @@
     {
       "id": "N8",
       "kind": "literature",
-      "title": "A multi-site evaluation of clinical pharmacist time, motion, interventions and interruptions.",
+      "title": "A multi-site evaluation of clinical\u00a0pharmacist time, motion, interventions and interruptions.",
       "authors": "Canning ML, Munns A, Twine J, McCourt E, Hussain R, Dunn T, Hayward L, Dunn E.",
       "year": 2025,
       "venue": "Int J Clin Pharm",
@@ -1720,7 +1720,7 @@
       "id": "N15",
       "kind": "literature",
       "title": "Automated dispensing cabinets and the effect on omitted doses of ward stock medicines; can implementation reduce delays to first dose antimicrobials?",
-      "authors": "Jeffrey E, Walsh Á, Lai K.",
+      "authors": "Jeffrey E, Walsh \u00c1, Lai K.",
       "year": 2025,
       "venue": "Explor Res Clin Soc Pharm",
       "doi": "10.1016/j.rcsop.2025.100583",
@@ -1785,6 +1785,65 @@
         "date": "2026-11-08",
         "method": "Europe PMC/NLM authors, publication year, venue, DOI/PMID"
       }
+    },
+    {
+      "id": "N18",
+      "kind": "literature",
+      "title": "Length and Redundancy of Outpatient Progress Notes Across a Decade at an Academic Medical Center",
+      "authors": "Rule A, Bedrick S, Chiang MF, Hribar MR.",
+      "year": 2021,
+      "venue": "JAMA Netw Open",
+      "volume": "4",
+      "issue": "7",
+      "pages": "e2115334",
+      "doi": "10.1001/jamanetworkopen.2021.15334",
+      "pmid": "34279650",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8290305/",
+      "accessed": "2026-11-09",
+      "read_level": "full text via paperclip; Methods and Text Source results, content.lines 22-37",
+      "evidence_year": 2018,
+      "evidence_year_basis": "2018 character-origin results; metadata available 2017-2018",
+      "recency": "older-retained",
+      "retention_reason": "Older evidence (2018): Owner requested note-authoring verification; explicit outpatient evidence, no section-level or ED/inpatient calibration claimed.",
+      "supersedes": [],
+      "supersededBy": [],
+      "metadata_verified": {
+        "date": "2026-11-09",
+        "method": "paperclip PMC full text and meta.json"
+      },
+      "figures": {
+        "typed": {
+          "mean_pct": 29.4,
+          "ci99": [
+            28.2,
+            30.7
+          ]
+        },
+        "copied": {
+          "mean_pct": 14.7,
+          "ci99": [
+            13.1,
+            16.5
+          ]
+        },
+        "templated": {
+          "mean_pct": 55.9,
+          "ci99": [
+            54.1,
+            57.7
+          ]
+        },
+        "text_source_notes_2017_2018": 644917,
+        "typed_by_specialty_pct": {
+          "primary": 33.8,
+          "adult_specialty": 21.7,
+          "pediatric": 23.1,
+          "surgical": 29.8
+        }
+      },
+      "definition": "EHR metadata character origins, mean proportions across notes; not word redundancy, author time, or per-section shares. Templated/imported not separately quantified; no dictated category.",
+      "section_shares": "not reported; applying pooled probabilities independently to sections is scenario",
+      "evidence_url": "https://paperclip.gxl.ai/citations/papers/PMC8290305#L22-L37"
     }
   ],
   "recency_policy": "current: evidence/version dated 2020+; older-retained: pre-2020 or conservative historical bound. Publication alone does not establish recent data.",

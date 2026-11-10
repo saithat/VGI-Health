@@ -5,8 +5,9 @@
  * --case-mix synthetic-hospital|legacy and --note-text synthetic-hospital|legacy
  * (defaults synthetic-hospital: setting case mix and note section text from
  * Synthetic Hospital, labeled synthetic-benchmark; legacy keeps local draws and
- * fixed phrases). --note-typed-share N (per mille, default 1000 = off) types
- * only that share of each section (declared template/dictation discount).
+ * fixed phrases). --note-authoring template|full defaults to template (N18,
+ * 2018 origin shares; scenario section/operator model). --note-typed-share N
+ * overrides effort with a uniform scenario share, preserving full text.
  * Defaults to runs/world/2 (world revision, independent of seed); writes
  * state-day-<d>.json, day-<d>-<persona>.json
  * (DaySchedule, validated against src/schema.ts) and manifest.json.
@@ -24,7 +25,7 @@ import { withInformationData } from "./information-needs";
 import { withTiming, mergeTimedDays } from "./timing/arrivals";
 import { generateWorld } from "./world";
 import { CASE_MIX_MODES, SYNTHETIC_HOSPITAL_MIX } from "./case-mix";
-import { NOTE_TEXT_MODES, NOTE_TYPED_SHARE_OFF, NoteTexts, loadSectionDonors, withNoteTexts } from "./notes";
+import { NOTE_TEXT_MODES, NOTE_AUTHORING_MODES, NOTE_AUTHORING_PROFILE, NoteTexts, loadSectionDonors, withNoteTexts } from "./notes";
 import { nativeAdt, simulateAdt } from "./adt";
 
 export const GENERATOR = "world@0.1.0";
@@ -83,8 +84,10 @@ async function main(): Promise<void> {
   if (noteText === "synthetic-hospital" && !existsSync(sectionsPath))
     throw new Error(`${relative(root, sectionsPath)} missing: run make synthetic-hospital, or pass --note-text legacy`);
   const notes = noteText === "synthetic-hospital" ? new NoteTexts(loadSectionDonors(sectionsPath)) : undefined;
-  const typedShare = intArg(args, "note-typed-share", NOTE_TYPED_SHARE_OFF);
-  if (typedShare > 1000) throw new Error("--note-typed-share must be 0..1000 (per mille)");
+  const typedShare = arg(args, "note-typed-share") === undefined ? undefined : intArg(args, "note-typed-share", 1000);
+  if (typedShare !== undefined && typedShare > 1000) throw new Error("--note-typed-share must be 0..1000 (per mille)");
+  const noteAuthoring = NOTE_AUTHORING_MODES.find(m => m === (arg(args, "note-authoring") ?? "template"));
+  if (noteAuthoring === undefined) throw new Error("--note-authoring must be template or full");
   const pop = loadPopulation(fixtures);
   const workflows = arg(args, "workflows") ?? "realistic";
   if (workflows !== "realistic" && workflows !== "legacy") throw new Error("--workflows must be realistic or legacy");
@@ -123,7 +126,7 @@ async function main(): Promise<void> {
     // Diagnosis keys for donor matching: ED scenarios and clinic/pediatric visit kinds.
     const scenarios = new Map([...d.state.today.ed.arrivals.map((a) => [a.taskId, a.scenario] as const), ...Object.entries(d.visitKinds)]);
     for (const p of PERSONAS) {
-      const base = notes === undefined ? d.schedules[p] : withNoteTexts(d.schedules[p], notes, (id) => run.pop.byId.get(id), (id) => scenarios.get(id), typedShare);
+      const base = notes === undefined ? d.schedules[p] : withNoteTexts(d.schedules[p], notes, (id) => run.pop.byId.get(id), (id) => scenarios.get(id), typedShare, noteAuthoring);
       const schedule = clockMode === "legacy" ? {...base, clockMode: "legacy" as const}
         : withTiming(base, d.state);
       const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...schedule, tasks: schedule.tasks.map(t => withCalendar(worldClock, () => withInformationData(t)))} : schedule);
@@ -153,7 +156,8 @@ async function main(): Promise<void> {
     // Synthetic-benchmark inputs (Synthetic Hospital); absent keys mean legacy local draws.
     ...(caseMix === "synthetic-hospital" ? {caseMix, caseMixSource: SYNTHETIC_HOSPITAL_MIX.source} : {}),
     ...(noteText === "synthetic-hospital" ? {noteText, noteTextSource: relative(root, sectionsPath),
-      ...(typedShare !== NOTE_TYPED_SHARE_OFF ? {noteTypedSharePerMille: typedShare} : {})} : {}),
+      ...(typedShare !== undefined ? {noteTypedSharePerMille: typedShare, noteAuthoring: "scenario-uniform-share"}
+        : {noteAuthoring, ...(noteAuthoring === "template" ? {noteAuthoringProfile: NOTE_AUTHORING_PROFILE} : {})})} : {}),
     seed,
     days,
     startDate: SIM_START_DATE,
