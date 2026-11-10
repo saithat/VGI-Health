@@ -3,8 +3,10 @@ import Ehr.Check.Check
 
 /-!
 Seeded rejection and replay tests for the full rule catalog.
-Each mutation also has its own rule check and negative property proof;
-a shared template failure does not establish detection.
+Each mutation has its own rule check and replay; a shared template failure
+does not establish mutation-specific detection. Kernel rejection theorems for
+seeds 1, 7, 13, 15, 16 and 22 use the full-catalog payload-domain obstruction
+to avoid whole-interpreter reduction beyond the 10,000 MB Lean budget.
 -/
 namespace Ehr.Check.FullSeedTests
 open Ehr Ehr.Check Ehr.Canonical Ehr.Specs.V1

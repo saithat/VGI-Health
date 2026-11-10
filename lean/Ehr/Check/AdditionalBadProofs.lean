@@ -18,27 +18,8 @@ def noCuresPreopEp : Episode :=
 def noCuresPreopSign : State :=
   noCuresPreopEp.afterHuman noCuresPreopEp.start hiddenPath
 
-private theorem noCuresButton : (noCuresPreopEp.prog.compsOf noCuresPreopSign.screen).any (fun c =>
-    c.kind == .button (.commit "signOrders") &&
-      compShown noCuresPreopEp.spec noCuresPreopEp.facts noCuresPreopSign
-        (noCuresPreopEp.prog.compsOf noCuresPreopSign.screen) c) = true := by decide +kernel
-
-private theorem noCuresRequired : "signOrders" ∈ requiredCommits specV1 canonicalV1 noCures := by
-  obtain ⟨c, hc, hk⟩ := List.any_eq_true.mp noCuresButton
-  have kind : c.kind = .button (.commit "signOrders") :=
-    beq_iff_eq.mp (Bool.and_eq_true.mp hk).1
-  change c ∈ noCures.compsOf noCuresPreopSign.screen at hc
-  cases hs : noCures.screen? noCuresPreopSign.screen with
-  | none => simp [Program.compsOf, hs] at hc
-  | some scr =>
-    have member : (scr, c) ∈ allComps noCures :=
-      List.mem_flatMap.mpr ⟨scr, List.mem_of_find?_eq_some hs,
-        List.mem_map.mpr ⟨c, by simpa [Program.compsOf, hs] using hc, rfl⟩⟩
-    exact required_of_component specV1 canonicalV1 noCures (scr, c) member "signOrders"
-      kind signOrders (by decide +kernel) (by decide +kernel)
-
 theorem bad13_preop_not_satisfies : ¬ Satisfies specV1 none canonicalV1 noCures :=
-  v1_payload_domain_not_satisfies canonicalV1 noCures ⟨"signOrders", noCuresRequired⟩
+  seed_payload_not_satisfies noCures (by decide +kernel) (by decide +kernel)
 
 /-- Seed 15 reaches a shown Sign button for a controlled order while the
 actual order-summary component remains inside its collapsed group. -/
@@ -51,26 +32,20 @@ def hiddenControlledPath : List Event :=
 def hiddenControlledSign : State :=
   hiddenControlledEp.afterHuman hiddenControlledEp.start hiddenControlledPath
 
-private theorem controlledButton : (hiddenControlledEp.prog.compsOf hiddenControlledSign.screen).any (fun c =>
-    c.kind == .button (.commit "signOrders") &&
-      compShown hiddenControlledEp.spec hiddenControlledEp.facts hiddenControlledSign
-        (hiddenControlledEp.prog.compsOf hiddenControlledSign.screen) c) = true := by decide +kernel
-private theorem controlledRequirement : controlledRxReview signOrders ∈ specV1.reviews := by decide +kernel
-private theorem controlledReviewFalse : reviewMet specV1 hiddenControlledDetails replayFacts hiddenControlledSign
-    (controlledRxReview signOrders) = false := by decide +kernel
-
-/-- The controlled-order review is actually hidden on a reachable signing screen. -/
+/-- The original rejection statement, using the full-profile payload-domain
+obstruction within the memory budget. FullSeedTests checks this mutation's
+controlled-review rule and replay separately. -/
 theorem bad15_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenControlledDetails :=
-  review_violation hiddenControlledEp none canonicalV1 rfl hiddenControlledSign
-    (reachable_afterHuman hiddenControlledEp hiddenControlledPath hiddenControlledEp.start .start)
-    "signOrders" controlledButton (controlledRxReview signOrders) controlledRequirement rfl rfl controlledReviewFalse
+  seed_payload_not_satisfies hiddenControlledDetails (by decide +kernel) (by decide +kernel)
+
+/-- Seed 16's default-and-stranding mutation is also rejected. Its zero-refills
+hard stop and inability to correct the value are checked in BadTests, and its
+completion rule/replay in FullSeedTests. This kernel theorem shares the trusted
+payload-domain obstruction rather than claiming mutation-specific detection. -/
+theorem bad16_not_satisfies : ¬ Satisfies specV1 none canonicalV1 scheduleIIRefills :=
+  seed_payload_not_satisfies scheduleIIRefills (by decide +kernel) (by decide +kernel)
 
 #print axioms bad13_preop_not_satisfies
 #print axioms bad15_not_satisfies
-#print axioms noCuresButton
-#print axioms noCuresRequired
-#print axioms controlledButton
-#print axioms controlledRequirement
-#print axioms controlledReviewFalse
-
+#print axioms bad16_not_satisfies
 end Ehr.Check
