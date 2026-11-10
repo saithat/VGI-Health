@@ -87,7 +87,10 @@ The two CLIs are configured inside that boundary as follows.
   anywhere. The sandbox gets the host's OAuth access token only, with no refresh
   token, so it cannot rotate the host's credentials. If the token would expire
   during the launch, the harness waits until it nears expiry and lets the host's
-  own CLI refresh it with one trivial call.
+  own CLI refresh it with one trivial call. Auto-memory is off: the private
+  home's `settings.json` sets `autoMemoryEnabled: false` and the launch sets
+  `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` (since the follow-ups below; the pilot and
+  full study above ran with it on, and every attempt was denied).
 
 ## Budget
 
@@ -102,6 +105,9 @@ stops the CLI (SIGTERM, then SIGKILL) and ends the decision with
 E, R and H. Tokens are taken from each CLI's own usage output: Codex
 `turn.completed` usage (input, cached input, output) and the Claude Code
 `result` event (input + cache read + cache creation, cache read, output).
+
+A CLI usage or rate-limit refusal is not a budget event; see
+[Usage limits pause the run](#usage-limits-pause-the-run).
 
 ## Recording, replay and audit
 
@@ -302,6 +308,159 @@ opt-in. Two changes would make a better-powered follow-up worth running:
 - give Claude Code a narrow allowlisted interpreter (for example `node` on workspace scripts), so both harnesses have equal shell freedom;
 - run at least 3 samples per decision, so P2's concentration can be separated from noise.
 
+## Follow-ups (owner decisions, 2026-11-09)
+
+### Auto-memory off
+
+The sandboxed Claude Code now runs with auto-memory disabled (settings and env,
+above). The audit is unchanged and still fails a launch on any tool input that
+names `/home/agent`, so a memory write that slipped through would still be
+flagged. A unit test checks the generated settings file and env.
+
+### Usage limits pause the run
+
+`agent/src/usage-limit.ts` recognizes the CLIs' own refusals:
+
+- Claude Code: a `rate_limit_event` with status `rejected`, or an API-error
+  message or result with HTTP 429, `usage_limit_reached`, `rate_limit_error`
+  or `error: "rate_limit"`;
+- Codex: an `error` or `turn.failed` event, or a stderr line, saying "hit your
+  usage limit", `usage_limit_reached`, `usage_not_included`, "rate limit exceeded"
+  or "429 Too Many Requests".
+
+Tool output and the agent's own text are never matched. Run over every
+recorded H transcript (201 launches), the detector flags exactly the 114
+launches of the 57 limit-hit samples and nothing else.
+
+If an H launch ends with such a refusal and without a successful submit, the
+sample throws `UsageLimitError`, an `InfrastructureExhaustedError`. It is not
+retried, gets no continuation launch, and `runNight` rethrows it, so no
+`llm-error` record is written. The Codex JSON backend (B, C, E and R) and R's
+sub-calls raise the same error. The run stops at the next sample boundary, and
+`manifest.json` gets `status: "paused"` and a `pause` object with the CLI, its
+message, the reset time when the CLI reports one, and the samples still
+pending. Running the same command again with `--resume` after the reset keeps
+every sample that has a `record.json`. It moves each other sample directory
+to `<sample>.partial-N` for audit and reruns only those. A test drives a fake
+CLI that prints each CLI's recorded refusal events, and a fake `codex` binary
+for the JSON backend.
+
+### Pre-declaration: H-claude+node (committed before any pilot result)
+
+**Variant.** H-claude+node is H-claude with Claude Code allowed to run Node
+scripts in the workspace. Everything else is unchanged: bwrap, the egress
+allowlist, `dontAsk`, the denied tools, the budget defaults and the default
+Claude Code model. It differs in exactly three places. It is selected with
+`--harness claude --harness-interpreter node`.
+
+1. `--allowedTools` gets one more entry, `Bash(node /work/*)`. Claude Code
+   matches it on the command text, and `node /work/../x.js` also matches (checked
+   with the installed CLI, 2.1.322). Path scoping is therefore enforced by item 2.
+2. `/run/harness/bin/node` (read-only, first on `PATH`) is a shim. It runs only a
+   regular file whose resolved path is under `/work`. The file runs under
+   Node's permission model: `--permission --allow-fs-read=/work
+   --allow-fs-read=/tmp --allow-fs-write=/work --allow-fs-write=/tmp`, so it
+   cannot read the private home and cannot start child processes, workers or
+   addons. `NODE_OPTIONS` and `NODE_PATH` are cleared. Anything else (`node -e`,
+   a relative path, a symlink or `..` out of `/work`, a directory) exits 126.
+   Network stays confined by the sandbox: loopback plus the
+   `api.anthropic.com` CONNECT allowlist.
+3. The workspace README gains a short "Scripts (node)" section. Every other
+   workspace file is byte-identical to H-claude's.
+
+Auto-memory is now off for every Claude launch (owner decision 1). The variant
+therefore also differs from the earlier H-claude pilot in this respect. That
+pilot's memory attempts were all denied, so the effect should be at most a
+few turns. Tests: the extra allowlist entry and shim exist only in the
+variant, and the workspace differs only in the README section. Inside the
+real sandbox, the shim runs a `/work` script and refuses `-e`, `..`, symlink
+and directory escapes. A script cannot read `/home/agent` even with
+`NODE_OPTIONS` set, and cannot spawn a process.
+
+**Pilot.** The seven decisions night-01/P1, night-02/P2, night-04/P3,
+night-05/P4, night-07/P5, night-08/P1 and night-09/P2, one sample each,
+`--workers 1`. The inputs are exactly those of the H-claude pilot
+(`runs/quality-BH-pilot-claude-20261109`):
+
+- frozen source `quality-BR-source-20261109` and sanity ledger `quality-BR-sanity-20261109`;
+- native binary sha256 `750e9833…`, the pre-wave-3 build, not rebuilt;
+- app build `030fac6d…`.
+
+The run stops before any sample if a frozen-input binding differs from that
+pilot's `inputs/binding.json`. Only the agent-source hash and options may
+differ. It runs under the browser lock and systemd-run with `MemoryMax=12G`.
+A usage limit pauses it, and it resumes as above.
+
+**Comparators.**
+
+- **B**: the same as for H, the B arm of `runs/quality-BR-20261109` (two samples
+  per decision). On the seven decisions it averages 4.5 accepted and 17.5 + 281.5 = 299
+  validation clicks plus scrolls saved.
+- **H-claude**: the H-claude pilot, 5/7 accepted and 22 + 480 = 502 clicks plus scrolls saved.
+
+**Continuation rule.** This is the H-claude rule, unchanged. The variant
+qualifies for a full study if it accepts at least B's count minus one (≥ 3.5,
+so at least 4 of 7) and saves at least B's validation clicks plus scrolls
+(≥ 299). The comparison with the H-claude pilot is descriptive, decision by
+decision: Δ accepted, Δ clicks plus scrolls, tokens, wall time, night commands,
+permission denials and how often node was used. With one sample per decision
+it cannot separate the two harnesses. If the rule qualifies the variant, the
+full study would be the H-claude design: 35 decisions × 2 samples, B reused
+from `quality-BR-20261109`, `--workers 4`, and the same decision-unit paired
+bootstrap (10,000 iterations, seed 20261103). The owner has said not to run it
+in this lane, so this lane only reports what the rule says.
+
+### H-claude+node pilot, 2026-11-09
+
+The pre-declared pilot ran as declared (`runs/quality-BH-pilot-claudenode-20261109`).
+Every frozen-input binding matched the H-claude pilot's. `worldSha256` is not one of
+those bindings: it hashes the copied world, whose manifest names the run's own
+`inputs/fixtures` path. The seven per-decision query files are byte-identical to the
+H-claude pilot's. All 7 samples completed in one pass, with no usage limit, budget
+hit, continuation or repair. `claude-opus-5-5` served every sample.
+
+| Arm | Accepted | Validation clicks saved | Validation scrolls saved | Input tokens / decision | Cached input / decision | Output tokens / decision | Seconds / decision | Night commands / decision | Turns / decision | Denied calls (total) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| B (B/R study, 2 samples) | 4.5/7 | 17.5 | 281.5 | 207,275 | 4,562 | 5,271 | 336.8 | – | – | – |
+| H-claude (pilot) | 5/7 | 22 | 480 | 2,067,912 | 1,971,467 | 14,050 | 524.8 | 11.7 | 43.9 | 21 |
+| H-claude+node | 6/7 | 8 | 285 | 1,986,783 | 1,899,506 | 14,136 | 505.6 | 12.4 | 50.0 | 18 |
+
+| Decision | B (accepted, clicks/scrolls, mean of 2) | H-claude | H-claude+node | node runs |
+|---|---|---|---|---:|
+| night-01/P1 | 1, 9.5/72.5 | 16/6 | 0/78 | 0 |
+| night-02/P2 | 1, 8/39 | 0/408 | 2/70 | 21 |
+| night-04/P3 | 0 | rejected (−1, 78) | 0/78 | 0 |
+| night-05/P4 | 1, 0/133.5 | 0/0 | 0/19 | 5 |
+| night-07/P5 | 1, 0/28.5 | 0/20 | 0/10 | 14 |
+| night-08/P1 | 0 | rejected (−1, 60) | rejected (0, 55) | 8 |
+| night-09/P2 | 0.5, 0/8 | 6/46 | 6/30 | 8 |
+
+**Rule.** H-claude+node accepted 6 decisions, which meets the floor of 3.5. It saved
+8 + 285 = 293 clicks plus scrolls, 6 short of B's 299, so **the rule does not qualify
+it for a full study**. No full study was run, as the owner instructed.
+
+**Against H-claude** (descriptive only; one sample per decision): +1 accepted
+(night-04/P3 now passes validation), −201 clicks plus scrolls. Nearly all of
+that difference is night-02/P2, where H-claude's single sample collapsed the
+order-favorites group for 408 scrolls and this sample found a smaller change
+(2/70). Excluding that decision, the variant saves 223 against H-claude's 116
+(B: 252). Token use, wall time and night commands are within about 5%.
+
+**What node changed.** Claude Code ran 56 node scripts in 5 of the 7 decisions.
+They were helpers that grouped geometry states, listed step targets, or
+generated patch and submission files (`geo.mjs`, `mknav.mjs`, `rules.js`).
+Denied calls fell only from 21 to 18. Most remaining denials are `cd /work; …`
+compounds, `node -e` one-liners and shell loops, which the variant does not
+allow. Egress went only to `api.anthropic.com`.
+
+**Audit.** With auto-memory off, there were no memory-write attempts. Three
+samples are still flagged: in each, Claude Code tried to read its own
+spilled tool-result file under `/home/agent/.claude/projects/…/tool-results/`.
+Two were Grep calls, which the permission rules denied. The third passed that
+path to a `/work` node script, and Node's permission model refused the read
+(`ERR_ACCESS_DENIED`). Every attempt failed, and the audit stays strict, so
+those samples remain flagged.
+
 ## Commands
 
 ```sh
@@ -335,7 +494,8 @@ reuse check compares them. Data stays untracked under the worktree's `runs/`.
 ## Limitations
 
 - Replay re-verifies the recorded commands and the outcome, not the model's transcript (see above).
-- Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom.
+- Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom. The opt-in H-claude+node variant narrows the gap: it allows `node /work/<script>` only, not `-e` one-liners or compound `cd …;` commands.
+- Claude Code writes large tool outputs to files under its private home and sometimes tries to read them back. The rules deny that, and the strict audit flags it.
 - The Codex credential copy includes its refresh token, as the existing Codex backend's does. A refresh inside the sandbox could rotate it.
 - The workspace inputs are 0444, but the agent may delete or replace them inside `/work`. Every check, estimate and submission is evaluated by the host against its own copy, so this can only mislead the agent itself.
 - Codex exec has no turn limit; wall time and the command quota bound it.

@@ -1,5 +1,6 @@
 import { serveNightTools, nightMcpSource, auditNightTranscript, submittedOutput } from './night-mcp.js';
 import { boundedQueryTranscript } from './query-audit.js';
+import { UsageLimitError, usageLimitIn } from '../usage-limit.js';
 import { writeQueryDirectory } from '../quality-queries.js';
 import { z } from 'zod';
 import { confinedArgs, auditTranscript, queryRequirements } from './isolation.js';
@@ -180,6 +181,10 @@ tool_timeout_sec = 900
         clearTimeout(timer);
         // Never accept an arm-C turn after dropping command provenance.
         if((this.queryMode||toolMode)&&stdoutTruncated){reject(Object.assign(new Error('codex backend: query transcript exceeded limit; complete audit unavailable'),{transcript:{stdout:boundedQueryTranscript(stdout),stderr},audit:{...auditTranscript(stdout,cwd),status:'fail',transcriptTruncated:true}}));return;}
+        // A plan usage limit or exhausted rate limit pauses the run (resumable); it is never a model result.
+        const failed=code!==0||(()=>{try{return transcriptFailure(stdout);}catch{return false;}})();
+        const limit=failed?usageLimitIn(stdout,stderr,'codex'):null;
+        if(limit){reject(Object.assign(new UsageLimitError(limit),{transcript:{stdout:this.queryMode?boundedQueryTranscript(stdout):stdout,stderr}}));return;}
         if (code === 0) resolve({ stdout, stderr });
         else reject(Object.assign(new Error(`codex backend: exit ${String(code)}: ${stderr}`), { transcript: {stdout:this.queryMode?boundedQueryTranscript(stdout):stdout,stderr}, audit: toolMode?auditNightTranscript(stdout,[]):auditTranscript(stdout,this.queryMode?cwd:undefined) }));
       });

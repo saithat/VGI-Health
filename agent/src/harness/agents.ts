@@ -14,6 +14,8 @@ export interface LaunchSpec {
   readOnly: (readonly [string, string])[]; hosts: readonly string[];
 }
 export interface AgentConfig { harness: HarnessKind; model: string | null; reasoningEffort: string; serviceTier: string; maxTurns: number;
+  /** Pre-declared H-claude+node variant: Claude Code may run `node /work/<script>` (see NODE_SHIM). */
+  interpreter?: 'node' | null;
   /** Test-only: a command run in place of a model CLI (harness 'script'). */
   script?: { command: string; args: string[] } }
 
@@ -22,6 +24,25 @@ export interface AgentConfig { harness: HarnessKind; model: string | null; reaso
 export const CLAUDE_TOOLS = ['Bash', 'Read', 'Glob', 'Grep', 'Edit', 'Write'];
 export const CLAUDE_ALLOWED = ['Read(//work/**)', 'Edit(//work/**)', 'Write(//work/**)', 'Glob', 'Grep',
   ...['night', 'ls', 'cat', 'jq', 'head', 'wc', 'grep'].map(c => `Bash(${c}:*)`)];
+/** H-claude+node: the one extra allowlist entry. Claude Code matches it on the command text, so
+ * `node /work/../x` would match; the shim below resolves the path and refuses anything outside /work. */
+export const CLAUDE_NODE_ALLOWED = `Bash(node ${SANDBOX_PATHS.workspace}/*)`;
+export const claudeAllowed = (interpreter: AgentConfig['interpreter']) => interpreter === 'node' ? [...CLAUDE_ALLOWED, CLAUDE_NODE_ALLOWED] : CLAUDE_ALLOWED;
+/** First on PATH as /run/harness/bin/node (read-only) for the node variant only. It runs a regular file
+ * whose resolved path is inside /work, under Node's permission model: file reads and writes only in
+ * /work and /tmp, no child processes, workers, addons or WASI. The bwrap sandbox and egress allowlist
+ * are unchanged; NODE_OPTIONS cannot widen the flags. */
+export const NODE_SHIM = `#!/bin/sh
+# Arm H claude+node: run one script from the workspace under Node's permission model.
+case "$1" in ${SANDBOX_PATHS.workspace}/*) ;; *) echo "node: only scripts under ${SANDBOX_PATHS.workspace} may run: node ${SANDBOX_PATHS.workspace}/<script> [args]" >&2; exit 126;; esac
+script=$(/usr/bin/realpath -e -- "$1" 2>/dev/null) || { echo "node: no such script: $1" >&2; exit 126; }
+case "$script" in ${SANDBOX_PATHS.workspace}/*) ;; *) echo "node: $1 resolves outside ${SANDBOX_PATHS.workspace}" >&2; exit 126;; esac
+[ -f "$script" ] || { echo "node: not a regular file: $1" >&2; exit 126; }
+shift
+exec /usr/bin/env -u NODE_OPTIONS -u NODE_PATH /usr/bin/node --permission --allow-fs-read=${SANDBOX_PATHS.workspace} --allow-fs-read=/tmp --allow-fs-write=${SANDBOX_PATHS.workspace} --allow-fs-write=/tmp -- "$script" "$@"
+`;
+/** Claude Code's auto-memory is off in the sandbox (settings and env); its attempts would only be denied anyway. */
+export const CLAUDE_SETTINGS = { autoMemoryEnabled: false };
 export const CLAUDE_DENIED = [`Read(/${SANDBOX_PATHS.home}/**)`, `Edit(/${SANDBOX_PATHS.home}/**)`, `Write(/${SANDBOX_PATHS.home}/**)`, 'Edit(//work/.claude/**)', 'Write(//work/.claude/**)', 'WebFetch', 'WebSearch', 'Task', 'Agent'];
 
 const codexHome = () => process.env['CODEX_HOME'] ?? path.join(homedir(), '.codex');
@@ -45,8 +66,15 @@ export function claudeTokenValidityMs(now = Date.now()) {
   return parsed.success ? parsed.data.claudeAiOauth.expiresAt - now : null;
 }
 
+/** The node shim exists in the read-only control directory only for the node variant. */
+async function installInterpreter(control: string, interpreter: AgentConfig['interpreter']) {
+  const shim = path.join(control, 'bin', 'node');
+  await rm(shim, { force: true });
+  if (interpreter === 'node') { await mkdir(path.dirname(shim), { recursive: true }); await writeFile(shim, NODE_SHIM, { mode: 0o555 }); }
+}
 /** Prepare the CLI's private home (credential copy, policy files) and return how to launch it. */
 export async function prepareLaunch(cfg: AgentConfig, home: string, control: string, launch: number): Promise<LaunchSpec> {
+  if (cfg.interpreter && cfg.harness === 'codex') throw new Error('The node interpreter variant is defined for the claude harness only');
   if (cfg.harness === 'codex') {
     if (!cfg.model) throw new Error('Arm H codex harness requires --model');
     if (cfg.serviceTier === 'fast') throw new Error('Codex fast mode is prohibited; use --service-tier default');
@@ -70,14 +98,17 @@ export async function prepareLaunch(cfg: AgentConfig, home: string, control: str
     if (!existsSync(source)) throw new Error('Arm H claude harness: no Claude Code credentials');
     const creds = claudeCredentialSchema.parse(JSON.parse(readFileSync(source, 'utf8')));
     await writeFile(path.join(dir, '.credentials.json'), JSON.stringify({ claudeAiOauth: { ...creds.claudeAiOauth, refreshToken: undefined } }), { mode: 0o600 });
+    await writeFile(path.join(dir, 'settings.json'), JSON.stringify(CLAUDE_SETTINGS), { mode: 0o600 });
+    await installInterpreter(control, cfg.interpreter);
     const binary = claudeBinary();
     return { command: '/opt/claude/claude', hosts: EGRESS_HOSTS.claude, readOnly: [[binary, '/opt/claude/claude']],
-      env: { CLAUDE_CONFIG_DIR: `${SANDBOX_PATHS.home}/.claude`, CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1', DISABLE_AUTOUPDATER: '1', DISABLE_TELEMETRY: '1', DISABLE_ERROR_REPORTING: '1' },
+      env: { CLAUDE_CONFIG_DIR: `${SANDBOX_PATHS.home}/.claude`, CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1', CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '1', DISABLE_AUTOUPDATER: '1', DISABLE_TELEMETRY: '1', DISABLE_ERROR_REPORTING: '1' },
       args: ['-p', '--output-format', 'stream-json', '--verbose', '--max-turns', String(cfg.maxTurns), '--tools', CLAUDE_TOOLS.join(','),
-        '--allowedTools', ...CLAUDE_ALLOWED, '--disallowedTools', ...CLAUDE_DENIED, '--permission-mode', 'dontAsk', '--setting-sources', 'user',
+        '--allowedTools', ...claudeAllowed(cfg.interpreter), '--disallowedTools', ...CLAUDE_DENIED, '--permission-mode', 'dontAsk', '--setting-sources', 'user',
         '--strict-mcp-config', '--no-session-persistence', '--disable-slash-commands', ...(cfg.model ? ['--model', cfg.model] : [])] };
   }
   if (!cfg.script) throw new Error('script harness needs a command');
+  await installInterpreter(control, cfg.interpreter);
   return { command: cfg.script.command, args: cfg.script.args, env: {}, readOnly: [], hosts: EGRESS_HOSTS.script };
 }
 

@@ -1,5 +1,6 @@
 /** Arm R partition boundary and effectful capabilities. Only these values enter the REPL. */
 import { z } from 'zod';
+import { UsageLimitError } from '../usage-limit.js';
 import type { RlmBudget } from './stats.js';
 export { DEFAULT_RLM_BUDGET, rlmBudgetSchema, type RlmBudget } from './stats.js';
 import { checkPatch, TrainEstimator, type LoopDeps, type NightInput } from '../night.js';
@@ -73,6 +74,8 @@ export class RlmHost {
     this.gate = { specVersion: input.release.specVersion, prev: this.current, canonical: input.release.canonical, nextVersion: this.current.version + 1 };
     this.estimator = new TrainEstimator(deps, input, input.release.specVersion);
   }
+  /** A sub-call refused by the CLI's usage/rate limit; the loop aborts the sample after the cell (resumable). */
+  usageLimit: UsageLimitError | null = null;
   get done() { return this.submitted; }
   get final() { if (!this.submitted) throw new Error('No FINAL submission'); return this.submission; }
   beginLoop() { this.submitted = false; this.submission = undefined; }
@@ -84,7 +87,7 @@ export class RlmHost {
     const event: HostEvent = { index: this.events.length, turn: this.turn, name, args: structuredClone(args), result: null, error: null };
     this.events.push(event);
     try { event.result = await this.dispatch(name, args); return structuredClone(event.result); }
-    catch (error) { event.error = error instanceof Error ? error.message : 'Host call failed'; throw error; }
+    catch (error) { event.error = error instanceof Error ? error.message : 'Host call failed'; if (error instanceof UsageLimitError) this.usageLimit ??= error; throw error; }
   };
   private async dispatch(name: string, args: unknown): Promise<unknown> {
     if (this.submitted) throw new Error('Loop has ended; no calls after FINAL');

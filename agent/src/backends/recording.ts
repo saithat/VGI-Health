@@ -1,4 +1,5 @@
 import { BackendRequestError } from '../errors.js';
+import { UsageLimitError } from '../usage-limit.js';
 import { retryInfrastructure,replayDrifted } from '../infrastructure.js';
 import { ReplayDivergedError, ReplayMissingError } from './replay.js';
 import { armCrashHook } from '../crash-hook.js';
@@ -73,7 +74,7 @@ export class RecordingLlm implements JsonLlm {
         while(existsSync(file.replace(/\.json$/,`.attempt-${number}.error.json`)))number++;
         await writeJson(file.replace(/\.json$/,`.attempt-${number}.error.json`),detail);
         await writeJson(file.replace(/\.json$/,'.error.json'),detail);
-        if(req.toolSession)throw new BackendRequestError(detail.error);
+        if(req.toolSession&&!(error instanceof UsageLimitError))throw new BackendRequestError(detail.error);
         throw error;
       }
     }, true);
