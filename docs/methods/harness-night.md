@@ -568,6 +568,8 @@ reuse check compares them. Data stays untracked under the worktree's `runs/`.
 
 ## Limitations
 
+- **Spool symlink fix (2026-11-10).** Until this fix, the host-side spool server followed symlinks the agent could plant in the agent-writable spool: a planted `<id>.res.tmp` link made the host write its JSON reply to any host-writable file, and a linked `<id>.req.json` made it read one. The host now opens requests with `O_NOFOLLOW` (regular files only) and creates replies with `O_EXCL | O_NOFOLLOW` (`agent/test/harness-spool.test.ts`). Earlier H runs predate the fix, and their spools were not checked for planted links.
+
 - Replay re-verifies the recorded commands and the outcome, not the model's transcript (see above).
 - Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom. The opt-in H-claude+node variant narrows the gap: it allows `node /work/<script>` only, not `-e` one-liners or compound `cd …;` commands.
 - Claude Code writes Bash output longer than `bashOutputMaxChars` to a file under its private home and sometimes tries to read it back. The rules deny that, and the strict audit flags it. The threshold is now the CLI's ceiling, 128,000 characters; larger outputs (for example `night render w3Orders`, about 741,000) still spill.
