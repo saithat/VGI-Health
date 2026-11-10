@@ -410,6 +410,57 @@ from `quality-BR-20261109`, `--workers 4`, and the same decision-unit paired
 bootstrap (10,000 iterations, seed 20261103). The owner has said not to run it
 in this lane, so this lane only reports what the rule says.
 
+### H-claude+node pilot, 2026-11-09
+
+The pre-declared pilot ran as declared (`runs/quality-BH-pilot-claudenode-20261109`).
+Every frozen-input binding matched the H-claude pilot's. `worldSha256` is not one of
+those bindings: it hashes the copied world, whose manifest names the run's own
+`inputs/fixtures` path. The seven per-decision query files are byte-identical to the
+H-claude pilot's. All 7 samples completed in one pass, with no usage limit, budget
+hit, continuation or repair. `claude-opus-5-5` served every sample.
+
+| Arm | Accepted | Validation clicks saved | Validation scrolls saved | Input tokens / decision | Cached input / decision | Output tokens / decision | Seconds / decision | Night commands / decision | Turns / decision | Denied calls (total) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| B (B/R study, 2 samples) | 4.5/7 | 17.5 | 281.5 | 207,275 | 4,562 | 5,271 | 336.8 | – | – | – |
+| H-claude (pilot) | 5/7 | 22 | 480 | 2,067,912 | 1,971,467 | 14,050 | 524.8 | 11.7 | 43.9 | 21 |
+| H-claude+node | 6/7 | 8 | 285 | 1,986,783 | 1,899,506 | 14,136 | 505.6 | 12.4 | 50.0 | 18 |
+
+| Decision | B (accepted, clicks/scrolls, mean of 2) | H-claude | H-claude+node | node runs |
+|---|---|---|---|---:|
+| night-01/P1 | 1, 9.5/72.5 | 16/6 | 0/78 | 0 |
+| night-02/P2 | 1, 8/39 | 0/408 | 2/70 | 21 |
+| night-04/P3 | 0 | rejected (−1, 78) | 0/78 | 0 |
+| night-05/P4 | 1, 0/133.5 | 0/0 | 0/19 | 5 |
+| night-07/P5 | 1, 0/28.5 | 0/20 | 0/10 | 14 |
+| night-08/P1 | 0 | rejected (−1, 60) | rejected (0, 55) | 8 |
+| night-09/P2 | 0.5, 0/8 | 6/46 | 6/30 | 8 |
+
+**Rule.** H-claude+node accepted 6 decisions, which meets the floor of 3.5. It saved
+8 + 285 = 293 clicks plus scrolls, 6 short of B's 299, so **the rule does not qualify
+it for a full study**. No full study was run, as the owner instructed.
+
+**Against H-claude** (descriptive only; one sample per decision): +1 accepted
+(night-04/P3 now passes validation), −201 clicks plus scrolls. Nearly all of
+that difference is night-02/P2, where H-claude's single sample collapsed the
+order-favorites group for 408 scrolls and this sample found a smaller change
+(2/70). Excluding that decision, the variant saves 223 against H-claude's 116
+(B: 252). Token use, wall time and night commands are within about 5%.
+
+**What node changed.** Claude Code ran 56 node scripts in 5 of the 7 decisions.
+They were helpers that grouped geometry states, listed step targets, or
+generated patch and submission files (`geo.mjs`, `mknav.mjs`, `rules.js`).
+Denied calls fell only from 21 to 18. Most remaining denials are `cd /work; …`
+compounds, `node -e` one-liners and shell loops, which the variant does not
+allow. Egress went only to `api.anthropic.com`.
+
+**Audit.** With auto-memory off, there were no memory-write attempts. Three
+samples are still flagged: in each, Claude Code tried to read its own
+spilled tool-result file under `/home/agent/.claude/projects/…/tool-results/`.
+Two were Grep calls, which the permission rules denied. The third passed that
+path to a `/work` node script, and Node's permission model refused the read
+(`ERR_ACCESS_DENIED`). Every attempt failed, and the audit stays strict, so
+those samples remain flagged.
+
 ## Commands
 
 ```sh
@@ -443,7 +494,8 @@ reuse check compares them. Data stays untracked under the worktree's `runs/`.
 ## Limitations
 
 - Replay re-verifies the recorded commands and the outcome, not the model's transcript (see above).
-- Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom.
+- Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom. The opt-in H-claude+node variant narrows the gap: it allows `node /work/<script>` only, not `-e` one-liners or compound `cd …;` commands.
+- Claude Code writes large tool outputs to files under its private home and sometimes tries to read them back. The rules deny that, and the strict audit flags it.
 - The Codex credential copy includes its refresh token, as the existing Codex backend's does. A refresh inside the sandbox could rotate it.
 - The workspace inputs are 0444, but the agent may delete or replace them inside `/work`. Every check, estimate and submission is evaluated by the host against its own copy, so this can only mislead the agent itself.
 - Codex exec has no turn limit; wall time and the command quota bound it.
