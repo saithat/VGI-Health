@@ -1,4 +1,4 @@
-_README last reviewed against commit `a907e5cb` (2026-11-10; third-lane integration)._
+_README last reviewed against commit `ff4e5eba` (2026-11-10)._
 
 # VGI Health
 
@@ -85,12 +85,13 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-Wave 3 is merged and verified ([audit](docs/audits/wave3-merge-20261109.md));
-the retained recording certificates below predate it and have not been re-issued.
+Wave 3 and its follow-ups are integrated and verified ([audit](docs/audits/w3b-merge-20261110.md)).
+The integration copy of the retained recording has current build bindings; its
+layouts, rule inputs and outcome scenarios remain frozen from before wave 3.
 
 | Evidence | Result and caveat |
 |---|---|
-| Retained recording verification (pre-wave-3) | All 33 retained revision bindings re-certified; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
+| Retained recording verification (frozen pre-wave-3 inputs) | All 33 retained revision bindings re-certified in the integration worktree; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
 | Matched workload experiment | Blind even days across five clinicians: both successor arms complete 660/662 tasks; mean queue delay is 1.19 minutes with fixed-cost interruptions and 1.73 with typed real work. Both have two overdue doses and zero active overtime. These are fixed-layout offline runs with uncalibrated rates; the archived cohort differs. [Cohorts, endpoints and screenshots](docs/methods/workload-and-interruptions.md#local-measurement-cohorts). |
 | Wave-3 simulator smoke | Day 2: 158/158 tasks complete; mean queue 12.58 min versus 1.73 in the earlier cohort. On identical new tasks, length costs add 267.69 active min and 56 scrolls. Scenario assumptions, fixed layouts, different wave-2/wave-3 cohorts. Full template/persona browser audits: zero findings. [Verification and scope](docs/audits/wave3-sim-20261109.md). |
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
@@ -102,7 +103,7 @@ capabilities. The system uses synthetic patients and is not a deployable product
 
 ### Wave 3 (approved 2026-11-09)
 
-Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md).
+Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); follow-up integration: [audit](docs/audits/w3b-merge-20261110.md).
 
 - Separate role profiles remain experimental under the frozen gate; native task fitting exposes source-script and chart-size transfer limits ([methods](docs/methods/role-calibration.md)).
 
@@ -163,7 +164,10 @@ at 8.3 GiB peak. Weekly/manual/Lean-PR CI audits all 24 seed axioms. Seeds
 Full-catalog regressions retain preset defaults and supply eligible
 CURES/trusted-evidence fixtures; interruption-count tests select legacy
 fixed-cost mode. Seeds 2/4/5 use the refactor's shared automation-rejection helper.
-All 15 core persona/release projections match main at `36cd547e`.
+All 15 core persona/release projections remain byte-identical to the integration
+base `53afbbf4`. The seven-task retained-layout capability regression reads its
+preserved `2-original` workload; current canonical workload checks use the
+realistic library world.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
 runs unit tests, 201 canonical conformance scenarios, the 15-accepted/23-rejected

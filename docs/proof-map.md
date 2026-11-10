@@ -16,7 +16,7 @@ run.
 flowchart TB
   subgraph guar_g["Guarantees"]
     proofs["Clinical guarantees<br/>151 theorems, 33 headline"]:::guar
-    check["Program checker<br/>315 theorems, 51 headline"]:::guar
+    check["Program checker<br/>317 theorems, 51 headline"]:::guar
     render["Screen renderer<br/>190 theorems, 11 headline"]:::guar
     layout["UI library &amp; geometry<br/>189 theorems, 36 headline"]:::guar
     commit["Commit reducers<br/>22 theorems, 8 headline"]:::guar
