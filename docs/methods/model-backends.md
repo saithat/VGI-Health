@@ -39,6 +39,12 @@ render the recorded backend name directly. The backend enum extension lives in t
 review-only evidence schema; the base schema used by certified rendering stays
 byte-identical.
 
+The `claude` backend (Anthropic SDK, four SDK retries) treats a 429 that
+remains after those retries as an exhausted rate limit. It raises a
+`UsageLimitError`, an infrastructure error and never `llm-error`.
+`proposal-quality` then pauses the run, which resumes with `--resume`; see
+[Usage limits pause the run](harness-night.md#usage-limits-pause-the-run).
+
 Real night prompts are roughly 347K characters (about 90K input tokens). A local
 model needs **≥ ~100K context**, with additional room for output and tokenizer
 variation. The 12,288-token local test server is suitable only for tiny transport

@@ -5,7 +5,8 @@
 import { z } from 'zod';
 import { InfrastructureExhaustedError } from './errors.js';
 
-export interface UsageLimit { cli: 'claude' | 'codex'; message: string; resetsAt: string | null }
+/** `claude-api` is the direct SDK backend (`--backend claude`), not the Claude Code CLI. */
+export interface UsageLimit { cli: 'claude' | 'codex' | 'claude-api'; message: string; resetsAt: string | null }
 /** Not retried: retryInfrastructure stops at InfrastructureExhaustedError, and runNight rethrows it. */
 export class UsageLimitError extends InfrastructureExhaustedError {
   constructor(readonly limit: UsageLimit) { super(`usage limit (${limit.cli}): ${limit.message}${limit.resetsAt ? `; resets ${limit.resetsAt}` : ''}`); }
@@ -18,7 +19,7 @@ const resets = (seconds: unknown) => typeof seconds === 'number' && Number.isFin
 
 /** The usage/rate-limit refusal in one CLI launch's output, or null. Only the CLI's own
  * error events (and stderr) count, never tool output or text the agent wrote. */
-export function usageLimitIn(stdout: string, stderr = '', cli: UsageLimit['cli'] = 'codex'): UsageLimit | null {
+export function usageLimitIn(stdout: string, stderr = '', cli: 'claude' | 'codex' = 'codex'): UsageLimit | null {
   for (const e of parsed(stdout)) {
     // Claude Code: rate_limit_event with status "rejected", or a synthetic API-error message/result (HTTP 429, usage_limit_reached).
     const rl = z.object({ type: z.literal('rate_limit_event'), rate_limit_info: z.object({ status: z.string(), resetsAt: z.number().optional(), rateLimitType: z.string().optional() }).passthrough() }).safeParse(e);
@@ -34,4 +35,19 @@ export function usageLimitIn(stdout: string, stderr = '', cli: UsageLimit['cli']
   }
   const line = stderr.split('\n').find(l => CODEX_TEXT.test(l));
   return line ? { cli, message: line.trim().slice(0, 500), resetsAt: null } : null;
+}
+
+/** Direct API: an HTTP 429 that the SDK still returns after its own retries is an exhausted rate limit.
+ * The reset is `retry-after` (seconds, or an HTTP date), else the latest `anthropic-ratelimit-*-reset`. */
+export function apiUsageLimit(status: number | undefined, message: string, headers: Headers | undefined, now = Date.now()): UsageLimit | null {
+  if (status !== 429) return null;
+  const after = headers?.get('retry-after')?.trim();
+  let resetsAt: string | null = null;
+  if (after && /^\d+(\.\d+)?$/.test(after)) resetsAt = new Date(now + Number(after) * 1000).toISOString();
+  else if (after && Number.isFinite(Date.parse(after))) resetsAt = new Date(Date.parse(after)).toISOString();
+  else {
+    const resets = [...(headers?.entries() ?? [])].filter(([k]) => /^anthropic-ratelimit-.*-reset$/.test(k)).map(([, v]) => Date.parse(v)).filter(Number.isFinite);
+    if (resets.length) resetsAt = new Date(Math.max(...resets)).toISOString();
+  }
+  return { cli: 'claude-api', message: message.slice(0, 500), resetsAt };
 }

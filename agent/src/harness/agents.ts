@@ -41,8 +41,13 @@ case "$script" in ${SANDBOX_PATHS.workspace}/*) ;; *) echo "node: $1 resolves ou
 shift
 exec /usr/bin/env -u NODE_OPTIONS -u NODE_PATH /usr/bin/node --permission --allow-fs-read=${SANDBOX_PATHS.workspace} --allow-fs-read=/tmp --allow-fs-write=${SANDBOX_PATHS.workspace} --allow-fs-write=/tmp -- "$script" "$@"
 `;
-/** Claude Code's auto-memory is off in the sandbox (settings and env); its attempts would only be denied anyway. */
-export const CLAUDE_SETTINGS = { autoMemoryEnabled: false };
+/** Inline Bash output limit for the sandboxed Claude Code. Claude Code 2.1.322's settings schema defines
+ * `bashOutputMaxChars`: "How many characters of a successful Bash or PowerShell command's output Claude
+ * receives inline (default 30000; values clamp to 4000-128000). Output past this is saved to a file" under
+ * its private home, which the sandbox denies reading. 128000 is the clamp ceiling, so larger outputs still spill. */
+export const CLAUDE_BASH_OUTPUT_MAX_CHARS = 128_000;
+/** Private user settings: auto-memory off (its attempts would only be denied anyway) and the raised spill threshold. */
+export const CLAUDE_SETTINGS = { autoMemoryEnabled: false, bashOutputMaxChars: CLAUDE_BASH_OUTPUT_MAX_CHARS };
 export const CLAUDE_DENIED = [`Read(/${SANDBOX_PATHS.home}/**)`, `Edit(/${SANDBOX_PATHS.home}/**)`, `Write(/${SANDBOX_PATHS.home}/**)`, 'Edit(//work/.claude/**)', 'Write(//work/.claude/**)', 'WebFetch', 'WebSearch', 'Task', 'Agent'];
 
 const codexHome = () => process.env['CODEX_HOME'] ?? path.join(homedir(), '.codex');
