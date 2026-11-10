@@ -15,7 +15,7 @@ export function run(seed: number, index = FIXTURE_INDEX): WorldRun {
   const key = `${index}:${seed}`;
   const hit = cache.get(key);
   if (hit !== undefined) return hit;
-  const r = generateWorld(seed, DAYS, loadPopulation(index).patients);
+  const r = generateWorld(seed, DAYS, loadPopulation(index).patients, undefined, { workflows: "realistic" });
   cache.set(key, r);
   return r;
 }

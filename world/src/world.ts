@@ -52,7 +52,9 @@ export function worldPopulation(patients: PatientProfile[], seed: number): PopIn
 export interface WorldOptions {
   worldClock?: WorldClock;
   caseMix?: CaseMixMode;
-  /** Wave-3 guarded workflows (refill protocol, inbox streams, MAR timing); `legacy` keeps the earlier flows. */
+  /** Wave-3 guarded workflows (refill protocol, inbox streams, MAR timing). Library
+   * calls without options keep the earlier flows, like `worldClock` and `caseMix`;
+   * `world gen` defaults to `realistic`. */
   workflows?: "realistic" | "legacy";
 }
 
@@ -251,7 +253,7 @@ function advanceCalendarDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBu
   const daySeed = hashHex(`${prev.seed}|${day}|${prevStateHash}`);
   const ctx = computeContext(prev.seed, day, daySeed);
   const state: WorldState = { ...structuredClone(prev), day, date: dateOf(day), daySeed, prevStateHash, context: ctx, today: emptyToday() };
-  const b = new DayBuild(day, ctx, pop, state, daySeed, options.caseMix, options.workflows);
+  const b = new DayBuild(day, ctx, pop, state, daySeed, options.caseMix, options.workflows ?? "legacy");
 
   for (const ip of state.inpatients) b.picker.block(ip.patientId);
   for (const c of state.surgicalCases) if (c.orDay === day && c.stage === "booked") b.picker.block(c.patientId);

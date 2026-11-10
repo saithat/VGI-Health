@@ -40,6 +40,9 @@ S8–S13 specify workflow structure only, not these durations or delegation rate
 `world gen --workflows legacy` omits these plans, retains capped legacy inbox
 bursts and uses the original dose timing generator. Existing schedules without
 plans preserve their simulator behavior.
+`world gen` defaults to `realistic`; library `generateWorld` calls without
+options keep the legacy flows, like the world-clock and case-mix opt-outs, so
+the frozen worlds 1 and 2 still regenerate exactly (wave-3 merge).
 
 ## Compound alerts
 
