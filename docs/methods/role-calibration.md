@@ -3,7 +3,7 @@
 This protocol implements wave-3 decisions 1, 2 and 8, approved 2026-11-09.
 It is predeclared before any fitting result. The pre-declaration commit is
 the first commit adding this document and `role-calibration/protocol.json`;
-its full hash will be recorded here in the implementation commit.
+its full hash is `ba5655a2e0e3b17692ac8fcadff1f5295f879483`.
 Agreement means statistical adequacy only. No clinician review exists.
 
 ## Frozen split and gate
@@ -60,3 +60,28 @@ passes every applicable gate. A passing label must say
 that label. Existing regression/guard/completion requirements still apply.
 
 Source register and full policy: [workflow calibration](../design/workflow-calibration.md#statistical-acceptance-without-a-clinician-reviewer).
+
+## Script freeze before fitting
+
+[`scripts.json`](role-calibration/scripts.json) freezes source-specific semantic
+tasks, timing boundaries, native transfer limitations and the numerical search.
+U8 imaging is one chest order; U8 laboratory is **CBC plus blood culture**;
+medication is ceftriaxone. U9 medication is atorvastatin 20 mg orally daily,
+quantity 30, with Save/Quit; its lab is PSA via a prior encounter. The generic
+native routes retain all hospital signing requirements. They are explicitly
+transfer reconstructions, with source UI fidelity unestablished, so numeric
+agreement alone cannot promote them. Absent editing, incorporation, developer
+inspection and verbal-response endpoints stay unsupported. No easier surrogate
+is substituted for these outcomes. Source-specific initial patient records are
+not available; the fixed imported synthetic patient is a declared scenario.
+
+Navigation fits first on train completion with deterministic minimum-detour
+tie-breaking. All selected source path denominators are unknown: path fitting
+is unidentified and no path pass is claimed. Latency then searches nonnegative
+additional service per mental operator using only U8 train mean/SD moments;
+motor constants, text lengths, interruptions and deferred recovery stay fixed.
+The per-attempt lognormal choice-latency law is a scenario assumption. ED uses
+its own uncalibrated parameters, never PCP coefficients. ICU pump work lacks a
+matched native task endpoint. N1 normalization also includes unscheduled days;
+ordinary simulation overtime is not TOSH8. Such missing endpoints fail the
+promotion gate, without inventing a shift-duration conversion.

@@ -1,0 +1,505 @@
+{
+  "version": "wave3-fit-scripts-v1",
+  "predeclaration": "ba5655a2e0e3b17692ac8fcadff1f5295f879483",
+  "frozenBeforeFit": true,
+  "parameters": {
+    "navigationGridPermille": [
+      0,
+      60,
+      120,
+      240
+    ],
+    "navigationAttemptsPerTask": 200,
+    "navigationObjective": "Train completion likelihood first; interpretable path error only where available. Ties choose least detour. All selected U8 path denominators unknown: report nonidentification, never a path pass.",
+    "latencyGridMsPerMentalOp": [
+      0,
+      500,
+      1000,
+      1500,
+      2000,
+      2500,
+      3000,
+      3500,
+      4000,
+      4500,
+      5000,
+      5500,
+      6000
+    ],
+    "latencyCVGrid": [
+      0,
+      0.5,
+      1
+    ],
+    "latencyAttemptsPerTask": 200,
+    "latencyObjective": "Macro mean squared normalized mean error plus squared normalized SD error on U8-2/3/5 successful attempts. Ties choose smaller mean then CV. Nonnegative extra choice service, not motor/time multiplication.",
+    "distribution": "Lognormal per-attempt choice latency from candidate mean/CV (scenario); no fabricated individual source subjects.",
+    "baseline": "Zero extra choice latency, zero detour, 80% keyboard share, same scripts and offered work; native KLM plus unchanged wave-3 reading and interruptions.",
+    "uncalibrated": "60 per-mille detour; zero extra choice latency; 80% keyboard share.",
+    "roleTransfer": "Fit U8 PCP candidate only. ED retains its independent uncalibrated profile; no PCP coefficients are borrowed. ICU pump profile has no equivalent native pump activity endpoint and stays experimental.",
+    "holdoutExecution": "10000 attempts per executable held-out script per arm; unsupported scripts produce missing/fail, never synthetic substitute times.",
+    "monteCarloPolicy": "Preselect 10000; if SE exceeds gate, fail without rerunning/tuning. Pilot sample size not chosen from held-out results."
+  },
+  "scripts": [
+    {
+      "id": "U8-2",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "imaging",
+      "orders": [
+        {
+          "kind": "imaging",
+          "name": "chest radiograph"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U8",
+        "locator": "Appendix C, PDF pp. 21-28; task-specific optimal path, demographic boilerplate disregarded as documented ambiguity"
+      }
+    },
+    {
+      "id": "U8-3",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "lab",
+      "orders": [
+        {
+          "kind": "procedure",
+          "name": "CBC"
+        },
+        {
+          "kind": "procedure",
+          "name": "blood culture"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U8",
+        "locator": "Appendix C, PDF pp. 21-28; task-specific optimal path, demographic boilerplate disregarded as documented ambiguity"
+      }
+    },
+    {
+      "id": "U8-5",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "medication",
+      "orders": [
+        {
+          "kind": "medication",
+          "name": "ceftriaxone"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U8",
+        "locator": "Appendix C, PDF pp. 21-28; task-specific optimal path, demographic boilerplate disregarded as documented ambiguity"
+      }
+    },
+    {
+      "id": "U1-21",
+      "profile": "pcp",
+      "workflow": "W7",
+      "family": "refill",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Historical sensitivity only; source pharmacy response is not a prescription sign.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U1",
+        "locator": "2018 refill task 21; historical sensitivity only"
+      }
+    },
+    {
+      "id": "U8-6",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "compound-alert",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Source drug cancellation, gentamicin/Lasix interaction detail and override reason are not fully represented.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U8",
+        "locator": "Appendix C, PDF pp. 21-28; task-specific optimal path, demographic boilerplate disregarded as documented ambiguity"
+      }
+    },
+    {
+      "id": "U8-7",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "reconciliation",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "No external C-CDA incorporation reducer.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U8",
+        "locator": "Appendix C, PDF pp. 21-28; task-specific optimal path, demographic boilerplate disregarded as documented ambiguity"
+      }
+    },
+    {
+      "id": "U8-9",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "prescription",
+      "orders": [
+        {
+          "kind": "medication",
+          "name": "valsartan"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "No discharge Med Rec/eRX pathway or transmitted-prescription acknowledgment.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U8",
+        "locator": "Appendix C, PDF pp. 21-28; task-specific optimal path, demographic boilerplate disregarded as documented ambiguity"
+      }
+    },
+    {
+      "id": "U9-2",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "prescription",
+      "orders": [
+        {
+          "kind": "medication",
+          "name": "atorvastatin"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Generic signing lacks source Save/Quit editor endpoint; compare as transfer only.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U9",
+        "locator": "Appendix tasks, PDF pp. 20 and 22; printed 5/8 medication path retained"
+      },
+      "dose": {
+        "tenths": 200,
+        "unit": "mg",
+        "route": "PO",
+        "frequency": "daily",
+        "quantity": 30
+      }
+    },
+    {
+      "id": "U9-4",
+      "profile": "pcp",
+      "workflow": "W1",
+      "family": "lab",
+      "orders": [
+        {
+          "kind": "procedure",
+          "name": "PSA"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Generic ordering lacks source past-encounter Administrative/Procedure route; compare as transfer only.",
+      "path": "Excluded: source path aggregation denominator unspecified; semantic steps are not clicks.",
+      "citation": {
+        "source": "U9",
+        "locator": "Appendix tasks, PDF pp. 20 and 22; printed 5/8 medication path retained"
+      }
+    },
+    {
+      "id": "U3-2",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "medication",
+      "orders": [
+        {
+          "kind": "medication",
+          "name": "simvastatin"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      },
+      "dose": {
+        "tenths": 200,
+        "unit": "mg",
+        "route": "PO",
+        "frequency": "daily"
+      }
+    },
+    {
+      "id": "U3-3",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "modify-medication",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "No existing-order edit reducer; do not substitute a new prescription.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      }
+    },
+    {
+      "id": "U3-4",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "lab",
+      "orders": [
+        {
+          "kind": "procedure",
+          "name": "cholesterol in HDL"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      },
+      "indication": "hypercholesterolemia"
+    },
+    {
+      "id": "U3-6",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "imaging",
+      "orders": [
+        {
+          "kind": "imaging",
+          "name": "CT head without contrast"
+        }
+      ],
+      "execute": true,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      },
+      "indication": "cerebrovascular accident"
+    },
+    {
+      "id": "U3-8",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "allergy-alert",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Bactrim alert developer-information endpoint is absent.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      }
+    },
+    {
+      "id": "U3-9",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "interaction-alert",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "Losartan interaction developer-information endpoint is absent.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      }
+    },
+    {
+      "id": "U3-10",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "problem",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "No problem-list addition reducer; do not substitute note signing.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      }
+    },
+    {
+      "id": "U3-12",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "allergy",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "No allergy-list addition reducer; do not substitute allergy review.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      }
+    },
+    {
+      "id": "U3-13",
+      "profile": "ed-resident",
+      "workflow": "W3",
+      "family": "vitals",
+      "orders": [],
+      "execute": false,
+      "sourceMatched": false,
+      "initial": "Synthetic imported patient chart already open; chart overview, no draft or review receipts; private fresh actor state.",
+      "final": "Actual unchanged hospital signOrders guard succeeds for every requested line; no encounter note/disposition is added.",
+      "timing": "Begin at source-equivalent chart route; end at last guarded UI event, before unrelated fixed-exposure closure service.",
+      "selection": "Patient selection precedes timing in these reconstructed source scripts; absent source patient fixture replaced by one fixed synthetic world patient, declared scenario.",
+      "typing": "Native four-character coded type-ahead plus acceptance; literal source doses where reported; native required entries and reviews retained.",
+      "alerts": "No source alert is bypassed. Unmatched compound/developer inspection tasks are unsupported.",
+      "assistance": "Native completion is guarded completion, not observed unaided success; source assistance status remains unresolved.",
+      "limitation": "No verbal pulse-abnormality interpretation outcome.",
+      "path": "Excluded: ratio-only source has no absolute optimal path denominator.",
+      "citation": {
+        "source": "U3",
+        "locator": "Appendix C, PDF pp. 21-32"
+      }
+    }
+  ]
+}
