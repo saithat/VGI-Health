@@ -32,7 +32,15 @@ private theorem patchedMember : HasComponent defaultRefillEligibility patched :=
   have host : Blueprint.host "w7Decision" = "w7Decision" := by decide +kernel
   simp only [id, host, beq_self_eq_true, ite_true]
   apply List.mem_map.mpr
-  exact ⟨sourceComponent, hc, by simp [patched, sourceId]⟩
+  have target : (sourceComponent.id == "w7Decision.legal.refillScheduleEligibility") = true := by
+    rw [sourceId]
+    decide
+  exact ⟨sourceComponent, hc, by
+    change (if sourceComponent.id == "w7Decision.legal.refillScheduleEligibility" then
+      { sourceComponent with kind := .field "refillScheduleEligibility" (.fixed 0) (.default "notScheduleII") }
+      else sourceComponent) = patched
+    rw [target]
+    rfl⟩
 private def element := (specV1.element? "refillScheduleEligibility").getD default
 private theorem lookup : specV1.element? "refillScheduleEligibility" = some element := by decide +kernel
 private theorem human : HumanMustEnter element := by decide +kernel
