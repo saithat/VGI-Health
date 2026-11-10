@@ -57,6 +57,13 @@ class GateTests(unittest.TestCase):
         self.assertEqual([r['arrivalSeed'] for r in a],[r['arrivalSeed'] for r in b])
         self.assertNotEqual([r['seed'] for r in a],[r['seed'] for r in b])
         self.assertTrue(all(r['choiceLatencyMs'] >= 0 for r in b))
+        self.assertTrue(all(r['policy'] == 'expert' for r in a+b))
+        self.assertTrue(all(r['keyboardShare'] == 80 for r in a+b))
+        ed = e.attempts('U3-4',10,'holdout',30,0,0,'ed-resident')
+        self.assertTrue(all(r['keyboardShare'] == 20 for r in ed))
+
+    def test_missing_baseline_is_not_zero_error(self):
+        self.assertIsNone(fit.macro_mae([dict(baseline=None)],'baseline'))
 
     def test_split_unchanged_and_disjoint(self):
         p = fit.read(fit.METHOD/'protocol.json')

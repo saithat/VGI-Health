@@ -4,6 +4,9 @@ This protocol implements wave-3 decisions 1, 2 and 8, approved 2026-11-09.
 It is predeclared before any fitting result. The pre-declaration commit is
 the first commit adding this document and `role-calibration/protocol.json`;
 its full hash is `ba5655a2e0e3b17692ac8fcadff1f5295f879483`.
+After the required final rebase, its equivalent is
+`450271861865d5ad45b4e0547a02a3dfab18ab21`; the protocol bytes are identical.
+Original hashes in the study artifacts retain the actual pre-fitting bindings.
 Agreement means statistical adequacy only. No clinician review exists.
 
 ## Frozen split and gate
@@ -116,6 +119,7 @@ cd ..
 python3 scripts/fit-role-profiles.py --prepare-only
 python3 scripts/fit-role-profiles.py
 python3 -m unittest discover -s scripts -p test_role_calibration.py -v
+python3 scripts/check-role-calibration-cli.py
 pnpm --filter agent lint
 pnpm --filter agent typecheck
 pnpm --filter agent exec vitest run test/ehr-adapter.test.ts test/simulation-modes.test.ts
@@ -126,3 +130,64 @@ fixture paths referenced by its world manifest must exist locally. All native
 input files and attempt JSONL stay below `runs/wave3-fit`. Existing frozen-model
 or acceptance output refuses an implicit rerun. Development is reported only
 after parameter freezing and never used to revise the model.
+
+## Experimental result and interpretation
+
+All three profiles remain **experimental**. No default is promoted and no
+clinical validation is claimed. The navigation search has identical completion
+likelihood at all four candidates; the frozen tie-break chooses zero detours.
+This is nonidentification, not evidence that clinicians navigate without error.
+The 37-candidate latency search chooses zero extra choice service and zero CV;
+the native reading and motor assumptions remain uncalibrated. Training uses
+2,400 navigation attempts and 22,200 latency attempts. Only training was resumed
+after a serialization correction and a change to four independent native
+processes; seeds, sample counts, objectives and thresholds were unchanged.
+The frozen candidate precedes every held-out execution.
+
+Each executable holdout has 10,000 attempts in each of three arms: KLM-only,
+the scoped profile and uncalibrated control. The latter retains role-specific
+source detour/keyboard settings. Offered-work digests must agree across all
+three arms. Unsupported scripts remain missing and fail the gate. Missing
+successful times are never replaced by failure durations or zero error. The
+available-case macro error is descriptive; the required all-11 comparison
+cannot pass with missing tasks. Per-task results and parameter provenance are
+in the [aggregate result](role-calibration/results.json); run inputs, individual
+attempts and the study executable remain gitignored under `runs/wave3-fit`.
+
+The controlled task reconstructions run on the continuous wave-3 clock, with
+fixed clinical snapshots and role/activity offered communication. They are not
+a full-shift calibration. The retained chart is a declared synthetic scenario,
+not the unavailable source-study patient snapshot. Reading alone costs 498.15 s
+in the U8 imaging training case, whereas the source mean is 84 s. Nonnegative
+additional choice service cannot subtract that burden. Fitting reading speed
+to an unknown source chart length would confound case size with behavior;
+this experiment leaves that coefficient unchanged.
+
+U9's quantity 30 is recorded in the source reconstruction, but `OrderChoice`
+has no explicit dispense-quantity choice; native required-entry placeholders
+remain. Generic signing also does not recreate Save/Quit or past-encounter
+selection. These source-equivalence limits were frozen before fitting. Literal
+source medication names are preserved, including drugs absent from the native
+formulary; no available drug is substituted to manufacture completion.
+The frozen ED program also lacks `orderKind`/`orderCode` controls (as do the
+other retained ED release layouts). Literal lab/service choices therefore stop
+at the unchanged “drug or complete service order” guard. This is a layout
+capability obstruction, not an estimate of clinician task duration. It is not
+repaired after held-out evaluation, and no signing requirement is relaxed.
+
+N1 training-function moments and normalized shift holdouts were not fitted:
+the harness has no source-equivalent scheduled/unscheduled-day denominator,
+and overtime is not TOSH8. ED N4 quartiles and ICU N5 interruption/alarm service
+do not supply two independent matched task families with SD/CI. ICU pump
+programming is not native MAR documentation. The N5 duration references remain
+external sensitivity targets, with missing simulated values. Historical U1-21
+refill sensitivity lacks the source pharmacy-response endpoint and is not fitted.
+N8 remains an Australian pharmacy sensitivity reference only; pediatrics,
+surgery and US pharmacy remain scenario-only. Deferred learning, recovery and
+preference coefficients are unchanged.
+
+The gate is byte-for-byte identical to pre-declaration commit
+`ba5655a2e0e3b17692ac8fcadff1f5295f879483`. These failed transfer tests cannot be
+used to tune a redesign; a redesigned fit needs new held-out evidence. There
+is no clinician reviewer. Agreement with aggregate task times would establish
+only the declared statistical adequacy, never clinical judgment or outcomes.

@@ -236,8 +236,7 @@ def act (ctx : Context) (params : PersonaParams) (task : Task) (r : Runner)
     }
   }
   out := { out with
-    episode := emit ctx task (choiceLatency out.episode ops) e
-      (List.replicate due.length [.wait, .think] |>.flatten |>.append ops)
+    episode := emit ctx task (choiceLatency out.episode ops) e (List.replicate due.length [.wait, .think] |>.flatten |>.append ops)
   }
   return out
 /-- Search remembers explored local views, not the Cartesian product of

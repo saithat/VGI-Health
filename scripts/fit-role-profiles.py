@@ -5,6 +5,7 @@ Only aggregate reports may be committed; native inputs, attempts and traces go
 under runs/. No human subjects are reconstructed from published moments.
 """
 import argparse
+import concurrent.futures
 import hashlib
 import json
 import math
@@ -132,6 +133,11 @@ class Experiment:
             self.inputs[script['id']] = dict(spec=str(ROOT/'releases/v2/spec.json'), world=str(self.world),
                 **{name:str(folder/(name+'.json')) for name in ['program','persona','schedule']})
         write(self.out/'inputs/manifest.json', self.inputs)
+        freeze = read(METHOD/'execution-inputs.json')['sha256']
+        actual = {str(p.relative_to(self.out/'inputs')):digest(p)
+                  for p in sorted((self.out/'inputs').rglob('*.json')) if p.name != 'manifest.json'}
+        if actual != freeze:
+            raise ValueError('local task inputs differ from the pre-fit hash freeze; do not refit or inspect holdouts')
 
     def attempts(self, id, n, phase, backtrack, latency, cv, arm):
         seed = self.protocol['seeds'][phase] + zlib.crc32(id.encode())
@@ -144,7 +150,7 @@ class Experiment:
         profile = next(s['profile'] for s in self.scripts['scripts'] if s['id'] == id)
         keyboard = self.scripts['parameters']['roleScenarioDefaults'][profile]['keyboardShare']
         return [dict(seed=behavioral.randrange(2**32),arrivalSeed=offered.randrange(2**32),
-                     backtrackRate=backtrack,keyboardShare=keyboard,
+                     backtrackRate=backtrack,keyboardShare=keyboard,policy='expert',
                      choiceLatencyMs=round(service.lognormvariate(mu,sigma)) if latency else 0)
                 for _ in range(n)]
 
@@ -153,12 +159,35 @@ class Experiment:
         key = hashlib.sha256(json.dumps(attempts).encode()).hexdigest()[:16]
         path = self.out/'attempts'/id/f'{key}.json'
         output = path.with_suffix('.jsonl')
-        write(path,dict(**self.inputs[id], attempts=attempts))
-        # Existence never silently reuses a previous acceptance run.
-        with output.open('w') as f:
-            p = subprocess.run([str(self.binary),str(path)],cwd=ROOT,stdout=f,stderr=subprocess.PIPE,text=True,timeout=3600)
-        if p.returncode:
-            raise RuntimeError(f'{id}: native failure: {p.stderr}')
+        request = dict(**self.inputs[id], attempts=attempts)
+        # Resume only completed, identical training requests. Holdout requests
+        # are never rerun or silently reused. Parallel chunks preserve attempt
+        # order and every frozen seed, with at most four native processes.
+        if phase != 'holdout' and path.exists() and read(path) == request and output.exists():
+            try:
+                cached = [json.loads(line) for line in output.read_text().splitlines()]
+            except json.JSONDecodeError:
+                cached = []
+            if len(cached) == n:
+                return summarize(cached)
+        if phase == 'holdout' and output.exists():
+            raise ValueError(f'{id}: refusing to repeat held-out attempts')
+        write(path,request)
+
+        def chunk(index):
+            chunk_path = path.with_name(path.stem+f'-part{index}.json')
+            chunk_output = chunk_path.with_suffix('.jsonl')
+            width = (n+3)//4
+            write(chunk_path,dict(**self.inputs[id],attempts=attempts[index*width:(index+1)*width]))
+            with chunk_output.open('w') as f:
+                p = subprocess.run([str(self.binary),str(chunk_path)],cwd=ROOT,stdout=f,stderr=subprocess.PIPE,text=True,timeout=14400)
+            if p.returncode:
+                raise RuntimeError(f'{id}: native failure: {p.stderr}')
+            return chunk_output.read_text()
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            outputs = list(pool.map(chunk,range(4)))
+        output.write_text(''.join(outputs))
         rows = [json.loads(line) for line in output.read_text().splitlines()]
         if len(rows) != n:
             raise ValueError(f'{id}: native attempt count mismatch')
@@ -234,7 +263,8 @@ class Experiment:
                                reason='Native MAR is not IV-pump programming; interruption and alarm durations are not independent pump task families.'),
         }
         report = dict(protocol=self.protocol['version'],predeclaration=PREDECLARATION,
-            scriptFreeze='574944a',sourceHashes={name:digest(METHOD/name) for name in ['protocol.json','scripts.json']},
+            scriptFreeze='574944a9',executionFreeze='e5f1d976',runnerSHA256=digest(Path(__file__)),
+            sourceHashes={name:digest(METHOD/name) for name in ['protocol.json','scripts.json','execution-inputs.json']},
             binarySHA256=digest(self.binary),simulator=self.protocol['simulator'],holdouts=rows,development=development,
             profiles=profiles,macroMAEAvailableSeconds=mae,
             baselineComparisonPass=all(r.get('baseline') and r['baseline']['meanSeconds'] is not None and

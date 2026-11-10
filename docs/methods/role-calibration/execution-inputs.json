@@ -3,7 +3,7 @@
   "sourceWorld": "wave3-sim-smoke, day 2, first W1/P1 or W3/P2 patient; imported synthetic scenario",
   "spec": "releases/v2/spec.json",
   "programs": "releases/v2/personas/P1.json and P2.json, patientSelection=false, start=chartSummary",
-  "params": "source role profile; no early review/sidebar scan/search/automatic removable override; 80% keyboard",
+  "params": "source role profile; no early review/sidebar scan/search/automatic removable override; PCP 80% and ED 20% keyboard shares",
   "scenarioDose": "U8 ceftriaxone 1000mg IV daily (source does not specify dose); other unspecified values native required placeholders; not calibration evidence",
   "sha256": {
     "U3-2/persona.json": "32c276e4b1005f9b2c67b39fb0946d7cbcfc3819944fc8a04a09b5fe9df02c63",
