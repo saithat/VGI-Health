@@ -28,6 +28,15 @@ private theorem bounds (v : Size) (hv : v ∈ viewports) : 81920 ≤ v.w ∧ 512
   simp only [viewports,List.mem_cons,List.not_mem_nil,or_false] at hv
   rcases hv with rfl | rfl | rfl <;> decide
 
+/-- Every structural box is the scroller, the banner, or an ordinary slot. -/
+private theorem placement_cases {v first xs p} (hp : p ∈ placements v first xs) :
+    p = scroller v ∨ p = banner v first ∨ ∃ a i, (a,i) ∈ xs.zipIdx ∧ p = ordinary v a.1 a.2 i := by
+  simp only [placements,List.mem_cons,List.mem_map] at hp
+  rcases hp with h | h | ⟨⟨a,i⟩,he,rfl⟩
+  · exact .inl h
+  · exact .inr (.inl h)
+  · exact .inr (.inr ⟨a,i,he,rfl⟩)
+
 private theorem ordinary_separated (v : Size) (p q : List Nat × Bool) (i j : Nat)
     (different : i ≠ j) : separated (ordinary v p.1 p.2 i) (ordinary v q.1 q.2 j) := by
   simp only [separated,ordinary,List.map_cons,List.map_nil,↓reduceIte,Apart,Rect.right,Rect.bottom]
@@ -76,13 +85,10 @@ private theorem targets (v : Size) (hv : v ∈ viewports) (first : List Nat)
   have hw := (bounds v hv).1
   constructor
   · intro p hp ht
-    simp only [placements,List.mem_cons] at hp
-    rcases hp with rfl | rfl | hp
+    rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
     · simp [scroller] at ht
     · simp [banner] at ht
-    · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-      simp only [ordinary]
-      omega
+    · simp only [ordinary]; omega
   · simp only [placements,List.pairwise_cons]
     refine ⟨?_,?_,?_⟩
     · intro q _ h; simp [activeTarget,scroller] at h
@@ -94,12 +100,10 @@ private theorem targets (v : Size) (hv : v ∈ viewports) (first : List Nat)
 private theorem no_modal (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
     G2 v (placements v first xs) := by
   intro p hp ht
-  simp only [placements,List.mem_cons] at hp
-  rcases hp with rfl | rfl | hp
+  rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
   · simp [scroller] at ht
   · simp [banner] at ht
-  · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-    simp [ordinary] at ht
+  · simp [ordinary] at ht
 
 private theorem no_commit (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
     G9 v (placements v first xs) := by
@@ -142,19 +146,16 @@ private theorem banner_text (v : Size) (hv : v ∈ viewports) (path : List Nat) 
 private theorem contained (v : Size) (hv : v ∈ viewports) (first : List Nat)
     (xs : List (List Nat × Bool)) :
     ∀ p ∈ placements v first xs, Contains (viewportRect v) (envelope p) := by
-  have hw := (bounds v hv).1
-  have hh := (bounds v hv).2
+  obtain ⟨hw, hh⟩ := bounds v hv
   intro p hp
-  simp only [placements,List.mem_cons] at hp
-  rcases hp with rfl | rfl | hp
+  rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
   · simp only [scroller,envelope,List.getLast?_nil,Option.map_none,Option.getD_none,
       clipRect,Contains,viewportRect,Rect.right,Rect.bottom]
     omega
   · simp only [banner,envelope,List.getLast?_nil,Option.map_none,Option.getD_none,
       Contains,viewportRect,Rect.right,Rect.bottom]
     omega
-  · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-    simp only [ordinary,envelope,List.getLast?_singleton,Option.map_some,Option.getD_some,
+  · simp only [ordinary,envelope,List.getLast?_singleton,Option.map_some,Option.getD_some,
       clipRect,Contains,viewportRect,Rect.right,Rect.bottom]
     omega
 
@@ -163,33 +164,27 @@ private theorem banner_rule (v : Size) (hv : v ∈ viewports) (first : List Nat)
   constructor
   · simp [placements,List.filter_map,scroller,banner,ordinary,Function.comp_def]
   · intro p hp hb
-    simp only [placements,List.mem_cons] at hp
-    rcases hp with rfl | rfl | hp
+    rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
     · simp [scroller] at hb
     · constructor
       · exact ⟨rfl,by simpa only [envelope,banner,List.getLast?_nil,Option.map_none,Option.getD_none] using contained v hv first xs (banner v first) (by simp [placements])⟩
       · intro q hq paint different
-        simp only [placements,List.mem_cons] at hq
-        rcases hq with rfl | rfl | hq
+        rcases placement_cases hq with rfl | rfl | ⟨b,j,_,rfl⟩
         · simp [scroller] at paint
         · exact False.elim (different rfl)
-        · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hq
-          exact banner_separated v first a i
-    · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-      simp [ordinary] at hb
+        · exact banner_separated v first b j
+    · simp [ordinary] at hb
 
 private theorem horizontal (v : Size) (hv : v ∈ viewports) (first : List Nat)
     (xs : List (List Nat × Bool)) : G5 v (placements v first xs) := by
   have hw := (bounds v hv).1
   intro p hp
-  simp only [placements,List.mem_cons] at hp
-  rcases hp with rfl | rfl | hp
+  rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
   · simp only [scroller,envelope,List.getLast?_nil,Option.map_none,Option.getD_none,
       clipRect,Rect.right]; omega
   · simp only [banner,envelope,List.getLast?_nil,Option.map_none,Option.getD_none,
       Rect.right]; omega
-  · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-    simp only [ordinary,envelope,List.getLast?_singleton,Option.map_some,Option.getD_some,
+  · simp only [ordinary,envelope,List.getLast?_singleton,Option.map_some,Option.getD_some,
       clipRect,Rect.right]; omega
 
 private theorem contrast (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
@@ -197,12 +192,10 @@ private theorem contrast (v : Size) (first : List Nat) (xs : List (List Nat × B
   have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 9 = true := by decide_cbv
   have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 6 = true := by decide_cbv
   intro p hp
-  simp only [placements,List.mem_cons] at hp
-  rcases hp with rfl | rfl | hp
+  rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
   · simp [scroller]
   · simp [banner,slotText,text]
-  · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-    simp [ordinary,slotText,text,target]
+  · simp [ordinary,slotText,text,target]
 
 private theorem separated_symm (p q : Placed) (h : separated p q) : separated q p := by
   unfold separated at *
@@ -214,29 +207,23 @@ private theorem text_rule (v : Size) (hv : v ∈ viewports) (first : List Nat)
     (xs : List (List Nat × Bool)) : G4 v (placements v first xs) := by
   refine ⟨fun p hp _ => contained v hv first xs p hp, ?_, ?_⟩
   · intro p hp t ht
-    simp only [placements,List.mem_cons] at hp
-    rcases hp with rfl | rfl | hp
+    rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
     · simp [scroller] at ht
-    · have same : t = { slotText with maxLines := 4 } := by simpa [banner] using ht.symm
-      subst t; exact banner_text v hv first
-    · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-      have same : t = slotText := by simpa [ordinary] using ht.symm
-      subst t; exact ordinary_text v hv a i
+    · obtain rfl : t = { slotText with maxLines := 4 } := by simpa [banner] using ht.symm
+      exact banner_text v hv first
+    · obtain rfl : t = slotText := by simpa [ordinary] using ht.symm
+      exact ordinary_text v hv a i
   · intro p hp ht _ q hq paint different _ _
-    simp only [placements,List.mem_cons] at hp hq
-    rcases hp with rfl | rfl | hp
+    rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
     · simp [scroller] at ht
-    · rcases hq with rfl | rfl | hq
+    · rcases placement_cases hq with rfl | rfl | ⟨b,j,_,rfl⟩
       · simp [scroller] at paint
       · exact False.elim (different rfl)
-      · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hq
-        exact banner_separated v first a i
-    · obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-      rcases hq with rfl | rfl | hq
+      · exact banner_separated v first b j
+    · rcases placement_cases hq with rfl | rfl | ⟨b,j,_,rfl⟩
       · simp [scroller] at paint
       · exact separated_symm _ _ (banner_separated v first a i)
-      · obtain ⟨⟨b,j⟩,_,rfl⟩ := List.mem_map.mp hq
-        apply ordinary_separated v a b i j
+      · apply ordinary_separated v a b i j
         intro same; apply different; simp [ordinary,same]
 
 
@@ -289,14 +276,11 @@ private theorem complete (v : Size) (first : List Nat) (xs : List (List Nat × B
     rw [sources_count, ← List.count_eq_length_filter]
     exact unique.count_of_mem hp
   · intro p hp path hs
-    simp only [placements,List.mem_cons] at hp
-    rcases hp with rfl | rfl | hp
+    rcases placement_cases hp with rfl | rfl | ⟨a,i,ha,rfl⟩
     · simp [scroller] at hs
-    · have same : first = path := by simpa [banner] using hs
-      subst path; simp [banner]
-    · obtain ⟨⟨a,i⟩,ha,rfl⟩ := List.mem_map.mp hp
-      have same : a.1 = path := by simpa [ordinary] using hs
-      subst path
+    · obtain rfl : first = path := by simpa [banner] using hs
+      simp [banner]
+    · obtain rfl : a.1 = path := by simpa [ordinary] using hs
       exact ⟨List.mem_cons_of_mem _ (List.mem_map.mpr ⟨a,(by simpa using (List.mem_map.mpr ⟨(a,i),ha,rfl⟩ : a ∈ xs.zipIdx.map Prod.fst)),rfl⟩),rfl⟩
 
 /-- One class certificate covers every list length, interaction mask and set of
@@ -394,6 +378,7 @@ theorem certifiedClass_allScreens (screen : UiScreen)
 
 
 #print axioms bounds
+#print axioms placement_cases
 #print axioms ordinary_separated
 #print axioms ordinary_before
 #print axioms banner_separated

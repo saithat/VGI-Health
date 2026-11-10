@@ -6,6 +6,10 @@ The generated release templates label all five MAR actions explicitly. Regenerat
 them from Lean-owned content after changing canonical screens; recorded programs
 and frozen certification inputs retain their original layouts.
 
+The wave-3 default adds [symmetric windows and separate bedside/charting clocks](workflow-phases.md#mar-timing).
+The older policy and measurements below remain the frozen comparator, selected
+with `world gen --workflows legacy`; they are not measurements of wave 3.
+
 Scheduled ward doses carry `OrderChoice.administration`, separately from order
 `holdReason`: a typed given, held, refused, delayed or notGiven outcome, reason,
 stable occurrence ID, scheduled/window/attempt minutes, re-offer and prescriber
@@ -15,7 +19,7 @@ off-unit doses are documented rather than silently skipped. PRN generation is
 unchanged. Historical schedules remain decodable; the old `patient-refused` hold
 sentinel now maps to refused. Other historical holds remain held.
 
-**Provisional simulation policy, not a universal clinical standard:** critical
+**Legacy provisional simulation policy, not a universal clinical standard:** critical
 medications are insulin, systemic formulary antibiotics and anticoagulants. Their
 late window is 30 minutes; other daily doses use 120 minutes and other scheduled
 doses 60 minutes, capped at 18:59 for expiry documentation by shift end.
@@ -68,8 +72,9 @@ Held, Refused, Delayed and Not given distinctly, with nonadministration reasons.
 The live two-nurse regression documents all four nonconsuming outcomes before
 one administration of the same occurrence. The board browser regression exercises
 swap and all three linked cancellations through real authenticated commands.
-The live reducer enforces occurrence uniqueness; timing and escalation
-remain generated scenario policy, rather than new live authorization guards.
+The live reducer enforces occurrence uniqueness. Wave 3 additionally validates
+a supplied timing record and binds it to the confirmed outcome; legacy clients
+may omit it. Escalation remains scenario documentation.
 No theorem statement in Specs, Props, Statements or comparator changed.
 The existing four MAR invariant/guard theorems keep their statements and now range
 over the two additional Event constructors. New `nonadministration_preserves_shared`

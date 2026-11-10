@@ -531,6 +531,7 @@ structure Gap where
 structure Result extends DayResult where
   policy : String := "bounded"
   memory : Memory
+  actorMemories : List Memory := []
   expert : DayResult
   effort : List Effort
   expertTravelUnits : List (String × Nat)
@@ -548,8 +549,9 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
   let expert := (simulateWithInformation sp prog params schedule factsFor seed displayFor? interruptionConfig).1
   let prog := if schedule.tasks.any (fun t => (factsFor t).patientDirectory?.isSome)
     then { prog with patientSelection? := some true } else prog
-  let user : User := { id := prog.owner, role := params.role }
+  let mut user : User := { id := prog.owner, role := params.role }
   let mut memory := { memory with actor := prog.owner }
+  let mut actorMemories : List Memory := [memory]
   let mut day : DayResult := {
     day := schedule.day,
     persona := params.id,
@@ -581,6 +583,18 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     pending := rest
     let placement := Scheduling.slot windows clock source
     let start := if legacy then source.startMin * 60000 else (placement.map (·.2)).getD clock
+    let actor := if legacy || interruptionConfig.legacyModel then prog.owner else
+      (placement.map (fun (w, _) => Scheduling.actorFor prog.owner windows w)).getD prog.owner
+    let priorActor := user.id
+    let sourceOwner := if legacy || interruptionConfig.legacyModel then prog.owner else
+      ((Scheduling.slot windows 0 source).map (fun (w, _) => Scheduling.actorFor prog.owner windows w)).getD priorActor
+    let handover := if actor != sourceOwner then taskHandover source sourceOwner actor start else none
+    if actor != priorActor then
+      actorMemories := memory :: actorMemories.filter (·.actor != memory.actor)
+      memory := (actorMemories.find? (·.actor == actor)).getD { actor }
+      receipts := []
+    user := { user with id := actor }
+    let clinical := if legacy || interruptionConfig.legacyModel then 0 else (Scheduling.arrival source).clinicalServiceMs?.getD 0
     let offset := if legacy then 0 else start % 60000
     let task := if legacy then source else { source with startMin := start / 60000 }
     let raw := factsFor source
@@ -592,9 +606,9 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
           activities := []
         }
       } else raw
-    let facts := { raw with now := task.startMin, receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
+    let facts := { raw with now := task.startMin, receipts := actorReceipts (legacy || interruptionConfig.legacyModel) user raw.receipts ++ (receipts.lookup task.patientId).getD [] }
     let eps := taskEpisodes facts task
-    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
+    let goals := eps.map fun ep => deriveGoals sp ep.facts user (episodeWorkflow task ep) ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
     let n := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions n
     let mut r : Runner := {
@@ -605,7 +619,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         rng,
         interruptions := positions,
         actionIndex := 0,
-        elapsedMs := offset,
+        elapsedMs := offset + clinical,
         lastDevice := none,
         resumption := Resumption.initRuntime seed source params.role (schedule.tasks.map (·.patientId)) interruptionConfig
       },
@@ -613,6 +627,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       guide,
       effort := { task := task.id }
     }
+    let protocolBefore := source.workflowPlan?.map (fun p => (Workflow.finish p false (workflowDecision source)).activeMs) |>.getD 0
+    r := { r with episode := { r.episode with elapsedMs := r.episode.elapsedMs + protocolBefore } }
     let mut documentedMs := start
     let mut complete := !eps.isEmpty
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
@@ -666,6 +682,9 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     if eps.isEmpty then
       let ctx : Context := { sp, prog, facts, user, goals := default }
       r := { r with episode := finishInterruptionTask ctx task r.episode false }
+    let workflow := source.workflowPlan?.map (fun p => Workflow.finish p complete (workflowDecision source))
+    let protocolAfter := workflow.map (fun w => w.activeMs - protocolBefore + w.waitingMs) |>.getD 0
+    r := { r with episode := { r.episode with elapsedMs := r.episode.elapsedMs + protocolAfter } }
     information := information ++ r.episode.lookups.map (fun a => lookupJson { a with traceIndex := day.trace.length + a.traceIndex })
     receipts := (task.patientId, r.episode.state.receipts) :: receipts.filter (·.1 != task.patientId)
     memory := r.memory
@@ -675,7 +694,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     day := { day with
       trace := day.trace ++ r.episode.trace,
       tasks := day.tasks ++ [{ metrics task.id r.episode.trace complete with
-        klmDeciSec := (r.episode.elapsedMs - offset - r.episode.resumption.metrics.closureWaitMs) / 100,
+        workflow? := workflow,
+        klmDeciSec := (r.episode.elapsedMs - offset - clinical - r.episode.resumption.metrics.closureWaitMs - (workflow.map (fun w => w.activeMs + w.waitingMs)).getD 0) / 100,
         wallTimeMinutes? := some ((r.episode.elapsedMs - offset + 59999) / 60000),
         interruptions? := if interruptionConfig.mode == .realWork then some r.episode.resumption.metrics else none
       }],
@@ -685,8 +705,13 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       let duration := r.episode.elapsedMs - offset
       clock := start + duration
       if let some (w, _) := placement then
-        timings := timings ++ [Scheduling.withInterruptions
-          (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs) w.endMs r.episode.resumption.metrics]
+        -- Workflow protocol phases are clinician service; the response wait is passive.
+        let m := r.episode.resumption.metrics
+        let protocolWait := (workflow.map (·.waitingMs)).getD 0
+        timings := timings ++ [Scheduling.withClocks (Scheduling.withInterruptions
+          (Workflow.withAdministration source (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs)) w.endMs m)
+          (clinical + (workflow.map (·.activeMs)).getD 0) r.episode.readingMs documentedMs
+          { m with closureWaitMs := m.closureWaitMs + protocolWait } actor handover]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   let expertTravel := expert.tasks.map fun t =>
     (t.task, traceTravel prog (expert.trace.filter (·.task == t.task)))
@@ -701,9 +726,11 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       timeMs := ((t.klmDeciSec : Int) - e.klmDeciSec) * 100,
       mouseTravelUnits := (travel : Int) - (expertTravel.lookup t.task).getD 0 : Gap
     }
+  actorMemories := memory :: actorMemories.filter (·.actor != memory.actor)
   return {
     toDayResult := day,
-    memory,
+    memory := (actorMemories.find? (·.actor == prog.owner)).getD { actor := prog.owner },
+    actorMemories,
     expert,
     effort := efforts,
     expertTravelUnits := expertTravel,

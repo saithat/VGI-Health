@@ -5,7 +5,7 @@ import { dayResultSchema, type DayResult } from '../src/dashboard/agent-evidence
 const metadata = {
   model: 'interrupting-work-v1', profile: 'wardNurse', ratePerHourMilli: 5500, exposureMinutes: 6, offered: [], closureWaitMs: 0, idle: [], reorientations: [],
   handled: 2, deferred: 1, workMs: 80000, resumptionDelayMs: 45000, reorientationMs: 5000,
-  revalidationPrevented: 1, abandoned: 0,
+  revalidationPrevented: 1, abandoned: 0, handoffs: [],
   work: [{ work: { id: 'call', patient: 'B', kind: 'page', urgency: 'urgent', arrivedAtMs: 0, essential: true, message: 'Care-team call' },
     startedAtMs: 1000, completedAtMs: 40000, deferred: false,
     steps: ['identifyPatient', 'readMessage', 'assess', 'reply', 'document'], outcome: 'responded', completed: true }],
@@ -21,6 +21,15 @@ function sample(interruptions?: unknown): DayResult {
 describe('interruption measurement data', () => {
   it('preserves native typed work through the shared day schema', () => {
     expect(sample(metadata).tasks[0]?.interruptions).toEqual(metadata);
+  });
+  it('retains clock-driven channel service and explicit recipient acceptance', () => {
+    const handoffs=[{task:'call',patient:'B',sender:'clinician',recipient:'on-call',offeredAtMs:40000,acceptedAtMs:41000,reason:'clinical follow-through'}];
+    const measured={...metadata,model:'interrupting-work-v3',handoffs,
+      work:metadata.work.map(w=>({...w,work:{...w.work,serviceMs:39000}}))};
+    expect(sample(measured).tasks[0]?.interruptions).toEqual(measured);
+    const {handoffs: omitted,...historical}=metadata;
+    expect(omitted).toEqual([]);
+    expect(sample(historical).tasks[0]?.interruptions?.handoffs).toBeUndefined();
   });
   it('distinguishes historical absence from measured zero and includes failed tasks', () => {
     expect(interruptionTotals([sample()], 'P1')).toBeNull();

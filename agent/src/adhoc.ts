@@ -104,7 +104,9 @@ export async function rerunNight(args: {
     runId: `${manifest.runId}/adhoc`, store,ehr,screens, agent: new LlmAgent(new RecordingLlm(args.llm, outDir)),
     seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: world.manifest.seed,
   };
+  const declaredWorkload=(await Promise.all(Array.from({length:world.manifest.days},(_,i)=>world.schedule(i+1,args.persona)))).flatMap(s=>s?.tasks??[]);
   const input = {
+    declaredWorkload,
     night: args.night, persona, release, current, train, programs, history,
     holdout: makeHoldout(deps, persona, await world.schedule(calibrationDay(args.night), args.persona)),
   };

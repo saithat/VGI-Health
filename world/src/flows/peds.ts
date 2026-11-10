@@ -14,6 +14,7 @@ import { Rng } from "../rng";
 import type { OrderChoice } from "../schema";
 import type { PedsChild } from "../state";
 import { addAppointment } from "./common";
+import { type CaseMixMode, mixWeights } from "../case-mix";
 
 // CVX codes.
 const CVX = { hepB: "08", dtap: "20", ipv: "10", hib: "49", pcv: "133", rota: "116", mmr: "03", varicella: "21", hepA: "83", tdap: "115", menacwy: "114", hpv: "165", flu: "150" } as const;
@@ -84,16 +85,16 @@ interface PedsPlan {
   reason: string;
 }
 
-function sickPlan(p: PatientProfile, kg: number, rng: Rng, flu: boolean): PedsPlan {
+function sickPlan(p: PatientProfile, kg: number, rng: Rng, flu: boolean, caseMix: CaseMixMode = "legacy"): PedsPlan {
   const pcn = isPcnAllergic(p);
   const ageY = p.ageYears;
-  const kind = rng.weighted<string>([
+  const kind = rng.weighted<string>(mixWeights(caseMix, "pedsSick", [
     ["otitis-media", ageY < 7 ? 6 : 2],
     ["strep-pharyngitis", ageY >= 3 ? 4 : 0],
     ["uri-fever", flu ? 8 : 4],
     ["asthma-flare", p.tags.includes("asthma") ? 6 : ageY >= 2 ? 1 : 0],
     ["gastroenteritis", 3],
-  ]);
+  ], (k) => k, (k) => (flu && k === "uri-fever" ? 2 : 1)));
   const fever = (): OrderChoice => (ageY >= 1 && rng.chance(0.4) ? peds.ibuprofen(kg) : peds.acetaminophen(kg));
   const notes = ["hpi", "exam", "assessmentPlan"];
   switch (kind) {
@@ -196,11 +197,12 @@ export function runPeds(b: DayBuild): void {
         reason: `recheck ${v.reason}`,
       };
     } else {
-      plan = sickPlan(v.p, kg, vr, b.ctx.fluWeek);
+      plan = sickPlan(v.p, kg, vr, b.ctx.fluWeek, b.caseMix);
     }
     for (const cvx of plan.immunizations) c.vaccinesGiven.push({ cvx, day: b.day });
     c.lastVisitDay = b.day;
     const taskId = b.peekTaskId("P4", "W5");
+    b.visitKinds[taskId] = plan.reason.replace(/^(recheck )+/, "");
     b.addTask(
       "P4",
       "W5",

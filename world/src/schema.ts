@@ -58,12 +58,21 @@ export const AdministrationDecisionSchema = z.strictObject({
   scheduledMin: Nat,
   windowEndMin: Nat,
   attemptMin: Nat,
+  windowStartMin: opt(Nat),
+  administeredMin: opt(Nat),
+  chartedMin: opt(Nat),
   reoffer: z.boolean(),
   notifyPrescriber: z.boolean(),
 }).superRefine((a, ctx) => {
-  if (a.windowEndMin < a.scheduledMin || a.attemptMin < a.scheduledMin ||
+  if (a.windowEndMin < a.scheduledMin || a.attemptMin < (a.windowStartMin ?? a.scheduledMin) ||
       ((a.outcome === "given" || a.outcome === "delayed") && a.attemptMin > a.windowEndMin)) {
     ctx.addIssue({ code: "custom", message: "Administration attempt outside its declared window" });
+  }
+  if (a.windowStartMin != null && (a.windowStartMin !== Math.max(0, a.scheduledMin - (a.windowEndMin - a.scheduledMin)) ||
+      ![30, 60, 120].includes(a.windowEndMin - a.scheduledMin) ||
+      a.chartedMin == null || a.chartedMin < a.attemptMin ||
+      (a.outcome === "given" ? a.administeredMin !== a.attemptMin : a.administeredMin != null))) {
+    ctx.addIssue({ code: "custom", message: "Distinct administration and charting times required" });
   }
 });
 export type AdministrationDecision = z.infer<typeof AdministrationDecisionSchema>;
@@ -82,6 +91,8 @@ export const OrderChoiceSchema = z.strictObject({
   administration: opt(AdministrationDecisionSchema),
   indication: opt(z.string().min(1)),
   prn: z.boolean(),
+  /** Imaging order priority (ServiceRequest.priority); Synthetic Hospital split in dataset mode. */
+  priority: opt(z.enum(["routine", "urgent", "asap", "stat"])),
 }).superRefine((o, ctx) => {
   if (o.holdReason != null && o.administration != null) {
     ctx.addIssue({ code: "custom", message: "Order hold and administration decision must be separate" });
@@ -90,6 +101,7 @@ export const OrderChoiceSchema = z.strictObject({
   if (service ? o.drug !== "" || !o.code || o.doseTenths !== 0 || o.unit !== "none" || o.route !== "" || o.freq !== "" || o.prn || o.supplyDays != null || o.curesExemptReason != null || o.holdReason != null || o.administration != null : o.drug === "" || o.route === "" || o.freq === "") {
     ctx.addIssue({ code: "custom", message: "Expected a medication or a coded, nondrug service order" });
   }
+  if (o.priority != null && o.kind !== "imaging") ctx.addIssue({ code: "custom", message: "Only imaging orders carry a priority" });
 });
 export type OrderChoice = z.infer<typeof OrderChoiceSchema>;
 
@@ -102,6 +114,8 @@ export const TaskChoicesSchema = z.strictObject({
   disposition: opt(z.enum(["admit", "discharge", "consult"])),
   immunizations: z.array(z.string().min(1)),
   noteSections: z.array(z.string().min(1)),
+  /** Typed section text (Synthetic Hospital-sized); omitted sections use Lean's fixed phrase. */
+  noteTexts: opt(z.array(z.strictObject({ id: z.string().min(1), text: z.string() }))),
   painScore: opt(Nat.max(10)),
   w6Step: opt(z.enum(W6StepValues)),
   refillReason: opt(z.string().min(1)),
@@ -114,6 +128,13 @@ export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
   z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(JsonSchema), z.record(z.string(), JsonSchema)]),
 );
 
+export const WorkflowPlanSchema = z.strictObject({
+  kind: z.enum(["refill", "alert", "advice", "result", "call", "consult", "chart", "pharmacy", "dispensing", "reconciliation", "prescription", "coordination"]),
+  owner: z.string().min(1), delegateTo: opt(z.string().min(1)), delegateAccepted: z.boolean(),
+  phaseMs: Nat, responseWaitMs: Nat,
+});
+export type WorkflowPlan = z.infer<typeof WorkflowPlanSchema>;
+
 /** `structure Task`. */
 export const TaskSchema = z.strictObject({
   id: z.string().min(1),
@@ -123,6 +144,7 @@ export const TaskSchema = z.strictObject({
   patientId: z.string().min(1),
   startMin: Nat,
   timing: ArrivalSchema.exactOptional(),
+  workflowPlan: WorkflowPlanSchema.exactOptional(),
   choices: TaskChoicesSchema,
   todayResources: z.array(JsonSchema),
   interruptions: Nat,
@@ -141,6 +163,7 @@ export const DayScheduleSchema = z.strictObject({
   tasks: z.array(TaskSchema),
   clockMode: z.enum(["continuous", "legacy"]).exactOptional(),
   shifts: z.array(ShiftSchema).exactOptional(),
+  sourceDates: z.array(z.tuple([Nat, z.string()])).exactOptional(),
 });
 export type DaySchedule = z.infer<typeof DayScheduleSchema>;
 

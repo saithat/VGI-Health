@@ -6,9 +6,6 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private theorem rejects_human (p : Program) (h : ¬ NoAutomationAttempts specV1 p) :
-    ¬ Satisfies specV1 none canonicalV1 p := fun hs => h hs.2.2.2.2.1.1
-
 @[irreducible] private def static2Screen : Screen := prefilledIdentity.screens[8]?.getD default
 private theorem static2ScreenPresent : prefilledIdentity.screens[8]?.isSome = true := by decide +kernel
 private theorem static2CompPresent : static2Screen.components[52]?.isSome = true := by decide +kernel

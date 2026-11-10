@@ -175,16 +175,22 @@ export const eventSchema: z.ZodType<L.Event> = z.union([
 const stepResultSchema: z.ZodType<L.StepResult> = z.union([z.enum(['ok', 'ignored']), z.object({ blocked: z.object({ reason: str }) })]);
 
 // ---------------------------------------------------------------- simulation
-const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'kind', 'code', 'supplyDays', 'curesExemptReason', 'holdReason', 'administration'], z.object({
+const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'kind', 'code', 'supplyDays', 'curesExemptReason', 'holdReason', 'administration', 'priority'], z.object({
   drug: str, doseTenths: nat, unit: unitKindSchema, route: str, freq: str, indication: str.exactOptional(), prn: z.boolean(),
   kind: z.enum(['medication', 'imaging', 'procedure']).exactOptional(), code: str.exactOptional(),
   supplyDays: nat.exactOptional(), curesExemptReason: str.exactOptional(), holdReason: str.exactOptional(),
+  priority: str.exactOptional(),
   administration: z.object({
     outcome: z.enum(['given', 'held', 'refused', 'notGiven', 'delayed']),
-    reason: str, occurrence: str, scheduledMin: nat, windowEndMin: nat, attemptMin: nat,
+    reason: str, occurrence: str, scheduledMin: nat, windowEndMin: nat, attemptMin: nat, windowStartMin: nat.exactOptional(), administeredMin: nat.exactOptional(), chartedMin: nat.exactOptional(),
     reoffer: z.boolean(), notifyPrescriber: z.boolean(),
   }).exactOptional(),
 }));
+const workflowPlanSchema = z.object({
+  kind:z.enum(['refill','alert','advice','result','call','consult','chart','pharmacy','dispensing','reconciliation','prescription','coordination']),
+  owner:str,delegateTo:str.exactOptional(),delegateAccepted:z.boolean(),phaseMs:nat,responseWaitMs:nat,
+});
+const workflowReportSchema = z.object({phases:z.array(str),owner:str,clinicalComplete:z.boolean(),closed:z.boolean(),activeMs:nat,waitingMs:nat});
 const taskSchema: z.ZodType<L.Task> = z.object({
   id: str,
   day: nat,
@@ -192,14 +198,16 @@ const taskSchema: z.ZodType<L.Task> = z.object({
   workflow: z.enum(['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']),
   patientId: str,
   startMin: nat,
-  choices: dropNulls(['refill', 'disposition', 'painScore', 'w6Step', 'refillReason'], z.object({
+  choices: dropNulls(['refill', 'disposition', 'painScore', 'w6Step', 'refillReason', 'noteTexts'], z.object({
     orders: z.array(orderChoiceSchema), administer: z.array(orderChoiceSchema), ackResult: z.boolean(),
     refill: str.exactOptional(), disposition: str.exactOptional(), immunizations: z.array(str), noteSections: z.array(str),
     painScore: nat.exactOptional(), w6Step: z.enum(['consult', 'preop', 'postop', 'rounding', 'discharge']).exactOptional(),
     refillReason: str.exactOptional(),
+    noteTexts: z.array(z.object({ id: str, text: z.string() })).exactOptional(),
   })),
   todayResources: z.array(z.unknown()),
   interruptions: nat,
+  workflowPlan:workflowPlanSchema.exactOptional(),
 });
 export const dayScheduleSchema: z.ZodType<L.DaySchedule> = z.object({ day: nat, persona: str, load: str, tasks: z.array(taskSchema) });
 // Supplemental bounded-user formats live in Ehr.Sim.Bounded, leaving the
@@ -222,6 +230,7 @@ export const personaParamsSchema: z.ZodType<PersonaParams> = z.object({
 const taskMetricsSchema: z.ZodType<TaskMetrics> = z.object({
   task: str, clicks: nat, keystrokes: nat, scrolls: nat, popups: nat, overrides: nat, searches: nat, backtracks: nat,
   mouseTravelPx:z.number().nonnegative().nullable().exactOptional(),scrollPx:z.number().nonnegative().nullable().exactOptional(),rawScrolls:nat.exactOptional(),
+  workflow:workflowReportSchema.exactOptional(),
   klmDeciSec: nat, completed: z.boolean(), wallTimeMinutes: nat.exactOptional(),
 });
 const expertDayResultSchema = z.object({
@@ -239,7 +248,7 @@ const expertDayResultSchema = z.object({
 });
 
 export const dayResultSchema: z.ZodType<DayResult> = expertDayResultSchema.extend({
-  policy:z.literal('bounded').exactOptional(),memory:userMemorySchema.exactOptional(),
+  policy:z.literal('bounded').exactOptional(),memory:userMemorySchema.exactOptional(),actorMemories:z.array(userMemorySchema).exactOptional(),
   expert:expertDayResultSchema.exactOptional(),effort:z.array(userEffortSchema).exactOptional(),
   observations:z.array(userObservationSchema).exactOptional(),
   assistance:z.array(userHelpSchema).exactOptional(),
@@ -279,7 +288,7 @@ export type DaySchedule = L.DaySchedule;
 export type PersonaParams = L.PersonaParams & {policy?:'expert'|'bounded';hiddenPreferences?:HiddenPreferences};
 export type TraceEvent = L.TraceEvent;
 export type TaskMetrics = L.TaskMetrics & {mouseTravelPx?:number|null;scrollPx?:number|null;rawScrolls?:number};
-export type DayResult = Omit<L.DayResult,'tasks'> & {policy?:'bounded';memory?:UserMemory;expert?:L.DayResult;effort?:z.infer<typeof userEffortSchema>[];observations?:z.infer<typeof userObservationSchema>[];assistance?:z.infer<typeof userHelpSchema>[];expertTravelUnits?:[string,number][];learnability?:{task:string;clicks:number;scrolls:number;keystrokes:number;timeMs:number;mouseTravelUnits:number}[];tasks:TaskMetrics[];geometry?:{programHash:string;componentsSha256?:string;appSha256:string;source:string;viewport:{width:number;height:number};missingTargets:string[]}};
+export type DayResult = Omit<L.DayResult,'tasks'> & {policy?:'bounded';memory?:UserMemory;actorMemories?:UserMemory[];expert?:L.DayResult;effort?:z.infer<typeof userEffortSchema>[];observations?:z.infer<typeof userObservationSchema>[];assistance?:z.infer<typeof userHelpSchema>[];expertTravelUnits?:[string,number][];learnability?:{task:string;clicks:number;scrolls:number;keystrokes:number;timeMs:number;mouseTravelUnits:number}[];tasks:TaskMetrics[];geometry?:{programHash:string;componentsSha256?:string;appSha256:string;source:string;viewport:{width:number;height:number};missingTargets:string[]}};
 export type Certificate = L.Certificate;
 
 export function violationOf(verdict: Verdict): Violation | null {

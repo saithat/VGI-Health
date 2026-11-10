@@ -1,4 +1,4 @@
-import {simulationModesSchema,realWorkModes,legacyModes,withSimulationModes,type SimulationModes} from './simulation-modes.js';
+import {simulationModesSchema,resolvedSimulationModes,realWorkModes,legacyModes,withSimulationModes,type SimulationModes} from './simulation-modes.js';
 import { structurePolicySchema, STRUCTURE_POLICY, type StructurePolicy } from './structure-policy.js';
 import { generatorOnlyBackend } from './generator-only.js';
 import { BOUNDED_COST_MODEL } from './bounded-tailoring.js';
@@ -213,7 +213,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (stableStringify(previous.releasePolicy ?? null) !== stableStringify(releasePolicy)) throw Error('Resume release cadence/department/review/switch-cost policy must match');
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
-    if(stableStringify(previous.simulationModes??legacyModes)!==stableStringify(simulationModes))throw Error('Resume simulation modes must match the recording');
+    if(stableStringify(resolvedSimulationModes(previous.simulationModes??legacyModes))!==stableStringify(resolvedSimulationModes(simulationModes)))throw Error('Resume simulation modes must match the recording');
     if((previous.parallel??false)!==(opts.parallel??false))throw new Error('Resume parallel mode must match the recorded run');
     if((previous.replayAllowDrift??false)!==(llm instanceof ReplayLlm?llm.options.allowDrift??false:false))throw new Error('Resume replay drift policy must match');
     if (previous.world !== world.dir || previous.backend !== llm.name || previous.model !== llm.model || previous.ehr.mode !== ehr.mode ||
@@ -387,7 +387,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const deps=workerDeps.get(id);if(!deps)throw new Error(`Missing worker ${id}`);
       const seedState=deps.seedState;
       const { program: current } = await store.login(id);
+      const declaredWorkload = (await Promise.all(Array.from({length: world.manifest.days}, (_, i) => world.schedule(i + 1, id)))).flatMap(s => s?.tasks ?? []);
       const nightInput = {
+        declaredWorkload,
         night: day, persona: view, release: await releaseForPersona(inForce, id), current,
         train: [...(train.get(id) ?? [])], programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
         holdout: makeHoldout(deps, view, await world.schedule(calibrationDay(day), id)),

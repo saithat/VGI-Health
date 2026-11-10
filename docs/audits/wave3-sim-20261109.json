@@ -1,0 +1,199 @@
+{
+  "protocol": "wave3-sim-smoke-v1",
+  "seed": 1,
+  "source": "/home/saithat/Projects/VGI-Health/runs/realism-wave2-real-work",
+  "world": "/home/saithat/Projects/VGI-w3-sim/runs/world/wave3-sim-smoke",
+  "design": "Day 2 all five retained actual layouts; seven-day horizons freeze those same layouts/specs. Different source cohorts: descriptive comparison, not a treatment estimate.",
+  "retainedReplayDifferences": [
+    {
+      "persona": "P1",
+      "exact": true,
+      "changedTasks": []
+    },
+    {
+      "persona": "P2",
+      "exact": true,
+      "changedTasks": []
+    },
+    {
+      "persona": "P3",
+      "exact": true,
+      "changedTasks": []
+    },
+    {
+      "persona": "P4",
+      "exact": true,
+      "changedTasks": []
+    },
+    {
+      "persona": "P5",
+      "exact": true,
+      "changedTasks": []
+    }
+  ],
+  "originalDay2": {
+    "tasks": 148,
+    "completed": 148,
+    "started": 148,
+    "meanQueueMin": 1.7278246621621622,
+    "overdueDoses": 0,
+    "activeOvertimeMin": 0,
+    "effortMin": 493.21666666666664,
+    "scrolls": 4676,
+    "communicationMin": 114.15,
+    "reorientationMin": 1.48,
+    "readingMin": null,
+    "clinicalMin": null,
+    "carried": 0,
+    "acceptedHandovers": null,
+    "actors": null
+  },
+  "legacyReplayDay2": {
+    "tasks": 148,
+    "completed": 148,
+    "started": 148,
+    "meanQueueMin": 1.7278246621621622,
+    "overdueDoses": 0,
+    "activeOvertimeMin": 0,
+    "effortMin": 493.21666666666664,
+    "scrolls": 4676,
+    "communicationMin": 114.15,
+    "reorientationMin": 1.48,
+    "readingMin": 0,
+    "clinicalMin": 0,
+    "carried": 0,
+    "acceptedHandovers": null,
+    "actors": 5
+  },
+  "wave3Day2": {
+    "tasks": 158,
+    "completed": 158,
+    "started": 158,
+    "meanQueueMin": 12.583495675105485,
+    "overdueDoses": 4,
+    "activeOvertimeMin": 10.328333333333333,
+    "effortMin": 983.1166666666667,
+    "scrolls": 6430,
+    "communicationMin": 90.3,
+    "reorientationMin": 2.6216666666666666,
+    "readingMin": 266.67,
+    "clinicalMin": 757,
+    "carried": 0,
+    "acceptedHandovers": 5,
+    "actors": 7
+  },
+  "wave3SameTasksLegacyText": {
+    "tasks": 158,
+    "completed": 158,
+    "started": 158,
+    "meanQueueMin": 10.180747784810126,
+    "overdueDoses": 4,
+    "activeOvertimeMin": 5.0375,
+    "effortMin": 715.43,
+    "scrolls": 6374,
+    "communicationMin": 90.3,
+    "reorientationMin": 2.6333333333333333,
+    "readingMin": 0,
+    "clinicalMin": 757,
+    "carried": 0,
+    "acceptedHandovers": 5,
+    "actors": 7
+  },
+  "wave3SevenDayHorizon": {
+    "tasks": 943,
+    "completed": 940,
+    "started": 943,
+    "meanQueueMin": 34.77138951926476,
+    "overdueDoses": 24,
+    "activeOvertimeMin": 64.97916666666667,
+    "effortMin": 5999.041666666667,
+    "scrolls": 35838,
+    "communicationMin": 498.68333333333334,
+    "reorientationMin": 13.215,
+    "readingMin": 1554.7716666666668,
+    "clinicalMin": 4919,
+    "carried": 0,
+    "acceptedHandovers": 18,
+    "actors": 47
+  },
+  "sourceWorld": {
+    "calendarDates": [
+      "2026-11-02",
+      "2026-11-03",
+      "2026-11-04",
+      "2026-11-05",
+      "2026-11-06",
+      "2026-11-07",
+      "2026-11-08"
+    ],
+    "edArrivals": 303,
+    "edNightArrivalsAfter1900": 88,
+    "edWeekendArrivals": 87,
+    "peakBoardersAtShiftStart": 37,
+    "sourceBoardingOver24h": 69
+  },
+  "verification": {
+    "leanBuildJobs": 545,
+    "newAxioms": {
+      "offered_owner": [
+        "propext"
+      ],
+      "accepted_owner": [
+        "propext"
+      ],
+      "clock_partition": [
+        "propext",
+        "Quot.sound"
+      ]
+    },
+    "deterministicFiles": 96,
+    "sameTextOfferedArrivalsEqual": true,
+    "browserAudits": {
+      "templates": {
+        "status": "pass",
+        "controlsStatus": "pass",
+        "states": 1826,
+        "measurements": 16434,
+        "findings": 0,
+        "elapsedMs": 1770899,
+        "batches": 29,
+        "retries": 0,
+        "cache": {
+          "hits": 0,
+          "misses": 1826
+        }
+      },
+      "personas": {
+        "status": "pass",
+        "controlsStatus": "pass",
+        "states": 1296,
+        "measurements": 11664,
+        "findings": 0,
+        "elapsedMs": 842703,
+        "batches": 14,
+        "retries": 0,
+        "cache": {
+          "hits": 443,
+          "misses": 853
+        }
+      }
+    },
+    "nativeRenderParity": {
+      "nativeScreenTreesIdentical": 801,
+      "urgencyProbesIdentical": 7,
+      "auditBinarySha256": "750e9833da4f1ac8373455de911334f6afdb7802bce95822d657b454a9b430d0",
+      "laneBinarySha256": "f6083e37088af6bebc640a9c3d46b4b578529cca4dee1f25845be58d45840fba",
+      "stockRnAfterReceiptIsolationExact": true,
+      "stockRnAfterOptionalWireExact": true
+    },
+    "frozenLegacyBehaviorExact": true,
+    "sourceReceiptIsolationExpertAndBounded": true,
+    "providerReadinessBeyondSourceDay": true,
+    "finalTargetedWorldTests": 9,
+    "historicalNativeReader": {
+      "contexts": 51,
+      "mismatches": 0
+    },
+    "historicalHandoffAbsencePreserved": true
+  }
+}

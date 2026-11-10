@@ -51,7 +51,7 @@ import {
 import { REPO_ROOT, writeJson } from './util.js';
 import { createFakeEhr } from './fake/ehr-fake.js';
 
-export interface CheckInput { specVersion: string; program: Program; prev: Program; canonical: Program }
+export interface CheckInput { specVersion: string; program: Program; prev: Program; canonical: Program; workload?: DaySchedule['tasks'] }
 export interface SimulateInput {
   specVersion: string;
   program: Program;
@@ -63,6 +63,8 @@ export interface SimulateInput {
   policy?: 'expert' | 'bounded';
   clockMode?: 'continuous' | 'legacy';
   interruptions?: 'realWork' | 'fixedCost';
+  simModel?: 'wave3' | 'legacy';
+  textCost?: 'length' | 'legacy';
   interruptionProfile?: 'wardNurse' | 'surgicalPhysician' | 'clinicPrescriber' | 'emergencyPhysician' | 'inpatientPharmacy';
 }
 export interface MinClicksInput { specVersion: string; program: Program; schedule: DaySchedule; worldDir: string }
@@ -142,8 +144,8 @@ class CliEhr implements EhrClient {
   }
 
   check(i: CheckInput): Promise<Verdict> {
-    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
-      const res = await this.run(['check', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
+    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical, ...(i.workload ? {workload:i.workload} : {}) }, async (p) => {
+      const res = await this.run(['check', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '', ...(i.workload ? ['--workload',p['workload'] ?? ''] : [])]);
       return parseOut('check', res, verdictSchema);
     });
   }
@@ -156,6 +158,8 @@ class CliEhr implements EhrClient {
         ...(i.policy ? ['--policy',i.policy] : []),
         ...(i.clockMode ? ['--clock-mode', i.clockMode] : []),
         ...(i.interruptions ? ['--interruptions', i.interruptions] : []),
+        ...(i.simModel ? ['--sim-model', i.simModel] : []),
+        ...(i.textCost ? ['--text-cost', i.textCost] : []),
         ...(i.interruptionProfile ? ['--interruption-profile', i.interruptionProfile] : []),
         ...(i.memory ? ['--memory-in',p['memory'] ?? ''] : []),
       ]);
@@ -175,10 +179,11 @@ class CliEhr implements EhrClient {
   }
 
   deploy(i: DeployInput): Promise<DeployResult> {
-    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
+    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical, ...(i.workload ? {workload:i.workload} : {}) }, async (p) => {
       const res = await this.run([
         'deploy', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '',
         '--canonical', p['canonical'] ?? '', '--out', i.outDir,
+        ...(i.workload ? ['--workload',p['workload'] ?? ''] : []),
       ]);
       const certificate = parseOut('deploy', res, certificateSchema);
       if (res.code === 0 && certificate.verdict === 'ok') return { deployed: true, certificate };

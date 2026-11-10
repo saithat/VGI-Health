@@ -8,6 +8,7 @@
  * The inbox backlog is world-determined (a fixed handling capacity per
  * burst), so it does not depend on how fast the UI lets P1 work.
  */
+import { workflowPlan } from "../workflows";
 import { type DayBuild, isPcnAllergic } from "../build";
 import { homeOrder, isDiabetic, nsaidOk, prn } from "../clinical";
 import { controlledPrescriptions, hasChronicOpioid } from "../controlled";
@@ -20,8 +21,11 @@ import { INBOX_RANDOM_STREAM } from "../seed-contract";
 import type { Json, OrderChoice } from "../schema";
 import type { InboxItem, PendingLab, RefillRequest } from "../state";
 import { addPendingLab, isInpatient, labValue, warfarinInr } from "./common";
+import { type CaseMixMode, mixWeights, settingQualifies } from "../case-mix";
 
 interface VisitPlan {
+  /** Chronic focus or acute problem key (mix.mjs RULES); absent for new/follow-up visits. */
+  kind?: string;
   orders: OrderChoice[];
   notes: string[];
   observations?: ClinicalObservation[];
@@ -63,7 +67,7 @@ function titrated(m: HomeMed, dir: 1 | -1): OrderChoice {
 
 // ---------- visit plans ----------
 
-function chronicFocus(p: PatientProfile, rng: Rng): string {
+function chronicFocus(p: PatientProfile, rng: Rng, caseMix: CaseMixMode = "legacy"): string {
   const options: string[] = [];
   if (hasChronicOpioid(p)) options.push("chronic-pain", "chronic-pain");
   if (p.tags.includes("htn")) options.push("htn");
@@ -73,7 +77,9 @@ function chronicFocus(p: PatientProfile, rng: Rng): string {
   if (homeMed(p, "apixaban") !== undefined) options.push("apixaban");
   if (p.tags.includes("asthma") || p.tags.includes("copd")) options.push("respiratory");
   if (p.tags.includes("prediabetes") || p.tags.includes("obesity")) options.push("metabolic");
-  return options.length === 0 ? "wellness" : rng.pick(options);
+  if (options.length === 0) return "wellness";
+  // Legacy picks uniformly (chronic pain listed twice); dataset mode weights each distinct focus.
+  return caseMix === "legacy" || !settingQualifies("clinicChronic") ? rng.pick(options) : rng.weighted(mixWeights(caseMix, "clinicChronic", [...new Set(options)].map((o) => [o, 1] as const), (o) => o));
 }
 
 function chronicVisit(p: PatientProfile, focus: string, rng: Rng): VisitPlan {
@@ -127,10 +133,18 @@ function chronicVisit(p: PatientProfile, focus: string, rng: Rng): VisitPlan {
   }
 }
 
+/** Flu-week and urgent-care multipliers of the legacy weights (scenario; declared, uncited). */
+function acuteFactor(kind: string, flu: boolean, urgentCare: boolean): number {
+  if (flu && kind === "influenza-like") return 8;
+  if (flu && kind === "cap-outpatient") return 3;
+  if (urgentCare && kind === "ankle-sprain") return 4;
+  return 1;
+}
+
 /** Same-day acute problems (add-ons and the urgent-care day). */
-function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boolean): VisitPlan {
+function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boolean, caseMix: CaseMixMode = "legacy"): VisitPlan {
   const pcn = isPcnAllergic(p);
-  const kind = rng.weighted<string>([
+  const kind = rng.weighted<string>(mixWeights(caseMix, "clinicAcute", [
     ["sinusitis", 4],
     ["strep-pharyngitis", 3],
     ["bronchitis", 3],
@@ -142,7 +156,11 @@ function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boole
     ["ankle-sprain", urgentCare ? 4 : 1],
     ["laceration", urgentCare ? 3 : 0],
     ["dental-pain", urgentCare ? 1 : 0],
-  ]);
+  ], (k) => k, (k) => acuteFactor(k, flu, urgentCare)));
+  return { ...acutePlan(p, rng, kind, pcn, urgentCare), kind };
+}
+
+function acutePlan(p: PatientProfile, rng: Rng, kind: string, pcn: boolean, urgentCare: boolean): VisitPlan {
   const notes = [...DOC, ...(urgentCare ? ["urgentCareTriage"] : [])];
   switch (kind) {
     case "sinusitis":
@@ -297,10 +315,14 @@ function runClinic(b: DayBuild): void {
       newPatients++;
       if (!b.state.p1Panel.includes(v.patient.id)) b.state.p1Panel.push(v.patient.id);
     } else if (v.kind === "post-discharge" || v.kind === "ed-followup") plan = followupVisit(v.patient, v.kind, vr);
-    else if (v.kind === "add-on") plan = acuteVisit(v.patient, vr, b.ctx.fluWeek, false);
-    else plan = chronicVisit(v.patient, chronicFocus(v.patient, vr), vr);
+    else if (v.kind === "add-on") plan = acuteVisit(v.patient, vr, b.ctx.fluWeek, false, b.caseMix);
+    else {
+      const focus = chronicFocus(v.patient, vr, b.caseMix);
+      plan = { ...chronicVisit(v.patient, focus, vr), kind: focus };
+    }
     const taskId = b.peekTaskId("P1", "W1");
-    b.addTask("P1", "W1", v.patient.id, start, { orders: plan.orders, noteSections: plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr));
+    const task = b.addTask("P1", "W1", v.patient.id, start, { orders: plan.orders, noteSections: plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr));
+    if (plan.kind !== undefined) b.visitKinds[task.id] = plan.kind;
     orderLabs(b, v.patient, plan, vr, `visit ${taskId}`);
   }
   b.state.today.clinics.P1 = { booked: visits.length, seen: all.length - noShows.length, noShows, addOns: addOnVisits.map((x) => x.v.patient.id), newPatients };
@@ -319,9 +341,10 @@ function runUrgentCare(b: DayBuild): void {
     if (p === undefined) break;
     const isNew = !panel.has(p.id);
     if (isNew) newPatients++;
-    const plan = acuteVisit(p, vr, b.ctx.fluWeek, true);
+    const plan = acuteVisit(p, vr, b.ctx.fluWeek, true, b.caseMix);
     const start = 30 + Math.round((k * 590) / n) + vr.int(0, 8);
-    b.addTask("P1", "W1", p.id, start, { orders: plan.orders, noteSections: isNew ? [...plan.notes, "pmh", "medRec"] : plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr, 1.3));
+    const task = b.addTask("P1", "W1", p.id, start, { orders: plan.orders, noteSections: isNew ? [...plan.notes, "pmh", "medRec"] : plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr, 1.3));
+    if (plan.kind !== undefined) b.visitKinds[task.id] = plan.kind;
     seenIds.push(p.id);
   }
   b.state.today.clinics.P1 = { booked: 0, seen: seenIds.length, noShows: [], addOns: seenIds, newPatients };
@@ -402,9 +425,9 @@ export function decideRefill(m: HomeMed, rng: Rng, early: boolean): Pick<RefillR
   }
 }
 
-function generateRefills(b: DayBuild, rng: Rng): InboxItem[] {
+function generateRefills(b: DayBuild, rng: Rng, target?: number): InboxItem[] {
   const vol = b.ctx.personaVolume.P1;
-  const n = Math.max(2, Math.min(12, rng.poisson(5 * vol * (b.ctx.monday ? 1.6 : 1))));
+  const n = target ?? Math.max(2, Math.min(12, rng.poisson(5 * vol * (b.ctx.monday ? 1.6 : 1))));
   const pending = new Set(b.state.inboxBacklog.filter((i) => i.refill !== null).map((i) => `${i.patientId}|${i.refill?.current.drug ?? ""}`));
   const pairs: { p: PatientProfile; m: HomeMed }[] = [];
   for (const id of b.state.p1Panel) {
@@ -438,7 +461,7 @@ function generateRefills(b: DayBuild, rng: Rng): InboxItem[] {
     else if (r.chance(0.04)) make(p, m, true, r);
   }
   const routine = rng.shuffle(pairs.filter(({ p, m }) => !isControlled(m.drug) && !pending.has(`${p.id}|${m.drug}`)));
-  for (const { p, m } of routine.slice(0, n)) make(p, m, false, rng.fork(`refill-${p.id}-${m.drug}`));
+  for (const { p, m } of routine.slice(0, target === undefined ? n : Math.max(0, n - items.length))) make(p, m, false, rng.fork(`refill-${p.id}-${m.drug}`));
   return items;
 }
 
@@ -481,6 +504,7 @@ function refillTaskFor(b: DayBuild, req: RefillRequest, start: number, rng: Rng)
 }
 
 function runInbox(b: DayBuild): void {
+  if (b.workflowMode !== "legacy") return runContemporaryInbox(b);
   const rng = b.rng(INBOX_RANDOM_STREAM);
   const arrivedLabs = b.state.pendingLabs.filter((l) => l.recipient === "P1" && l.resultDay <= b.day);
   b.state.pendingLabs = b.state.pendingLabs.filter((l) => !arrivedLabs.includes(l));
@@ -510,3 +534,58 @@ function runInbox(b: DayBuild): void {
   b.state.today.inbox.P1 = { arrived: newItems.length, handled: qi, backlogAfter: b.state.inboxBacklog.length };
 }
 
+
+/** N1 (2022–23, publication 2024): message means per 8 scheduled clinic hours.
+ * Poisson counts, uniform arrival shape and routing are declared scenarios.
+ * No per-burst handling cap; the serial simulator determines service/backlog. */
+export const INBOX_STREAMS = {
+  advice: 15.3, prescription: 14.3, result: 12.3, call: 23.5, consult: 0.31,
+} as const;
+function runContemporaryInbox(b: DayBuild): void {
+  const rng = b.rng("inbox-streams-v3");
+  const count = (kind: keyof typeof INBOX_STREAMS) => rng.fork(kind).poisson(INBOX_STREAMS[kind]);
+  const counts = {advice:count("advice"), prescription:count("prescription"), result:count("result"), call:count("call"), consult:count("consult")};
+  const arrived = b.state.pendingLabs.filter(l => l.recipient === "P1" && l.resultDay <= b.day);
+  b.state.pendingLabs = b.state.pendingLabs.filter(l => !arrived.includes(l));
+  const incoming: InboxItem[] = arrived.map(lab => ({id:b.nextId("item"), kind:"result",
+    patientId:lab.patientId, arrivedDay:b.day, priority:lab.interpretation === "N" ? 2 : 0, lab, refill:null}));
+  incoming.push(...generateRefills(b, rng.fork("prescription"), counts.prescription));
+  const queue = [...b.state.inboxBacklog, ...incoming];
+  const panel = b.pop.adults.filter(p => b.state.p1Panel.includes(p.id) && !isInpatient(b, p.id));
+  const patients = panel.length ? panel : b.pop.adults;
+  let handled = 0;
+  for (const item of queue) {
+    const r = rng.fork(item.id);
+    const start = r.int(0, 479);
+    const before = b.tasks.P1.length;
+    if (item.lab) resultTask(b, item.lab, start, r);
+    else if (item.refill) refillTaskFor(b, item.refill, start, r);
+    for (const t of b.tasks.P1.slice(before)) {
+      t.workflowPlan = workflowPlan(item.refill ? "refill" : "result", "P1",
+        item.refill && !isControlled(item.refill.current.drug) ? "P1-pharmacy-review" : undefined);
+    }
+    handled++;
+  }
+  // Additional externally ordered results represent an independent stream,
+  // preserving every locally generated result even above the reference mean.
+  for (const kind of ["advice", "result", "call", "consult"] as const) {
+    const count = kind === "result" ? Math.max(0, counts.result - queue.filter(i => i.lab).length) : counts[kind];
+    for (let k = 0; k < count && patients.length; k++) {
+      const r = rng.fork(`${kind}:${k}`);
+      const p = r.pick(patients);
+      const start = r.int(0, 479);
+      const resources: Json[] = kind === "result"
+        ? [labObservation(b.nextId("external-result"), p.id, b.day, 450 + start, "creatinine", 0.9, "N")]
+        : [];
+      const t = b.addTask("P1", "W2", p.id, start,
+        {ackResult:kind === "result", noteSections:["hpi", "assessmentPlan"]}, resources, b.interruptions("P1", r, 0.5));
+      t.workflowPlan = workflowPlan(kind, "P1", kind === "call" ? "P1-triage" : undefined);
+      t.todayResources.push({resourceType:"Task", id:`${t.id}-inbox`, status:"ready", intent:"order",
+        for:{reference:`Patient/${p.id}`}, owner:{reference:`Practitioner/${t.workflowPlan.owner}`},
+        code:{text:`inbox-${kind}`}, description:`scenario routing; ${kind} stream; N1 2022–23 mean only`});
+      handled++;
+    }
+  }
+  b.state.inboxBacklog = [];
+  b.state.today.inbox.P1 = {arrived:handled, handled, backlogAfter:0};
+}

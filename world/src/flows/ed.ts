@@ -1,3 +1,4 @@
+import { fullDayArrival, stages } from "../timing/world-clock";
 /**
  * P2, ED shift (W3): a stream of new patients with triage weights (some typed
  * in lb), order sets, allergy-critical prescribing, weight-based doses, and
@@ -19,6 +20,7 @@ import type { Json, OrderChoice } from "../schema";
 import type { CaseDiagnosis, EdVisit } from "../state";
 import { addAppointment, admit, canAdmit } from "./common";
 import { createUrgentCase } from "./surgery";
+import { type CaseMixMode, mixWeights, settingQualifies } from "../case-mix";
 
 interface ScenarioCtx {
   p: PatientProfile;
@@ -64,6 +66,9 @@ function painRx(x: ScenarioCtx): OrderChoice {
 function oxyPrn(x: ScenarioCtx): OrderChoice {
   return prn.oxycodonePO(opioidTolerant(x.p) ? 10 : 5);
 }
+
+/** Flu-week multipliers of the legacy weights (scenario; declared, uncited). */
+const ED_FLU_FACTOR: Partial<Record<string, number>> = { pneumonia: 13 / 8, "copd-asthma-exacerbation": 1.5, "influenza-like-illness": 16 / 3 };
 
 /** Adult and pediatric ED scenarios with their selection weight for a given patient. */
 const ADULT_SCENARIOS: readonly { key: string; weight: (p: PatientProfile, flu: boolean) => number; build: (x: ScenarioCtx) => EdPlan }[] = [
@@ -487,14 +492,16 @@ export function runEd(b: DayBuild): void {
   const rng = b.rng("ed");
   const ctx = b.ctx;
   const vol = ctx.personaVolume.P2;
-  const n = Math.max(12, Math.min(22, Math.round(16 * vol) + rng.int(-1, 1)));
+  const baseN = Math.max(12, Math.min(22, Math.round(16 * vol) + rng.int(-1, 1)));
+  const aroundClock = b.state.worldClock === "continuous";
+  const n = aroundClock ? Math.round(baseN * 2.4) : baseN;
 
   // Surgical consults today: the scripted appendicitis plus random ones.
   const consults: CaseDiagnosis[] = [];
   if (SCRIPTED_APPENDICITIS_DAYS.includes(b.day) || rng.chance(0.18)) consults.push("appendicitis");
   if (rng.chance(0.1)) consults.push("acute-cholecystitis");
 
-  const clocks = Array.from({ length: n }, () => arrivalClock(rng)).sort((a, c) => a - c);
+  const clocks = Array.from({ length: n }, () => aroundClock ? fullDayArrival(rng, ctx.weekday === "Sat" || ctx.weekday === "Sun") : arrivalClock(rng)).sort((a, c) => a - c);
   // Consults arrive mid-morning to early afternoon, so P5 can see them the same day.
   const consultAt = new Map<number, CaseDiagnosis>();
   for (const dx of consults) {
@@ -537,7 +544,7 @@ export function runEd(b: DayBuild): void {
     const pcn = knownPcn || newAllergy;
     const x: ScenarioCtx = { p, kg, pcn, rng: prng };
     const taskId = b.peekTaskId("P2", "W3");
-    const startMin = clock - SHIFTS.P2.startClock + prng.int(5, 25);
+    const startMin = clock - SHIFTS.P2.startClock + (aroundClock ? prng.fork("provider-wait").int(4, 28) : prng.int(5, 25));
 
     const lb = prng.chance(p.ageYears < 18 ? Math.min(0.7, ctx.lbShare * 2) : ctx.lbShare);
     const resources: Json[] = [
@@ -564,15 +571,16 @@ export function runEd(b: DayBuild): void {
 
     let plan: EdPlan;
     if (p.ageYears < 18) {
-      plan = prng.weighted(PEDS_SCENARIOS.map((s) => [s, s.weight] as const)).build(x);
+      plan = prng.weighted(mixWeights(b.caseMix, "edPeds", PEDS_SCENARIOS.map((s) => [s, s.weight] as const), (s) => s.key)).build(x);
     } else {
       const flu = ctx.fluWeek;
       const pp = p;
-      plan = prng.weighted(ADULT_SCENARIOS.map((s) => [s, s.weight(pp, flu)] as const)).build(x);
+      plan = prng.weighted(mixWeights(b.caseMix, "edAdult", ADULT_SCENARIOS.map((s) => [s, s.weight(pp, flu)] as const), (s) => s.key,
+        (s) => (flu ? ED_FLU_FACTOR[s.key] ?? 1 : 1))).build(x);
     }
 
     let disposition: "admit" | "discharge" = plan.admit !== undefined && prng.chance(plan.admitProb) ? "admit" : "discharge";
-    if (disposition === "admit" && !canAdmit(b)) {
+    if (!aroundClock && disposition === "admit" && !canAdmit(b)) {
       disposition = "discharge";
       b.log(`no ward bed: ${p.id} (${plan.key}) discharged from ED with close follow-up`);
     }
@@ -622,13 +630,54 @@ export function runEd(b: DayBuild): void {
   let peak = 0;
   for (const [s] of stays) peak = Math.max(peak, stays.filter(([a, e]) => a <= s && s < e).length);
   const yesterdayLateAdmits = b.state.admissions.filter((a) => a.day === b.day - 1 && a.clock >= 15 * 60).length;
-  b.state.today.ed = { arrivals, peakCensus: peak, boardersAtShiftStart: yesterdayLateAdmits };
+  if (aroundClock) {
+    const previous = b.state.edCarry ?? [];
+    const current = arrivals.map(a => stages({...a, providerReadyClock: (b.tasks.P2.find(t => t.id === a.taskId)?.startMin ?? a.arrivalClock - SHIFTS.P2.startClock) + SHIFTS.P2.startClock}, rng.fork(`stages:${a.taskId}`)));
+    // Reserve scenario bed slots by predicted discharge; a full ward delays
+    // departure instead of changing an admit decision into a discharge.
+    const newAdmissions = new Set(current.map(a => a.admissionId));
+    const existing = b.state.inpatients.filter(ip => !newAdmissions.has(ip.admissionId));
+    const slots = Array.from({length: Math.max(1, Math.min(10, Math.floor(b.pop.adults.length * 0.3)))}, () => 420);
+    for (const ip of existing) {
+      const index = slots.indexOf(Math.min(...slots));
+      slots[index] = Math.max(slots[index] ?? 420, (ip.plannedDischargeDay - b.day) * 1440 + ip.dischargeClock);
+    }
+    for (const a of current) {
+      const ip = b.state.inpatients.find(ip => ip.admissionId === a.admissionId);
+      if (!ip || a.admitDecisionClock === undefined) continue;
+      const index = slots.indexOf(Math.min(...slots));
+      a.bedDepartureClock = Math.max(a.bedDepartureClock ?? 0, slots[index] ?? 0);
+      a.boardingMin = a.bedDepartureClock - a.admitDecisionClock;
+      slots[index] = a.bedDepartureClock + Math.max(1, ip.plannedDischargeDay - b.day) * 1440;
+    }
+    // Medical admission orders exist at the decision, but ward availability and
+    // regimen start are delayed to physical departure. Boarders remain blocked.
+    for (const a of current) {
+      const ip = b.state.inpatients.find(ip => ip.admissionId === a.admissionId);
+      if (!ip || a.bedDepartureClock === undefined) continue;
+      const dayOffset = Math.floor((a.bedDepartureClock - 420) / 1440);
+      ip.admitDay = b.day + dayOffset;
+      ip.admitClock = a.bedDepartureClock - dayOffset * 1440;
+      ip.plannedDischargeDay += dayOffset;
+      for (const reg of ip.regimens) { reg.fromDay = ip.admitDay; reg.fromClock = ip.admitClock; }
+      const record = b.state.admissions.find(r => r.id === ip.admissionId);
+      if (record) { record.day = ip.admitDay; record.clock = ip.admitClock; }
+    }
+    b.state.edCarry = [...previous, ...current].filter(a => (a.bedDepartureClock ?? 0) >= 1860)
+      .map(a => ({...a, arrivalClock: a.arrivalClock - 1440,
+        ...(a.providerReadyClock !== undefined ? {providerReadyClock: a.providerReadyClock - 1440} : {}),
+        ...(a.admitDecisionClock !== undefined ? {admitDecisionClock: a.admitDecisionClock - 1440} : {}),
+        bedDepartureClock: (a.bedDepartureClock ?? 0) - 1440}));
+    const all = [...previous, ...current];
+    for (const a of all) peak = Math.max(peak, all.filter(v => v.arrivalClock <= a.arrivalClock && a.arrivalClock < (v.bedDepartureClock ?? 0)).length);
+    b.state.today.ed = {arrivals: current, peakCensus: peak, boardersAtShiftStart: previous.filter(a => a.admitDecisionClock !== undefined).length};
+  } else b.state.today.ed = { arrivals, peakCensus: peak, boardersAtShiftStart: yesterdayLateAdmits };
 }
 
 /** An admission plan for an inpatient already on the ward when the simulation starts. */
-export function initialAdmissionPlan(p: PatientProfile, kg: number, rng: Rng): { diagnosis: string; regimen: OrderChoice[]; prnPerShift: number } {
+export function initialAdmissionPlan(p: PatientProfile, kg: number, rng: Rng, caseMix: CaseMixMode = "legacy"): { diagnosis: string; regimen: OrderChoice[]; prnPerShift: number } {
   const keys = ["pneumonia", "cellulitis", "copd-asthma-exacerbation", "pyelonephritis", ...(isDiabetic(p) ? ["hyperglycemia"] : [])];
-  const key = rng.pick(keys);
+  const key = caseMix === "legacy" || !settingQualifies("wardAdmission") ? rng.pick(keys) : rng.weighted(mixWeights(caseMix, "wardAdmission", keys.map((k) => [k, 1] as const), (k) => k));
   const scen = ADULT_SCENARIOS.find((s) => s.key === key);
   if (scen === undefined) throw new Error(`unknown scenario ${key}`);
   const plan = scen.build({ p, kg, pcn: isPcnAllergic(p), rng });

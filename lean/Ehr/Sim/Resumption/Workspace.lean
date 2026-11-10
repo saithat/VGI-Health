@@ -72,4 +72,37 @@ def handOver (frame : DraftFrame) (recipient reason : String) (atMs : Nat) : Opt
       task := frame.task, owner := frame.owner, patient := frame.patient,
       suspendedAtMs := frame.suspendedAtMs, closedAtMs := atMs,
       disposition := .handedOver, reason := recipient ++ ": " ++ reason }
+/-- Offer and acceptance are separate transitions. The offer alone leaves
+responsibility with the sender. All clocks share the source schedule origin. -/
+def offerHandover (task patient sender recipient reason : String) (atMs : Nat) :
+    Option Scheduling.Handover :=
+  if [task, patient, sender, recipient, reason].any (fun x => x.trimAscii.toString == "") || sender == recipient then none
+  else some { task, patient, sender, recipient, offeredAtMs := atMs, reason }
+
+def acceptHandover (offer : Scheduling.Handover) (recipient : String) (atMs : Nat) :
+    Option Scheduling.Handover :=
+  if offer.recipient == recipient && offer.acceptedAtMs?.isNone && offer.offeredAtMs ≤ atMs then
+    some { offer with acceptedAtMs? := some atMs } else none
+
+def responsibility (h : Scheduling.Handover) : String :=
+  if h.acceptedAtMs?.isSome then h.recipient else h.sender
+
+theorem offered_owner (h : Scheduling.Handover) (pending : h.acceptedAtMs? = none) :
+    responsibility h = h.sender := by simp [responsibility, pending]
+
+theorem accepted_owner (h : Scheduling.Handover) (recipient : String) (atMs : Nat)
+    (accepted : (acceptHandover h recipient atMs).isSome = true) :
+    responsibility ((acceptHandover h recipient atMs).getD h) = recipient := by
+  simp only [acceptHandover] at accepted ⊢
+  split at accepted
+  · rename_i checks
+    rw [if_pos checks]
+    have recipientMatches : h.recipient = recipient := by
+      simp only [Bool.and_eq_true, beq_iff_eq] at checks
+      exact checks.1.1
+    simpa [responsibility] using recipientMatches
+  · simp at accepted
+
+#print axioms offered_owner
+#print axioms accepted_owner
 end Ehr.Sim.Resumption

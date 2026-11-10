@@ -5,6 +5,7 @@ import { structurePolicySchema, effectPass, scoreStructure, rejectionGauge, STRU
 import { radicalChange, structuralDistance } from '../../explore/structure.js';
 import { boundedSwitchCost, IncompleteBoundedReplay } from './bounded-tailoring.js';
 import { sessionReviewGate, tailoringFeedback } from './session-gate.js';
+import { RELEASE_IDS } from './release-config.js';
 import { CADENCE_PROTOCOL, autoApprove, releaseDue, usageWeightedSwitchCost, type ReleaseCadence, type ReviewGate, type ReviewBundle, type ReviewChoices, type SwitchCost } from './cadence.js';
 import { DesignArchiveStore, archiveFeedback, designHash, type ArchiveEntry, type ArchiveObservation } from './design-archive.js';
 import { describeProgram, generate, validateCandidate } from '../../explore/generator.js';
@@ -75,6 +76,8 @@ export interface LoopDeps {
 }
 
 export interface NightInput {
+  /** Field-only workload declaration; never included in agent prompts. */
+  declaredWorkload?: DaySchedule['tasks'];
   night: number;
   informationEffort?: readonly InformationEffort[];
   persona: PersonaView;
@@ -105,6 +108,7 @@ export function invalidPatch(error: unknown): CheckResult {
 }
 
 export interface Gate {
+  workload?: DaySchedule['tasks'];
   specVersion: string;
   /** Previous version for the stability budget. */
   prev: Program;
@@ -125,7 +129,7 @@ export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly 
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
     return { program: null, check: invalidPatch(e) };
   }
-  const verdict = await ehr.check({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical });
+  const verdict = await ehr.check({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, ...(gate.workload ? {workload:gate.workload} : {}) });
   return { program, check: toCheckResult(verdict) };
 }
 
@@ -321,7 +325,7 @@ export async function deployVersion(deps: LoopDeps, persona: string, program: Pr
   if (screenCheck.status === 'error') throw new InfrastructureError(screenCheck.message);
   if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
   stage='native-deploy';
-  const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: path.join(deps.store.dir, 'native', persona, `v${program.version}`) });
+  const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, ...(gate.workload ? {workload:gate.workload} : {}), outDir: path.join(deps.store.dir, 'native', persona, `v${program.version}`) });
   if (!res.deployed) return { ok: false, reason: 'deploy-refused', check: toCheckResult(res.verdict), screenCheck };
   stage='snapshot';
   const {spec,inputs}=await retryInfrastructure('deploy:snapshot',async()=>{
@@ -380,7 +384,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   const hotspots = structure && quality ? rankHotspots(input.train,quality.locality,input.informationEffort,structure.topK) : [];
   const { night, persona, release, current } = input;
   const specVersion = release.specVersion;
-  const gate: Gate = { specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
+  const gate: Gate = { specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night, ...(release.id !== RELEASE_IDS.base ? {workload:input.declaredWorkload ?? input.train.flatMap(d=>d.schedule.tasks)} : {}) };
 
   // 1. Observe (train days only).
   const evidence = summarizeTrain(persona.id, current, input.train, input.programs);
@@ -654,7 +658,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   const hotspots=structure&&quality ? rankHotspots(input.train,quality.locality,input.informationEffort,structure.topK) : [];
   const cadence = options.cadence ?? { kind: 'nightly' };
   const due = releaseDue(night, cadence);
-  const gate: Gate = { specVersion: release.specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
+  const gate: Gate = { specVersion: release.specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night, ...(release.id !== RELEASE_IDS.base ? {workload:input.declaredWorkload ?? input.train.flatMap(d=>d.schedule.tasks)} : {}) };
   const archiveStore = new DesignArchiveStore(path.join(deps.store.dir, 'archives'), {
     clinician: persona.id, owner: persona.userId, department: options.department, role: current.role,
   });

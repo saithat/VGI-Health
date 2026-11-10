@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VGI Health · Module imports</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+        color: #1b3040;
+        background: #f2f6f8;
+      }
+      header {
+        padding: 22px 28px;
+        background: white;
+        border-bottom: 1px solid #ccd8df;
+      }
+      h1 {
+        font:
+          600 30px Georgia,
+          serif;
+        margin: 8px 0;
+      }
+      a {
+        color: #076978;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
+        gap: 20px;
+        padding: 24px;
+      }
+      aside,
+      section {
+        background: white;
+        border: 1px solid #ccd8df;
+        border-radius: 10px;
+        padding: 16px;
+        min-width: 0;
+      }
+      input,
+      button {
+        font: inherit;
+        padding: 7px;
+        border: 1px solid #ccd8df;
+        border-radius: 5px;
+        background: white;
+        color: inherit;
+      }
+      input {
+        width: 100%;
+        margin: 8px 0;
+      }
+      button {
+        cursor: pointer;
+        text-align: left;
+        overflow-wrap: anywhere;
+      }
+      button[aria-current="true"] {
+        background: #e3f2f3;
+        border-color: #076978;
+      }
+      :focus-visible {
+        outline: 3px solid #076978;
+        outline-offset: 3px;
+      }
+      #modules {
+        display: grid;
+        gap: 5px;
+        max-height: 610px;
+        overflow: auto;
+      }
+      .muted {
+        color: #526775;
+        font-size: 12px;
+      }
+      h2 {
+        overflow-wrap: anywhere;
+      }
+      #graph {
+        overflow: auto;
+        max-height: 650px;
+      }
+      svg text {
+        fill: #1b3040;
+        font:
+          12px ui-monospace,
+          monospace;
+      }
+      svg a:hover rect {
+        fill: #e3f2f3;
+      }
+      svg a:focus rect {
+        stroke: #076978;
+        stroke-width: 3;
+      }
+      @media (max-width: 800px) {
+        main {
+          display: block;
+          padding: 12px;
+        }
+        aside {
+          margin-bottom: 12px;
+        }
+        #modules {
+          max-height: 200px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="index.html">← Declaration proof map</a>
+      <h1>Module imports</h1>
+      <p>
+        An arrow means “imports”. Select a module to see its direct imports and
+        the modules that import it.
+      </p>
+      <p id="stats" class="muted"></p>
+      <a href="imports.dot" download
+        >Download import-graph DOT (dependency → importer)</a
+      >
+    </header>
+    <main>
+      <aside>
+        <label for="search">Find a module</label
+        ><input type="search" id="search" placeholder="Ehr.Commit.Mar" />
+        <div id="modules"></div>
+      </aside>
+      <section>
+        <h2 id="title"></h2>
+        <a id="source" target="_blank" rel="noopener"
+          >Source at built commit ↗</a
+        >
+        <p class="muted">
+          Click a node to center it. Source links open GitHub. All project
+          modules in the extractor's fixed build roots are listed at left;
+          external Lean/Std dependencies remain in the DOT download.
+        </p>
+        <div id="graph"></div>
+      </section>
+    </main>
+    <script type="application/json" id="proof-data">
+      __PROOF_MAP_DATA__
+    </script>
+    <script>
+      (() => {
+        "use strict";
+        const data = JSON.parse(
+            document.querySelector("#proof-data").textContent,
+          ),
+          M = data.modules;
+        const $ = (s) => document.querySelector(s),
+          esc = (s) =>
+            String(s).replace(
+              /[&<>"]/g,
+              (c) =>
+                ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+            );
+        const rev = M.map(() => []);
+        M.forEach((m, i) => m[1].forEach((j) => rev[j].push(i)));
+        const source = (i) =>
+          `https://github.com/saithat/VGI-Health/blob/${data.commit}/lean/${M[i][0].replaceAll(".", "/")}.lean#L1`;
+        let selected;
+        $("#stats").textContent =
+          `${M.length} project modules · ${M.reduce((n, m) => n + m[1].length, 0)} direct imports · commit ${data.commit.slice(0, 12)}`;
+        function list() {
+          const q = $("#search").value.toLowerCase();
+          $("#modules").innerHTML = M.map((m, i) =>
+            m[0].toLowerCase().includes(q)
+              ? `<button type="button" data-module="${i}" aria-current="${i === selected}">${esc(m[0])}</button>`
+              : "",
+          ).join("");
+        }
+        function show(i) {
+          if (!M[i]) return;
+          selected = i;
+          $("#title").textContent = M[i][0];
+          $("#source").href = source(i);
+          const users = rev[i],
+            deps = M[i][1],
+            height = Math.max(users.length, deps.length, 1) * 68 + 70,
+            center = height / 2;
+          const node = (j, x, y) =>
+            `<a href="#m${j}" aria-label="Show ${esc(M[j][0])}"><rect x="${x}" y="${y}" width="260" height="38" rx="6" fill="${j === i ? "#e3f2f3" : "#f2f6f8"}" stroke="#a5bcc6"/><text x="${x + 10}" y="${y + 16}">${esc(M[j][0].length > 32 ? "…" + M[j][0].slice(-31) : M[j][0])}</text><title>${esc(M[j][0])}</title></a><a href="${source(j)}" target="_blank" rel="noopener" aria-label="Source for ${esc(M[j][0])}"><text x="${x + 10}" y="${y + 31}" style="fill:#076978;font-size:10px">source ↗</text></a>`;
+          let svg = `<svg xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Direct module import graph" width="900" height="${height}" viewBox="0 0 900 ${height}"><defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8" fill="#6e8e9d"/></marker></defs><text x="20" y="22">Imported by (${users.length})</text><text x="320" y="22">Selected module</text><text x="620" y="22">Imports (${deps.length})</text>`;
+          users.forEach((j, k) => {
+            const y = 48 + k * 68;
+            svg += `<path d="M280 ${y + 19} C300 ${y + 19} 300 ${center} 320 ${center}" fill="none" stroke="#6e8e9d" marker-end="url(#arrow)"/>`;
+          });
+          deps.forEach((j, k) => {
+            const y = 48 + k * 68;
+            svg += `<path d="M580 ${center} C600 ${center} 600 ${y + 19} 620 ${y + 19}" fill="none" stroke="#6e8e9d" marker-end="url(#arrow)"/>`;
+          });
+          svg += node(i, 320, center - 19);
+          users.forEach((j, k) => {
+            svg += node(j, 20, 48 + k * 68);
+          });
+          deps.forEach((j, k) => {
+            svg += node(j, 620, 48 + k * 68);
+          });
+          $("#graph").innerHTML = svg + "</svg>";
+          list();
+        }
+        $("#search").addEventListener("input", list);
+        $("#search").addEventListener("keydown", (e) => {
+          if (e.key === "Enter") $("#modules button")?.click();
+        });
+        document.addEventListener("click", (e) => {
+          const b = e.target.closest("[data-module]");
+          if (b) {
+            location.hash = `m${b.dataset.module}`;
+            show(+b.dataset.module);
+          }
+        });
+        window.addEventListener("hashchange", () => {
+          const m = /^#m(\d+)$/.exec(location.hash);
+          if (m) show(+m[1]);
+        });
+        const m = /^#m(\d+)$/.exec(location.hash);
+        show(
+          m
+            ? +m[1]
+            : Math.max(
+                0,
+                M.findIndex((m) => m[0] === "Ehr.Commit.Mar"),
+              ),
+        );
+      })();
+    </script>
+  </body>
+</html>

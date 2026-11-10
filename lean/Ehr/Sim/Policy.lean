@@ -2,6 +2,7 @@ import Ehr.Core.Workspace
 import Ehr.Sim.Interaction
 import Ehr.Sim.TaskContext
 import Ehr.Sim.Scheduling.Clock
+import Ehr.Sim.Workflow.Timing
 import Ehr.Sim.Resumption.Work
 
 /-!
@@ -63,6 +64,8 @@ structure EpisodeResult where
   elapsedMs : Nat
   lastDevice : Option Bool
   resumption : Resumption.InterruptionRuntime := {}
+  readingMs : Nat := 0
+  readSections : List String := []
 
 /-- Resumed events and planning share the current patient snapshot; the saved
 context cannot restore stale facts after an external scenario update. -/
@@ -266,8 +269,45 @@ def selectTaskPatient (ctx : Context) (task : Task) (r : EpisodeResult) : Episod
     -- Data arrival is not a second clinician activation.
     return { out with state := Workspace.bind ctx.sp ctx.prog ctx.facts ctx.user out.state }
 
+/-- Scenario text model: 50 ms/character (200 words/min at six characters
+per word) and 1800 characters/viewport. No observed-care fit is claimed.
+Synthetic Hospital (2026) supplies text, not either coefficient. -/
+def textReadMs (characters : Nat) : Nat := characters * 50
+def textPages (characters : Nat) : Nat := (characters - 1) / 1800
+
+def readSection (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : EpisodeResult := Id.run do
+  if r.resumption.config.legacyModel || !r.resumption.config.lengthCosts then return r
+  let mut out := r
+  -- Read only notes actually exposed in this patient's visible chart panel.
+  -- Relevance selection (decision 16) stays deferred; no hidden chart is read.
+  let visibleNotes := (shown ctx r.state).any fun c =>
+    showsInfo "priorNotes" c.kind || showsInfo "encounterNotes" c.kind
+  if visibleNotes then
+    for note in (r.resumption.config.chartDisplay task).notes do
+      let key := "chart:" ++ note.id
+      if !out.readSections.contains key then
+        for _ in List.range (textPages note.text.length) do
+          out := emit ctx task out (.scroll out.state.screen) [.scroll]
+        let ms := textReadMs note.text.length
+        out := { out with
+          elapsedMs := out.elapsedMs + ms, readingMs := out.readingMs + ms,
+          readSections := out.readSections ++ [key] }
+  let some id := eventComp e | return out
+  let some c := shownComp? ctx.sp ctx.prog ctx.facts out.state id | return out
+  let .field sec _ _ := c.kind | return out
+  let some text := (task.choices.noteTexts?.getD []).find? (·.id == sec) | return out
+  if out.readSections.contains sec then return out
+  for _ in List.range (textPages text.text.length) do
+    out := emit ctx task out (.scroll out.state.screen) [.scroll]
+  let ms := textReadMs text.text.length
+  return { out with
+    elapsedMs := out.elapsedMs + ms, readingMs := out.readingMs + ms,
+    readSections := out.readSections ++ [sec],
+    state := { out.state with clock := (out.elapsedMs + ms) / 100 } }
+
 /-- Scroll to fields below a twelve-component fold, ten rows per page. -/
 def scrollTo (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : EpisodeResult :=
+  let r := readSection ctx task r e
   match eventComp e with
   | none => r
   | some id =>
@@ -293,7 +333,7 @@ def readNeed (ctx : Context) (task : Task) (r : EpisodeResult) (n : Information.
   for _ in List.range ((depth - 1) / 10) do
     out := emit ctx task out (.scroll out.state.screen) [.scroll]
   -- Reading is paid mental time without a fabricated UI activation/receipt.
-  out := { out with elapsedMs := out.elapsedMs + mentalMs * items }
+  out := { out with elapsedMs := out.elapsedMs + mentalMs * items, readingMs := out.readingMs + mentalMs * items }
   let seen := { out.state with clock := out.elapsedMs / 100 }
   for m in readable do
     if (needWitnesses ctx seen m).contains comp then
@@ -414,6 +454,17 @@ def playEpisode (ctx : Context) (params : PersonaParams) (task : Task) (lastEpis
   if !ctx.goals.informationNeeds.all (fun n => r.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episodeIndex && !a.consumed)) then r
   else playLoop ctx params task lastEpisode fuel r true 0
 
+/-- Source snapshots cannot inject another actor's private review knowledge.
+Legacy controls retain the historical ambient-receipt behavior. -/
+def actorReceipts (legacy : Bool) (u : User) (source : List Receipt) : List Receipt :=
+  if legacy then source else source.filter (·.user == u.id)
+
+/-- The scenario receiver explicitly accepts before service. Unaccepted offers
+remain sender-owned. No predecessor workspace or receipts cross this boundary. -/
+def taskHandover (task : Task) (sender recipient : String) (atMs : Nat) : Option Scheduling.Handover :=
+  (Resumption.offerHandover task.id task.patientId sender recipient "queued clinical work at coverage transition" atMs).bind
+    (fun h => Resumption.acceptHandover h recipient atMs)
+
 /-- One day: patient-specific receipts survive between tasks, captured values
 and commit/ack history do not. Each task has its own independent RNG stream. -/
 def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
@@ -424,7 +475,7 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
   -- layout. Recorded trajectory replay keeps its original program flag.
   let prog := if schedule.tasks.any (fun task => (factsFor task).patientDirectory?.isSome)
     then { prog with patientSelection? := some true } else prog
-  let user : User := { id := prog.owner, role := params.role }
+  let mut user : User := { id := prog.owner, role := params.role }
   let mut lookups := []
   let mut receipts : List (String × List Receipt) := []
   let mut day : DayResult := {
@@ -447,6 +498,15 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
     pending := rest
     let placement := Scheduling.slot windows clock source
     let start := if legacy then source.startMin * 60000 else (placement.map (·.2)).getD clock
+    let actor := if legacy || interruptionConfig.legacyModel then prog.owner else
+      (placement.map (fun (w, _) => Scheduling.actorFor prog.owner windows w)).getD prog.owner
+    let priorActor := user.id
+    let sourceOwner := if legacy || interruptionConfig.legacyModel then prog.owner else
+      ((Scheduling.slot windows 0 source).map (fun (w, _) => Scheduling.actorFor prog.owner windows w)).getD priorActor
+    let handover := if actor != sourceOwner then taskHandover source sourceOwner actor start else none
+    if actor != priorActor then receipts := []
+    user := { user with id := actor }
+    let clinical := if legacy || interruptionConfig.legacyModel then 0 else (Scheduling.arrival source).clinicalServiceMs?.getD 0
     let offset := if legacy then 0 else start % 60000
     let task := if legacy then source else { source with startMin := start / 60000 }
     let raw := factsFor source
@@ -457,18 +517,20 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
       else raw
     let facts := { raw with
       now := task.startMin,
-      receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
+      receipts := actorReceipts (legacy || interruptionConfig.legacyModel) user raw.receipts ++ (receipts.lookup task.patientId).getD [] }
     let eps := taskEpisodes facts task
     if eps.isEmpty then
       day := { day with complaints := day.complaints ++
-        [s!"{task.id}: no clinical episode; refill approval requires a focused prescription or explicit order"] }
-    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
+        [s!"{task.id}: no clinical episode; check workflow ownership/delegation, dose timing and focused refill prescription"] }
+    let goals := eps.map fun ep => deriveGoals sp ep.facts user (episodeWorkflow task ep) ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
     let nActions := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions nActions
     let mut r : EpisodeResult := {
       state := default, trace := [], complaints := [], rng,
-      interruptions := positions, actionIndex := 0, elapsedMs := offset, lastDevice := none,
+      interruptions := positions, actionIndex := 0, elapsedMs := offset + clinical, lastDevice := none,
       resumption := Resumption.initRuntime seed source params.role (schedule.tasks.map (·.patientId)) interruptionConfig }
+    let protocolBefore := source.workflowPlan?.map (fun p => (Workflow.finish p false (workflowDecision source)).activeMs) |>.getD 0
+    r := { r with elapsedMs := r.elapsedMs + protocolBefore }
     let mut documentedMs := start
     let mut complete := !eps.isEmpty
     let mut floor := { emptyMetrics task.id with completed := true }
@@ -491,13 +553,17 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
     if eps.isEmpty then
       let ctx : Context := { sp, prog, facts, user, goals := default }
       r := finishInterruptionTask ctx task r false
+    let workflow := source.workflowPlan?.map (fun p => Workflow.finish p complete (workflowDecision source))
+    let protocolAfter := workflow.map (fun w => w.activeMs - protocolBefore + w.waitingMs) |>.getD 0
+    r := { r with elapsedMs := r.elapsedMs + protocolAfter }
     lookups := lookups ++ r.lookups.map (fun a => { a with traceIndex := day.trace.length + a.traceIndex })
     receipts := (task.patientId, r.state.receipts) :: receipts.filter (·.1 != task.patientId)
     day := { day with
       trace := day.trace ++ r.trace
       tasks := day.tasks ++ [{ metrics task.id r.trace complete with
-        klmDeciSec := if interruptionConfig.mode == .fixedCost then (metrics task.id r.trace complete).klmDeciSec
-          else (r.elapsedMs - offset - r.resumption.metrics.closureWaitMs) / 100,
+        workflow? := workflow,
+        klmDeciSec := if interruptionConfig.legacyModel && interruptionConfig.mode == .fixedCost then (metrics task.id r.trace complete).klmDeciSec
+          else (r.elapsedMs - offset - clinical - r.resumption.metrics.closureWaitMs - (workflow.map (fun w => w.activeMs + w.waitingMs)).getD 0) / 100,
         wallTimeMinutes? := some ((r.elapsedMs - offset + 59999) / 60000),
         interruptions? := if interruptionConfig.mode == .realWork then some r.resumption.metrics else none }]
       floor := day.floor ++ [floor]
@@ -506,8 +572,13 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
       let duration := r.elapsedMs - offset
       clock := start + duration
       if let some (w, _) := placement then
-        timings := timings ++ [Scheduling.withInterruptions
-          (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs) w.endMs r.resumption.metrics]
+        -- Workflow protocol phases are clinician service; the response wait is passive.
+        let m := r.resumption.metrics
+        let protocolWait := (workflow.map (·.waitingMs)).getD 0
+        timings := timings ++ [Scheduling.withClocks (Scheduling.withInterruptions
+          (Workflow.withAdministration source (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs)) w.endMs m)
+          (clinical + (workflow.map (·.activeMs)).getD 0) r.readingMs documentedMs
+          { m with closureWaitMs := m.closureWaitMs + protocolWait } actor handover]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   return (day, lookups)
 

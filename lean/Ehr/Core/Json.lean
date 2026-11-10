@@ -67,7 +67,7 @@ deriving instance Lean.ToJson, Lean.FromJson for
   InitInput, StepOutput, StepInput, ViewInput, BatchCase, BatchStep
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  Workflow, OrderKind, W6Step, AdministrationOutcome, AdministrationDecision, OrderChoice, TaskChoices, PersonaParams, Op, TraceEvent, TaskMetrics,
+  Workflow, OrderKind, W6Step, AdministrationOutcome, AdministrationDecision, OrderChoice, NoteText, TaskChoices, PersonaParams, Op, TraceEvent, TaskMetrics,
   DayResult, Verdict, Certificate
 
 /-- One simulated task for a persona on a day. -/
@@ -86,6 +86,7 @@ structure Task where
   todayResources : List Lean.Json := []
   interruptions : Nat := 0
   timing? : Option Sim.Scheduling.Arrival := none
+  workflowPlan? : Option Sim.Workflow.WorkflowPlan := none
   deriving BEq, Inhabited, Lean.ToJson, Lean.FromJson
 
 /-- One persona's schedule for one day. -/
@@ -98,6 +99,8 @@ structure DaySchedule where
   /-- Omitted selects continuous; legacy retains archived task-local clocks. -/
   clockMode? : Option String := none
   shifts? : Option (List Sim.Scheduling.Shift) := none
+  /-- Explicit source calendar dates for a merged multi-day queue. -/
+  sourceDates? : Option (List (Nat × String)) := none
   deriving BEq, Inhabited, Lean.ToJson, Lean.FromJson
 
 /-- `true` when `x` survives a JSON round trip (to a string and back). -/

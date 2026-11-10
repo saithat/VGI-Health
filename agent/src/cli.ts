@@ -49,6 +49,7 @@ import { loadWorld } from './world.js';
 import { evaluateQuality, historicalDecisions } from './quality.js';
 import type { QualityArm } from './quality-report.js';
 import { DEFAULT_RLM_BUDGET } from './rlm/stats.js';
+import { DEFAULT_HARNESS_BUDGET } from './harness/stats.js';
 import { offlineRecordSchema, refreshSanityRepetitions, writeQualityReport } from './quality-report.js';
 
 function backendArg(v: string | undefined): BackendChoice {
@@ -77,7 +78,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
-      'clock-mode':{type:'string'},'interruptions':{type:'string'},
+      'clock-mode':{type:'string'},'sim-model':{type:'string'},'text-cost':{type:'string'},'interruptions':{type:'string'},
       'minimum-effect':{type:'string'},'novelty-weight':{type:'string'},'hotspots':{type:'string'},'offline-archive':{type:'string'},'historical-nightly':{type:'boolean',default:false},
       'generator-only':{type:'boolean',default:false}, 'discovery-nights':{type:'string'}, 'bounded-costs':{type:'boolean',default:false}, 'tailoring-sessions':{type:'boolean',default:false},
       protocol: { type: 'string' }, cadence: { type: 'string' }, departments: { type: 'string' },
@@ -95,7 +96,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     ...(values.hotspots!==undefined?{topK:Number(values.hotspots)}:{}),
   });
   const offlineArchive=values['offline-archive']?await readJson(resolveUserPath(values['offline-archive']),z.object({programs:z.array(programSchema)})):undefined;
-  const simulationModes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork'});
+  const simulationModes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork',simModel:values['sim-model']??'wave3',textCost:values['text-cost']??'length'});
   const summary = await runDays({ simulationModes,structurePolicy,...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
     ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
     ...(values['generator-only'] ? {generatorOnly:true}:{}),
@@ -241,11 +242,17 @@ const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
     }
   },
   'proposal-quality': async argv => {
-    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'},'geometry-from':{type:'string'},'app-build':{type:'string'},'tool-replay-from':{type:'string'},'tool-max-calls':{type:'string'},'tool-max-checks':{type:'string'},'tool-max-estimates':{type:'string'},'tool-wall-ms':{type:'string'},'tool-max-tokens':{type:'string'},'rlm-max-turns':{type:'string'},'rlm-max-sub-calls':{type:'string'},'rlm-wall-ms':{type:'string'},'rlm-sub-model':{type:'string'},'rlm-sub-reasoning-effort':{type:'string'}}});
+    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'},'geometry-from':{type:'string'},'app-build':{type:'string'},'tool-replay-from':{type:'string'},'tool-max-calls':{type:'string'},'tool-max-checks':{type:'string'},'tool-max-estimates':{type:'string'},'tool-wall-ms':{type:'string'},'tool-max-tokens':{type:'string'},'rlm-max-turns':{type:'string'},'rlm-max-sub-calls':{type:'string'},'rlm-wall-ms':{type:'string'},'rlm-sub-model':{type:'string'},'rlm-sub-reasoning-effort':{type:'string'},harness:{type:'string'},'reuse-arm-from':{type:'string'},'reuse-arm':{type:'string'},'harness-model':{type:'string'},'harness-max-commands':{type:'string'},'harness-max-turns':{type:'string'},'harness-max-launches':{type:'string'},'harness-wall-ms':{type:'string'}}});
     if(!values.run||!values.out)throw new Error('--run and --out are required');
     const backend=backendArg(values.backend??'replay');
-    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='D'||a==='E'||a==='R'||a==='sanity')return a;throw new Error('--arms must contain A, B, C, D, E, R or sanity');});
-    await evaluateQuality({...(values['geometry-from']?{geometryFrom:resolveUserPath(values['geometry-from'])}:{}),...(values['app-build']?{appBuild:resolveUserPath(values['app-build'])}:{}),...(values['tool-replay-from']?{toolReplayFrom:resolveUserPath(values['tool-replay-from'])}:{}),
+    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='D'||a==='E'||a==='R'||a==='H'||a==='sanity')return a;throw new Error('--arms must contain A, B, C, D, E, R, H or sanity');});
+    if(values.harness!==undefined&&values.harness!=='codex'&&values.harness!=='claude')throw new Error('--harness must be codex or claude');
+    const harness=arms.includes('H')?{...(values.harness==='codex'||values.harness==='claude'?{harness:values.harness}:{}),...(values['harness-model']?{harnessModel:values['harness-model']}:{}),
+      harnessBudget:{maxCommands:intArg(values['harness-max-commands'],'harness-max-commands',DEFAULT_HARNESS_BUDGET.maxCommands),maxChecks:intArg(values['tool-max-checks'],'tool-max-checks',DEFAULT_HARNESS_BUDGET.maxChecks),
+        maxEstimates:intArg(values['tool-max-estimates'],'tool-max-estimates',DEFAULT_HARNESS_BUDGET.maxEstimates),maxTurns:intArg(values['harness-max-turns'],'harness-max-turns',DEFAULT_HARNESS_BUDGET.maxTurns),
+        maxLaunches:intArg(values['harness-max-launches'],'harness-max-launches',DEFAULT_HARNESS_BUDGET.maxLaunches),wallMs:intArg(values['harness-wall-ms'],'harness-wall-ms',DEFAULT_HARNESS_BUDGET.wallMs)}}:{};
+    const reuse=values['reuse-arm-from']||values['reuse-arm']?{reuseArmFrom:resolveUserPath(values['reuse-arm-from']??(()=>{throw new Error('--reuse-arm needs --reuse-arm-from <run>');})()),reuseArm:arms.find(a=>a===values['reuse-arm'])??(()=>{throw new Error('--reuse-arm must name one of --arms');})()}:{};
+    await evaluateQuality({...harness,...reuse,...(values['geometry-from']?{geometryFrom:resolveUserPath(values['geometry-from'])}:{}),...(values['app-build']?{appBuild:resolveUserPath(values['app-build'])}:{}),...(values['tool-replay-from']?{toolReplayFrom:resolveUserPath(values['tool-replay-from'])}:{}),
       toolBudget:{maxCalls:intArg(values['tool-max-calls'],'tool-max-calls',60),maxChecks:intArg(values['tool-max-checks'],'tool-max-checks',12),maxEstimates:intArg(values['tool-max-estimates'],'tool-max-estimates',8),wallMs:intArg(values['tool-wall-ms'],'tool-wall-ms',900000),maxTokens:intArg(values['tool-max-tokens'],'tool-max-tokens',120000)},rlmBudget:{...DEFAULT_RLM_BUDGET,maxRootTurns:intArg(values['rlm-max-turns'],'rlm-max-turns',DEFAULT_RLM_BUDGET.maxRootTurns),maxSubCalls:intArg(values['rlm-max-sub-calls'],'rlm-max-sub-calls',DEFAULT_RLM_BUDGET.maxSubCalls),
         maxChecks:intArg(values['tool-max-checks'],'tool-max-checks',DEFAULT_RLM_BUDGET.maxChecks),maxEstimates:intArg(values['tool-max-estimates'],'tool-max-estimates',DEFAULT_RLM_BUDGET.maxEstimates),wallMs:intArg(values['rlm-wall-ms'],'rlm-wall-ms',DEFAULT_RLM_BUDGET.wallMs)},
       ...(values['rlm-sub-model']?{rlmSubModel:values['rlm-sub-model']}:{}),...(values['rlm-sub-reasoning-effort']?{rlmSubReasoningEffort:values['rlm-sub-reasoning-effort']}:{}),

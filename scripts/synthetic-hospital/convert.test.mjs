@@ -5,7 +5,8 @@ import assert from 'node:assert/strict';
 import { readFile, readdir, mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
-import { convertPatient, diagnosisLookup, personaFits, readFormulary, selectCohort, SOURCE_TAG, SYSTEM } from './convert.mjs';
+import { ageOn, birthDateOf, convertPatient, diagnosisLookup, personaFits, readFormulary, SECTIONS_PATH, selectCohort, SOURCE_TAG, SYSTEM } from './convert.mjs';
+import { RULES, classify, normalizeCode } from './mix.mjs';
 import { root, sha256, verifyCache } from './fetch.mjs';
 
 const profile = { sex: 'F', age_at_first_encounter: 40, allergies: ['Penicillin (rash)'],
@@ -39,7 +40,10 @@ test('deterministic R4 transaction, conditional patient identifier, provenance, 
   }
   const patient = bundle.entry.find((e) => e.resource.resourceType === 'Patient');
   assert.equal(new URLSearchParams(patient.request.ifNoneExist).get('identifier'), `${SYSTEM}|123`);
-  assert.equal(patient.resource.birthDate, '1986-10-31');
+  // Source age 40 is the age at the first (2020-01-15) encounter, after one shift.
+  const first = resources(bundle, 'Encounter')[0].period.start;
+  assert.equal(patient.resource.birthDate, birthDateOf(row, options.referenceDate));
+  assert.equal(ageOn(patient.resource.birthDate, first), 40);
   assert.equal(patient.resource.name[0].text, convertPatient(row, options).patient.name);
   const provenance = resources(bundle, 'Provenance')[0];
   assert.match(provenance.entity[0].what.display, /911f34c4ac65a508543c4b3b90c373a0cd16534d/);
@@ -98,6 +102,20 @@ test('preserves allergy, family and social statements; does not invent surgery f
   assert.equal(resources(bundle, 'Observation').find((r) => r.code.coding?.[0]?.code === '72166-2').valueString, 'Never smoker');
   assert.equal(resources(bundle, 'Observation').find((r) => r.code.coding?.[0]?.code === '11331-6').valueString, 'None');
 });
+test('DOB places the source age at the first encounter for every timeline, including infants', () => {
+  const infant = { ...row, age: 0, encounters: [{ ...row.encounters[1], encounter_date: '2020-01-15' }, { ...row.encounters[0], encounter_date: '2024-01-15' }] };
+  const { bundle } = convertPatient(infant, options);
+  const birthDate = resources(bundle, 'Patient')[0].birthDate;
+  for (const e of resources(bundle, 'Encounter')) assert.ok(e.period.start >= birthDate);
+  assert.equal(ageOn(birthDate, resources(bundle, 'Encounter')[0].period.start), 0);
+  assert.equal(personaFits(infant, options.referenceDate).P4, true);
+});
+test('scenario rules match ICD-10-CM prefixes without dots', () => {
+  assert.equal(normalizeCode('n39.0'), 'N390');
+  assert.deepEqual(classify(RULES.edAdult, 'I21.4'), ['chest-pain']);
+  assert.deepEqual(classify(RULES.edAdult, 'Q85.1'), []);
+  assert.deepEqual(classify(RULES.clinicChronic, 'I48.91'), ['warfarin', 'apixaban']);
+});
 test('selection is independent of source row order and validates size and identity', () => {
   const rows = Array.from({ length: 20 }, (_, i) => ({ ...row, patient_id: i, age: i % 2 ? 12 : 40 }));
   assert.deepEqual(selectCohort(rows, 15), selectCohort(rows.toReversed(), 15));
@@ -111,11 +129,18 @@ test('committed cohort integrity, persona coverage and FHIR note/resource counts
   const index = JSON.parse(await readFile(resolve(root, 'fixtures/synthetic-hospital/index.json'), 'utf8'));
   const formulary = readFormulary(await readFile(resolve(root, 'lean/Ehr/Formulary.lean'), 'utf8'));
   assert.equal(Object.keys(formulary).length, 25);
-  assert.equal(index.patientCount, 150);
+  assert.equal(index.label, 'synthetic-benchmark');
+  assert.equal(index.patientCount, 1268);
+  assert.equal(index.sourceEncounters, 5602);
+  assert.equal(index.encounterCount, 5602);
   assert.deepEqual((await readdir(resolve(root, 'fixtures/synthetic-hospital'))).filter((f) => /^\d+\.json$/.test(f)).sort(), index.patients.map((p) => p.file).sort());
   assert.equal(index.sourcePediatricPatients, 248);
-  assert.deepEqual(index.selectedForCounts, { P1: 30, P2: 30, P3: 30, P4: 30, P5: 30 });
-  assert.ok(index.patients.reduce((n, p) => n + p.bytes, 0) < 10 * 1024 * 1024);
+  assert.equal(Object.values(index.selectedForCounts).reduce((a, b) => a + b, 0), 1268);
+  assert.ok(index.patients.reduce((n, p) => n + p.bytes, 0) < 80 * 1024 * 1024);
+  const sections = JSON.parse(await readFile(SECTIONS_PATH, 'utf8'));
+  assert.equal(sha256(JSON.stringify(sections) + '\n'), index.sections.sha256);
+  assert.equal(sections.label, 'synthetic-benchmark');
+  assert.equal(sections.encounters.reduce((n, e) => n + e.sections.length, 0), 59964);
   const counts = {};
   for (const patient of index.patients) {
     const data = await readFile(resolve(root, 'fixtures/synthetic-hospital', patient.file));

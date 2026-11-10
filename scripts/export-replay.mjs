@@ -37,7 +37,7 @@ export async function exportReplay({root=path.resolve('.'),dir,runId=path.basena
    for(const file of versions){
     const program=programSchema.parse(await read(path.join(dir,'programs',persona,file)));
     const spec=await read(path.join(dir,'certifications',persona,`v${program.version}`,'spec.json'));
-    const result=await command(['simulate','--spec',path.join(dir,'certifications',persona,`v${program.version}`,'spec.json'),'--program',path.join(dir,'programs',persona,file),'--persona',path.join(world.dir,'personas',`${persona}.json`),'--schedule',input,'--world',world.dir,'--seed','1000004','--clock-mode',manifest.simulationModes?.clockMode??'legacy','--interruptions',manifest.simulationModes?.interruptions??'fixedCost']);
+    const result=await command(['simulate','--spec',path.join(dir,'certifications',persona,`v${program.version}`,'spec.json'),'--program',path.join(dir,'programs',persona,file),'--persona',path.join(world.dir,'personas',`${persona}.json`),'--schedule',input,'--world',world.dir,'--seed','1000004','--clock-mode',manifest.simulationModes?.clockMode??'legacy','--interruptions',manifest.simulationModes?.interruptions??'fixedCost','--sim-model',manifest.simulationModes?.simModel??'legacy','--text-cost',manifest.simulationModes?.textCost??'legacy']);
     if(!result.tasks.every(t=>t.completed))throw new Error(`${persona} ${file}: replay episode did not complete`);
     const side={version:program.version,trace:result.trace.map(t=>({event:t.event,ops:t.ops,klmDeciSec:t.t-original.startMin*600}))};
     contexts.push({persona,version:program.version,specVersion:program.specVersion,spec,bundle:projection,user:{id:program.owner,role:program.role},trace:side.trace.map(t=>t.event)});

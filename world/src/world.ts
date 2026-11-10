@@ -10,7 +10,8 @@ import { seedState } from "./seed-contract";
  *   -> P1 clinic and inbox -> pediatric clinic -> carry-over.
  */
 import { DayBuild, type PopIndex, indexPopulation } from "./build";
-import { SHIFTS, dateOf } from "./calendar";
+import type { CaseMixMode } from "./case-mix";
+import { SHIFTS, dateOf, withCalendar, type WorldClock } from "./calendar";
 import { computeContext } from "./context";
 import { assignChronicOpioids, worldHomeMedResources } from "./controlled";
 import { addAppointment, addPendingLab, admit, labValue, maxCensus } from "./flows/common";
@@ -47,10 +48,24 @@ export function worldPopulation(patients: PatientProfile[], seed: number): PopIn
 }
 
 /** The world on day 0 (the Friday before the simulation): census, bookings, pending results, backlog. */
-export function initialState(seed: number, pop: PopIndex): WorldState {
+/** Generator options. Library default `legacy` reproduces frozen archives; the CLI defaults to Synthetic Hospital. */
+export interface WorldOptions {
+  worldClock?: WorldClock;
+  caseMix?: CaseMixMode;
+  /** Wave-3 guarded workflows (refill protocol, inbox streams, MAR timing). Library
+   * calls without options keep the earlier flows, like `worldClock` and `caseMix`;
+   * `world gen` defaults to `realistic`. */
+  workflows?: "realistic" | "legacy";
+}
+
+export function initialState(seed: number, pop: PopIndex, options: WorldOptions = {}): WorldState {
+  return withCalendar(options.worldClock ?? "legacy", () => initialCalendarState(seed, pop, options));
+}
+function initialCalendarState(seed: number, pop: PopIndex, options: WorldOptions): WorldState {
   const daySeed = hashHex(`${seed}|init`);
   const st: WorldState = {
     schemaVersion: 1,
+    ...(options.worldClock === "continuous" ? {worldClock: "continuous" as const, edCarry: []} : {}),
     seed,
     day: 0,
     date: dateOf(0),
@@ -69,7 +84,7 @@ export function initialState(seed: number, pop: PopIndex): WorldState {
     discharges: [],
     counters: {},
   };
-  const b = new DayBuild(0, st.context, pop, st, daySeed);
+  const b = new DayBuild(0, st.context, pop, st, daySeed, options.caseMix);
   const rng = new Rng(`${daySeed}:init`);
 
   // P1's panel: adults with chronic problems or meds, plus most of the rest (the others can be "new" patients).
@@ -83,7 +98,7 @@ export function initialState(seed: number, pop: PopIndex): WorldState {
     const r = rng.fork(`init-ip-${k}`);
     const p = b.picker.pick(r, (q) => q.ageYears >= 45) ?? b.picker.pick(r, (q) => q.ageYears >= 18);
     if (p === undefined) break;
-    const plan = initialAdmissionPlan(p, p.weightKg, r);
+    const plan = initialAdmissionPlan(p, p.weightKg, r, b.caseMix);
     const admitDay = r.int(-2, 0);
     const ip = admit(
       b,
@@ -223,17 +238,22 @@ function countTasks(tasks: Task[]): Partial<Record<Workflow, number>> {
 export interface DayOutput {
   state: WorldState;
   schedules: Record<Persona, DaySchedule>;
+  /** Clinic and pediatric visit kinds by task id (see DayBuild.visitKinds). */
+  visitKinds: Record<string, string>;
 }
 
 /** Advance the world one day. `prev` is not modified. */
-export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void = runWard): DayOutput {
+export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void = runWard, options: WorldOptions = {}): DayOutput {
+  return withCalendar(options.worldClock ?? prev.worldClock ?? "legacy", () => advanceCalendarDay(prev, pop, wardFlow, options));
+}
+function advanceCalendarDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void, options: WorldOptions): DayOutput {
   const day = prev.day + 1;
   // Presentation names and serialized vocabulary do not redraw clinical scenarios.
   const prevStateHash = hashHex(stableStringify(seedState(prev)));
   const daySeed = hashHex(`${prev.seed}|${day}|${prevStateHash}`);
   const ctx = computeContext(prev.seed, day, daySeed);
   const state: WorldState = { ...structuredClone(prev), day, date: dateOf(day), daySeed, prevStateHash, context: ctx, today: emptyToday() };
-  const b = new DayBuild(day, ctx, pop, state, daySeed);
+  const b = new DayBuild(day, ctx, pop, state, daySeed, options.caseMix, options.workflows ?? "legacy");
 
   for (const ip of state.inpatients) b.picker.block(ip.patientId);
   for (const c of state.surgicalCases) if (c.orDay === day && c.stage === "booked") b.picker.block(c.patientId);
@@ -245,8 +265,8 @@ export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBui
   runEd(b);
   runSurgery(b);
   wardFlow(b);
-  runP1(b);
-  runPeds(b);
+  const weekend = state.worldClock === "continuous" && (ctx.weekday === "Sat" || ctx.weekday === "Sun");
+  if (!weekend) { runP1(b); runPeds(b); }
 
   // World-assigned home meds travel with every task for that patient, so FHIR-derived facts see them.
   for (const persona of PERSONAS) {
@@ -256,6 +276,9 @@ export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBui
     }
   }
 
+  if (state.worldClock === "continuous") {
+    state.today.ward.admissions = state.admissions.filter(a => a.day === day).map(a => a.id);
+  }
   // Carry-over: drop today's discharges; anyone whose planned discharge passed without one stays a day longer.
   const dischargedToday = new Set(state.discharges.filter((d) => d.day === day && d.admissionId !== null).map((d) => d.admissionId));
   state.inpatients = state.inpatients.filter((ip) => !dischargedToday.has(ip.admissionId));
@@ -278,7 +301,7 @@ export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBui
   });
   state.today.taskCounts = perPersona((p) => countTasks(schedules[p].tasks));
   state.today.events = b.events;
-  return { state, schedules };
+  return { state, schedules, visitKinds: b.visitKinds };
 }
 
 export interface WorldRun {
@@ -292,13 +315,13 @@ export interface WorldRun {
  * `wardFlow` is an explicit test seam for immutable pre-outcome archives;
  * production callers use the current ward model. */
 export function generateWorld(seed: number, days: number, patients: PatientProfile[],
-  wardFlow: (b: DayBuild) => void = runWard): WorldRun {
+  wardFlow: (b: DayBuild) => void = runWard, options: WorldOptions = {}): WorldRun {
   const pop = worldPopulation(patients, seed);
-  const initial = initialState(seed, pop);
+  const initial = initialState(seed, pop, options);
   const out: DayOutput[] = [];
   let prev = initial;
   for (let d = 1; d <= days; d++) {
-    const r = advanceDay(prev, pop, wardFlow);
+    const r = advanceDay(prev, pop, wardFlow, options);
     out.push(r);
     prev = r.state;
   }

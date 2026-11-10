@@ -2,6 +2,7 @@
  * Shared machinery for building one simulated day: id allocation, seeded
  * random streams, the patient picker, and task construction.
  */
+import { workflowPlan } from "./workflows";
 import { PRIOR_AUTH_RELEASE_DAY } from "./releases";
 import { SHIFTS } from "./calendar";
 import { clinicalObservation, type ClinicalObservation } from "./fhir";
@@ -10,6 +11,7 @@ import { hasAllergyClass } from "./patients";
 import { Rng } from "./rng";
 import type { Json, OrderChoice, Persona, Task, TaskChoices, Workflow } from "./schema";
 import type { DayContext, WorldState } from "./state";
+import { type CaseMixMode, drawImagingPriority } from "./case-mix";
 
 export interface PopIndex {
   all: PatientProfile[];
@@ -124,6 +126,9 @@ export class DayBuild {
   readonly tasks: Record<Persona, Task[]> = { P1: [], P2: [], P3: [], P4: [], P5: [] };
   readonly picker: Picker;
   readonly events: string[] = [];
+  /** Clinical visit kind (chronic focus, acute problem, pediatric reason) by task id,
+   * for diagnosis-matched note text. Generation output only; never drawn from. */
+  readonly visitKinds: Record<string, string> = {};
   private seq: Record<Persona, number> = { P1: 0, P2: 0, P3: 0, P4: 0, P5: 0 };
 
   constructor(
@@ -132,6 +137,9 @@ export class DayBuild {
     readonly pop: PopIndex,
     readonly state: WorldState,
     readonly daySeed: string,
+    /** Scenario weights within each setting (see case-mix.ts). */
+    readonly caseMix: CaseMixMode = "legacy",
+    readonly workflowMode: "realistic" | "legacy" = "realistic",
   ) {
     this.picker = new Picker(pop);
   }
@@ -161,7 +169,7 @@ export class DayBuild {
     return Math.min(6, rng.poisson(INTERRUPTION_MEAN[persona] * this.ctx.interruptionFactor * scale));
   }
 
-  /** Create and register a task. `startMin` is clamped into the persona's shift. */
+  /** Create/register a task. New MAR charting may fall in successor coverage. */
   addTask(
     persona: Persona,
     workflow: Workflow,
@@ -174,18 +182,27 @@ export class DayBuild {
     this.seq[persona] += 1;
     const id = `d${String(this.day).padStart(2, "0")}-${persona}-${workflow}-${String(this.seq[persona]).padStart(3, "0")}`;
     // Filter after scenario generation so release gating consumes no random draws.
-    const orders = (c.orders ?? []).filter((o) =>
+    const gated = (c.orders ?? []).filter((o) =>
       this.day >= PRIOR_AUTH_RELEASE_DAY || (o.kind ?? "medication") === "medication");
+    // Dataset mode: imaging orders carry the Synthetic Hospital priority split of their setting.
+    const setting = persona === "P2" ? "ed" : persona === "P3" || workflow === "W6" ? "inpatient" : "outpatient";
+    const orders = this.caseMix === "legacy" ? gated : gated.map((o, i) =>
+      o.kind === "imaging" && o.priority == null ? { ...o, priority: drawImagingPriority(setting, `${id}|${i}`) } : o);
     const task: Task = {
       id,
       day: this.day,
       persona,
       workflow,
       patientId,
-      startMin: Math.max(0, Math.min(SHIFTS[persona].lengthMin, Math.round(startMin))),
+      startMin: Math.max(0, (this.state.worldClock === "continuous" && persona === "P2")
+        || (c.administer ?? []).some(o => o.administration?.chartedMin != null)
+        ? Math.round(startMin) : Math.min(SHIFTS[persona].lengthMin, Math.round(startMin))),
       choices: choices({ ...c, orders }),
       todayResources: [...todayResources, ...(c.observations ?? []).map((o, i) => clinicalObservation(`${id}-clinical-${i}`, patientId, this.day, SHIFTS[persona].startClock + startMin, o))],
       interruptions,
+      ...(this.workflowMode === "legacy" || workflow === "W4" && !(c.noteSections?.length) ? {} : {workflowPlan: workflowPlan(
+        workflow === "W7" ? "refill" : workflow === "W2" ? "result" :
+        orders.some(o => hasDrugAllergy(this.patient(patientId)) && o.drug !== "") ? "alert" : "chart", persona)}),
     };
     this.tasks[persona].push(task);
     return task;

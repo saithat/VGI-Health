@@ -1,15 +1,22 @@
 /**
- * Simulation calendar. Day 1 is a Monday; days are consecutive work-days
- * (weekends skipped), so days 1 and 6 are Mondays.
+ * Simulation calendar. Day 1 is Monday. The continuous world uses calendar
+ * days; the legacy scope (library default) skips weekends.
  */
+import { AsyncLocalStorage } from "node:async_hooks";
 import type { Persona } from "./schema";
+
+export type WorldClock = "continuous" | "legacy";
+// Scoped and re-entrant: independent world generations never share calendar mode.
+const calendar = new AsyncLocalStorage<WorldClock>();
+export function withCalendar<T>(mode: WorldClock, build: () => T): T { return calendar.run(mode, build); }
+export function continuousCalendar(): boolean { return calendar.getStore() === "continuous"; }
 
 /** First simulated work-day (a Monday). Ages and FHIR dates are computed from it. */
 export const SIM_START_DATE = "2026-11-02";
 /** Fixed UTC offset written into FHIR dateTimes (Pacific Standard Time in November). */
 export const TZ_OFFSET = "-08:00";
 
-export type Weekday = "Mon" | "Tue" | "Wed" | "Thu" | "Fri";
+export type Weekday = "Mon" | "Tue" | "Wed" | "Thu" | "Fri" | "Sat" | "Sun";
 const WEEKDAYS: readonly Weekday[] = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 
 /** Shift start (minutes since midnight) and length per persona. `Task.startMin` counts from the start. */
@@ -22,6 +29,7 @@ export const SHIFTS: Record<Persona, { startClock: number; lengthMin: number; la
 };
 
 export function weekdayOf(day: number): Weekday {
+  if (continuousCalendar()) return (["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const)[((day - 1) % 7 + 7) % 7] ?? "Mon";
   const w = WEEKDAYS[(((day - 1) % 5) + 5) % 5];
   if (w === undefined) throw new Error(`bad day ${day}`);
   return w;
@@ -29,7 +37,7 @@ export function weekdayOf(day: number): Weekday {
 
 /** 1-based calendar week of the simulation. */
 export function weekOf(day: number): number {
-  return Math.floor((day - 1) / 5) + 1;
+  return Math.floor((day - 1) / (continuousCalendar() ? 7 : 5)) + 1;
 }
 
 /** ISO date (YYYY-MM-DD) of a simulation day. Day 0 is the Friday before day 1; negative days go back further. */
@@ -38,17 +46,19 @@ export function dateOf(day: number): string {
   const idx = day - 1; // work-day offset from day 1
   const weeks = Math.floor(idx / 5);
   const rem = idx - weeks * 5;
-  const calendarDays = weeks * 7 + rem;
+  const calendarDays = continuousCalendar() ? idx : weeks * 7 + rem;
   const d = new Date(start + calendarDays * 86_400_000);
   return d.toISOString().slice(0, 10);
 }
 
 /** FHIR dateTime for a sim day and a clock time (minutes since midnight). */
 export function dateTimeOf(day: number, clockMin: number): string {
-  const c = Math.max(0, Math.min(24 * 60 - 1, Math.round(clockMin)));
+  const rounded = Math.round(clockMin);
+  const carry = continuousCalendar() ? Math.floor(rounded / 1440) : 0;
+  const c = continuousCalendar() ? ((rounded % 1440) + 1440) % 1440 : Math.max(0, Math.min(1439, rounded));
   const hh = String(Math.floor(c / 60)).padStart(2, "0");
   const mm = String(c % 60).padStart(2, "0");
-  return `${dateOf(day)}T${hh}:${mm}:00${TZ_OFFSET}`;
+  return `${dateOf(day + carry)}T${hh}:${mm}:00${TZ_OFFSET}`;
 }
 
 /** Whole years between an ISO birth date and a sim day. */

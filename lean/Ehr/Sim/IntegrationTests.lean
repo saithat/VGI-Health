@@ -161,13 +161,30 @@ def fastProgram : Program := { program with start := "fast", screens := [
     (roomingScreen.components ++ orderScreen.components ++ signScreen.components).map fun c =>
       { c with parent? := none, hotkey? := some "K" } }] }
 def pairedSchedule := { PolicyTests.schedule with tasks := [{ PolicyTests.task with interruptions := 7 }] }
--- This paired interruption-count regression uses the fixed-cost policy.
-def fastDay := simulate spec fastProgram PolicyTests.p1 pairedSchedule (fun _ => facts) 123 { mode := .fixedCost }
-def slowDay := simulate spec program PolicyTests.p1 pairedSchedule (fun _ => facts) 123 { mode := .fixedCost }
+/-- Legacy fixed-cost mode: each declared interruption is one wait. -/
+def legacyInterruptions : Resumption.InterruptionConfig := { mode := .fixedCost, legacyModel := true }
+def fastDay := simulate spec fastProgram PolicyTests.p1 pairedSchedule (fun _ => facts) 123 legacyInterruptions
+def slowDay := simulate spec program PolicyTests.p1 pairedSchedule (fun _ => facts) 123 legacyInterruptions
 #guard fastDay.tasks.all (·.completed) && slowDay.tasks.all (·.completed)
 #guard (fastDay.trace.flatMap (·.ops) |>.filter (· == .wait)).length == 7
 #guard (slowDay.trace.flatMap (·.ops) |>.filter (· == .wait)).length == 7
 #guard (fastDay.floor.zip fastDay.tasks).all (fun (a, b) => below a b)
+
+/-- Real-work mode (the wave-3 default clock): interruptions are exogenous
+arrivals served as communication work on the serial clock, never fixed waits.
+The offered work is identical for both layouts. -/
+def fastReal := simulate spec fastProgram PolicyTests.p1 pairedSchedule (fun _ => facts) 123
+def slowReal := simulate spec program PolicyTests.p1 pairedSchedule (fun _ => facts) 123
+#guard fastReal.tasks.all (·.completed) && slowReal.tasks.all (·.completed)
+#guard (fastReal.trace.flatMap (·.ops) |>.filter (· == .wait)).length == 0
+#guard (slowReal.trace.flatMap (·.ops) |>.filter (· == .wait)).length == 0
+#guard (fastReal.tasks ++ slowReal.tasks).all fun t =>
+  t.interruptions?.any (·.model == "interrupting-work-v3")
+#guard fastReal.tasks.map (·.interruptions?.map (·.offered)) ==
+  slowReal.tasks.map (·.interruptions?.map (·.offered))
+#guard (fastReal.floor.zip fastReal.tasks).all (fun (a, b) => below a b)
+#guard (fastReal.tasks ++ slowReal.tasks).all fun t => t.interruptions?.any fun m =>
+  !m.offered.isEmpty && m.handled + m.deferred == m.offered.length
 
 def scanSpec := { MinClicksTests.microSpec with elements := [
   {

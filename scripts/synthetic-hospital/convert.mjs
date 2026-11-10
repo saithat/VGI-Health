@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import { fictionalize } from '../fictional-identities.mjs';
 import { readFile, mkdir, writeFile, readdir, rm } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { cache, root, source, sha256, verifyCache } from './fetch.mjs';
+import { RULES, classify, loadExport, settingOf, withAges } from './mix.mjs';
 
 export const SYSTEM = 'urn:vgi:synthetic-hospital';
 export const SOURCE_TAG = { system: 'urn:vgi:source', code: 'synthetic-hospital' };
@@ -27,39 +28,51 @@ const dateOf = (value) => {
   return Date.parse(`${value}T00:00:00Z`);
 };
 export const encounterClass = (type) => ({ ed: 'EMER', inpatient: 'IMP', icu: 'IMP', outpatient: 'AMB', follow_up: 'AMB', telehealth: 'VR', procedure: 'AMB' })[type] ?? 'AMB';
-export function personaFits(row) {
+/** Approximate DOB. The source `age` is the age at the first encounter
+ * (profile.age_at_first_encounter), so the DOB falls in the year before the
+ * shifted first encounter: age years plus a deterministic 0–364-day offset. */
+export function birthDateOf(row, referenceDate) {
+  const times = row.encounters.map((e) => dateOf(e.encounter_date));
+  const first = new Date(Math.min(...times) + shiftDaysOf(row, referenceDate) * DAY);
+  const anniversary = Date.UTC(first.getUTCFullYear() - row.age, first.getUTCMonth(), Math.min(first.getUTCDate(), 28));
+  return new Date(anniversary - (intHash(`dob:${row.patient_id}`) % 365) * DAY).toISOString().slice(0, 10);
+}
+/** One offset per patient: the newest encounter lands 1–365 days before the reference date. */
+export function shiftDaysOf(row, referenceDate) {
+  const latest = Math.max(...row.encounters.map((e) => dateOf(e.encounter_date)));
+  return (dateOf(referenceDate) - (1 + intHash(`anchor:${row.patient_id}`) % 365) * DAY - latest) / DAY;
+}
+export const ageOn = (birthDate, date) => {
+  const [by, bm, bd] = birthDate.split('-').map(Number), [y, m, d] = date.split('-').map(Number);
+  return y - by - (m < bm || (m === bm && d < bd) ? 1 : 0);
+};
+/** Age on the reference date; without one (unit tests) the source age is used. */
+const currentAge = (row, referenceDate) => referenceDate ? ageOn(birthDateOf(row, referenceDate), referenceDate) : row.age;
+export function personaFits(row, referenceDate) {
   const p = JSON.parse(row.profile);
   const types = row.encounters.map((e) => e.encounter_type);
+  const age = currentAge(row, referenceDate);
   const surgical = p.surgical_history.some((s) => !absentHistory(s)) ||
     /appendic|cholecyst|hernia|bowel obstruction|perforation|colectomy/i.test(list(row.primary_diagnoses).join(' '));
-  return { P1: row.age >= 18 && types.some((t) => ['outpatient', 'follow_up', 'telehealth'].includes(t)),
+  return { P1: age >= 18 && types.some((t) => ['outpatient', 'follow_up', 'telehealth'].includes(t)),
     P2: types.includes('ed'), P3: types.some((t) => ['inpatient', 'icu'].includes(t)),
-    P4: row.age < 18, P5: surgical };
+    P4: age < 18, P5: surgical };
 }
-export function selectCohort(rows, count = 150, referenceDate) {
+export function selectCohort(rows, count = rows.length, referenceDate) {
   if (!Number.isInteger(count) || count < 1 || count > rows.length) throw new Error('Count must be an integer within the source population');
   if (new Set(rows.map((r) => r.patient_id)).size !== rows.length) throw new Error('Duplicate source patient id');
-  // Age is the only available DOB precision. Exclude source timelines that would
-  // precede the approximated DOB rather than manufacturing infant birth dates.
-  const plausible = (r) => {
-    if (!referenceDate) return true;
-    const times = r.encounters.map((e) => dateOf(e.encounter_date));
-    const anchor = dateOf(referenceDate) - (1 + intHash(`anchor:${r.patient_id}`) % 365) * DAY;
-    const dob = `${Number(referenceDate.slice(0, 4)) - r.age}${referenceDate.slice(4)}`;
-    return Math.min(...times) + anchor - Math.max(...times) >= dateOf(dob);
-  };
-  const candidates = rows.filter(plausible);
-  if (count > candidates.length) throw new Error('Not enough patients with a timeline after the approximate DOB');
+  const candidates = rows;
   const sorted = [...candidates].sort((a, b) => sha256(`cohort-v1:${a.patient_id}`).localeCompare(sha256(`cohort-v1:${b.patient_id}`)));
+  const fits = new Map(sorted.map((r) => [r.patient_id, personaFits(r, referenceDate)]));
   const selected = new Map();
   const assigned = {};
   const personas = ['P1', 'P2', 'P3', 'P4', 'P5'];
-  // Round-robin quotas yield 30 distinct primary selections per persona at N=150.
-  // Other eligible personas are recorded too; fit is not a clinical assignment.
+  // Round-robin quotas give each persona distinct primary selections until its
+  // eligible pool runs out. Other eligible personas are recorded too; fit is not a clinical assignment.
   while (selected.size < count) {
     let progress = false;
     for (const persona of personas) {
-      const row = sorted.find((r) => !selected.has(r.patient_id) && personaFits(r)[persona]);
+      const row = sorted.find((r) => !selected.has(r.patient_id) && fits.get(r.patient_id)[persona]);
       if (row) {
         selected.set(row.patient_id, row); assigned[row.patient_id] = persona; progress = true;
         if (selected.size === count) break;
@@ -98,7 +111,6 @@ export function diagnosisLookup(db) {
 export function convertPatient(row, { referenceDate, formulary, lookup = () => undefined }) {
   const p = JSON.parse(row.profile);
   if (!Number.isInteger(row.age) || row.age < 0 || row.age > 120 || !row.encounters.length) throw new Error(`Invalid patient ${row.patient_id}`);
-  const reference = dateOf(referenceDate);
   const entries = [];
   const add = (key, resource) => {
     const value = `${row.patient_id}:${key}`;
@@ -119,18 +131,17 @@ export function convertPatient(row, { referenceDate, formulary, lookup = () => u
   const given = ['Avery', 'Morgan', 'Jordan', 'Cameron', 'Riley', 'Taylor', 'Alex', 'Casey', 'Quinn', 'Jamie', 'Reese', 'Robin', 'Sage', 'Rowan', 'Drew', 'Skyler'][intHash(row.patient_id) % 16];
   const family = ['Holloway', 'Bennett', 'Reed', 'Sullivan', 'Brooks', 'Rivera', 'Patel', 'Hayes', 'Chen', 'Park', 'Ellis', 'Foster', 'Shaw', 'Nguyen', 'Torres', 'Grant'][intHash(`family:${row.patient_id}`) % 16];
   const name = `${given} ${family}`;
-  const birthDate = `${Number(referenceDate.slice(0, 4)) - row.age}${referenceDate.slice(4)}`;
+  const birthDate = birthDateOf(row, referenceDate);
   const patient = add('patient', { resourceType: 'Patient', active: true,
     identifier: [{ system: SYSTEM, value: String(row.patient_id) }, { system: 'http://hospital.smarthealthit.org', value: `SH${String(row.patient_id).padStart(8, '0')}` }],
     name: [{ use: 'official', given: [given], family, text: name }],
     gender: { M: 'male', F: 'female' }[row.sex] ?? 'unknown', birthDate,
     extension: [{ url: `${SYSTEM}:source-profile`, valueString: row.profile },
-      { url: `${SYSTEM}:birthdate-basis`, valueString: `Approximate DOB: source age ${row.age} relative to ${referenceDate}; source age_at_first_encounter=${p.age_at_first_encounter}` }] });
+      { url: `${SYSTEM}:birthdate-basis`, valueString: `Approximate DOB: source age ${row.age} at the first encounter (age_at_first_encounter=${p.age_at_first_encounter}); deterministic day within that year` }] });
   // Index uses the actual deterministic resource id, distinct from the numeric upstream id.
   const patientResource = entries[0].resource;
   const latest = Math.max(...row.encounters.map((e) => dateOf(e.encounter_date)));
-  const anchor = reference - (1 + intHash(`anchor:${row.patient_id}`) % 365) * DAY;
-  const shiftDays = (anchor - latest) / DAY;
+  const shiftDays = shiftDaysOf(row, referenceDate);
   const shifted = (date) => new Date(dateOf(date) + shiftDays * DAY).toISOString().slice(0, 10);
   const encRefs = new Map();
   const ordered = [...row.encounters].sort((a, b) => dateOf(a.encounter_date) - dateOf(b.encounter_date) || a.encounter_order - b.encounter_order || a.encounter_id - b.encounter_id);
@@ -214,14 +225,14 @@ export function convertPatient(row, { referenceDate, formulary, lookup = () => u
       display: `${source.repository}/tree/${source.commit} — ${source.citation}` } }] });
   return { bundle: fictionalize({ resourceType: 'Bundle', type: 'transaction', meta: { tag: [SOURCE_TAG] }, entry: entries }),
     patient: { id: patientResource.id, sourceId: row.patient_id, identifier: `${SYSTEM}|${row.patient_id}`, name, birthDate,
-      mrn: `SH${String(row.patient_id).padStart(8, '0')}`, age: row.age, sex: row.sex,
+      mrn: `SH${String(row.patient_id).padStart(8, '0')}`, age: ageOn(birthDate, referenceDate), sourceAgeAtFirstEncounter: row.age, sex: row.sex,
       encounterClass: encounterClass(ordered.at(-1).encounter_type),
-      flags: { pediatric: row.age < 18, surgical: personaFits(row).P5, allergic: p.allergies.some((a) => !/^(NKDA|no known (?:drug )?allergies|none(?: known)?)$/i.test(a.trim())),
+      flags: { pediatric: ageOn(birthDate, referenceDate) < 18, surgical: personaFits(row).P5, allergic: p.allergies.some((a) => !/^(NKDA|no known (?:drug )?allergies|none(?: known)?)$/i.test(a.trim())),
         anticoagulated: p.home_medications.some((m) => ['warfarin', 'apixaban', 'enoxaparin', 'heparin'].includes(normalize(m.name))) },
-      personaFits: personaFits(row), shiftDays, sourceNewestDate: new Date(latest).toISOString().slice(0, 10), newestDate: shifted(new Date(latest).toISOString().slice(0, 10)),
+      personaFits: personaFits(row, referenceDate), shiftDays, sourceNewestDate: new Date(latest).toISOString().slice(0, 10), newestDate: shifted(new Date(latest).toISOString().slice(0, 10)),
       encounters: ordered.length, codedConditions, textOnlyConditions: conditions.size - codedConditions } };
 }
-export async function exportCohort({ count = 150, output = resolve(root, 'fixtures/synthetic-hospital') } = {}) {
+export async function exportCohort({ count, output = resolve(root, 'fixtures/synthetic-hospital') } = {}) {
   await verifyCache();
   const rows = (await readFile(resolve(cache, 'patient_profiles.jsonl'), 'utf8')).trim().split('\n').map((line) => JSON.parse(line));
   const db = JSON.parse(execFileSync('python3', [resolve(import.meta.dirname, 'inspect-db.py'), resolve(cache, 'benchmark_v1.3.db')], { maxBuffer: 32 * 1024 * 1024 }));
@@ -231,7 +242,7 @@ export async function exportCohort({ count = 150, output = resolve(root, 'fixtur
   await mkdir(output, { recursive: true });
   const patients = [];
   const resourceCounts = {};
-  for (const { row, selectedFor } of selectCohort(rows, count, referenceDate)) {
+  for (const { row, selectedFor } of selectCohort(rows, count ?? rows.length, referenceDate)) {
     const { bundle, patient } = convertPatient(row, { referenceDate, formulary, lookup: diagnosisLookup(db) });
     const file = `${row.patient_id}.json`;
     const data = JSON.stringify(bundle) + '\n';
@@ -239,8 +250,11 @@ export async function exportCohort({ count = 150, output = resolve(root, 'fixtur
     patients.push({ ...patient, selectedFor, file, bytes: Buffer.byteLength(data), sha256: sha256(data) });
     for (const e of bundle.entry) resourceCounts[e.resource.resourceType] = (resourceCounts[e.resource.resourceType] ?? 0) + 1;
   }
-  const index = { source, referenceDate, selection: 'cohort-v1 SHA256 ordering, round-robin P1–P5 eligibility; exclude timelines before approximate DOB; primary selections disjoint, fits overlap',
+  const sections = await exportSections(rows);
+  const index = { source, label: 'synthetic-benchmark', referenceDate, selection: 'cohort-v1 SHA256 ordering, round-robin P1–P5 eligibility; primary selections disjoint, fits overlap',
     sourcePatients: rows.length, sourcePediatricPatients: rows.filter((r) => r.age < 18).length,
+    sourceEncounters: rows.reduce((n, r) => n + r.encounters.length, 0), encounterCount: patients.reduce((n, p) => n + p.encounters, 0),
+    currentPediatricPatients: patients.filter((p) => p.flags.pediatric).length, sections,
     dbInspection: { tableCounts: db.tableCounts, diagnosisRowsWithIcd10: db.diagnoses.filter((d) => d.icd10_code).length,
       terminologyTables: Object.keys(db.tableCounts).filter((k) => /terminolog/i.test(k)) },
     patientCount: patients.length, resourceCounts,
@@ -254,8 +268,36 @@ export async function exportCohort({ count = 150, output = resolve(root, 'fixtur
   console.log(JSON.stringify({ patients: patients.length, resourceCounts, selectedFor: index.selectedForCounts, fits: index.personaFitCounts, bytes: patients.reduce((n, p) => n + p.bytes, 0) }, null, 2));
   return index;
 }
+export const SECTIONS_PATH = resolve(root, 'fixtures/synthetic-hospital-sections.json');
+/** Chart sections for world note text (synthetic-benchmark): every released
+ * encounter_ehr_sections row with its setting, the encounter's sex, age
+ * and matched local scenarios. Organization and clinician names are replaced
+ * exactly as in the bundles. Kept beside (not inside) the bundle directory,
+ * whose *.json files are all bundles; never committed. */
+export async function exportSections(rows, path = SECTIONS_PATH) {
+  const data = await loadExport();
+  const encounters = new Map(withAges(data).map((e) => [e.id, e]));
+  const insurance = new Map(rows.map((r) => [r.patient_id, JSON.parse(r.profile).insurance]));
+  const byEncounter = new Map();
+  for (const [encounter, type, order, text] of data.sections) {
+    if (!byEncounter.has(encounter)) byEncounter.set(encounter, []);
+    byEncounter.get(encounter).push({ type, order, text });
+  }
+  const out = [];
+  for (const [id, list] of byEncounter) {
+    const e = encounters.get(id);
+    const scenarios = [...new Set(Object.values(RULES).flatMap((rules) => classify(rules, e.icd10)))].sort();
+    // Same identity sources as the bundle: attending as author, payer as payor.
+    const named = fictionalize({ author: [{ display: e.attending }], payor: [{ display: insurance.get(e.patient) }], sections: list });
+    out.push({ encounter: id, patient: e.patient, setting: settingOf(e.type), sex: e.sex, age: e.age, scenarios, sections: named.sections });
+  }
+  const file = { label: 'synthetic-benchmark', source: { repository: source.repository, commit: source.commit }, encounters: out };
+  const text = JSON.stringify(file) + '\n';
+  await writeFile(path, text);
+  return { file: relative(root, path), encounters: out.length, sections: data.sections.length, bytes: Buffer.byteLength(text), sha256: sha256(text) };
+}
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const args = process.argv.slice(2);
-  if (args.length && (args.length !== 2 || args[0] !== '--count')) throw new Error('Usage: convert.mjs [--count N]');
-  await exportCohort({ count: args.length ? Number(args[1]) : 150 });
+  if (args.length && (args.length !== 2 || args[0] !== '--count')) throw new Error('Usage: convert.mjs [--count N] (default: all patients)');
+  await exportCohort({ count: args.length ? Number(args[1]) : undefined });
 }
