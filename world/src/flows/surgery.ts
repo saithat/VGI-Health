@@ -23,6 +23,10 @@ import type { Json, OrderChoice } from "../schema";
 import type { CaseDiagnosis, Inpatient, SurgicalCase } from "../state";
 import { activeOrders, addPendingLab, admit, canAdmit, dischargeInpatient, dischargeSameDay, isInpatient, labValue, setRegimen } from "./common";
 
+/** Declared scenario, uncited: 25% of surgical inpatient rounds order imaging;
+ * two thirds chest X-ray, one third CT abdomen/pelvis. Independent stream. */
+export const INPATIENT_IMAGING_SCENARIO = { rate: 0.25, chestXrayShare: 2 / 3 } as const;
+
 const P5_START = SHIFTS.P5.startClock;
 const toClock = (m: number) => P5_START + m;
 const toMin = (clock: number) => clock - P5_START;
@@ -270,6 +274,12 @@ export function runSurgery(b: DayBuild): void {
       }
     } else {
       notes.push("preopPlan");
+    }
+    const imagingRng = b.rng(`inpatient-imaging|${ip.admissionId}`);
+    if (b.workflowMode === "realistic" && imagingRng.chance(INPATIENT_IMAGING_SCENARIO.rate)) {
+      const chest = imagingRng.chance(INPATIENT_IMAGING_SCENARIO.chestXrayShare);
+      changes.push(serviceOrder("imaging", chest ? "chest-xray" : "ct-abdomen-pelvis",
+        chest ? "scenario-postoperative-respiratory-concern" : "scenario-postoperative-abdominal-concern"));
     }
     b.addTask("P5", "W6", ip.patientId, t, { orders: changes, w6Step: "rounding", noteSections: notes }, [], b.interruptions("P5", rng, 0.5));
     t += 8;

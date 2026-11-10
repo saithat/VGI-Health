@@ -82,6 +82,12 @@ const clinical=read(resolve(ROOT,'fixtures/clinical/overrides.json'));
       }
     }
     dnr+=resources.filter(r=>codes(r).includes('dnr')).length;
+    // Contemporary W2 advice/call/consult streams must not fabricate empty lab reports.
+    for(const report of resources.filter(r=>r.resourceType==='DiagnosticReport'&&r.code?.text==='Laboratory results'))
+      assert.ok(report.result.length>0&&report.conclusion.includes(':'));
+    const messages=resources.filter(r=>r.resourceType==='Communication'&&r.category?.some(c=>c.coding?.some(x=>x.code==='workflow-message')));
+    if(read(resolve(ROOT,`runs/world/2/day-${day}-P1.json`)).tasks.some(t=>t.workflow==='W2'&&!t.todayResources.some(r=>r.resourceType==='Observation')))
+      assert.ok(messages.length>0);
     for(const p of ['P1','P2','P3','P4','P5']) {
       const inbox=find(p,'inbox').entry.map(e=>byKey.get(e.item.reference));
       assert.ok(inbox.filter(r=>r.resourceType==='Communication').length>=2);

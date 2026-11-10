@@ -1554,12 +1554,23 @@ export interface OrderChoice {
 }
 
 /**
- * Text typed for one documentation section, keyed by its element id. World
+ * Simulator authoring effort; selections are KLM point/click pairs. The full
+ * section still enters through the ordinary human event and clinical guards.
+ */
+export interface NoteAuthoring {
+  origin: string;
+  typedCharacters: number;
+  selections: number;
+}
+
+/**
+ * Full text for one documentation section, keyed by its element id. World
  * generation sizes it from Synthetic Hospital chart sections (synthetic-benchmark).
  */
 export interface NoteText {
   id: string;
   text: string;
+  authoring?: NoteAuthoring;
 }
 
 /**

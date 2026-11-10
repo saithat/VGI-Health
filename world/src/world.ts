@@ -48,13 +48,12 @@ export function worldPopulation(patients: PatientProfile[], seed: number): PopIn
 }
 
 /** The world on day 0 (the Friday before the simulation): census, bookings, pending results, backlog. */
-/** Generator options. Library default `legacy` reproduces frozen archives; the CLI defaults to Synthetic Hospital. */
+/** Library workflows default to realistic, matching the CLI. Clock and case-mix
+ * defaults retain their independent legacy settings; dataset notes are post-processing. */
 export interface WorldOptions {
   worldClock?: WorldClock;
   caseMix?: CaseMixMode;
-  /** Wave-3 guarded workflows (refill protocol, inbox streams, MAR timing). Library
-   * calls without options keep the earlier flows, like `worldClock` and `caseMix`;
-   * `world gen` defaults to `realistic`. */
+  /** Wave-3 guarded workflows. Explicit legacy retains pre-wave-3 behavior. */
   workflows?: "realistic" | "legacy";
 }
 
@@ -253,7 +252,7 @@ function advanceCalendarDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBu
   const daySeed = hashHex(`${prev.seed}|${day}|${prevStateHash}`);
   const ctx = computeContext(prev.seed, day, daySeed);
   const state: WorldState = { ...structuredClone(prev), day, date: dateOf(day), daySeed, prevStateHash, context: ctx, today: emptyToday() };
-  const b = new DayBuild(day, ctx, pop, state, daySeed, options.caseMix, options.workflows ?? "legacy");
+  const b = new DayBuild(day, ctx, pop, state, daySeed, options.caseMix, options.workflows ?? "realistic");
 
   for (const ip of state.inpatients) b.picker.block(ip.patientId);
   for (const c of state.surgicalCases) if (c.orDay === day && c.stage === "booked") b.picker.block(c.patientId);

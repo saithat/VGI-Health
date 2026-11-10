@@ -3,7 +3,7 @@
  * (synthetic-benchmark). Each task borrows one donor encounter from its
  * setting, matched by diagnosis key (ED scenario, or clinic/pediatric visit
  * kind), then sex and age band; every mapped
- * note section types that donor's section text, so section sizes follow the
+ * note section retains that donor's full text, so section sizes follow the
  * dataset. Sections with no dataset counterpart keep Lean's fixed phrase
  * (A45 placeholders). `legacy` omits all text, which reproduces the fixed
  * phrases of earlier worlds.
@@ -128,23 +128,45 @@ export class NoteTexts {
   }
 }
 
-/** Template/dictation typing discount: the per-mille share of each section's
- * text that is keyboard-typed (scenario value; declared, uncited; 1000 = off,
- * the default). The rest is assumed to arrive by template, copy-forward or
- * dictation and is not typed, so only the typed prefix is supplied. */
+/** Historical opt-out: uniformly charge this typed share, retaining full text. */
 export const NOTE_TYPED_SHARE_OFF = 1000;
+
+export const NOTE_AUTHORING_MODES = ["template", "full"] as const;
+export type NoteAuthoringMode = typeof NOTE_AUTHORING_MODES[number];
+export const NOTE_AUTHORING_PROFILE = {
+  sourceId: "N18", doi: "10.1001/jamanetworkopen.2021.15334", dataYear: 2018, publicationYear: 2021,
+  label: "calibrated", scope: "OHSU outpatient progress-note character origins; older evidence",
+  sharesPerMille: { freeText: 294, copied: 147, template: 559 },
+  scenario: { sectionAssignment: "independent hash draw using pooled character shares; no section-specific source estimates",
+    nonOutpatient: "extrapolated from outpatient evidence", templateSelections: 2, copiedSelections: 1, copiedEditPerMille: 50 },
+} as const;
 
 export function typedPortion(text: string, perMille: number): string {
   if (!Number.isInteger(perMille) || perMille < 0 || perMille > 1000) throw new Error("note typed share must be an integer per mille in 0..1000");
-  return perMille === NOTE_TYPED_SHARE_OFF ? text : text.slice(0, Math.ceil(text.length * perMille / 1000));
+  return perMille === NOTE_TYPED_SHARE_OFF ? text : [...text].slice(0, Math.ceil([...text].length * perMille / 1000)).join("");
 }
 
-/** Add section text to every task of a schedule (a pure post-processing step: no random draws). */
+/** One origin per full section. Pooled probabilities are calibrated (N18, 2018);
+ * applying them to sections/other settings and all operator counts are scenarios.
+ * Independent hashing avoids changing world random streams. */
+export function authorSection(taskId: string, section: {id: string; text: string}, typedShare?: number) {
+  if (typedShare !== undefined) return { ...section, authoring: {
+    origin: "freeText" as const, typedCharacters: [...typedPortion(section.text, typedShare)].length, selections: 0 } };
+  const draw = parseInt(hashHex(`note-origin|${taskId}|${section.id}`).slice(-8), 16) % 1000;
+  const shares = NOTE_AUTHORING_PROFILE.sharesPerMille;
+  const origin = draw < shares.freeText ? "freeText" : draw < shares.freeText + shares.copied ? "copied" : "template";
+  const scenario = NOTE_AUTHORING_PROFILE.scenario;
+  return { ...section, authoring: { origin,
+    typedCharacters: origin === "freeText" ? [...section.text].length : origin === "copied" ? Math.ceil([...section.text].length * scenario.copiedEditPerMille / 1000) : 0,
+    selections: origin === "template" ? scenario.templateSelections : origin === "copied" ? scenario.copiedSelections : 0 } };
+}
+
+/** Add full section text and effort without consuming world random draws. */
 export function withNoteTexts(schedule: DaySchedule, notes: NoteTexts, patient: (id: string) => PatientProfile | undefined,
-  scenario: (taskId: string) => string | undefined, typedShare = NOTE_TYPED_SHARE_OFF): DaySchedule {
+  scenario: (taskId: string) => string | undefined, typedShare?: number, authoring: NoteAuthoringMode = "template"): DaySchedule {
   return { ...schedule, tasks: schedule.tasks.map((task) => {
     const texts = notes.texts(task, patient(task.patientId), scenario(task.id))
-      .map((n) => ({ ...n, text: typedPortion(n.text, typedShare) })).filter((n) => n.text.length > 0);
+      .map((n) => typedShare !== undefined || authoring === "template" ? authorSection(task.id, n, typedShare) : n);
     return texts.length === 0 ? task : { ...task, choices: { ...task.choices, noteTexts: texts } };
   }) };
 }

@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { MIX_MIN_MATCHED, MIX_PSEUDO_COUNT, SYNTHETIC_HOSPITAL_MIX, datasetCount, drawImagingPriority, imagingPriorityWeights, mixWeights, settingQualifies } from "../src/case-mix";
-import { NOTE_SECTION_TYPES, NoteTexts, type SectionDonor, typedPortion, withNoteTexts } from "../src/notes";
+import { NOTE_SECTION_TYPES, NOTE_AUTHORING_PROFILE, authorSection, NoteTexts, type SectionDonor, typedPortion, withNoteTexts } from "../src/notes";
 import { loadPopulation } from "../src/patients";
 import { DayScheduleSchema, PERSONAS, type Task } from "../src/schema";
 import { generateWorld } from "../src/world";
@@ -91,7 +91,7 @@ describe("note section text", () => {
     const donors = new NoteTexts([donor(1, "ed", 30), donor(2, "inpatient", 70), donor(3, "outpatient", 30), donor(4, "outpatient", 8)]);
     const schedules = PERSONAS.map((p) => withNoteTexts(world.days[0]?.schedules[p] ?? { day: 1, persona: p, load: "normal", tasks: [] }, donors, (id) => world.pop.byId.get(id), () => undefined));
     expect(schedules.some((s) => s.tasks.some((t) => (t.choices.noteTexts?.length ?? 0) > 0))).toBe(true);
-    const result = spawnSync("sh", ["-c", "ulimit -v 8000000; export LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536; exec lake env lean -j6 --run ../world/test/lean/Contract.lean"], {
+    const result = spawnSync("sh", ["-c", "if [ -n \"$VGI_LEAN_SLOT\" ]; then \"$VGI_LEAN_SLOT\" acquire w3follow >&2; trap '\"$VGI_LEAN_SLOT\" release w3follow' EXIT; fi; ulimit -v 8000000; export LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536; lake env lean -j4 --run ../world/test/lean/Contract.lean"], {
       cwd: join(root, "lean"), input: schedules.map((s) => JSON.stringify(s)).join("\n") + "\n", encoding: "utf8", maxBuffer: 20 * 1024 * 1024, timeout: 60_000,
     });
     expect(result.status, result.stderr || result.stdout).toBe(0);
@@ -107,6 +107,22 @@ describe("note section text", () => {
     expect(typedPortion("abcdefghij", 1000)).toBe("abcdefghij");
     expect(typedPortion("abcdefghij", 300)).toBe("abc");
     expect(() => typedPortion("x", 1001)).toThrow();
+  });
+
+  it("uses three section origins with full text and explicit selection/edit effort", () => {
+    expect(NOTE_AUTHORING_PROFILE).toMatchObject({sourceId:"N18",dataYear:2018,label:"calibrated"});
+    const text = "x".repeat(2000);
+    const sections = Array.from({length:10000}, (_,i) => authorSection(`t${i}`, {id:"hpi",text}));
+    for (const origin of ["template", "copied", "freeText"]) {
+      const rows = sections.filter(s => s.authoring.origin === origin);
+      expect(rows.length).toBeGreaterThan(1000);
+      expect(rows.every(s => s.text === text)).toBe(true);
+      expect(rows[0]?.authoring).toMatchObject(origin === "template" ? {typedCharacters:0,selections:2}
+        : origin === "copied" ? {typedCharacters:100,selections:1} : {typedCharacters:2000,selections:0});
+    }
+    expect(sections.filter(s => s.authoring.origin === "freeText").length / sections.length).toBeCloseTo(0.294,1);
+    expect(authorSection("x",{id:"hpi",text},294)).toMatchObject({text,authoring:{typedCharacters:588,selections:0}});
+    expect(() => authorSection("x",{id:"hpi",text},1001)).toThrow();
   });
 
   it("adds text without changing anything else in the schedule", () => {

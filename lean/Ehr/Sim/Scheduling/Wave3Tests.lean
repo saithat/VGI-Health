@@ -91,4 +91,21 @@ def chartRead := scrollTo chartCtx textTask chartEpisode (.click "commit")
 def historicalMetrics := Lean.toJson ({} : InterruptionMetrics)
 #guard !(historicalMetrics.getObjVal? "handoffs").isOk
 #guard (Lean.fromJson? historicalMetrics : Except String InterruptionMetrics).isOk
+-- Template/import and copy-forward keep full section values; only effort varies.
+def authored (origin : String) (keys selections : Nat) : List NoteText :=
+  [{id := "assessment", text := String.ofList (List.replicate 3601 'x'),
+    authoring? := some {origin, typedCharacters := keys, selections}}]
+def entryValue : Value := .text (String.ofList (List.replicate 3601 'x'))
+def templateOps := noteEntryOps (authored "template" 0 2) "assessment" entryValue [.point, .click]
+def copiedOps := noteEntryOps (authored "copied" 181 1) "assessment" entryValue [.point, .click]
+#guard typedKeys (.enter "assessmentField" entryValue) templateOps == 0
+#guard activation (.enter "assessmentField" entryValue) templateOps == 3
+#guard typedKeys (.enter "assessmentField" entryValue) copiedOps == 181
+#guard typedKeys (.enter "assessmentField" entryValue)
+  (noteEntryOps (authored "freeText" 3601 0) "assessment" entryValue [.key]) == 3601
+#guard sectionText {noteTexts? := some (authored "template" 0 2)} "assessment" == (String.ofList (List.replicate 3601 'x'))
+#guard (scrollTo textCtx {textTask with choices := {textTask.choices with noteTexts? := some (authored "template" 0 2)}} episode
+  (.enter "assessmentField" entryValue)).readingMs == read.readingMs
+#print axioms noteEntryOps
+#print axioms typedKeys
 end Ehr.Sim.Scheduling.Wave3Tests
