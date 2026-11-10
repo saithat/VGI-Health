@@ -151,6 +151,15 @@ and replay configuration, context requirements and frozen-night comparisons.
 The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
 lazy review evidence and safe local renames.
 
+`scripts/build-ehrheavy.py [--target MODULE]` builds isolated full-profile
+`EhrHeavy` modules serially with `-M10000`; the wave-3 closure passes 156 modules
+at 8.3 GiB peak. Weekly/manual/Lean-PR CI audits all 24 seed axioms. Seeds
+1/7/13/15/16/22 share the payload-domain proof; mutation replays remain separate.
+Full-catalog regressions retain preset defaults and supply eligible
+CURES/trusted-evidence fixtures; interruption-count tests select legacy
+fixed-cost mode. Seeds 2/4/5 use the refactor's shared automation-rejection helper.
+All 15 core persona/release projections match main at `36cd547e`.
+
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
 runs unit tests, 201 canonical conformance scenarios, the 15-accepted/23-rejected
 certification matrix, and Postgres integration/protocol tests. Archive-backed

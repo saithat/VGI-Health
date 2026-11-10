@@ -106,9 +106,12 @@ def renewalTask : Task := {
 #guard (taskChoices { renewalTask with choices := {
   refill? := some "modify", orders := [{ GoalsTests.warf with doseTenths := 20 }] } }).orders.map
   (·.doseTenths) == [20]
+-- Canonical full-catalog simulations require the same trusted record evidence
+-- as PolicyTests; the Tiny programs below keep their original minimal facts.
 def renewalDay := simulate catalogSpec catalogProgram
   { PolicyTests.p1 with backtrackRate := 0 }
-  { PolicyTests.schedule with tasks := [renewalTask] } (fun _ => interactingFacts) 123
+  { PolicyTests.schedule with tasks := [renewalTask] } (fun _ =>
+    if Specs.ruleProfile == .full then Canonical.FeatureExamples.withEvidence interactingFacts else interactingFacts) 123
 #guard let day := renewalDay
   day.tasks.all (·.completed) &&
   (day.floor.zip day.tasks).all (fun (a, b) => below a b) &&
@@ -116,7 +119,7 @@ def renewalDay := simulate catalogSpec catalogProgram
 def denialDay := simulate Specs.V1.specV1 Canonical.canonicalV1
   { PolicyTests.p1 with backtrackRate := 0 }
   { PolicyTests.schedule with tasks := [{ renewalTask with choices := {
-      refill? := some "deny", refillReason? := some "early-refill" } }] } (fun _ => facts) 123
+      refill? := some "deny", refillReason? := some "early-refill" } }] } (fun _ => PolicyTests.canonicalFacts) 123
 #guard let day := denialDay
   day.tasks.all (·.completed) && day.trace.any (fun e => match e.event with
     | .click id => id == "w7Decision.commit.denyRefill" | _ => false)
@@ -128,7 +131,7 @@ def sharedTask : Task := { PolicyTests.task with
   choices := { orders := [GoalsTests.amox], noteSections := ["hpi", "exam", "mdm"], disposition? := some "admit" } }
 def sharedDay := simulate Specs.V1.specV1 Canonical.canonicalV1
   { PolicyTests.p1 with reviewsAllergiesEarly := false, backtrackRate := 0 }
-  { PolicyTests.schedule with tasks := [sharedTask] } (fun _ => facts) 123
+  { PolicyTests.schedule with tasks := [sharedTask] } (fun _ => PolicyTests.canonicalFacts) 123
 #guard sharedDay.tasks.all (·.completed)
 #guard (sharedDay.floor.zip sharedDay.tasks).all (fun (a, b) => below a b)
 

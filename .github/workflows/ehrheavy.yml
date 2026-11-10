@@ -1,0 +1,53 @@
+name: EhrHeavy
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 8 * * 1'
+  pull_request:
+    paths:
+      - 'lean/**'
+      - 'scripts/build-ehrheavy.py'
+      - '.github/workflows/ehrheavy.yml'
+      - '.github/actions/setup-lean/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ehrheavy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  full-profile:
+    # Needs more than 8 GiB: measured Seed17 peak RSS 8.28 GiB, serial builds.
+    # This public repository gets a 16 GB ubuntu-latest VM:
+    # https://docs.github.com/en/actions/reference/runners/github-hosted-runners
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      TMPDIR: ${{ runner.temp }}/ehrheavy
+      LEAN_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - run: mkdir -p "$TMPDIR"
+      - uses: ./.github/actions/setup-lean
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/ehrheavy/vgi-ehrheavy/lean/.lake
+          key: ${{ runner.os }}-${{ runner.arch }}-ehrheavy-${{ hashFiles('lean/lean-toolchain', 'lean/lakefile.toml', 'lean/lake-manifest.json') }}-${{ hashFiles('lean/**/*.lean') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-ehrheavy-${{ hashFiles('lean/lean-toolchain', 'lean/lakefile.toml', 'lean/lake-manifest.json') }}-
+      - name: Build full-profile kernel proofs sequentially
+        run: |
+          set -o pipefail
+          /usr/bin/time -v python3 scripts/build-ehrheavy.py 2>&1 | tee "$TMPDIR/ehrheavy.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ehrheavy-evidence
+          path: |
+            ${{ runner.temp }}/ehrheavy/ehrheavy.log
+            ${{ runner.temp }}/ehrheavy/vgi-ehrheavy/build.log
+            ${{ runner.temp }}/ehrheavy/vgi-ehrheavy/metrics.tsv
+          retention-days: 30

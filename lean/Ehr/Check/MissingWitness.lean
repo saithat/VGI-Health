@@ -1,4 +1,4 @@
-import Ehr.Check.StructuralWitness
+import Ehr.Check.PatchWitness
 import Ehr.Canonical.BadPrograms
 
 namespace Ehr.Check
@@ -15,6 +15,15 @@ theorem withoutElement_no_field (p : Program) (eid : ElementId)
   obtain ⟨original, horiginal, rfl⟩ := hscr
   have kept := (List.mem_filter.mp hc).2
   cases hk : c.kind <;> simp_all [fieldOf?, withoutElement]
+
+/-- Removing fields retains a known non-field component without reducing the
+persona projection or inspecting unrelated canonical screens. -/
+theorem hasComponent_withoutElement (p : Program) (eid : ElementId) (c : Component)
+    (member : HasComponent p c) (nonfield : fieldOf? c.kind = none) :
+    HasComponent (withoutElement p eid) c := by
+  obtain ⟨s, hs, hc⟩ := member
+  refine ⟨_, List.mem_map.mpr ⟨s, hs, rfl⟩, List.mem_filter.mpr ⟨hc, ?_⟩⟩
+  cases hk : c.kind <;> simp_all [fieldOf?]
 
 /-- An actual commit component witnesses membership in the required task family. -/
 theorem required_of_component (sp : Spec) (can p : Program) (sc : Screen × Component)
@@ -46,6 +55,7 @@ theorem missing_required_not_satisfies (sp : Spec) (can p : Program) (cm : Commi
   subst e
   exact absent sc hc slot pf hf'
 
+#print axioms hasComponent_withoutElement
 #print axioms withoutElement_no_field
 #print axioms required_of_component
 #print axioms missing_required_not_satisfies

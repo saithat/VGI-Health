@@ -15,18 +15,21 @@ open Ehr.Specs.V1 Ehr.Specs.V2 Ehr.Specs.V3
   | .error _ => false
 
 -- Each release supports human documentation of the corrected code through
--- real composer events. This tests the waiver path, not statutory eligibility
--- or rejection of arbitrary codes.
+-- real composer events, with independent evidence for the procedure, eligible
+-- facility and a supply within seven days. Human category entry is still needed.
+def surgeryExemptionFacts : Facts := { adult with record := adult.record ++
+  [("facilityKind", "surgical-clinic"), ("surgicalProcedure", "synthetic-procedure"),
+   ("directedSupplyDays", "7")] }
 #guard [(specV1, canonicalV1), (specV2, canonicalV2), (specV3, canonicalV3)].all fun (sp, p) =>
   let p := p.updateScreen "w1Sign" fun s => s.dropComp "w1Sign.cures"
-  let s := run opioidPath p adult physician sp
+  let s := run opioidPath p surgeryExemptionFacts physician sp
   let entered := more s [.click "w1Sign.edit",
     .enter "w1Orders.curesExemptionReason" (.code "surgery-7-day"),
-    .click "w1Orders.toSign", .click "w1Verify.continue"] p adult physician sp
-  (finish s "w1Sign" "signOrders" p adult physician sp).commits == [] &&
+    .click "w1Orders.toSign", .click "w1Verify.continue"] p surgeryExemptionFacts physician sp
+  (finish s "w1Sign" "signOrders" p surgeryExemptionFacts physician sp).commits == [] &&
   (cap entered "curesExemptionReason").any (fun c =>
     c.byHuman && c.confirmed && c.value == .code "surgery-7-day") &&
-  (finish entered "w1Sign" "signOrders" p adult physician sp).commits == ["signOrders"]
+  (finish entered "w1Sign" "signOrders" p surgeryExemptionFacts physician sp).commits == ["signOrders"]
 
 /-- v2 preserves a complete v1 prescribing path without any new input. -/
 def optionalRelease : State := run w1Path canonicalV2 adult physician specV2

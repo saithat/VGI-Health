@@ -8,9 +8,9 @@ set_option maxRecDepth 16384
 
 private def static14Screen : Screen := canonicalSource[5]?.getD default
 private theorem static14ScreenPresent : canonicalSource[5]?.isSome = true := by decide +kernel
-private theorem static14CompPresent : static14Screen.components[75]?.isSome = true := by decide +kernel
+private theorem static14CompPresent : static14Screen.components[67]?.isSome = true := by decide +kernel
 @[irreducible] private def static14Witness : Screen × Component :=
-  (static14Screen, static14Screen.components[75]?.getD default)
+  (static14Screen, static14Screen.components[67]?.getD default)
 private def static14Macro : Macro := { id := "badNaloxone", label := "Oxycodone 30 mg q4h + naloxone offered", steps := [.setValue "w1Orders.drug" "oxycodone", .setValue "w1Orders.dose" "30", .setValue "w1Orders.freq" "q4h", .setValue "w1Orders.naloxoneOffer" "offered"] }
 private theorem static14Macro_mem : static14Macro ∈ macroNaloxone.macros := by
   change static14Macro ∈ (base 14).macros ++ [static14Macro]
@@ -28,7 +28,7 @@ private theorem static14Member : HasComponent macroNaloxone static14Witness.2 :=
     canonical_keeps_plain_field static14Witness.2
       (blueprint_keeps_field canonicalSource static14Screen static14Witness.2
         (getD_mem canonicalSource 5 static14ScreenPresent) (by decide +kernel)
-        (by unfold static14Witness; exact getD_mem static14Screen.components 75 static14CompPresent)
+        (by unfold static14Witness; exact getD_mem static14Screen.components 67 static14CompPresent)
         "naloxoneOffer" (.fixed 0) .none static14ComponentKind
         (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel) (by decide +kernel))
       "naloxoneOffer" (.fixed 0) .none static14ComponentKind naloxoneOffer naloxoneLookup rfl rfl
@@ -51,4 +51,14 @@ theorem bad14_not_satisfies : ¬ Satisfies specV1 none canonicalV1 macroNaloxone
     (.fixed 0) .none (by rw [same]; exact static14Kind)
     naloxoneOffer naloxoneLookup (by decide) hs.2.2.2.2.1.1
 #print axioms bad14_not_satisfies
+#print axioms static14ScreenPresent
+#print axioms static14CompPresent
+#print axioms static14Macro_mem
+#print axioms static14Step
+#print axioms static14Id
+#print axioms static14Kind
+#print axioms naloxoneLookup
+#print axioms static14ComponentKind
+#print axioms static14Member
+
 end Ehr.Check

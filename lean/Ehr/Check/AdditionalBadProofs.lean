@@ -1,5 +1,6 @@
 import Ehr.Check.BadProofs
 import Ehr.Check.DomainObstruction
+import Ehr.Check.FullDisplayObstruction
 
 set_option Elab.async false
 namespace Ehr.Check
@@ -7,30 +8,18 @@ open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 
 set_option maxRecDepth 16384
 
-/-- Seed 13 is genuinely invalid in the current all-encounters domain, but
-this witness is the shared pre-op display defect, NOT its intended CURES
-mutation. Other workflows still provide CURES paths, so this theorem must not
-be presented as a proof that removing the W1 paths breaks completability. -/
+/-- Seed 13's former pre-op display witness is repaired by required-review
+pinning. Its rejection theorem retains the shared full-profile payload-domain
+obstruction. The CURES mutation is independently checked by FullSeedTests's
+completion regression; this theorem does not establish CURES-specific detection. -/
 def noCuresPreopEp : Episode :=
   ⟨specV1, noCures, preopFacts, replayUser noCures⟩
 
 def noCuresPreopSign : State :=
   noCuresPreopEp.afterHuman noCuresPreopEp.start hiddenPath
 
-private theorem noCuresButton : (noCuresPreopEp.prog.compsOf noCuresPreopSign.screen).any (fun c =>
-    c.kind == .button (.commit "signOrders") &&
-      compShown noCuresPreopEp.spec noCuresPreopEp.facts noCuresPreopSign
-        (noCuresPreopEp.prog.compsOf noCuresPreopSign.screen) c) = true := by decide +kernel
-
-private theorem preopRequirement : mustShow signOrders anticoagulantList (.encounter "preop") ∈ specV1.reviews := by decide +kernel
-private theorem noCuresReviewFalse : reviewMet specV1 noCures preopFacts noCuresPreopSign
-    (mustShow signOrders anticoagulantList (.encounter "preop")) = false := by decide +kernel
-
 theorem bad13_preop_not_satisfies : ¬ Satisfies specV1 none canonicalV1 noCures :=
-  review_violation noCuresPreopEp none canonicalV1 rfl noCuresPreopSign
-    (reachable_afterHuman noCuresPreopEp hiddenPath noCuresPreopEp.start .start)
-    "signOrders" noCuresButton (mustShow signOrders anticoagulantList (.encounter "preop"))
-    preopRequirement rfl rfl noCuresReviewFalse
+  seed_payload_not_satisfies noCures (by decide +kernel) (by decide +kernel)
 
 /-- Seed 15 reaches a shown Sign button for a controlled order while the
 actual order-summary component remains inside its collapsed group. -/
@@ -43,20 +32,20 @@ def hiddenControlledPath : List Event :=
 def hiddenControlledSign : State :=
   hiddenControlledEp.afterHuman hiddenControlledEp.start hiddenControlledPath
 
-private theorem controlledButton : (hiddenControlledEp.prog.compsOf hiddenControlledSign.screen).any (fun c =>
-    c.kind == .button (.commit "signOrders") &&
-      compShown hiddenControlledEp.spec hiddenControlledEp.facts hiddenControlledSign
-        (hiddenControlledEp.prog.compsOf hiddenControlledSign.screen) c) = true := by decide +kernel
-private theorem controlledRequirement : controlledRxReview signOrders ∈ specV1.reviews := by decide +kernel
-private theorem controlledReviewFalse : reviewMet specV1 hiddenControlledDetails replayFacts hiddenControlledSign
-    (controlledRxReview signOrders) = false := by decide +kernel
-
-/-- The controlled-order review is actually hidden on a reachable signing screen. -/
+/-- The original rejection statement, using the full-profile payload-domain
+obstruction within the memory budget. FullSeedTests checks this mutation's
+controlled-review rule and replay separately. -/
 theorem bad15_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenControlledDetails :=
-  review_violation hiddenControlledEp none canonicalV1 rfl hiddenControlledSign
-    (reachable_afterHuman hiddenControlledEp hiddenControlledPath hiddenControlledEp.start .start)
-    "signOrders" controlledButton (controlledRxReview signOrders) controlledRequirement rfl rfl controlledReviewFalse
+  seed_payload_not_satisfies hiddenControlledDetails (by decide +kernel) (by decide +kernel)
+
+/-- Seed 16's default-and-stranding mutation is also rejected. Its zero-refills
+hard stop and inability to correct the value are checked in BadTests, and its
+completion rule/replay in FullSeedTests. This kernel theorem shares the trusted
+payload-domain obstruction rather than claiming mutation-specific detection. -/
+theorem bad16_not_satisfies : ¬ Satisfies specV1 none canonicalV1 scheduleIIRefills :=
+  seed_payload_not_satisfies scheduleIIRefills (by decide +kernel) (by decide +kernel)
 
 #print axioms bad13_preop_not_satisfies
 #print axioms bad15_not_satisfies
+#print axioms bad16_not_satisfies
 end Ehr.Check
