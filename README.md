@@ -132,7 +132,7 @@ and replay configuration, context requirements and frozen-night comparisons.
 The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
 lazy review evidence and safe local renames.
 
-`EhrHeavy` uses a separate full-profile scratch build (`TMPDIR=/path/to/disk python3 scripts/build-ehrheavy.py`), serial modules and a 10,000 MB Lean ceiling; its scheduled/manual/Lean-PR workflow records module time, peak RSS and all 24 seed axioms; seeds 1, 7, 13, 15, 16 and 22 share the payload-domain rejection proof, with mutation-specific rule/replay regressions checked separately, including paired CURES-waiver cases with and without independent facility/procedure evidence; full presets retain global default declarations; canonical simulations supply full-profile trusted evidence and select fixed-cost mode for interruption-count fixtures.
+`scripts/build-ehrheavy.py [--target MODULE]` builds isolated full-profile `EhrHeavy` modules serially with `-M10000` (8.3 GiB peak); weekly/manual/Lean-PR CI audits all 24 seed axioms. Seeds 1/7/13/15/16/22 share the payload-domain proof; mutation replays remain separate. Full-catalog regressions retain preset defaults and supply eligible CURES/trusted-evidence fixtures; interruption-count tests select fixed-cost mode.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
 runs unit tests, 201 canonical conformance scenarios, the 15-accepted/23-rejected

@@ -38,6 +38,7 @@ def module_order(lean: Path, root: str) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--build-dir', type=Path, help='Persistent scratch directory under TMPDIR')
+    parser.add_argument('--target', default='EhrHeavy', help='One module to validate (default: EhrHeavy)')
     parser.add_argument('--memory-mb', type=int, default=10000,
                         help='Lean memory ceiling per process (default: 10000 MB, maximum: 10000)')
     args = parser.parse_args()
@@ -76,14 +77,18 @@ def main() -> None:
             dest.write_bytes(content)
     for name in ('lakefile.toml', 'lake-manifest.json', 'lean-toolchain'):
         shutil.copyfile(repo / 'lean' / name, lean / name)
-    # Only the scratch build receives the ceiling; release Lake defaults stay intact.
+    # Only scratch receives the ceiling. weakLeanArgs does not invalidate proof
+    # artifacts when only this resource limit changes; source traces still do.
     lakefile = lean / 'lakefile.toml'
-    lakefile.write_text(lakefile.read_text().replace(
-        'version = "0.1.0"',
-        f'version = "0.1.0"\nmoreLeanArgs = ["-M{args.memory_mb}"]'))
+    configuration = lakefile.read_text()
+    if re.search(r'^weakLeanArgs\s*=', configuration, re.MULTILINE):
+        raise RuntimeError('Lake already configures weakLeanArgs; review the memory ceiling')
+    lakefile.write_text(f'weakLeanArgs = ["-M{args.memory_mb}"]\n' + configuration)
     env = dict(os.environ, LEAN_NUM_THREADS='1')
     start = time.monotonic()
-    modules = module_order(lean, 'EhrHeavy')
+    modules = module_order(lean, args.target)
+    if not modules or modules[-1] != args.target:
+        parser.error(f'Unknown local module: {args.target}')
     print(f'Full profile: {lean}; {len(modules)} modules, sequential builds', flush=True)
     with (scratch / 'build.log').open('w') as log, (scratch / 'metrics.tsv').open('w') as metrics:
         metrics.write('module\tseconds\tpeak_rss_kib\texit_code\n')
@@ -102,18 +107,26 @@ def main() -> None:
                 unexpected = set(re.findall(r'[A-Za-z_.][A-Za-z_0-9.]*', axioms)) - {
                     'propext', 'Classical.choice', 'Quot.sound'}
                 if unexpected:
+                    print(result.stdout, end='', flush=True)
                     raise RuntimeError(f'{module}: disallowed axioms {sorted(unexpected)}')
             # Keep replayed axiom evidence in the log, but keep the console concise.
             if result.returncode or re.search(r'warning:.*(sorry|declaration uses)', result.stdout):
                 print(result.stdout, end='', flush=True)
                 sys.exit(result.returncode or 1)
         evidence = (scratch / 'build.log').read_text()
-        expected = {f'bad{n:02}_not_satisfies' for n in [*range(1, 13), 14, 15, *range(17, 25)]}
-        expected.add('bad13_preop_not_satisfies')
+        expected = set()
+        for module in modules:
+            source = lean.joinpath(*module.split('.')).with_suffix('.lean').read_text()
+            expected.update(re.findall(r'^theorem\s+(bad\d{2}_\w+)', source, re.MULTILINE))
+        if args.target == 'EhrHeavy':
+            seeds = {f'bad{n:02}_not_satisfies' for n in [*range(1, 13), *range(14, 25)]}
+            seeds.add('bad13_preop_not_satisfies')
+            if not seeds <= expected:
+                raise RuntimeError(f'Missing seed theorems: {sorted(seeds - expected)}')
         printed = set(re.findall(r"'Ehr\.Check\.(bad\w+)' (?:depends on axioms|does not depend)", evidence))
         if expected - printed:
             raise RuntimeError(f'Missing seed axiom evidence: {sorted(expected - printed)}')
-    print(f'EhrHeavy passed ({len(modules)} modules, {time.monotonic() - start:.1f}s); '
+    print(f'{args.target} passed ({len(modules)} modules, {time.monotonic() - start:.1f}s); '
           f'log: {scratch / "build.log"}', flush=True)
 
 
