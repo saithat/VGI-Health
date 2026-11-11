@@ -23,9 +23,9 @@ facts. In their global form five of the nine (1, 2, 5, 9, 11) keep their
 kernel-checked counterexamples, because leaving a chart clears that patient's
 state and the landing view shows no chart; the global form of the other four
 is not stated. The owner approved the per-episode scope on 2026-11-11; the new
-statements await review. The
-critical-result handler was repaired on 2026-11-10: its action text is a draft
-outside `captured`, and it is refused while an alert popup is open.
+statements await review. The critical-result handler was repaired on
+2026-11-10: its action text is a draft outside `captured`, and it is refused
+while an alert popup is open.
 
 | Guarantee | Scope |
 |---|---|

@@ -1,9 +1,7 @@
 # Runtime statements: Comparator review
 
 Status: proposal for owner and engineer review, 2026-11-11. Nothing here is in
-the Comparator catalog yet. Per-episode statements for patient-selection
-programs are being written in a separate lane and will be added here after it
-merges.
+the Comparator catalog yet.
 
 `make verify` runs Comparator on three configurations: `lean/comparator.json`
 (18 theorems about `Ehr.step`, the core interpreter, stated in
@@ -57,6 +55,9 @@ Specification (in `Ehr/Proofs/Runtime*.lean` until moved):
 | `withCritical`, `forgetCritical` | `RuntimeModel.lean:66`, `RuntimeBlind.lean:12` | Replace or clear exactly the two critical fields. |
 | `Record`, `record` | `RuntimeRefinement.lean:50,58` | The fields an open popup protects: captured, commits, acked, receipts, popup. |
 | `next`, `FixedAlways`, `FixedEveryStep` | `RuntimeRefinement.lean:108,166,172` | Runtime analogues of `Episode.next`, `Props.Always`, `Props.EveryStep`, over human API calls. |
+| Episode model: `BoundEpisode`, `start`, `Hydrates`, `workspaceEvent`, `Stays`, `InEpisode` | `RuntimeEpisode.lean:18-80` | One patient's chart from hydration until the clinician leaves or switches it, with fixed facts. `opened` is any unbound state from which hydration succeeds, not only a reachable one; hydration rebuilds the chart from a fresh `init`, so this makes the theorems stronger. The hydrated chart `start` is in the episode although it is never an API output, and the hydrating call is measured from it. Refused navigation events (under a popup) are also excluded. `unselected_not_inEpisode` rules out the landing view. |
+| `ReachableFrom`, 14 `…From` forms | `RuntimeFrom.lean:21` | Core runs from an arbitrary start. Each `…From_start` equivalence (`XFrom ep ep.start ↔ Props.X ep`) is closed by a generic lemma, so the kernel checks the bodies agree. |
+| `EpisodeAlways`, `EpisodeEveryStep`, 14 `Episode…` properties, `EpisodeAccepted` | `RuntimeEpisodeRefinement.lean:106,115`, `RuntimeEpisodeProps.lean:20-109` | Same bodies as the `Fixed…` forms with episode reachability; per-step clauses cover only non-navigation calls. `EpisodeHumanStepsByHuman`'s first clause is about the hydrated chart, not `runInit`. Bodies use `view`; `episode_runView` proves it equals `runView` in every episode state. |
 | 14 `Fixed…` properties, `FixedAccepted` | `RuntimeOrdinary.lean:57-142` | Each repeats the `Props` body with `FixedReachable` and the API step. 11 are checked against the `Props` body by the kernel, because the proof passes the core property through unchanged. `FixedEnteredOnce`, `FixedHumanStepsByHuman`, `FixedOnlyHumanCommitsAndAcks` also drop `actor = .human` conjuncts, so compare those three by eye with `Props/Properties.lean:88,174,183`. |
 
 ## 3. Statements proposed for the catalog
@@ -89,6 +90,14 @@ All are in namespace `Ehr.Runtime`. Priority order:
 7. **`accepted_ordinary`** (`RuntimeOrdinary.lean:272`): checker acceptance
    implies `FixedAccepted` for an ordinary program, any facts, and any user of
    the program's role.
+8. **`accepted_episode`** (`RuntimeEpisodeAccepted.lean:81`): checker
+   acceptance implies `EpisodeAccepted` for a patient-selection program, any
+   facts, any user of the program's role, and any pre-hydration state. It is
+   proved directly, not through a refinement: `episode_not_core` shows episode
+   states are never `Props.Reachable` (core runs have no patient context), and
+   `Witness.start_history_not_core` shows the hydrated chart's Back history
+   differs from every core run of the witness program. `episode_refines` gives
+   the weaker refinement to core runs from the hydrated chart.
 
 Not proposed: the concrete witnesses and regressions (`Runtime.Witness.*`,
 `Runtime.ClinicalWitness.*`), the static bundle `accepted_static`, and the
@@ -113,6 +122,11 @@ evidence outside the catalog.
   (`Runtime.Witness.role_not_checked`). The reserved `critical.*` component IDs
   are not rejected by the checker, so a program control with such an ID would be
   shadowed while that result exists.
+- **Episode scope.** Reopening the same patient starts a new episode with no
+  captures or acknowledgments, so an acknowledged interruptive alert interrupts
+  again. Hydration jumps straight to the destination screen, skipping
+  intermediate prefills. Both are current behaviour; the per-episode theorems
+  describe it and do not endorse it.
 - **Small handler items** (no proof depends on them): drafts are not cleared
   after a result is resolved; the `critical.escalate:` click always returns
   `blocked`, because `tickets` has already applied the time-driven `advance` and
