@@ -109,10 +109,13 @@ private theorem stepCore_ack_witness (sp p f u actor s e)
     | ack a => exact ⟨rfl, a, rfl⟩
     | _ => exact False.elim (ha (stepCore_acked_nonAck _ _ _ _ _ _ _ rfl))
 
-/-- New commits and acknowledgments arise only from the human's own public
-events, never from a macro click, convenience action, or hidden button. -/
-theorem onlyHumanCommitsAndAcks (ep : Episode) : OnlyHumanCommitsAndAcks ep := by
-  intro s _ actor e
+/-- One step from any state, reachable or not: new commits and acknowledgments
+arise only from the human's own public events. -/
+theorem onlyHumanCommitsAndAcks_at (ep : Episode) (s : State) (actor : Actor) (e : Event) :
+    (∀ c, CommitHappens ep s actor e c →
+      actor = .human ∧ ∃ cid, e = .click cid ∧
+        ∃ comp ∈ ep.prog.compsOf s.screen, comp.id = cid ∧ comp.kind = .button (.commit c)) ∧
+    ((ep.next actor s e).acked ≠ s.acked → actor = .human ∧ ∃ a, e = .ack a) := by
   constructor
   · intro c hc
     change c ∉ s.commits ∧ c ∈ (step ep.spec ep.prog ep.facts ep.user actor s e).1.commits at hc
@@ -162,6 +165,11 @@ theorem onlyHumanCommitsAndAcks (ep : Episode) : OnlyHumanCommitsAndAcks ep := b
               (runMacro_safe ep.spec ep.prog ep.facts ep.user mac.steps 0 s).acked
       | _ => exact stepCore_ack_witness _ _ _ _ _ _ _ ha
 
+/-- New commits and acknowledgments arise only from the human's own public
+events, never from a macro click, convenience action, or hidden button. -/
+theorem onlyHumanCommitsAndAcks (ep : Episode) : OnlyHumanCommitsAndAcks ep :=
+  fun s _ actor e => onlyHumanCommitsAndAcks_at ep s actor e
+
 /-- Accepted programs keep every human step explicit, refuse automation
 attempts structurally, and require a distinct cosigner (property 5). -/
 theorem accepted_humanOnlyKept (sp prev can p) (h : check sp prev can p = .ok) :
@@ -171,6 +179,7 @@ theorem accepted_humanOnlyKept (sp prev can p) (h : check sp prev can p = .ok) :
     ⟨humanStepsByHuman ⟨sp, p, facts, user⟩, onlyHumanCommitsAndAcks ⟨sp, p, facts, user⟩,
       cosignIsSecondUser ⟨sp, p, facts, user⟩⟩⟩
 
+#print axioms onlyHumanCommitsAndAcks_at
 #print axioms onlyHumanCommitsAndAcks
 #print axioms accepted_humanOnlyKept
 end Ehr.Check

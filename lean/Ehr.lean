@@ -44,6 +44,7 @@ import Ehr.Proofs.Runtime
 import Ehr.Proofs.RuntimeProperties
 import Ehr.Proofs.RuntimeOrdinary
 import Ehr.Proofs.RuntimeClinicalWitness
+import Ehr.Proofs.RuntimeEpisodeHistory
 import Ehr.Proofs.T2
 import Ehr.Proofs.T6
 import Ehr.Proofs.Audit

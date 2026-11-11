@@ -84,20 +84,32 @@ private theorem alertKeys_captured (facts : Facts) (s t : State) (c : AlertCond)
   cases c <;> simp only [alertKeys, drugsInPlay, orderLines, doseOutOfRange,
     lineDoseMgTenths?, weightKgTenths?, capturedWeightKg?, h, clinicalEval_captured facts s t _ h] <;> rfl
 
+/-- Alert keys depend on the state only through its captures. -/
+theorem alertKeys_of_captured (facts : Facts) (s t : State) (c : AlertCond)
+    (h : t.captured = s.captured) : alertKeys facts t c = alertKeys facts s c :=
+  alertKeys_captured facts s t c h
+
+/-- One step from any state, reachable or not, keeps the popup truth invariant. -/
+theorem popupKeys_step (ep : Episode) (s : State) (actor : Actor) (e : Event)
+    (ih : ∀ a k, s.popup? = some (a, k) →
+      ∃ al ∈ ep.spec.alerts, al.id = a ∧ k ∈ alertKeys ep.facts s al.cond) :
+    ∀ a k, (ep.next actor s e).popup? = some (a, k) →
+      ∃ al ∈ ep.spec.alerts, al.id = a ∧ k ∈ alertKeys ep.facts (ep.next actor s e) al.cond := by
+  intro a k hp
+  have he := popup_captured ep.spec ep.prog ep.facts ep.user actor s e a k hp
+  by_cases hold : s.popup? = some (a,k)
+  · obtain ⟨al, hal, hid, hk⟩ := ih a k hold
+    exact ⟨al, hal, hid, (alertKeys_captured ep.facts s _ al.cond he).symm ▸ hk⟩
+  · obtain ⟨al, hal, hid, hk, _⟩ := A2_popup_holds _ _ _ _ actor s e a k hold hp
+    exact ⟨al, hal, hid, (alertKeys_captured ep.facts s _ al.cond he).symm ▸ hk⟩
+
 /-- The popup truth invariant holds after every event and every clock advance. -/
 theorem alertsOnlyWhenTrue (ep : Episode) : AlertsOnlyWhenTrue ep := by
   intro s hs
   refine ⟨?_, fun a ha => inlineAlert_holds ep s a ha⟩
   induction hs with
   | start => intro a k hp; simp only [Episode.start, init_popup] at hp; contradiction
-  | @step s actor e hs ih =>
-    intro a k hp
-    have he := popup_captured ep.spec ep.prog ep.facts ep.user actor s e a k hp
-    by_cases hold : s.popup? = some (a,k)
-    · obtain ⟨al, hal, hid, hk⟩ := ih a k hold
-      exact ⟨al, hal, hid, (alertKeys_captured ep.facts s _ al.cond he).symm ▸ hk⟩
-    · obtain ⟨al, hal, hid, hk, _⟩ := A2_popup_holds _ _ _ _ actor s e a k hold hp
-      exact ⟨al, hal, hid, (alertKeys_captured ep.facts s _ al.cond he).symm ▸ hk⟩
+  | @step s actor e hs ih => exact popupKeys_step ep s actor e ih
   | @wait s d hs ih =>
     intro a k hp
     obtain ⟨al, hal, hid, hk⟩ := ih a k hp
@@ -113,22 +125,22 @@ private theorem ackCore_popup_acked (s : State) (a : AlertId) (p : AlertId × St
     · intro _; rfl
   · intro _; rfl
 
-private theorem popup_acked (ep : Episode) (s : State) (hs : Reachable ep s)
+private theorem popup_acked (ep : Episode) (s : State)
     (actor : Actor) (e : Event) (p : AlertId × String)
     (hp : (ep.next actor s e).popup? = some p) : (ep.next actor s e).acked = s.acked := by
   by_cases hn : (ep.next actor s e).acked = s.acked
   · exact hn
-  · obtain ⟨rfl, a, rfl⟩ := (onlyHumanCommitsAndAcks ep s hs actor e).2 hn
+  · obtain ⟨rfl, a, rfl⟩ := (onlyHumanCommitsAndAcks_at ep s actor e).2 hn
     have he : ep.next .human s (.ack a) = (ackCore .human s a).1 := by
       simp [Episode.next, step, stepCore, Event.isAck, stepEvent]
     rw [he] at hp hn
     exact False.elim (hn (ackCore_popup_acked s a p hp))
 
-private theorem acked_monotone (ep : Episode) (s : State) (hs : Reachable ep s)
+private theorem acked_monotone (ep : Episode) (s : State)
     (actor : Actor) (e : Event) : ∀ p ∈ s.acked, p ∈ (ep.next actor s e).acked := by
   by_cases he : (ep.next actor s e).acked = s.acked
   · intro p hp; simpa [he] using hp
-  · obtain ⟨rfl, a, rfl⟩ := (onlyHumanCommitsAndAcks ep s hs actor e).2 he
+  · obtain ⟨rfl, a, rfl⟩ := (onlyHumanCommitsAndAcks_at ep s actor e).2 he
     intro p hp
     simp only [Episode.next, step, stepCore, Event.isAck, Bool.not_true, Bool.and_false,
       Bool.false_eq_true, ↓reduceIte, stepEvent, ackCore]
@@ -146,22 +158,34 @@ private theorem popup_continues (sp p f u actor s e) (pair : AlertId × String)
     simp [step, stepCore, hp, Event.isAck, stepEvent, ackCore]
   split <;> simp_all
 
+/-- One step from any state, reachable or not: acknowledgments persist and an
+open popup stays until it is acknowledged. -/
+theorem interruptsOnce_at (ep : Episode) (s : State) (actor : Actor) (e : Event) :
+    (∀ p ∈ s.acked, p ∈ (ep.next actor s e).acked) ∧
+    (∀ p, s.popup? = some p → (ep.next actor s e).popup? = some p ∨ p ∈ (ep.next actor s e).acked) :=
+  ⟨acked_monotone ep s actor e, fun pair hp => popup_continues _ _ _ _ _ _ _ pair hp⟩
+
+/-- One step from any state, reachable or not, keeps the open popup unacknowledged. -/
+theorem popupUnacked_step (ep : Episode) (s : State) (actor : Actor) (e : Event)
+    (ih : ∀ p, s.popup? = some p → p ∉ s.acked) :
+    ∀ p, (ep.next actor s e).popup? = some p → p ∉ (ep.next actor s e).acked := by
+  intro p hp
+  have ha := popup_acked ep s actor e p hp
+  rw [ha]
+  by_cases hold : s.popup? = some p
+  · exact ih p hold
+  · exact (A2_popup_holds _ _ _ _ actor s e p.1 p.2 hold hp).choose_spec.2.2.2
+
 /-- Acknowledgments persist, open popups are modal until acknowledged, and an
 acknowledged alert/key never becomes the current popup (property 11's semantics). -/
 theorem interruptsOnce (ep : Episode) : InterruptsOnce ep := by
   constructor
-  · intro s hs actor e
-    exact ⟨acked_monotone ep s hs actor e, fun pair hp => popup_continues _ _ _ _ _ _ _ pair hp⟩
+  · intro s _ actor e
+    exact interruptsOnce_at ep s actor e
   · intro s hs
     induction hs with
     | start => intro p hp; simp only [Episode.start, init_popup] at hp; contradiction
-    | @step s actor e hs ih =>
-      intro p hp
-      have ha := popup_acked ep s hs actor e p hp
-      rw [ha]
-      by_cases hold : s.popup? = some p
-      · exact ih p hold
-      · exact (A2_popup_holds _ _ _ _ actor s e p.1 p.2 hold hp).choose_spec.2.2.2
+    | @step s actor e hs ih => exact popupUnacked_step ep s actor e ih
     | @wait s d hs ih => exact ih
 
 /-- Accepted programs have no false popup declarations, and every actual
@@ -179,6 +203,10 @@ theorem accepted_noRepeatInterruptions (sp prev can p) (h : check sp prev can p 
 
 #print axioms clinicalEval_captured
 #print axioms popup_captured
+#print axioms alertKeys_of_captured
+#print axioms popupKeys_step
+#print axioms interruptsOnce_at
+#print axioms popupUnacked_step
 #print axioms alertsOnlyWhenTrue
 #print axioms interruptsOnce
 #print axioms accepted_noFalseAlarms

@@ -195,12 +195,16 @@ selection. [Runtime coverage](docs/methods/runtime-coverage.md) proves the commi
 safeguards (T0, T2, T3), popup origin, popup severity and popup blocking for
 `runStep`. Of the twelve accepted properties, three carry over to `runStep` for
 every program; the other nine are proved for programs without patient selection
-run with fixed facts (`accepted_ordinary`). With patient selection, five of
-those nine have kernel-checked counterexamples, all from workspace navigation
-clearing patient state, and four are open. The critical-result handler was
-repaired on 2026-11-10: its action text is a draft outside `captured`, and it
-is refused while an alert popup is open. The workspace fixes remain proposals
-for owner review.
+run with fixed facts (`accepted_ordinary`). With patient selection, all nine
+are proved per bound patient episode (`accepted_episode`): from the hydration
+of one patient's chart until the clinician leaves or switches it, with fixed
+facts. In their global form five of the nine (1, 2, 5, 9, 11) keep their
+kernel-checked counterexamples, because leaving a chart clears that patient's
+state and the landing view shows no chart; the global form of the other four
+is not stated. The owner approved the per-episode scope on 2026-11-11; the new
+statements await review. The
+critical-result handler was repaired on 2026-11-10: its action text is a draft
+outside `captured`, and it is refused while an alert popup is open.
 
 | Headline theorem(s) | Guarantee and scope |
 |---|---|
