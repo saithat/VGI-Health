@@ -1220,6 +1220,13 @@ export interface User {
 }
 
 /**
+ * Draft action text for one critical result, separate from clinical captures.
+ * Specification-surface change for owner review (2026-11-11): named fields replace
+ * pairs in Lean; JSON retains the historical `[result, text]` array encoding.
+ */
+export type CriticalDraft = [result: string, text: string];
+
+/**
  * Interpreter state for one episode (one patient task).
  */
 export interface State {
@@ -1265,12 +1272,12 @@ export interface State {
   patientContext?: PatientContext;
   criticalResults?: Ticket[];
   /**
-   * Draft critical-result action text, as (result id, text) pairs. It is kept
+   * Draft critical-result action text, with named result and text fields. It is kept
    * apart from `captured`, so it is never a clinical capture; only the
    * critical-result handler and its renderer read it. Absent from JSON when
-   * `none`. Specification-surface change for owner review (2026-11-10).
+   * `none`. Specification-surface change for owner review (2026-11-11).
    */
-  criticalDrafts?: [string, string][];
+  criticalDrafts?: CriticalDraft[];
 }
 
 /**

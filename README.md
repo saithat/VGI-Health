@@ -204,7 +204,16 @@ state and the landing view shows no chart; the global form of the other four
 is not stated. The owner approved the per-episode scope on 2026-11-11; the new
 statements await review. The critical-result handler was repaired on
 2026-11-10: its action text is a draft outside `captured`, and it is refused
-while an alert popup is open.
+while an alert popup is open. As of 2026-11-11, drafts use named Lean fields
+with the historical `[result, text]` JSON encoding; successful resolve removes
+that result's draft, while refusal retains it. The checker reserves all
+`critical.` component IDs, with a proved no-shadow guarantee for accepted
+programs (`Ehr.Check.accepted_critical_no_shadow`). Handler authorization uses
+the responsible/covering user ID (covering after escalation), which is stricter
+than a role check; `role_not_checked` documents this contract. The draft type
+and new checker statements are specification surface for owner review. Generated
+TypeScript keeps the tuple wire format; its source change affects the next
+certified app hash. WASM, app and proof-map refresh are deferred to integration.
 
 | Headline theorem(s) | Guarantee and scope |
 |---|---|

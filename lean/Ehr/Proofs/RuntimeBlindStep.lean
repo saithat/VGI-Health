@@ -10,7 +10,7 @@ open Ehr
 /-- New specification for owner review: an interpreter output whose state has
 its critical workflow fields replaced. -/
 def liftCritical (o : State × StepResult) (c : Option (List Multi.Critical.Ticket))
-    (d : Option (List (String × String))) : State × StepResult :=
+    (d : Option (List CriticalDraft)) : State × StepResult :=
   (withCritical o.1 c d, o.2)
 
 /-- Slot resolution does not read the critical fields. -/

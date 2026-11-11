@@ -73,7 +73,7 @@ for a spec element. -/
 theorem action_is_draft :
     (runStep (input cleared action)).result = .ok ∧
     documented.captured = opened.captured ∧
-    documented.criticalDrafts? = some [("k1", "called ICU")] ∧
+    documented.criticalDrafts? = some [{ result := "k1", text := "called ICU" }] ∧
     ∀ x ∈ documented.captured, (spec.element? x.element).isSome = true := by decide
 
 /-- New specification for owner review: the handler authorizes by responsible

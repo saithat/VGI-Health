@@ -1,4 +1,5 @@
 import Ehr.Check.Rules
+import Ehr.Core.CriticalRuntime
 import Ehr.Props.Navigation
 import Ehr.Check.PopupRequests
 import Ehr.Check.ReplayContext
@@ -349,7 +350,12 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
       explain := fun _ => plain "patientSelection" "Patient selection inside the workspace must be retained" },
     { property := "workspaceIds", passes := prog.patientSelection? != some true ||
         (allComps prog).all (fun pair => !pair.2.id.startsWith "workspace.")
-      explain := fun _ => plain "workspaceIds" "The workspace action namespace is reserved for patient selection" }
+      explain := fun _ => plain "workspaceIds" "The workspace action namespace is reserved for patient selection" },
+    { property := "criticalIds", passes := (allComps prog).all (fun sc => !CriticalRuntime.reservedId sc.2.id)
+      explain := fun _ => compFinding "criticalIds" prog false fun scr c =>
+        if CriticalRuntime.reservedId c.id then
+          some s!"component {c.id} on screen {scr.id} uses the critical. action namespace reserved for critical results"
+        else none }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

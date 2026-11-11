@@ -40,9 +40,9 @@ Behaviour (trusted code, about 350 lines):
 | Definition | Location | What to check |
 |---|---|---|
 | `runInit`, `runStep`, `runView` | `Ehr/Api.lean:17-34` | The order: the critical handler runs first (only on a bound state for workspace programs); otherwise `Workspace.step` or `step` with actor `.human`. |
-| `CriticalRuntime.handle` | `Ehr/Core/CriticalRuntime.lean:39` | Matches four `critical.*:<result id>` component IDs for a current ticket; refuses under an open popup; writes only `criticalResults?` and `criticalDrafts?`. |
+| `CriticalRuntime.handle` | `Ehr/Core/CriticalRuntime.lean` | Matches four `critical.*:<result id>` component IDs for a current ticket; refuses under an open popup; writes only `criticalResults?` and `criticalDrafts?`. |
 | `Workspace.enabled`, `bound`, `bind`, `step` | `Ehr/Core/Workspace.lean:24,129,135,148` | `bind` hydrates a fresh `init` for the selected patient, loads that patient's receipts from facts, and navigates to the destination screen. |
-| `State.criticalDrafts?` | `Ehr/Core/Types.lean:941` | New field (2026-11-11), absent from JSON when `none`. A change to the specification surface. |
+| `CriticalDraft`, `State.criticalDrafts?` | `Ehr/Core/Types.lean` | Named `result`/`text` draft structure (2026-11-11), with byte-identical historical pair-array JSON and the option omitted when `none`. A change to the specification surface. |
 
 Specification (in `Ehr/Proofs/Runtime*.lean` until moved):
 
@@ -118,17 +118,24 @@ evidence outside the catalog.
   is a no-op once the critical fields are forgotten. It holds for every
   instantiation in `RuntimeOrdinary.lean`; check that this is the reading you
   want for the per-step properties.
-- **Handler authorization** is by responsible/covering user ID, not role
-  (`Runtime.Witness.role_not_checked`). The reserved `critical.*` component IDs
-  are not rejected by the checker, so a program control with such an ID would be
-  shadowed while that result exists.
+- **Handler authorization** follows the owner's 2026-11-11 decision:
+  responsible/covering user ID (covering after escalation) is the rule, stricter
+  than a role check; sharing a role grants no access. No role check is added;
+  `Runtime.Witness.role_not_checked` documents this contract. The checker now
+  reserves the entire `critical.` component-ID prefix to protect current and
+  future runtime endpoints. `Ehr.Check.accepted_criticalIds`,
+  `critical_handle_reserved` and `accepted_critical_no_shadow` prove that every
+  handler-matched event names no component of an accepted program. These new
+  statements are specification surface for owner review, outside Comparator.
 - **Episode scope.** Reopening the same patient starts a new episode with no
   captures or acknowledgments, so an acknowledged interruptive alert interrupts
   again. Hydration jumps straight to the destination screen, skipping
   intermediate prefills. Both are current behaviour; the per-episode theorems
   describe it and do not endorse it.
-- **Small handler items** (no proof depends on them): drafts are not cleared
-  after a result is resolved; the `critical.escalate:` click always returns
+- **Small handler items:** successful resolve now removes that result's draft;
+  refusal retains it, and unrelated drafts are preserved (`UrgencyTests`).
+  `CriticalDraft` uses named Lean fields while emitting/decoding the historical
+  `[result, text]` JSON arrays. The `critical.escalate:` click always returns
   `blocked`, because `tickets` has already applied the time-driven `advance` and
   the rendered button is disabled. Escalation happens through time alone.
 

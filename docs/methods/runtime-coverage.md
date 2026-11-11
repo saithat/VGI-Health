@@ -34,19 +34,38 @@ handler matches a text entry into `critical.action:<result id>` and a click on
 `critical.receive:`, `critical.resolve:` or `critical.escalate:<result id>`,
 for a result in the current ticket list. A matched text entry stores the text
 in `State.criticalDrafts?` (one draft per result ID); a matched click updates
-`State.criticalResults?`, and resolve reads the draft. No handled event touches
+`State.criticalResults?`, and resolve reads the draft. Successful resolve removes
+only that result's draft (the final draft removal restores `none`); refused
+resolve preserves it. No handled event touches
 `captured`, `commits`, `acked`, `receipts`, `popup?` or `screen`
 (`Ehr.Runtime.critical_frame`). While an alert popup is open, every matched
 event returns the unchanged state and `blocked "popup: acknowledge the alert
 first"`, the interpreter's own message (`Ehr.Runtime.critical_popup`). The
-handler checks the responsible/covering user ID, not the role
-(`Ehr.Runtime.Witness.role_not_checked`). Unmatched events call `step` with
-actor `.human`. Internal macros still run through the unchanged interpreter.
+handler authorizes by responsible/covering user ID (covering only after
+escalation). This is stricter than a role check: another user of the same role
+has no authority. No role check is added;
+`Ehr.Runtime.Witness.role_not_checked` documents this contract. Unmatched events
+call `step` with actor `.human`. Internal macros still run through the unchanged interpreter.
 
-`State.criticalDrafts?` is absent from JSON when there is no draft, so states
-without drafts serialize exactly as before and earlier serialized states decode
-unchanged (`Ehr.Render.UrgencyTests`). The rendered action field keeps its
-component ID and reads the draft.
+`State.criticalDrafts? : Option (List CriticalDraft)` has named `result` and
+`text` fields in Lean, a specification-surface change approved for implementation
+on 2026-11-11 and awaiting owner review. Its custom codec still emits and decodes
+only the historical `[result, text]` pair arrays. When the option is `none`,
+`criticalDrafts` is absent; states with and without drafts retain their previous
+JSON bytes. `Ehr.Render.UrgencyTests` checks legacy decoding, byte equality to the
+pair codec, draft cleanup and refusal retention. The rendered action field keeps
+its component ID and reads the draft through `CriticalRuntime.actionText`.
+
+The checker rejects every program component ID starting with `critical.`,
+including hidden components and programs without patient selection. Reserving
+the whole prefix gives the runtime a stable namespace for future endpoints;
+reserving only today's four would allow the same collision to recur.
+`Ehr.Check.accepted_criticalIds` proves the exclusion on all screens;
+`critical_handle_reserved` proves every actual handler match, including refusals,
+uses that namespace; `accepted_critical_no_shadow` combines them to show a
+handler-matched event names no program component in an accepted program. These
+are new specification statements for review, outside Comparator. Element IDs
+are unaffected (the clinical witness still uses `critical.action:k1`).
 
 For programs with `patientSelection? = some true`, `runInit` returns an empty,
 unselected workspace. The handler is offered an event only when the incoming
@@ -395,8 +414,9 @@ patient selection:
 
 ## Proposed changes for the owner
 
-The first two items below were approved and applied on 2026-11-10. The rest are
-proposals or decisions, not applied changes. The episode scope is a
+The first two items below were approved and applied on 2026-11-10; the next
+three implement the owner's 2026-11-11 decisions. The remaining items are
+proposals or decisions. The episode scope is a
 specification change: it needs review of the new statements and changes no
 behavior.
 
@@ -405,15 +425,16 @@ behavior.
   overwriting a declared coded capture with text.
 - **Applied: handler refused under a popup.** Every matched handler event is
   refused while an alert popup is open.
-- **Still proposed: reserve the critical endpoint names.** The handler matches
-  component IDs `critical.action:`, `critical.receive:`, `critical.resolve:` and
-  `critical.escalate:` followed by a current result ID, before the program sees
-  the event. A program control with such an ID would be shadowed while that
-  result exists. Nothing is written outside the rule set, but the checker does
-  not reject such IDs.
-- **Still proposed: role contract for the handler.** Authorization is by
-  responsible/covering user ID only (`Ehr.Runtime.Witness.role_not_checked`).
-  Specify whether a role check is wanted.
+- **Applied 2026-11-11: reserve critical component IDs.** The checker reserves
+  the whole `critical.` prefix, with located `criticalIds` rejections and the
+  no-shadow soundness theorems above. This also protects future runtime endpoints.
+- **Applied 2026-11-11: handler authorization contract.** Responsible/covering
+  user-ID authorization is the rule and is stricter than a role check. No role
+  check is added; `Ehr.Runtime.Witness.role_not_checked` documents this.
+- **Applied 2026-11-11: structured drafts and resolve cleanup.** `CriticalDraft`
+  names `result` and `text`, preserving the historical pair-array JSON format.
+  A successful resolve removes that result's draft; refusal keeps it. The type
+  change is specification surface for owner review.
 - **Approved 2026-11-11, for review: per-episode scope.** Properties 1, 2, 5,
   9 and 11, and also 3, 4, 7 and 10, are stated and proved per bound patient
   episode (`Ehr.Runtime.accepted_episode`). Clearing captures,
@@ -465,7 +486,7 @@ Run from the repository root, with no concurrent lake process:
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6
-(cd lean && lake build)
+(cd lean && systemd-run --user --scope -q -p MemoryMax=16G -p MemorySwapMax=0 lake build)
 bash scripts/audit-verification.sh
 ```
 
@@ -477,7 +498,7 @@ leave packaged WASM/source bindings and proof-map freshness for the merge
 session to refresh, so `node scripts/wasm-assets.mjs` and the proof-map
 freshness check fail until then.
 
-The new `State` field changes the generated `lean/generated/ehr-types.ts`
+The original optional `State` field changed `lean/generated/ehr-types.ts`
 (one optional field on `State`; regenerated with `lake exe gents`). No file
 under `app/` changed. The app build fingerprints that generated file as source
 text, because `app/src/ehr/ui/types.ts` imports a value from it, so the
@@ -510,3 +531,31 @@ On 2026-11-10, after the handler repair:
 - Not run: `wasm/test/urgency.mjs` (needs the WASM rebuild) and the browser
   audits. The three agent suites that call the native binary skip all 18 tests
   in a worktree without run data, so they give no evidence here.
+
+On 2026-11-11, after structured critical drafts and reserved component IDs:
+
+- The default build passed in a `MemoryMax=16G`, `MemorySwapMax=0` user scope
+  (599 jobs, `LEAN_NUM_THREADS=4`). All 1051 axiom printouts use only the
+  permitted axioms, including `critical_frame`, the refinement proofs,
+  `role_not_checked` and the new namespace soundness statements. No new proof
+  placeholders or axioms were introduced. The default build runs the draft
+  cleanup/JSON guards and the checker namespace rejection guards.
+- `lake exe gents` passed (202 types, 44 samples). Regenerated files:
+  `lean/generated/ehr-types.ts` and `lean/generated/ehr-samples.ts`;
+  `sim-types.ts` is unchanged. `CriticalDraft` is a labeled TypeScript tuple,
+  matching its custom JSON codec; samples include a draft and a state with one.
+  This changes the next app fingerprint despite no edits under `app/`.
+- The template and `--personas` browser audit commands were attempted once,
+  sequentially. Both exited before any browser work with `ENOENT` for
+  `fixtures/synthea/index.json`. No run data was supplied. The agent suites
+  were not run because this worktree has no run data. App/WASM builds and
+  proof-map regeneration remain for the merge session; `EhrHeavy` is outside
+  this lane's scope.
+- `EHR_CONFORMANCE_TRANSPORT=serve node conformance/index.mjs --canonical
+  --jobs 4 --out "$TMPDIR/critical-drafts/conformance.json"` passed against the
+  rebuilt native binary: 15 targets, 201 scenarios, 1584 passed, 0 failed,
+  1431 not applicable. Scenario expectations are unchanged.
+- `bash scripts/audit-verification.sh` passed under the same memory scope:
+  84 existing catalog theorems audited, no unexpected axioms. The new namespace
+  statements remain outside Comparator and are checked/printed by the default
+  build.

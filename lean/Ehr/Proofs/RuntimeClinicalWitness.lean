@@ -77,7 +77,7 @@ theorem clinical_unchanged :
     clinicalEval Witness.facts opened predicate = some true ∧
     clinicalEval Witness.facts documented predicate = some true ∧
     documented.captured = ready.captured ∧
-    documented.criticalDrafts? = some [("k1", "called ICU")] := by decide
+    documented.criticalDrafts? = some [{ result := "k1", text := "called ICU" }] := by decide
 
 /-- New specification for owner review: the former counterexample program now
 has runtime property 10, by the general theorem for accepted ordinary programs. -/

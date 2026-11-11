@@ -64,7 +64,7 @@ theorem bind_of_bound (sp p f u s) (h : Workspace.bound f s = true) :
 /-- New specification for owner review: the state with its two critical-result
 workflow fields replaced and every other field kept. -/
 def withCritical (s : State) (c : Option (List Multi.Critical.Ticket))
-    (d : Option (List (String × String))) : State :=
+    (d : Option (List CriticalDraft)) : State :=
   { s with criticalResults? := c, criticalDrafts? := d }
 
 /-- New specification for owner review: a handled critical-result event
