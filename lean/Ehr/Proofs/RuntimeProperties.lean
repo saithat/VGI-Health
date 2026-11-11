@@ -4,7 +4,8 @@ import Ehr.Check.Sound
 /-! Accepted-program coverage for runtime execution. Every theorem below is
 a new specification for owner review, outside Comparator. Static conjuncts
 retain their original definitions; commit conjuncts use the effective input.
-These are not an assertion of all twelve original properties for runStep. -/
+These are not an assertion of all twelve original properties for runStep.
+`Ehr.Proofs.RuntimeOrdinary` proves the remaining clauses for ordinary programs. -/
 
 namespace Ehr.Runtime
 open Ehr Props Proofs
@@ -90,8 +91,9 @@ theorem accepted_severityTiers (sp prev can p) (h : Check.check sp prev can p = 
 
 /-- New specification for owner review: an ordinary fixed-facts runtime
 whose reachable calls all decline the critical handler refines the core
-exactly. This is a conditional boundary, not an assumption that all handlers
-are inert. The critical capture witness shows why the premise is necessary. -/
+exactly. The premise is needed for exact state equality only, because a handled
+event changes the critical workflow fields. Without the premise the refinement
+holds up to those two fields: `ordinary_refines`. -/
 theorem fixed_refines_core (ep : Episode)
     (hordinary : Workspace.enabled ep.prog = false)
     (hhandler : ∀ s, FixedReachable ep s → ∀ e,
@@ -111,7 +113,9 @@ theorem fixed_refines_core (ep : Episode)
   | wait d _ ih => exact .wait d ih
 
 /-- New specification for owner review: state invariants transfer wholesale
-on the conditional handler-free ordinary fragment, using exact refinement. -/
+on the conditional handler-free ordinary fragment, using exact refinement.
+`ordinary_always` removes the premise for invariants that do not read the
+critical workflow fields. -/
 theorem fixed_invariant (ep : Episode)
     (hordinary : Workspace.enabled ep.prog = false)
     (hhandler : ∀ s, FixedReachable ep s → ∀ e,

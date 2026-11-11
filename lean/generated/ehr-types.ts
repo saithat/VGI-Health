@@ -1264,6 +1264,13 @@ export interface State {
    */
   patientContext?: PatientContext;
   criticalResults?: Ticket[];
+  /**
+   * Draft critical-result action text, as (result id, text) pairs. It is kept
+   * apart from `captured`, so it is never a clinical capture; only the
+   * critical-result handler and its renderer read it. Absent from JSON when
+   * `none`. Specification-surface change for owner review (2026-11-10).
+   */
+  criticalDrafts?: [string, string][];
 }
 
 /**

@@ -13,12 +13,14 @@ theorem critical_handle_commits (facts user state event output)
     split at h
     · simp at h
     · dsimp only at h
-      split at h <;> cases h <;> rfl
+      repeat' split at h
+      all_goals cases h; rfl
   · dsimp only [Bind.bind, Option.bind, Pure.pure] at h
     split at h
     · simp at h
-    · simp only [Option.some.injEq] at h
-      rw [← h]
+    · dsimp only at h
+      repeat' split at h
+      all_goals cases h; rfl
   · simp_all
 
 #print axioms critical_handle_commits

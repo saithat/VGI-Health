@@ -11,12 +11,15 @@ The headline `Ehr.Proofs.*` and original `accepted_*` theorems below cover
 `Ehr.step`/`init` and `Props.Reachable`. The deployed API calls
 `Ehr.runStep`/`runInit`, which add a critical-result handler and patient
 selection. [Runtime coverage](methods/runtime-coverage.md) proves the commit
-safeguards (T0, T2, T3), popup origin and popup severity for `runStep`. Of the
-twelve accepted properties, three carry over to `runStep`, seven have
-kernel-checked runtime counterexamples and two are open. The counterexamples
-come from the critical-result handler, which writes a capture outside the rule
-set and ignores an open popup, and from workspace navigation, which clears
-patient state. No behaviour was changed; the fixes are proposals for owner review.
+safeguards (T0, T2, T3), popup origin, popup severity and popup blocking for
+`runStep`. Of the twelve accepted properties, three carry over to `runStep` for
+every program; the other nine are proved for programs without patient selection
+run with fixed facts (`accepted_ordinary`). With patient selection, five of
+those nine have kernel-checked counterexamples, all from workspace navigation
+clearing patient state, and four are open. The critical-result handler was
+repaired on 2026-11-10: its action text is a draft outside `captured`, and it
+is refused while an alert popup is open. The workspace fixes remain proposals
+for owner review.
 
 | Guarantee | Scope |
 |---|---|
