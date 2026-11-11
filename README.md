@@ -160,7 +160,8 @@ lazy review evidence and safe local renames.
 `scripts/build-ehrheavy.py [--target MODULE]` builds isolated full-profile
 `EhrHeavy` modules serially with `-M10000`; the wave-3 closure passes 156 modules
 at 8.3 GiB peak. Weekly/manual/Lean-PR CI audits all 24 seed axioms. Seeds
-1/7/13/15/16/22 share the payload-domain proof; mutation replays remain separate.
+1/7/13/15/16/22 share the payload-domain proof, which holds for any program with a
+signing task and so does not show the seeded defect; mutation replays remain separate.
 Full-catalog regressions retain preset defaults and supply eligible
 CURES/trusted-evidence fixtures; interruption-count tests select legacy
 fixed-cost mode. Seeds 2/4/5 use the refactor's shared automation-rejection helper.
@@ -189,7 +190,7 @@ not yet in Comparator.
 | `T0`, `T2` | Every program/record/event sequence: no sign without required confirmed entries, human provenance and declared units, valid reviews/receipts, interruptive-alert acknowledgments and an allowed role. |
 | `T3`, `T6` | Macros/prefills cannot sign, acknowledge, create receipts or supply human-only values; cosigning names a second human. |
 | `A2`, `A4`; `D1`–`D6` | Alert conditions/passivity and the rendered banner, required reviews, honest buttons and modal alerts are preserved. |
-| `accepted_*` | Checker acceptance implies 12 of 13 screen properties for all patients and reachable states. Property 6 (completion) is proved only for restricted families; general abstraction adapters remain open. |
+| `accepted_*` | Checker acceptance implies 12 of 13 screen properties for all patients and reachable states. Property 6 (completion) is proved only for restricted families. For the V1–V3 rule sets it is false as defined: it ranges over records with no trusted payload, where no program can commit (`v1_payload_domain_not_satisfies`, `EhrHeavy`). A [record-domain premise](docs/design/property6-record-domain.md) awaits owner review. |
 | Multi-actor safety | Bed exclusivity, at-most-once doses and critical-result resolution or escalation by deadline in the Lean reducers/models. |
 | Protocol invariants | Unbounded request-effect uniqueness, durable retries, guarded expected-version replacement, refusal isolation and event-fold projections, under the storage/sole-writer contract. ADT uses the actual native reducer; host trace refinement is tested. |
 | Research layout range | `renderer_range`, `checkProgram_sound`, `layoutAccepted_program`: the fixed semantic text-card compiler covers every renderer output and preserves G1–G9. This does not certify deployed widget fidelity or integrate DOM/APG dispatch. |
@@ -303,7 +304,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Clinical scenario policies | [Medication outcomes](docs/methods/medication-outcomes.md), [information needs](docs/methods/information-needs.md), [ADT](docs/methods/adt.md) |
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
 | Interface research | [UI library](docs/methods/ui-library.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |
-| Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md), [RLM arm R](docs/methods/rlm-night.md), [harness-native arm H](docs/methods/harness-night.md) (Claude Code CLI in a confined workspace: 60/70 accepted vs B's 58/70 in the full study; opt-in) |
+| Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md), [RLM arm R](docs/methods/rlm-night.md), [harness-native arm H](docs/methods/harness-night.md) (Claude Code CLI in a confined workspace: 60/70 accepted vs B's 58/70 in the full study; B ran on Codex `gpt-6.1-sol` and H on Claude Opus 5.5, so the gap is not a harness-only effect; opt-in) |
 | Local evidence and data | [Run data](docs/methods/run-data.md), [conformance](docs/methods/conformance.md), [Synthetic Hospital](docs/methods/synthetic-hospital.md), [organization names and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
 
 ## Data sources

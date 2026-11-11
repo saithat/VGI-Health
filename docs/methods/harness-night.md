@@ -109,7 +109,11 @@ E, R and H. Tokens are taken from each CLI's own usage output: Codex
 `result` event (input + cache read + cache creation, cache read, output).
 
 A CLI usage or rate-limit refusal is not a budget event; see
-[Usage limits pause the run](#usage-limits-pause-the-run).
+[Usage limits pause the run](#usage-limits-pause-the-run). Waiting for a host
+credential that covers the launch is not charged either: `harnessLoop.wallMs`
+excludes it and `credentialWaitMs` reports it (2026-11-10; before that a token
+with 4–21 minutes left could consume most of a decision's wall budget. No
+recorded sample was affected: the largest non-launch time in the full study was 147 s).
 
 ## Recording, replay and audit
 
@@ -256,7 +260,8 @@ the sanity ledger and the B model options identical. `reused-arm.json` records
 both agent source hashes; they differ because this branch adds H. B was not run
 at the same time as H. The full H-Codex study did not run.
 
-**Usage-limit incident.** The first pass ran at 08:45–11:15 PST. After 13 H
+**Usage-limit incident.** The first pass ran at about 10:45–11:19 PST (its H
+records are stamped 18:48–19:19Z; an earlier version of this page said 08:45–11:15). After 13 H
 samples the Claude subscription's 5-hour usage limit returned HTTP 429
 `usage_limit_reached` (overage disabled). The remaining 57 H samples ended
 within seconds as `llm-error` ("agent ended without night submit"). Every one of
@@ -570,6 +575,8 @@ reuse check compares them. Data stays untracked under the worktree's `runs/`.
 
 - **Spool symlink fix (2026-11-10).** Until this fix, the host-side spool server followed symlinks the agent could plant in the agent-writable spool: a planted `<id>.res.tmp` link made the host write its JSON reply to any host-writable file, and a linked `<id>.req.json` made it read one. The host now opens requests with `O_NOFOLLOW` (regular files only) and creates replies with `O_EXCL | O_NOFOLLOW` (`agent/test/harness-spool.test.ts`). Earlier H runs predate the fix, and their spools were not checked for planted links.
 
+- **B and H ran on different models.** The reused B samples used Codex `gpt-6.1-sol`; every H-claude sample was served by `claude-opus-5-5`. The B/H differences above therefore mix harness and model, and cannot be read as a harness-only effect. A same-model comparison needs B on the Claude backend or the full H-Codex study.
+- **Spool FIFO fix (2026-11-10).** The host opened spool requests with a blocking `open`. A FIFO planted as `<id>.req.json` (possible for H-Codex, whose sandbox allows `mkfifo`; not for the default Claude allowlist) blocked the spool server for good and kept the host process from exiting. Requests are now opened with `O_NONBLOCK` and anything but a regular file is refused (`agent/test/harness-spool.test.ts`).
 - Replay re-verifies the recorded commands and the outcome, not the model's transcript (see above).
 - Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom. The opt-in H-claude+node variant narrows the gap: it allows `node /work/<script>` only, not `-e` one-liners or compound `cd …;` commands.
 - Claude Code writes Bash output longer than `bashOutputMaxChars` to a file under its private home and sometimes tries to read it back. The rules deny that, and the strict audit flags it. The threshold is now the CLI's ceiling, 128,000 characters; larger outputs (for example `night render w3Orders`, about 741,000) still spill.

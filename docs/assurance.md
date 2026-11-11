@@ -13,7 +13,7 @@ UI-library theorems are kernel checked and are not yet in Comparator.
 | Macros and prefills never sign, acknowledge, create receipts or enter human-only values; a cosign names a second human (`T3`, `T6`). | Every program. |
 | Alerts appear only when their condition holds; passive alerts never pop up (`A2`, `A4`). | Every program. |
 | Checker acceptance implies 12 of 13 screen properties for every patient and reachable state (`accepted_*`). | Every accepted program. |
-| Every required task stays completable (property 6). | Proved for restricted families; a kernel-proved finite-model certificate checker is available, but general program abstraction coverage remains open. |
+| Every required task stays completable (property 6). | Proved for restricted families; a kernel-proved finite-model certificate checker is available, but general program abstraction coverage remains open. For the V1–V3 rule sets the property is false as defined: `v1_payload_domain_not_satisfies` (and its V2/V3 forms, in the opt-in `EhrHeavy` target) refutes `Satisfies` for every program with a required commit, because completion ranges over records with no trusted payload. A [record-domain premise](design/property6-record-domain.md) awaits owner review. |
 | The screen tree keeps the patient banner, required review content, honest buttons and modal interruptive alerts (`D1`–`D6`). | Every program and record. |
 | Bed assignments are exclusive; scheduled doses are given at most once; critical results are resolved or escalated by a deadline. | Lean reducers and multi-actor models. |
 

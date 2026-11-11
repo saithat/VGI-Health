@@ -180,9 +180,10 @@ export async function serveHarnessSpool(spool: string, host: Pick<HarnessHost, '
   return async () => { stopped = true; await busy; await running; };
 }
 
-/** Read a regular, non-symlink request file of at most 5 MB. */
+/** Read a regular, non-symlink request file of at most 5 MB. O_NONBLOCK: opening a FIFO the agent
+ * planted returns at once (and is then refused as not a regular file) instead of blocking the host. */
 async function readSpoolRequest(file: string): Promise<unknown> {
-  const fh = await open(file, constants.O_RDONLY | constants.O_NOFOLLOW);
+  const fh = await open(file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
   try {
     const st = await fh.stat();
     if (!st.isFile() || st.size > 5_000_000) return null;

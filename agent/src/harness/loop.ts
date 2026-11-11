@@ -39,7 +39,8 @@ export interface HarnessOptions extends AgentConfig {
   /** Re-verification: the recorded sample directory whose night commands must re-execute identically. */
   replayFrom?: string;
   persist?: (event: HarnessEvent) => Promise<void>;
-  /** Test hook: wait for the host's Claude access token to cover a launch (default true for claude). */
+  /** Wait for a host credential that covers a launch. Defaults to the Claude access-token check for the
+   * claude harness and to nothing otherwise; tests supply their own. The wait is not charged to the wall budget. */
   ensureToken?: (neededMs: number) => Promise<void>;
 }
 interface LaunchRecord { launch: number; prompt: string; args: string[]; code: number | null; signal: string | null; timedOut: boolean; stdoutTruncated: boolean; wallMs: number;
@@ -58,6 +59,8 @@ export class HarnessNightAgent implements AgentBackend {
   private repair: RepairContext | undefined;
   private exceeded: string | null = null;
   private changedFiles = 0;
+  /** Time spent waiting for a usable host credential: infrastructure, excluded from the decision's wall budget. */
+  private credentialWaitMs = 0;
   private replayTokens: HarnessLoopStats['tokens'] | null = null;
   constructor(private readonly input: NightInput, deps: LoopDeps, bundle: QueryBundle, private readonly opts: HarnessOptions) {
     this.budget = harnessBudgetSchema.parse(opts.budget ?? DEFAULT_HARNESS_BUDGET);
@@ -88,13 +91,18 @@ export class HarnessNightAgent implements AgentBackend {
     await chmod(path.join(ctl, 'bin', 'night'), 0o555);
     return root;
   }
-  private remainingMs() { return this.budget.wallMs - (Date.now() - this.start); }
+  private chargedMs() { return Date.now() - this.start - this.credentialWaitMs; }
+  private remainingMs() { return this.budget.wallMs - this.chargedMs(); }
 
   private async launch(kind: 'propose' | 'repair' | 'continue') {
     const root = await this.prepare(), ws = path.join(root, 'work'), home = path.join(root, 'home'), ctl = path.join(root, 'control'), spool = path.join(root, 'spool');
     const index = this.launches.length;
     this.host.launch = index;
-    if (this.opts.harness === 'claude') await (this.opts.ensureToken ?? ensureClaudeToken)(Math.min(this.remainingMs(), this.budget.wallMs) + 60_000);
+    const ensureToken = this.opts.ensureToken ?? (this.opts.harness === 'claude' ? ensureClaudeToken : null);
+    if (ensureToken) {
+      const waitStart = Date.now();
+      try { await ensureToken(Math.min(this.remainingMs(), this.budget.wallMs) + 60_000); } finally { this.credentialWaitMs += Date.now() - waitStart; }
+    }
     const spec = await prepareLaunch(this.opts, home, ctl, index);
     const egress: EgressEvent[] = [];
     await rm(path.join(ctl, 'egress.sock'), { force: true });
@@ -195,7 +203,7 @@ export class HarnessNightAgent implements AgentBackend {
     const findings = this.launches.reduce((n, l) => n + l.audit.findings.length, 0);
     return { harness: this.opts.harness, ...(this.opts.interpreter ? { interpreter: this.opts.interpreter } : {}), model: this.model, servedModels: [...new Set(this.launches.flatMap(l => l.usage.servedModels))].sort(), budget: this.budget,
       launches: this.launches.length, turns: this.launches.length && this.launches.every(l => l.usage.turns !== null) ? this.launches.reduce((n, l) => n + (l.usage.turns ?? 0), 0) : null,
-      commands: host.commands, checks: host.checks, estimates: host.estimates, tally: host.tally, complaints: host.complaints, wallMs: Date.now() - this.start, exceeded: this.exceeded,
+      commands: host.commands, checks: host.checks, estimates: host.estimates, tally: host.tally, complaints: host.complaints, wallMs: this.chargedMs(), ...(this.credentialWaitMs ? { credentialWaitMs: this.credentialWaitMs } : {}), exceeded: this.exceeded,
       submitted: this.host.done, tokens: this.replayTokens ?? { input: sum('input'), output: sum('output'), cachedInput: sum('cachedInput') },
       egress: { allowed: this.launches.flatMap(l => l.egress).filter(e => e.allowed).length, denied },
       audit: { status: findings ? 'fail' : 'pass', findings, permissionDenials: this.launches.reduce((n, l) => n + l.audit.permissionDenials, 0) },

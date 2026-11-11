@@ -22,7 +22,9 @@ const tokens = z.object({ input: z.number().nullable(), output: z.number().nulla
 export const harnessLoopSchema = z.object({
   harness: z.enum(['codex', 'claude', 'script']), interpreter: z.literal('node').optional(), model: z.string(), servedModels: z.array(z.string()),
   budget: harnessBudgetSchema, launches: z.number(), turns: z.number().nullable(), commands: z.number(), checks: z.number(), estimates: z.number(),
-  tally: z.record(z.string(), z.number()), complaints: z.array(z.string()), wallMs: z.number(), exceeded: z.string().nullable(), submitted: z.boolean(),
+  tally: z.record(z.string(), z.number()), complaints: z.array(z.string()),
+  /** Charged wall time. Waiting for a host credential is reported separately and never charged. */
+  wallMs: z.number(), credentialWaitMs: z.number().optional(), exceeded: z.string().nullable(), submitted: z.boolean(),
   tokens, egress: z.object({ allowed: z.number(), denied: z.record(z.string(), z.number()) }),
   audit: z.object({ status: z.enum(['pass', 'fail']), findings: z.number(), permissionDenials: z.number() }),
   workspaceSha256: z.string(), agentFiles: z.number(),

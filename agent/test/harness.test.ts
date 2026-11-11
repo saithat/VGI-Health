@@ -44,7 +44,7 @@ async function fixture() {
 }
 type Fixture = Awaited<ReturnType<typeof fixture>>;
 /** A shell script stands in for the model CLI; everything else (workspace, bwrap, egress, night CLI) is production code. */
-function agent(f: Fixture, script: string, runDir: string, extra: { budget?: HarnessBudget; replayFrom?: string; interpreter?: 'node' } = {}) {
+function agent(f: Fixture, script: string, runDir: string, extra: { budget?: HarnessBudget; replayFrom?: string; interpreter?: 'node'; ensureToken?: (neededMs: number) => Promise<void> } = {}) {
   return new HarnessNightAgent(f.input, f.deps, f.bundle, { harness: 'script', model: null, reasoningEffort: 'high', serviceTier: 'default', maxTurns: 10,
     script: { command: '/usr/bin/sh', args: ['-c', script] }, runDir, ...extra });
 }
@@ -130,6 +130,17 @@ night submit --no-change "again"; echo "rc=$?"`;
   try { await expect(quiet.proposeCandidates(ctx(quiet))).rejects.toThrow(HarnessBudgetError); } finally { await quiet.close(); }
   expect(quiet.stats()).toMatchObject({ launches: 2, commands: 2, exceeded: 'agent ended without night submit (launch budget exhausted)' });
 });
+it.skipIf(!bwrap)('does not charge a wait for the host credential to the decision wall budget', async () => {
+  // The wait alone exceeds the wall budget; the agent must still get its whole budget afterwards.
+  const f = await fixture(), a = agent(f, 'sleep 1.5\nnight submit --no-change "measured nothing"', f.dir,
+    { budget: { ...DEFAULT_HARNESS_BUDGET, wallMs: 6_000 }, ensureToken: () => new Promise(r => setTimeout(r, 7_000)) });
+  try { expect((await a.proposeCandidates(ctx(a))).decision).toBe('noChange'); } finally { await a.close(); }
+  const stats = a.stats();
+  expect(stats).toMatchObject({ submitted: true, exceeded: null, launches: 1 });
+  expect(stats.credentialWaitMs).toBeGreaterThanOrEqual(6_900);
+  expect(stats.wallMs).toBeLessThan(6_000);
+}, 40_000);
+
 it.skipIf(!bwrap)('re-verifies a recorded submission: same workspace, every night command re-executes to the same output, then the ordinary final gate runs', async () => {
   const f = await fixture(), rec = await scratch();
   const submission = { hypothesis: 'h', decision: 'change', candidates: [f.candidate('c1')], chosen: ['c1'], rationale: 'measured', rejected: [] };
