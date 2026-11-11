@@ -47,8 +47,8 @@ def output (s : State) (e : Event) : StepOutput :=
 -- Text entry leaves `captured` unchanged and stores one draft per result.
 #guard documented.captured == received.captured
 #guard documented.captured.all (·.element != "critical.action:panic-1")
-#guard documented.criticalDrafts? == some [("panic-1", "Called patient; arranged emergency evaluation")]
-#guard (event documented (.enter "critical.action:panic-1" (.text "Revised"))).criticalDrafts? == some [("panic-1", "Revised")]
+#guard documented.criticalDrafts? == some [{ result := "panic-1", text := "Called patient; arranged emergency evaluation" }]
+#guard (event documented (.enter "critical.action:panic-1" (.text "Revised"))).criticalDrafts? == some [{ result := "panic-1", text := "Revised" }]
 #guard documented.commits == received.commits && documented.acked == received.acked &&
   documented.receipts == received.receipts && documented.popup? == received.popup? &&
   documented.screen == received.screen
@@ -57,6 +57,28 @@ def output (s : State) (e : Event) : StepOutput :=
 #guard (CriticalRuntime.tickets facts resolved).all fun t =>
   (t.resolution.map (·.action)) == some "Called patient; arranged emergency evaluation"
 #guard resolved.captured == received.captured
+#guard resolved.criticalDrafts? == none
+#guard ((encodeJson resolved).splitOn "criticalDrafts").length == 1
+-- Only the resolved result is removed; drafts for other results survive.
+def withOtherDraft : State :=
+  { documented with criticalDrafts? := some ({ result := "other", text := "Pending action" } :: documented.criticalDrafts?.getD []) }
+#guard (event withOtherDraft (.click "critical.resolve:panic-1")).criticalDrafts? ==
+  some [{ result := "other", text := "Pending action" }]
+-- Refusals preserve every draft: missing receipt, wrong user, empty action,
+-- already resolved ticket, and popup blocking (below).
+def unreceivedDraft : State := event initial actionEvent
+#guard (output unreceivedDraft (.click "critical.resolve:panic-1")).result != .ok
+#guard (event unreceivedDraft (.click "critical.resolve:panic-1")).criticalDrafts? == unreceivedDraft.criticalDrafts?
+#guard (event documented (.click "critical.resolve:panic-1") ⟨"stranger", .physician⟩).criticalDrafts? == documented.criticalDrafts?
+def blankDraft : State := event received (.enter "critical.action:panic-1" (.text "  "))
+#guard (output blankDraft (.click "critical.resolve:panic-1")).result != .ok
+#guard (event blankDraft (.click "critical.resolve:panic-1")).criticalDrafts? == blankDraft.criticalDrafts?
+def resolvedDraft : State := event resolved actionEvent
+#guard (output resolvedDraft (.click "critical.resolve:panic-1")).result != .ok
+#guard (event resolvedDraft (.click "critical.resolve:panic-1")).criticalDrafts? == resolvedDraft.criticalDrafts?
+-- Receive and time-driven escalation never discard drafts.
+#guard (event documented (.click "critical.receive:panic-1")).criticalDrafts? == documented.criticalDrafts?
+#guard (event { documented with clock := 30 * 600 } (.click "critical.escalate:panic-1")).criticalDrafts? == documented.criticalDrafts?
 -- Without a draft, resolution is refused.
 #guard (CriticalRuntime.tickets facts (event received (.click "critical.resolve:panic-1"))).all (·.resolution.isNone)
 
@@ -88,6 +110,14 @@ def legacyJson : String :=
   s.criticalDrafts? == none && ((encodeJson s).splitOn "criticalDrafts").length == 1 &&
   (decodeJson State (encodeJson s)).toOption == some s
 #guard roundTrips initial && roundTrips received && roundTrips documented && roundTrips resolved
+-- The named Lean structure emits and decodes exactly the historical pair array.
+#guard encodeJson ({ result := "panic-1", text := "Called patient; arranged emergency evaluation" } : CriticalDraft) ==
+  encodeJson ("panic-1", "Called patient; arranged emergency evaluation")
+def legacyDraftJson : String := legacyJson.dropEnd 1 |>.toString |>
+  (· ++ ",\"criticalDrafts\":[[\"panic-1\",\"legacy action\"]]}")
+#guard (decodeJson State legacyDraftJson).toOption ==
+  some { legacyState with criticalDrafts? := some [{ result := "panic-1", text := "legacy action" }] }
+#guard (decodeJson CriticalDraft "[\"panic-1\"]").toOption.isNone
 #guard ((encodeJson documented).splitOn "\"criticalDrafts\":[[\"panic-1\",").length == 2
 
 def ui (s : State) : UiScreen := runRenderUi {

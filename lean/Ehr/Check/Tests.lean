@@ -1,3 +1,4 @@
+import Ehr.Check.CriticalIdsSound
 import Ehr.Check.TinyRejections
 import Ehr.Check.PatchWitness
 import Ehr.Check.ViolationWitness
@@ -38,6 +39,19 @@ example : NavigationSane goodProgram := accepted_navigation spec none goodProgra
 #guard match firstFinding (rules spec none goodProgram program) with
   | some f => f.property == "noFalseAlarms" && (counterexample spec program f).2.2
   | none => false
+
+/-- The runtime owns the entire critical. namespace on every screen. -/
+def withCriticalId (id : CompId) : Program :=
+  { goodProgram with screens := goodProgram.screens.map fun scr =>
+      { scr with components := scr.components ++ [{ id, kind := .group false false }] } }
+
+#guard ["critical.action:k1", "critical.receive:k1", "critical.resolve:k1", "critical.escalate:k1",
+    "critical.", "critical.future:k1"].all fun id =>
+  match check spec none goodProgram (withCriticalId id) with
+  | .violation property message _ _ => property == "criticalIds" &&
+      (message.splitOn "namespace reserved for critical results").length == 2
+  | _ => false
+#guard check spec none goodProgram (withCriticalId "criticality.action:k1") == .ok
 
 /-- A current-slot composer can add lines without stranding unfinished ones. -/
 def withAddLine : Program :=

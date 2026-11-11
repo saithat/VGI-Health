@@ -14,6 +14,8 @@ def urgentNodes (sp : Spec) (facts : Facts) (s : State) : List UiNode :=
     (uiLabel a.label "Clinical alert")
     (match a.tier with | .interruptive => "interruptive" | .passive => "passive" | .removable => "removable")
 
+/-- Critical workflow controls read the named `CriticalDraft.text` through the
+shared lookup; resolved results show the recorded action rather than a draft. -/
 def criticalNodes (facts : Facts) (user : User) (s : State) : List UiNode :=
   let s := { s with clock := 0 }
   (CriticalRuntime.tickets facts s).filterMap fun t =>

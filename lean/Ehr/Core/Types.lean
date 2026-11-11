@@ -909,6 +909,14 @@ structure User where
   role : Role
   deriving DecidableEq, Repr, Inhabited
 
+/-- Draft action text for one critical result, separate from clinical captures.
+Specification-surface change for owner review (2026-11-11): named fields replace
+pairs in Lean; JSON retains the historical `[result, text]` array encoding. -/
+structure CriticalDraft where
+  result : String
+  text : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Interpreter state for one episode (one patient task). -/
 structure State where
   screen : ScreenId
@@ -934,11 +942,11 @@ structure State where
   /-- Present only for programs using in-UI patient selection. -/
   patientContext? : Option PatientContext := none
   criticalResults? : Option (List Multi.Critical.Ticket) := none
-  /-- Draft critical-result action text, as (result id, text) pairs. It is kept
+  /-- Draft critical-result action text, with named result and text fields. It is kept
   apart from `captured`, so it is never a clinical capture; only the
   critical-result handler and its renderer read it. Absent from JSON when
-  `none`. Specification-surface change for owner review (2026-11-10). -/
-  criticalDrafts? : Option (List (String × String)) := none
+  `none`. Specification-surface change for owner review (2026-11-11). -/
+  criticalDrafts? : Option (List CriticalDraft) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A user (or macro) action. -/

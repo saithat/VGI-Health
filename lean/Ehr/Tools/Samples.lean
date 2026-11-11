@@ -93,6 +93,8 @@ def all : List Sample := [
   mk "tinySpecV2" "Spec" Tiny.specV2,
   mk "tinyProgramV2" "Program" Tiny.programV2,
   mk "tinyViewPriorAuth" "ScreenView" (view Tiny.specV2 Tiny.programV2 Tiny.facts Tiny.user afterPA.1),
+  mk "criticalDraft" "CriticalDraft" ({ result := "panic-1", text := "Called patient" } : Ehr.CriticalDraft),
+  mk "criticalDraftState" "State" ({ s0 with criticalDrafts? := some [{ result := "panic-1", text := "Called patient" }] } : Ehr.State),
   mk "tinyInitState" "State" s0,
   mk "tinyPopupState" "State" popped.1,
   mk "tinyViewInit" "ScreenView" (view Tiny.spec Tiny.program Tiny.facts Tiny.user s0),

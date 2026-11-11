@@ -60,6 +60,16 @@ deriving instance Lean.ToJson, Lean.FromJson for
   PatientChoice, PatientListRow, PatientActivity, PatientDirectory, PatientContext,
   DoseUnitRule, DrugInfo, PatientIdentity, Receipt, Facts
 
+/-- Preserve byte-identical critical draft JSON from the original pair encoding. -/
+instance : Lean.ToJson CriticalDraft where
+  toJson d := Lean.toJson (d.result, d.text)
+
+/-- Recorded pair arrays remain the sole draft wire format. -/
+instance : Lean.FromJson CriticalDraft where
+  fromJson? j := do
+    let (result, text) ← (Lean.fromJson? j : Except String (String × String))
+    return { result, text }
+
 deriving instance Lean.ToJson, Lean.FromJson for
   Value, Actor, Captured, User, State, Event, StepResult, ItemView, ScreenView
 

@@ -17,6 +17,7 @@ The TypeScript mirrors Lean's derived JSON encoding exactly:
 - a constructor without arguments is a string literal;
 - a constructor with named arguments is `{ ctor: { arg: T; … } }`;
 - a constructor with one unnamed argument is `{ ctor: T }`;
+- `CriticalDraft` preserves its historical `[result, text]` array encoding;
 - a structure is an object; an `Option` field named `foo?` becomes `foo?: T`
   (left out when `none`); other `Option` fields become `T | null`;
 - `A × B` is `[A, B]`; `List A` is `A[]`; `Lean.Json` is `unknown`.
@@ -106,6 +107,8 @@ def emitDecl (env : Environment) (known : NameSet) (fieldsMode : Nat := 0) : Dec
     let t ← IO.ofExcept (tsType known d.value)
     return s!"{jsDoc "" (← findDocString? env n)}export type {tsName n} = {t};\n"
   | .struct n => do
+    if n == ``Ehr.CriticalDraft then
+      return s!"{jsDoc "" (← findDocString? env n)}export type CriticalDraft = [result: string, text: string];\n"
     let fields := getStructureFields env n
     let mut out := s!"{jsDoc "" (← findDocString? env n)}export interface {tsName n} \{\n"
     for f in fields do
