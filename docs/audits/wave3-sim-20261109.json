@@ -103,11 +103,11 @@
     "tasks": 943,
     "completed": 940,
     "started": 943,
-    "meanQueueMin": 34.77138951926476,
+    "meanQueueMin": 34.53577357723577,
     "overdueDoses": 24,
-    "activeOvertimeMin": 64.97916666666667,
-    "effortMin": 5999.041666666667,
-    "scrolls": 35838,
+    "activeOvertimeMin": 56.65,
+    "effortMin": 5969.418333333333,
+    "scrolls": 35574,
     "communicationMin": 498.68333333333334,
     "reorientationMin": 13.215,
     "readingMin": 1554.7716666666668,
@@ -195,5 +195,22 @@
       "mismatches": 0
     },
     "historicalHandoffAbsencePreserved": true
+  },
+  "wave3SevenDayHorizonBeforeSimFixes20261110": {
+    "tasks": 943,
+    "completed": 940,
+    "started": 943,
+    "meanQueueMin": 34.77138951926476,
+    "overdueDoses": 24,
+    "activeOvertimeMin": 64.97916666666667,
+    "effortMin": 5999.041666666667,
+    "scrolls": 35838,
+    "communicationMin": 498.68333333333334,
+    "reorientationMin": 13.215,
+    "readingMin": 1554.7716666666668,
+    "clinicalMin": 4919,
+    "carried": 0,
+    "acceptedHandovers": 18,
+    "actors": 47
   }
 }

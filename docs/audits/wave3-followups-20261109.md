@@ -17,15 +17,17 @@ corrected contexts are verified on regenerated library worlds separately.
 
 | Persona | Keystrokes: phrases → full → template | Native KLM minutes: phrases → full → template |
 |---|---:|---:|
-| P1 | 72,677 → 155,857 → 76,972 | 6,198.5 → 6,690.9 → 6,449.6 |
+| P1 | 72,677 → 296,944 → 114,214 | 6,198.5 → 7,161.1 → 6,573.7 |
 | P2 | 123,214 → 305,287 → 164,489 | 6,457.4 → 7,232.9 → 6,778.3 |
 | P4 | 26,142 → 90,775 → 36,575 | 1,059.5 → 1,336.7 → 1,162.2 |
 | P5 | 20,248 → 44,450 → 25,336 | 1,291.5 → 1,396.1 → 1,334.9 |
 
+P1 was re-run on 2026-11-11 after the [simulator fixes](sim-bugfixes-20261110.md): planned inbox notes had typed the fixed phrase instead of the supplied text, and passive response waits had counted as overtime. Before the fix P1 read 72,677 → 155,857 → 76,972 keys and 6,198.5 → 6,690.9 → 6,449.6 minutes; the phrase arm's keys and minutes are unchanged. P2–P5 are unchanged.
+
 A direct input comparison passed for all 50 persona-days: clinical tasks and
 context bytes are identical across arms, and full/template section text is
 identical. Every arm completes 1,947/1,947 tasks. P3 is unchanged. Full/template scroll counts
-match. Minutes are the wave3 native `klmDeciSec` aggregate, including length-based
+match, except P1 after the re-run (13,450 full, 13,453 template). Minutes are the wave3 native `klmDeciSec` aggregate, including length-based
 reading and interruption/return service; they are not pure operator sums or
 observed clinical performance. See [methods](../methods/note-authoring.md) for
 provenance and interpretation. [JSON](wave3-followups-20261109.json) records all

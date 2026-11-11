@@ -57,7 +57,7 @@
         "clicks": 15565,
         "klmMinutes": 6198.5,
         "queueDelayMinutes": 373911.1,
-        "overtimeMinutes": 58.1,
+        "overtimeMinutes": 57.1,
         "overdueDoses": 0
       },
       "P2": {
@@ -109,12 +109,12 @@
       "P1": {
         "tasks": 708,
         "completed": 708,
-        "keystrokes": 155857,
-        "scrolls": 13453,
-        "clicks": 15561,
-        "klmMinutes": 6690.9,
-        "queueDelayMinutes": 424019.4,
-        "overtimeMinutes": 61.9,
+        "keystrokes": 296944,
+        "scrolls": 13450,
+        "clicks": 15563,
+        "klmMinutes": 7161.1,
+        "queueDelayMinutes": 477528.9,
+        "overtimeMinutes": 60.4,
         "overdueDoses": 0
       },
       "P2": {
@@ -166,12 +166,12 @@
       "P1": {
         "tasks": 708,
         "completed": 708,
-        "keystrokes": 76972,
+        "keystrokes": 114214,
         "scrolls": 13453,
         "clicks": 17086,
-        "klmMinutes": 6449.6,
-        "queueDelayMinutes": 403011.7,
-        "overtimeMinutes": 48.9,
+        "klmMinutes": 6573.7,
+        "queueDelayMinutes": 411477.1,
+        "overtimeMinutes": 54.5,
         "overdueDoses": 0
       },
       "P2": {
@@ -225,5 +225,46 @@
     "clinicalTasksIdentical": true,
     "contextsByteIdentical": true,
     "fullTemplateTextIdentical": true
+  },
+  "armsBeforeSimFixes20261110": {
+    "phrase": {
+      "P1": {
+        "tasks": 708,
+        "completed": 708,
+        "keystrokes": 72677,
+        "scrolls": 13446,
+        "clicks": 15565,
+        "klmMinutes": 6198.5,
+        "queueDelayMinutes": 373911.1,
+        "overtimeMinutes": 58.1,
+        "overdueDoses": 0
+      }
+    },
+    "full": {
+      "P1": {
+        "tasks": 708,
+        "completed": 708,
+        "keystrokes": 155857,
+        "scrolls": 13453,
+        "clicks": 15561,
+        "klmMinutes": 6690.9,
+        "queueDelayMinutes": 424019.4,
+        "overtimeMinutes": 61.9,
+        "overdueDoses": 0
+      }
+    },
+    "template": {
+      "P1": {
+        "tasks": 708,
+        "completed": 708,
+        "keystrokes": 76972,
+        "scrolls": 13453,
+        "clicks": 17086,
+        "klmMinutes": 6449.6,
+        "queueDelayMinutes": 403011.7,
+        "overtimeMinutes": 48.9,
+        "overdueDoses": 0
+      }
+    }
   }
 }

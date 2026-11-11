@@ -191,3 +191,19 @@ and findings measure rendering, not these simulator clocks or episode minima.
 No published exact-minimum numeric table was found that needs remeasurement;
 existing `min-clicks` consumers should rerun their original commands where they
 use planned W2 notes or focused W7 approvals.
+
+## Measurements refreshed in the merge session (2026-11-11)
+
+Re-run from the main checkout with the fixed native binary and the restored frozen inputs.
+
+- `node scripts/wave3-sim-smoke.mjs`: both day-2 arms are unchanged, so the README smoke row
+  (158/158, 12.58 min, +267.69 active min, +56 scrolls) stands. The seven-day horizon moved:
+  mean queue 34.77 → 34.54 min, active overtime 64.98 → 56.65 min, active effort
+  5,999.04 → 5,969.42 min, scrolls 35,838 → 35,574. Completion (940/943), overdue doses (24),
+  handovers and coverage actors are unchanged. The pre-fix report is kept locally as
+  `runs/wave3-sim-smoke.pre-simfix-20261110/`.
+- The two `check-world.mjs` follow-up commands: only P1 changed. Full-text keys
+  155,857 → 296,944 and template keys 76,972 → 114,214 (the supplied text is now typed);
+  full KLM minutes 6,690.9 → 7,161.1, template 6,449.6 → 6,573.7; P1 active overtime
+  58.1/61.9/48.9 → 57.1/60.4/54.5 (phrase/full/template). P2–P5 and every completion count are
+  unchanged. `wave3-followups-20261109.json` keeps the pre-fix P1 rows.
