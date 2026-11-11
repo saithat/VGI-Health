@@ -186,10 +186,15 @@ Comparator (`make verify`); protocol and experimental UI-library statements are
 not yet in Comparator.
 
 The headline `Ehr.Proofs.*` and original `accepted_*` theorems below cover
-`Ehr.step`/`init` and `Props.Reachable`; the deployed API calls
-`Ehr.runStep`/`runInit`. [Runtime coverage](docs/methods/runtime-coverage.md) proves
-commit safeguards at the hydrated interpreter input and runtime popup
-severity, and records kernel-checked counterexamples and open transfers.
+`Ehr.step`/`init` and `Props.Reachable`. The deployed API calls
+`Ehr.runStep`/`runInit`, which add a critical-result handler and patient
+selection. [Runtime coverage](docs/methods/runtime-coverage.md) proves the commit
+safeguards (T0, T2, T3), popup origin and popup severity for `runStep`. Of the
+twelve accepted properties, three carry over to `runStep`, seven have
+kernel-checked runtime counterexamples and two are open. The counterexamples
+come from the critical-result handler, which writes a capture outside the rule
+set and ignores an open popup, and from workspace navigation, which clears
+patient state. No behaviour was changed; the fixes are proposals for owner review.
 
 | Headline theorem(s) | Guarantee and scope |
 |---|---|
