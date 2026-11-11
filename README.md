@@ -161,7 +161,8 @@ lazy review evidence and safe local renames.
 
 `scripts/build-ehrheavy.py [--target MODULE]` builds isolated full-profile
 `EhrHeavy` modules serially with `-M10000`; the wave-3 closure passes 156 modules
-at 8.3 GiB peak. Weekly/manual/Lean-PR CI audits all 24 seed axioms. Seeds
+at 8.3 GiB peak. The weekly/manual/Lean-PR workflow `ehrheavy.yml` audits all 24
+seed axioms; an invalid workflow file kept it from running until 2026-11-11. Seeds
 1/7/13/15/16/22 share the payload-domain proof, which holds for any program with a
 signing task and so does not show the seeded defect; mutation replays remain separate.
 Full-catalog regressions retain preset defaults and supply eligible

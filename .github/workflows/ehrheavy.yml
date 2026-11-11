@@ -26,11 +26,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
-      TMPDIR: ${{ runner.temp }}/ehrheavy
       LEAN_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v4
-      - run: mkdir -p "$TMPDIR"
+      # The runner context is not available in job-level env, so TMPDIR is set here.
+      - run: |
+          echo "TMPDIR=$RUNNER_TEMP/ehrheavy" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/ehrheavy"
       - uses: ./.github/actions/setup-lean
       - uses: actions/cache@v4
         with:
