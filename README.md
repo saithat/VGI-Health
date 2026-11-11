@@ -185,6 +185,12 @@ contains the exact commands, local prerequisites and browser-lock discipline.
 Comparator (`make verify`); protocol and experimental UI-library statements are
 not yet in Comparator.
 
+The headline `Ehr.Proofs.*` and original `accepted_*` theorems below cover
+`Ehr.step`/`init` and `Props.Reachable`; the deployed API calls
+`Ehr.runStep`/`runInit`. [Runtime coverage](docs/methods/runtime-coverage.md) proves
+commit safeguards at the hydrated interpreter input and runtime popup
+severity, and records kernel-checked counterexamples and open transfers.
+
 | Headline theorem(s) | Guarantee and scope |
 |---|---|
 | `T0`, `T2` | Every program/record/event sequence: no sign without required confirmed entries, human provenance and declared units, valid reviews/receipts, interruptive-alert acknowledgments and an allowed role. |

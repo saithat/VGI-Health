@@ -7,6 +7,12 @@ axioms (`propext`, `Classical.choice`, `Quot.sound`). The clinical statements ar
 cross-checked by Lean's Comparator (`make verify`). The protocol and experimental
 UI-library theorems are kernel checked and are not yet in Comparator.
 
+The headline `Ehr.Proofs.*` and original `accepted_*` theorems below cover
+`Ehr.step`/`init` and `Props.Reachable`; the deployed API calls
+`Ehr.runStep`/`runInit`. [Runtime coverage](methods/runtime-coverage.md) proves
+commit safeguards at the hydrated interpreter input and runtime popup
+severity, and records kernel-checked counterexamples and open transfers.
+
 | Guarantee | Scope |
 |---|---|
 | No sign without its guard: required entries confirmed and human-entered where required, in the declared unit (lb never satisfies kg); reviews shown or covered by a valid receipt; interruptive alerts acknowledged; role allowed (`T0`, `T2`). | Every program, record and event sequence. |
