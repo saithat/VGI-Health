@@ -86,7 +86,9 @@ boundaries, directory map and detailed sequence.
 
 These are synthetic, local experiments, not observed clinician performance.
 Wave 3 and its follow-ups are integrated and verified ([audit](docs/audits/w3b-merge-20261110.md)).
-The integration copy of the retained recording has current build bindings; its
+The integration copy of the retained recording was bound to the 2026-11-10 build;
+the critical-result repair (2026-11-11) changed the app, WASM and native hashes, so
+it needs re-certification before replay against the current build. Its
 layouts, rule inputs and outcome scenarios remain frozen from before wave 3.
 
 | Evidence | Result and caveat |
