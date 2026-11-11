@@ -189,21 +189,41 @@ private theorem step_noHuman (sp p f u actor s e) (hi : HumanCaptured sp s)
     · exact stepCore_noHuman _ _ _ _ _ _ _ hi hne
   · exact stepCore_noHuman _ _ _ _ _ _ _ hi hne
 
+/-- Navigation to a screen captures no new human-required value, from any state. -/
+theorem goTo_noNewHuman (sp p f s z) : NoNewHuman sp s (goTo sp p f s z).1 :=
+  goTo_noHuman sp p f s z
+
+/-- A transition without new human-required values keeps them confirmed human entries. -/
+theorem NoNewHuman.humanCaptured {sp s t} (h : NoNewHuman sp s t) (hi : HumanCaptured sp s) :
+    HumanCaptured sp t := h.preserves hi
+
+/-- One step from any state, reachable or not: a new human-required value
+needs a human entry event. -/
+theorem step_noNewHuman (sp p f u actor s e) (hi : HumanCaptured sp s)
+    (hn : ¬ (actor = .human ∧ ∃ cid v, e = .enter cid v)) :
+    NoNewHuman sp s (step sp p f u actor s e).1 :=
+  step_noHuman _ _ _ _ _ _ _ hi (by grind)
+
+/-- One step from any state, reachable or not, keeps every human-required
+capture a confirmed human entry. -/
+theorem step_humanCaptured (sp p f u actor s e) (hi : HumanCaptured sp s) :
+    HumanCaptured sp (step sp p f u actor s e).1 := by
+  by_cases hn : actor = .human ∧ ∃ cid v, e = .enter cid v
+  · obtain ⟨rfl, cid, v, rfl⟩ := hn
+    change HumanCaptured sp (stepCore sp p f u .human _ (.enter cid v)).1
+    unfold stepCore
+    split
+    · exact hi
+    · exact enterCore_human_quality _ _ _ _ _ _ _ hi
+  · exact (step_noNewHuman _ _ _ _ _ _ _ hi hn).preserves hi
+
 /-- All reachable human-required captures are confirmed human entries. -/
 theorem reachable_humanCaptured (ep : Episode) : Always ep (HumanCaptured ep.spec) := by
   intro s hs
   induction hs with
   | start =>
     exact (prefillScreen_noHuman _ _ _ _).preserves (by intro x hx; simp at hx)
-  | step actor e _ ih =>
-    by_cases hn : actor = .human ∧ ∃ cid v, e = .enter cid v
-    · obtain ⟨rfl, cid, v, rfl⟩ := hn
-      change HumanCaptured ep.spec (stepCore ep.spec ep.prog ep.facts ep.user .human _ (.enter cid v)).1
-      unfold stepCore
-      split
-      · exact ih
-      · exact enterCore_human_quality _ _ _ _ _ _ _ ih
-    · exact (step_noHuman _ _ _ _ _ _ _ ih (by grind)).preserves ih
+  | step actor e _ ih => exact step_humanCaptured _ _ _ _ _ _ _ ih
   | wait d _ ih => exact ih
 
 /-- A newly captured never-policy or human-only value can only come from an
@@ -218,6 +238,9 @@ theorem humanStepsByHuman (ep : Episode) : HumanStepsByHuman ep := by
     · exact False.elim (hnew (step_noHuman _ _ _ _ _ _ _
         (reachable_humanCaptured ep s hs) (by grind) x hx el hel hh))
 
+#print axioms goTo_noNewHuman
+#print axioms step_noNewHuman
+#print axioms step_humanCaptured
 #print axioms reachable_humanCaptured
 #print axioms humanStepsByHuman
 end Ehr.Check

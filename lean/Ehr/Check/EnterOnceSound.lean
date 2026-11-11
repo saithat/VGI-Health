@@ -107,13 +107,22 @@ private theorem step_eq_core (sp p f u actor s e)
         simp [step, hp, hm]
     | _ => rfl
 
-/-- Navigation, review, confirmation and alert handling preserve each
-confirmed value. Only explicit entry or a human-started macro may replace it. -/
-theorem enteredOnce (ep : Episode) : EnteredOnce ep := by
-  intro s _ actor e hne hmacro x hx hc
+/-- One step from any state, reachable or not: navigation, review,
+confirmation and alert handling preserve each confirmed value. -/
+theorem enteredOnce_at (ep : Episode) (s : State) (actor : Actor) (e : Event)
+    (hne : ∀ cid v, e ≠ .enter cid v)
+    (hmacro : actor = .human → ∀ cid, e = .click cid →
+      clickedMacro? ep.spec ep.prog ep.facts s cid = none ∨ s.popup?.isSome) :
+    ∀ x ∈ s.captured, x.confirmed = true → x ∈ (ep.next actor s e).captured := by
+  intro x hx hc
   change x ∈ (step ep.spec ep.prog ep.facts ep.user actor s e).1.captured
   rw [step_eq_core _ _ _ _ _ _ _ hmacro]
   exact stepCore_keeps _ _ _ _ _ _ _ hne x hx hc
+
+/-- Navigation, review, confirmation and alert handling preserve each
+confirmed value. Only explicit entry or a human-started macro may replace it. -/
+theorem enteredOnce (ep : Episode) : EnteredOnce ep :=
+  fun s _ actor e hne hmacro => enteredOnce_at ep s actor e hne hmacro
 
 /-- Accepted programs capture all requirements and never re-request a
 confirmed value; declared auto-links eliminate transcription (property 2). -/
@@ -123,6 +132,7 @@ theorem accepted_capturesAllOnce (sp prev can p) (h : check sp prev can p = .ok)
   exact ⟨ht.2.2.2.2.2.2.2.2.2.2.2.1, fun facts user _ =>
     ⟨commitCapturesAll ⟨sp, p, facts, user⟩, enteredOnce ⟨sp, p, facts, user⟩⟩⟩
 
+#print axioms enteredOnce_at
 #print axioms enteredOnce
 #print axioms accepted_capturesAllOnce
 end Ehr.Check

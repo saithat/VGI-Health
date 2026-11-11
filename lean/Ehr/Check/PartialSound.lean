@@ -17,6 +17,12 @@ private theorem accepted_pins (sp prev can p) (h : check sp prev can p = .ok) :
   simp only [Bool.and_eq_true] at hp
   exact ⟨hr, hl, hp.1⟩
 
+/-- Accepted programs pass the three pin rules: reviews on commit screens,
+landmarks on every screen, and passive alerts on their targeted screens. -/
+theorem accepted_pinRules (sp prev can p) (h : check sp prev can p = .ok) :
+    reviewsPinned sp p = true ∧ landmarksPinned sp p = true ∧ passivePinned sp p = true :=
+  accepted_pins sp prev can p h
+
 private theorem accepted_depth (sp prev can p) (h : check sp prev can p = .ok) :
     RequiredWithinDepth sp can p := by
   have hall := (check_ok_iff sp prev can p).mp h
@@ -69,6 +75,7 @@ theorem accepted_alertsFire (sp prev can p) (h : check sp prev can p = .ok) : Al
     ⟨interruptiveHandled ⟨sp, p, facts, user⟩,
       passivePinned_sound ⟨sp, p, facts, user⟩ (accepted_pins _ _ _ _ h).2.2⟩⟩
 
+#print axioms accepted_pinRules
 #print axioms accepted_wellFormed
 #print axioms accepted_reviewsBeforeCommit
 #print axioms accepted_units

@@ -44,13 +44,13 @@ theorem currentScreen (ep : Episode) (s : State)
     exact ⟨scr, List.mem_of_find?_eq_some hf, rfl,
       by simpa [Program.screen?] using List.find?_some hf⟩
 
-/-- Landmarks pinned by the checker are shown in every reachable state. -/
-theorem landmarksPinned_sound (ep : Episode)
-    (hstart : (ep.prog.screen? ep.prog.start).isSome = true)
-    (h : landmarksPinned ep.spec ep.prog = true) : LandmarksShown ep := by
-  intro s hs l hl
-  obtain ⟨scr, hscr, hlook, hid⟩ := currentScreen ep s
-    (reachable_screenNames ep hstart s hs).1
+/-- Landmarks pinned by the checker are shown in every state whose screen is
+a program screen, reachable or not. -/
+theorem landmarksPinned_at (ep : Episode) (h : landmarksPinned ep.spec ep.prog = true)
+    (s : State) (hs : (ep.prog.screen? s.screen).isSome = true) :
+    ∀ l ∈ ep.spec.design.landmarks, InfoShown ep s l := by
+  intro l hl
+  obtain ⟨scr, hscr, hlook, hid⟩ := currentScreen ep s hs
   have hp := List.all_eq_true.mp (List.all_eq_true.mp h scr hscr) l hl
   obtain ⟨c, hc, hpin⟩ := List.any_eq_true.mp hp
   simp only [Bool.and_eq_true] at hpin
@@ -60,10 +60,19 @@ theorem landmarksPinned_sound (ep : Episode)
   apply List.any_eq_true.mpr
   exact ⟨c, hc, by simp only [Bool.and_eq_true]; exact ⟨hi, fixedShown_sound _ _ _ _ _ hvis⟩⟩
 
-/-- Passive alert pins refer to the actual view, including its condition. -/
-theorem passivePinned_sound (ep : Episode)
-    (h : passivePinned ep.spec ep.prog = true) : PassiveShownInline ep := by
-  intro s _ al hal ht htarget hh
+/-- Landmarks pinned by the checker are shown in every reachable state. -/
+theorem landmarksPinned_sound (ep : Episode)
+    (hstart : (ep.prog.screen? ep.prog.start).isSome = true)
+    (h : landmarksPinned ep.spec ep.prog = true) : LandmarksShown ep :=
+  fun s hs => landmarksPinned_at ep h s (reachable_screenNames ep hstart s hs).1
+
+/-- Passive alert pins refer to the actual view, including its condition, in
+every state, reachable or not. -/
+theorem passivePinned_at (ep : Episode) (h : passivePinned ep.spec ep.prog = true) (s : State) :
+    ∀ al ∈ ep.spec.alerts, al.tier = .passive →
+      (ep.prog.screen? s.screen).any al.targetsScreen = true →
+      alertHolds ep.spec ep.facts s al.id = true → AlertShownInline ep s al.id := by
+  intro al hal ht htarget hh
   have hr := List.all_eq_true.mp h al hal
   change (al.tier != Tier.passive || _) = true at hr
   simp only [ht, bne_self_eq_false, Bool.false_or] at hr
@@ -85,6 +94,11 @@ theorem passivePinned_sound (ep : Episode)
     · change compShown _ _ _ _ c = true
       simp only [compShown, hk, hh, Bool.and_true]
       exact fixedShown_sound _ _ _ _ _ hv
+
+/-- Passive alert pins refer to the actual view, including its condition. -/
+theorem passivePinned_sound (ep : Episode)
+    (h : passivePinned ep.spec ep.prog = true) : PassiveShownInline ep :=
+  fun s _ => passivePinned_at ep h s
 
 /-- Receipt validity is monotone in its allowed age and roles. -/
 theorem receiptValid_mono (sp facts now i r w w' roles roles')
@@ -158,13 +172,14 @@ theorem pinnedForReview_sound (ep : Episode) (s : State) (rq : ReviewReq)
     · exact Or.inr (Or.inl (receiptHideSafe_sound ep s rq hsafe hr))
     · exact Or.inl (shown (by simp [ownVisible, hsize, hv, hr]))
 
-/-- Pinning the review on every commit screen prevents hidden-review traps. -/
-theorem reviewsPinned_sound (ep : Episode)
-    (hstart : (ep.prog.screen? ep.prog.start).isSome = true)
-    (h : reviewsPinned ep.spec ep.prog = true) : CommitScreenShowsReviews ep := by
-  intro s hs cm hbutton rq hrq hcm hwaiver
-  obtain ⟨scr, hscr, hlook, _⟩ := currentScreen ep s
-    (reachable_screenNames ep hstart s hs).1
+/-- Pinning the review on every commit screen prevents hidden-review traps,
+in every state whose screen is a program screen, reachable or not. -/
+theorem reviewsPinned_at (ep : Episode) (h : reviewsPinned ep.spec ep.prog = true)
+    (s : State) (hs : (ep.prog.screen? s.screen).isSome = true) :
+    ∀ c, CommitButtonShown ep s c →
+      ∀ rq ∈ ep.spec.reviews, rq.commit = c → rq.waivedBy? = none → ReviewMetIn ep s rq := by
+  intro cm hbutton rq hrq hcm hwaiver
+  obtain ⟨scr, hscr, hlook, _⟩ := currentScreen ep s hs
   obtain ⟨item, hi, _, hk⟩ := hbutton
   change item ∈ (ep.prog.compsOf s.screen).map _ at hi
   obtain ⟨comp, hc, rfl⟩ := List.mem_map.mp hi
@@ -180,7 +195,16 @@ theorem reviewsPinned_sound (ep : Episode)
   · simpa [Program.compsOf, hlook] using hc'
   · simpa [Program.compsOf, hlook] using hp
 
+/-- Pinning the review on every commit screen prevents hidden-review traps. -/
+theorem reviewsPinned_sound (ep : Episode)
+    (hstart : (ep.prog.screen? ep.prog.start).isSome = true)
+    (h : reviewsPinned ep.spec ep.prog = true) : CommitScreenShowsReviews ep :=
+  fun s hs => reviewsPinned_at ep h s (reachable_screenNames ep hstart s hs).1
+
 #print axioms fixedShown_sound
+#print axioms landmarksPinned_at
+#print axioms passivePinned_at
+#print axioms reviewsPinned_at
 #print axioms landmarksPinned_sound
 #print axioms passivePinned_sound
 #print axioms reviewsPinned_sound

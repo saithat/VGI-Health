@@ -247,6 +247,22 @@ private theorem runMacro_writes (sp p f u) (steps : List MacroStep) (i s)
     · rename_i t he; rw [he] at ht; exact ih _ _ ht
     · rename_i t r hr he; rw [he] at ht; exact ht
 
+/-- Navigation to a screen keeps the write invariant, from any state. -/
+theorem goTo_writesState (sp p f u s z) (h : WritesState sp f u s)
+    (hd : DeclaredWritesInSpec sp p) (hu : u.role = p.role) :
+    WritesState sp f u (goTo sp p f s z).1 := goTo_writes sp p f u s z h hd hu
+
+/-- One step from any state, reachable or not, keeps the write invariant. -/
+theorem step_writesState (sp p f u actor s e) (h : WritesState sp f u s)
+    (hd : DeclaredWritesInSpec sp p) (hu : u.role = p.role) :
+    WritesState sp f u (step sp p f u actor s e).1 := by
+  unfold step
+  split
+  · split
+    · exact runMacro_writes _ _ _ _ _ _ _ h hd hu
+    · exact stepCore_writes _ _ _ _ _ _ _ h hd hu
+  · exact stepCore_writes _ _ _ _ _ _ _ h hd hu
+
 /-- Field declaration permissions suffice for the actual interpreter's write
 invariant; enter, commit, receipt and request actions also check permissions. -/
 theorem writesAllowed (ep : Episode) (hd : DeclaredWritesInSpec ep.spec ep.prog)
@@ -257,13 +273,7 @@ theorem writesAllowed (ep : Episode) (hd : DeclaredWritesInSpec ep.spec ep.prog)
   | start =>
     apply prefillScreen_writes _ _ _ _ _ _ hd hu
     exact ⟨by simp, by simp, fun r hr => Or.inl hr⟩
-  | step actor e _ ih =>
-    unfold Episode.next step
-    split
-    · split
-      · exact runMacro_writes _ _ _ _ _ _ _ ih hd hu
-      · exact stepCore_writes _ _ _ _ _ _ _ ih hd hu
-    · exact stepCore_writes _ _ _ _ _ _ _ ih hd hu
+  | step actor e _ ih => exact step_writesState _ _ _ _ _ _ _ ih hd hu
   | wait d _ ih => exact ih
 
 /-- Accepted programs write only authorized spec elements, commits and infos
@@ -273,6 +283,8 @@ theorem accepted_writesOnly (sp prev can p) (h : check sp prev can p = .ok) :
   have hd := (accepted_structural sp prev can p h).2.2.2.2.1
   exact ⟨hd, fun facts user hu => writesAllowed ⟨sp, p, facts, user⟩ hd hu⟩
 
+#print axioms goTo_writesState
+#print axioms step_writesState
 #print axioms writesAllowed
 #print axioms accepted_writesOnly
 end Ehr.Check
