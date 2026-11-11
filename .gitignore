@@ -29,6 +29,7 @@ app/shots/*
 app/shots/realism/*
 !app/shots/realism/present/
 !app/shots/final/
+!app/shots/video/
 # Local content-addressed screen-gate receipts
 
 # Pinned Synthetic Hospital upstream downloads

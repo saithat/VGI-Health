@@ -173,23 +173,36 @@ theorem new_commit_core (i : StepInput) (c : CommitId)
     rw [he] at hafter
     contradiction
 
+/-- New specification for owner review: the stored draft of the patient
+selected in `s`, which hydration of `s` restores. Empty when no patient is
+selected or nothing is stored for the patient. -/
+def pending (s : State) : PatientDraft :=
+  Workspace.draft s ((s.patientContext?.bind (·.patient?)).getD "")
+
+/-- New specification for owner review: the draft store that hydration of
+`s` leaves: the store without the selected patient's draft. -/
+def remaining (s : State) : Option (List PatientDraft) :=
+  Workspace.others s ((s.patientContext?.bind (·.patient?)).getD "")
+
 /-- New specification for owner review: hydration either preserves evidence
-or starts a fresh patient episode, loading only the host's prior receipts. -/
+or starts a fresh patient episode. The fresh episode has no commit and no
+popup, loads only the host's prior receipts, and its acknowledgments are those
+stored for the selected patient when the clinician last left that chart. -/
 theorem bind_evidence (sp p f u s) :
     evidence (Workspace.bind sp p f u s) = evidence s ∨
-    evidence (Workspace.bind sp p f u s) = ([], [], f.receipts, none) := by
+    evidence (Workspace.bind sp p f u s) = ([], (pending s).acked, f.receipts, none) := by
   unfold Workspace.bind
   split
   · exact Or.inl rfl
-  · split
+  · rename_i c hc
+    split
     · exact Or.inl rfl
     · split
       · exact Or.inl rfl
       · right
-        simp only [evidence, (goTo_safe ..).commits, (goTo_safe ..).acked,
-          (goTo_safe ..).receipts, goTo_popup, Ehr.init,
-          (prefillScreen_safe ..).commits, (prefillScreen_safe ..).acked,
-          (prefillScreen_safe ..).receipts, prefillScreen_popup]
+        simp only [evidence, Workspace.restore, pending, hc, Option.bind_some,
+          (goTo_safe ..).commits, (goTo_safe ..).receipts, goTo_popup, Ehr.init,
+          (prefillScreen_safe ..).commits, (prefillScreen_safe ..).receipts, prefillScreen_popup]
 
 /-- New specification for owner review: hydration cannot add a commit. -/
 theorem input_commits (i : StepInput) (c : CommitId)
@@ -206,21 +219,24 @@ theorem input_commits (i : StepInput) (c : CommitId)
       contradiction
   · exact hc
 
-/-- New specification for owner review: hydration cannot add an
-acknowledgment, even when it loads a different patient's prior receipts. -/
+/-- New specification for owner review: an acknowledgment in the effective
+input was in the API state or is one stored for the selected patient, which
+hydration restores. Hydration supplies no other acknowledgment, even when it
+loads a different patient's prior receipts. This replaces the earlier
+statement without the stored-draft case, which restoring drafts makes false. -/
 theorem input_acks (i : StepInput) (pair : AlertId × String)
-    (hc : pair ∈ (inputState i).acked) : pair ∈ i.state.acked := by
+    (hc : pair ∈ (inputState i).acked) :
+    pair ∈ i.state.acked ∨ pair ∈ (pending i.state).acked := by
   unfold inputState at hc
   split at hc
   · rcases bind_evidence i.spec i.program i.facts i.user i.state with h | h
     · have he : (Workspace.bind i.spec i.program i.facts i.user i.state).acked =
           i.state.acked := congrArg (fun x => x.2.1) h
-      exact he ▸ hc
-    · have he : (Workspace.bind i.spec i.program i.facts i.user i.state).acked = [] :=
-        congrArg (fun x => x.2.1) h
-      rw [he] at hc
-      contradiction
-  · exact hc
+      exact Or.inl (he ▸ hc)
+    · have he : (Workspace.bind i.spec i.program i.facts i.user i.state).acked =
+          (pending i.state).acked := congrArg (fun x => x.2.1) h
+      exact Or.inr (he ▸ hc)
+  · exact Or.inl hc
 
 /-- New specification for owner review: hydration's only additional receipts
 come from host facts; it does not manufacture review evidence. -/

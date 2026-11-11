@@ -45,8 +45,11 @@ unconfirmed input) and commits. These follow from the existing guard and Back
 semantics. Accepted scenario certificates also check alert acknowledgment and
 capture/commit retention on navigation edges through `CompletionModel.edgesHold`;
 `accepted_edges` proves coverage of every reachable model edge. A patient-switch
-durability claim is deferred: workspace switching clears patient-local state,
-while signed-data persistence belongs to the external commit service. There is
+durability claim is deferred: workspace switching keeps a patient's unsigned
+entries and alert acknowledgments as a per-session draft and restores them on
+reopening ([runtime coverage](runtime-coverage.md#per-patient-drafts)), but
+commits are not restored, and signed-data persistence belongs to the external
+commit service. There is
 no discard-on-Back prompt in the modeled semantics because Back preserves input.
 
 Targeted native verification for this checker:

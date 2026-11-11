@@ -1227,6 +1227,21 @@ export interface User {
 export type CriticalDraft = [result: string, text: string];
 
 /**
+ * One patient's unsigned work, kept while the clinician is outside that
+ * patient's chart: the captures and the alert acknowledgments of the chart as it
+ * was left. Commits, receipts and the popup are not kept; signed work is in the
+ * record. New specification for owner review (2026-11-11).
+ */
+export interface PatientDraft {
+  /**
+   * Source `Patient.id`, as in `PatientContext.patient?`.
+   */
+  patient: string;
+  captured: Captured[];
+  acked: [AlertId, string][];
+}
+
+/**
  * Interpreter state for one episode (one patient task).
  */
 export interface State {
@@ -1270,6 +1285,14 @@ export interface State {
    * Present only for programs using in-UI patient selection.
    */
   patientContext?: PatientContext;
+  /**
+   * Per-patient drafts of the signed-in session, written when the clinician
+   * leaves a bound chart and read when the same patient is hydrated again. Only
+   * `Ehr.Workspace` reads or writes it. Absent from JSON when `none`; it is
+   * `none` whenever no draft is stored. Specification-surface change for owner
+   * review (2026-11-11).
+   */
+  patientDrafts?: PatientDraft[];
   criticalResults?: Ticket[];
   /**
    * Draft critical-result action text, with named result and text fields. It is kept

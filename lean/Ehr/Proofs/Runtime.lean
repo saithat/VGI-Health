@@ -173,12 +173,15 @@ theorem A4_run (sp p u s) (hs : Reachable sp p u s) : PopupNotPassive sp s := by
   | event f e _ ih => exact A4_step ⟨sp, p, f, u, _, e⟩ ih
   | wait d _ ih => exact ih
 
-/-- New specification for owner review: a runtime acknowledgment new to the
-API state must come from the core; hydration and handlers cannot supply it. -/
+/-- New specification for owner review: a runtime acknowledgment that is
+neither in the API state nor stored for the selected patient must come from
+the core; hydration and handlers cannot supply it. The stored-draft premise is
+new: hydration restores the acknowledgments stored for the patient. -/
 theorem ack_origin (i : StepInput) (pair : AlertId × String)
-    (hnew : pair ∉ i.state.acked) (hafter : pair ∈ (runStep i).state.acked) :
+    (hnew : pair ∉ i.state.acked) (hstored : pair ∉ (pending i.state).acked)
+    (hafter : pair ∈ (runStep i).state.acked) :
     (runStep i).state = (step i.spec i.program i.facts i.user .human (inputState i) i.event).1 :=
-  new_ack_core i pair (fun hc => hnew (input_acks i pair hc)) hafter
+  new_ack_core i pair (fun hc => (input_acks i pair hc).elim hnew hstored) hafter
 
 /-- New specification for owner review: every output receipt was already in
 state, supplied in host facts, or produced by the core on its effective input. -/

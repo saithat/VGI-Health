@@ -71,7 +71,7 @@ instance : Lean.FromJson CriticalDraft where
     return { result, text }
 
 deriving instance Lean.ToJson, Lean.FromJson for
-  Value, Actor, Captured, User, State, Event, StepResult, ItemView, ScreenView
+  Value, Actor, Captured, PatientDraft, User, State, Event, StepResult, ItemView, ScreenView
 
 deriving instance Lean.ToJson, Lean.FromJson for
   InitInput, StepOutput, StepInput, ViewInput, BatchCase, BatchStep

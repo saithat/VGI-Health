@@ -56,7 +56,7 @@ export const selectionScenarios = [
     assert(d.state.patientContext.bound === 'heldout-B', 'Lookup opened another patient');
     return { d, observed: `Patient Lookup query ${query} uniquely found and opened Boris Rowan` };
   })),
-  scenario('switch-isolation', 'Switch A to B resets clinical state, refuses stale A binding, and excludes A resources from B facts/UI', f => {
+  scenario('switch-isolation', 'Switch A to B starts B with a fresh chart, refuses stale A binding, and excludes A resources from B facts/UI', f => {
     const a = project(f, 0), b = project(f, 1, true), d = driver(f, a, true);
     d.find(info('allergyList'), 'patient A allergy list');
     assert(JSON.stringify(d.render(a.display)).includes('heldout-A_PRIVATE_ALLERGY'), 'A private marker was not visible before switching');
@@ -77,6 +77,6 @@ export const selectionScenarios = [
     const rendered = JSON.stringify(d.render(b.display));
     assert(rendered.includes('heldout-B_PRIVATE_ALLERGY') && rendered.includes('HB-902'), 'B chart failed to show B data');
     assert(!rendered.includes('heldout-A_PRIVATE_ALLERGY') && !rendered.includes('HA-701') && !b.facts.allergyClasses.includes('penicillin'), 'A clinical data leaked into B chart');
-    return { d, observed: 'A→B cleared captures/reviews/alerts/commits; stale A source refused; mixed-bundle B projection contains only B clinical data' };
+    return { d, observed: 'A→B: the B chart starts without A captures/reviews/alerts/commits (A unsigned work stays in the stored A draft); stale A source refused; mixed-bundle B projection contains only B clinical data' };
   }),
 ];

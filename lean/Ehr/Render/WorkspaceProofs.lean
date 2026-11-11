@@ -7,7 +7,8 @@ namespace Ehr.Workspace
 #guard patientMatches "Ellis, Riley" { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
 #guard patientMatches "sh00001675" { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
 #guard !patientMatches "," { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
-/-- Patient B never inherits captures, acknowledgments, commits or receipts from patient A. -/
+/-- Patient B never inherits captures, acknowledgments, commits or receipts from patient A.
+Patient A's captures and acknowledgments are kept apart, in A's stored draft. -/
 theorem opening_clears_patient_state (p : Program) (s : State) (patient target : String) :
     (openPatient p s patient target).captured = [] ∧
     (openPatient p s patient target).receipts = [] ∧

@@ -5,7 +5,9 @@ a new specification for owner review, outside Comparator. All witnesses use
 accepted programs and actual runs from runInit; no fabricated popup state is
 assumed. `decide` is confined to these concrete finite computations. The
 ordinary witness is a regression for the repaired critical-result handler; the
-workspace witnesses are counterexamples to global runtime properties. -/
+workspace witnesses are counterexamples to the original global forms of
+runtime properties. `Ehr.Proofs.RuntimeDraftWitness` continues the workspace
+run through Return and reopening. -/
 
 namespace Ehr.Runtime.Witness
 open Ehr Props Check
@@ -142,18 +144,28 @@ theorem acknowledged_reachable :
   .event (.ack "clinicalAlert") (.event (.click "alert")
     (.event (.enter "assessmentField" (.flag true)) (.event selectPatient .start)))
 
-/-- New specification for owner review: global confirmed-capture retention
-(EnteredOnce) fails across workspace return, a non-entry, non-macro click. -/
-theorem return_loses_capture :
+/-- New specification for owner review: the original global form of
+confirmed-capture retention (`FixedEnteredOnce`) still fails across workspace
+return, a non-entry, non-macro click: Return moves the chart's captures into
+the patient's stored draft, so `State.captured` of the list state is empty.
+The capture is not lost; see `Ehr.Runtime.Witness.return_keeps_capture` and
+the session form `Ehr.Runtime.session_captures`. This replaces
+`return_loses_capture`. -/
+theorem return_empties_captured :
     ∃ x ∈ acknowledged.captured, x.confirmed = true ∧ x ∉ returned.captured ∧
       clickedMacro? spec workspace directoryFacts acknowledged "workspace.return" = none := by
   refine ⟨{ element := "assessment", slot := 0, value := .flag true, byHuman := true, confirmed := true }, ?_⟩
   decide
 
-/-- New specification for owner review: global acknowledgment persistence
-(InterruptsOnce) and the acknowledgment-change clause of OnlyHumanCommitsAndAcks
-fail across workspace return. The clearing event is a click, not an ack. -/
-theorem return_loses_ack :
+/-- New specification for owner review: the original global forms of
+acknowledgment persistence (`FixedInterruptsOnce`) and of the
+acknowledgment-change clause of `FixedOnlyHumanCommitsAndAcks` still fail
+across workspace return: Return moves the chart's acknowledgments into the
+patient's stored draft, so `State.acked` of the list state is empty, and the
+event is a click, not an ack. The acknowledgment is not lost; see
+`Ehr.Runtime.Witness.return_keeps_ack` and the session form
+`Ehr.Runtime.session_acks`. This replaces `return_loses_ack`. -/
+theorem return_empties_acked :
     acknowledged.acked ≠ [] ∧ returned.acked = [] ∧
       ∀ a, (Event.click "workspace.return") ≠ .ack a := by
   refine ⟨by decide, by decide, ?_⟩
@@ -162,7 +174,8 @@ theorem return_loses_ack :
 
 /-- New specification for owner review: the unselected runtime view has no
 items, including the required patient banner. Thus a global LandmarksShown
-analogue using runView fails before a patient is selected. -/
+analogue using runView fails before a patient is selected. What holds there
+instead is `Ehr.Runtime.unselected_view`: the view shows no patient data. -/
 theorem landing_has_no_landmark :
     "patientBanner" ∈ spec.design.landmarks ∧
     (runView ⟨spec, workspace, directoryFacts, Examples.Tiny.user, landing⟩).items = [] := by decide
@@ -183,7 +196,9 @@ theorem passive_accepted : check passiveSpec none workspace workspace = .ok := b
 
 /-- New specification for owner review: global PassiveShownInline using
 runView fails in the initial unbound workspace, even though its screen is
-program-defined, targeted, and its passive care-gap alert is firing. -/
+program-defined, targeted, and its passive care-gap alert is firing. No
+patient is selected, so by `Ehr.Runtime.unselected_view` no patient-specific
+alert may be shown there. -/
 theorem landing_passive_not_shown :
     let al := Scalar.alert .careGap .passive
     al ∈ passiveSpec.alerts ∧ al.tier = .passive ∧
@@ -207,8 +222,8 @@ theorem passive_landing_reachable :
 #print axioms writes_allowed
 #print axioms workspace_accepted
 #print axioms acknowledged_reachable
-#print axioms return_loses_capture
-#print axioms return_loses_ack
+#print axioms return_empties_captured
+#print axioms return_empties_acked
 #print axioms landing_has_no_landmark
 #print axioms passive_accepted
 #print axioms landing_passive_not_shown

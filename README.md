@@ -1,4 +1,4 @@
-_README last reviewed against commit `46a09a65` (2026-11-11)._
+_README last reviewed against commit `74992920` (2026-11-11)._
 
 # VGI Health
 
@@ -44,6 +44,13 @@ project is not affiliated with any EHR vendor.
 |---|---|---|
 | ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-landing.png) | ![MAR](app/shots/final/P3-chart.png) |
 
+A primary-care visit, from the clinic schedule to order review: the clinician
+opens the chart, enters the reason for visit and vitals, reviews allergies,
+picks an order favorite, confirms each automated prefill and reviews the order
+before signing ([full-resolution video](app/shots/video/p1-visit.mp4)).
+
+[![Primary-care visit workflow](app/shots/video/p1-visit.gif)](app/shots/video/p1-visit.mp4)
+
 ## Architecture
 
 The Lean `Spec` is the rulebook; a JSON `Program` describes screens, fields,
@@ -52,11 +59,9 @@ browser screen checks and replay validation gate deployment; `step` guards each
 interaction at runtime. A rejected proposal can receive a counterexample and up
 to three repairs.
 
-Seeded safety probes remain diagnostic and cannot deploy. The allergy probe
-hides every provider of the required allergy list on one commit screen,
-including duplicate and composite providers; hiding only one panel can be safe.
-The [wave 2 investigation](docs/audits/wave2-investigation-20261109.md) reproduces
-that distinction and separates retained layout completion gaps from clock effects.
+Seeded safety probes are diagnostic and cannot deploy. The allergy probe hides
+every provider of the required allergy list on one commit screen; hiding only
+one panel can be safe ([investigation](docs/audits/wave2-investigation-20261109.md)).
 
 ```mermaid
 flowchart LR
@@ -85,17 +90,15 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-Wave 3 and its follow-ups are integrated and verified ([audit](docs/audits/w3b-merge-20261110.md)).
-The integration copy of the retained recording was bound to the 2026-11-10 build;
-the critical-result repair (2026-11-11) changed the app, WASM and native hashes, so
-it needs re-certification before replay against the current build. Its
-layouts, rule inputs and outcome scenarios remain frozen from before wave 3.
+The retained recording is certified against an earlier build and must be
+re-certified before it is replayed against the current one; its layouts, rule
+inputs and outcome scenarios are frozen.
 
 | Evidence | Result and caveat |
 |---|---|
-| Retained recording verification (frozen pre-wave-3 inputs) | All 33 retained revision bindings re-certified in the integration worktree; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
+| Retained recording verification (frozen inputs) | All 33 retained revision bindings re-certified; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
 | Matched workload experiment | Blind even days across five clinicians: both successor arms complete 660/662 tasks; mean queue delay is 1.19 minutes with fixed-cost interruptions and 1.73 with typed real work. Both have two overdue doses and zero active overtime. These are fixed-layout offline runs with uncalibrated rates; the archived cohort differs. [Cohorts, endpoints and screenshots](docs/methods/workload-and-interruptions.md#local-measurement-cohorts). |
-| Wave-3 simulator smoke | Day 2: 158/158 tasks complete; mean queue 12.58 min versus 1.73 in the earlier cohort. On identical new tasks, length costs add 267.69 active min and 56 scrolls. Scenario assumptions, fixed layouts, different wave-2/wave-3 cohorts. Full template/persona browser audits: zero findings. [Verification and scope](docs/audits/wave3-sim-20261109.md). |
+| Simulator smoke test | Day 2: 158/158 tasks complete; mean queue 12.58 min versus 1.73 in the earlier cohort. On identical new tasks, length costs add 267.69 active min and 56 scrolls. Scenario assumptions, fixed layouts, different cohorts. Full template/persona browser audits: zero findings. [Verification and scope](docs/audits/wave3-sim-20261109.md). |
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
 | Layout optimization pilot | One frozen P1 context accepts B and refuses D after D adds three validation clicks; both selected designs have structural distance 0.004717 and zero native rejection rate. This does not establish improvement or broader exploration. [Discovery policy and pilot](docs/methods/discovery-and-cadence.md). |
 
@@ -103,11 +106,7 @@ The [EHR scope inventory](docs/methods/ehr-scope.md) lists seven workflows, five
 personas and the simplified or absent departments, interfaces and production
 capabilities. The system uses synthetic patients and is not a deployable product.
 
-### Wave 3 (approved 2026-11-09)
-
-Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [wave-3 audit](docs/audits/wave3-merge-20261109.md), [follow-up audit](docs/audits/w3b-merge-20261110.md).
-
-- Separate role profiles remain experimental: the pre-declared fit (decisions 1, 2, 8) failed every holdout gate ([methods](docs/methods/role-calibration.md)); the [fit diagnosis](docs/audits/fit-diagnosis-20261110.md) traces the timing-window and capability mismatches.
+### Simulated hospital
 
 - Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
 - Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
@@ -123,6 +122,7 @@ Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged 
 - Dataset notes use section-level template/copy/free-text effort with verified older N18 origin shares and explicit scenario operator costs ([methods and matched comparison](docs/methods/note-authoring.md)).
 - P5 inpatient rounds include scenario imaging orders with Synthetic Hospital priority ([methods](docs/methods/workflow-phases.md#inpatient-imaging)).
 - Library generation defaults to realistic workflows; explicit legacy mode reproduces preserved library snapshots byte-for-byte ([methods](docs/methods/workflow-phases.md#library-default-and-frozen-worlds)).
+- Separate role profiles remain experimental: the pre-declared fit failed every holdout gate ([methods](docs/methods/role-calibration.md), [diagnosis](docs/audits/fit-diagnosis-20261110.md)).
 
 ## How to run
 
@@ -159,19 +159,9 @@ and replay configuration, context requirements and frozen-night comparisons.
 The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
 lazy review evidence and safe local renames.
 
-`scripts/build-ehrheavy.py [--target MODULE]` builds isolated full-profile
-`EhrHeavy` modules serially with `-M10000`; the wave-3 closure passes 156 modules
-at 8.3 GiB peak. The weekly/manual/Lean-PR workflow `ehrheavy.yml` audits all 24
-seed axioms; an invalid workflow file kept it from running until 2026-11-11. Seeds
-1/7/13/15/16/22 share the payload-domain proof, which holds for any program with a
-signing task and so does not show the seeded defect; mutation replays remain separate.
-Full-catalog regressions retain preset defaults and supply eligible
-CURES/trusted-evidence fixtures; interruption-count tests select legacy
-fixed-cost mode. Seeds 2/4/5 use the refactor's shared automation-rejection helper.
-All 15 core persona/release projections remain byte-identical to the integration
-base `53afbbf4`. The seven-task retained-layout capability regression reads its
-preserved `2-original` workload; current canonical workload checks use the
-realistic library world.
+`scripts/build-ehrheavy.py [--target MODULE]` builds the full-profile `EhrHeavy`
+modules serially (about 8.3 GiB peak); the weekly `ehrheavy.yml` workflow audits
+all 24 seeded-defect axioms.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
 runs unit tests, 201 canonical conformance scenarios, the 15-accepted/23-rejected
@@ -198,23 +188,27 @@ every program; the other nine are proved for programs without patient selection
 run with fixed facts (`accepted_ordinary`). With patient selection, all nine
 are proved per bound patient episode (`accepted_episode`): from the hydration
 of one patient's chart until the clinician leaves or switches it, with fixed
-facts. In their global form five of the nine (1, 2, 5, 9, 11) keep their
-kernel-checked counterexamples, because leaving a chart clears that patient's
-state and the landing view shows no chart; the global form of the other four
-is not stated. The owner approved the per-episode scope on 2026-11-11; the new
-statements await review. The critical-result handler was repaired on
-2026-11-10: its action text is a draft outside `captured`, and it is refused
-while an alert popup is open. Since 2026-11-11 a successful resolve clears the
-result's draft, and the checker reserves all `critical.` component IDs, so the
-handler cannot shadow a program control (`Ehr.Check.accepted_critical_no_shadow`).
-Authorization is by responsible/covering user ID, which is stricter than a role check.
+facts. Leaving a chart keeps that patient's unsigned entries and alert
+acknowledgments as a draft for the signed-in session and reopening the chart
+restores them; signed work is not restored. Across such navigation, properties
+2, 5 and 11 are proved with each patient's work read from the open chart or
+the draft (`selection_global`). The call that loads a chart refuses commits
+and acknowledgments, and no patient data is shown before a patient is selected
+(`unselected_view`). Properties 1 and 9 keep their global counterexamples on
+the landing view; the global form of the other four is not stated. The live
+app does not keep drafts across charts yet. Critical-result action text is a
+draft outside `captured`, cleared on a successful resolve; the handler is
+refused while an alert popup is open, and the checker reserves all `critical.`
+component IDs so the handler cannot shadow a program control
+(`Ehr.Check.accepted_critical_no_shadow`). Authorization is by
+responsible/covering user ID, which is stricter than a role check.
 
 | Headline theorem(s) | Guarantee and scope |
 |---|---|
 | `T0`, `T2` | Every program/record/event sequence: no sign without required confirmed entries, human provenance and declared units, valid reviews/receipts, interruptive-alert acknowledgments and an allowed role. |
 | `T3`, `T6` | Macros/prefills cannot sign, acknowledge, create receipts or supply human-only values; cosigning names a second human. |
 | `A2`, `A4`; `D1`–`D6` | Alert conditions/passivity and the rendered banner, required reviews, honest buttons and modal alerts are preserved. |
-| `accepted_*` | Checker acceptance implies 12 of 13 screen properties for all patients and reachable states. Property 6 (completion) is proved only for restricted families. For the V1–V3 rule sets it is false as defined: it ranges over records with no trusted payload, where no program can commit (`v1_payload_domain_not_satisfies`, `EhrHeavy`). A [record-domain premise](docs/design/property6-record-domain.md) awaits owner review. |
+| `accepted_*` | Checker acceptance implies 12 of 13 screen properties for all patients and reachable states. Property 6 (completion) is proved only for restricted families. For the V1–V3 rule sets it is false as defined: it ranges over records with no trusted payload, where no program can commit (`v1_payload_domain_not_satisfies`, `EhrHeavy`). A [record-domain premise](docs/design/property6-record-domain.md) is in progress. |
 | Multi-actor safety | Bed exclusivity, at-most-once doses and critical-result resolution or escalation by deadline in the Lean reducers/models. |
 | Protocol invariants | Unbounded request-effect uniqueness, durable retries, guarded expected-version replacement, refusal isolation and event-fold projections, under the storage/sole-writer contract. ADT uses the actual native reducer; host trace refinement is tested. |
 | Research layout range | `renderer_range`, `checkProgram_sound`, `layoutAccepted_program`: the fixed semantic text-card compiler covers every renderer output and preserves G1–G9. This does not certify deployed widget fidelity or integrate DOM/APG dispatch. |
@@ -247,31 +241,28 @@ certified build.
 An optional [Lean Atlas view](docs/proof-map.md#optional-lean-atlas-view) runs against the same compiled roots in isolation.
 [MAR proof walkthrough](docs/proof-walkthrough.md) traces one guarantee through its definitions and key lemmas.
 
-## Policies awaiting owner review
+## Provisional policies
 
-Wave-3 simulator recommendations were approved on 2026-11-09; their scenario
-coefficients and provisional interaction rules remain unvalidated.
-The MAR, ADT, workload and interruption rules are implemented provisional specifications.
-The checks establish their stated behavior; clinical appropriateness and the
-uncalibrated rates remain for owner review in this single decision list.
+The MAR, ADT, workload and interruption rules are implemented, provisional
+specifications. The checks establish their stated behavior; their clinical
+appropriateness and the uncalibrated rates are not validated.
 
-| Decision | Implemented policy awaiting review |
+| Area | Implemented policy |
 |---|---|
-| MAR outcomes and timing | Owner approved wave-3 timing on 2026-11-09: [symmetric CMS windows and distinct clocks](docs/methods/workflow-phases.md#mar-timing). Criticality, holds, 20/45-minute re-offers, escalation and the legacy monitoring cutoff remain scenario policy. |
+| MAR outcomes and timing | [Symmetric CMS windows and distinct clocks](docs/methods/workflow-phases.md#mar-timing). Criticality, holds, 20/45-minute re-offers, escalation and the legacy monitoring cutoff remain scenario policy. |
 | MAR follow-up scope | Prescriber notification is nursing documentation only; live delivery and cross-shift dose ownership remain future work. |
 | ADT cancellation eligibility | [Administrative rules](docs/methods/adt.md#administrative-adt-extension): patient's latest ADT event, of the matching kind; positive exact ordinal; active destination beds; transfer cancellation requires the original bed empty and ready after cleaning. |
 | Clinical work after cancellation | Retain all documentation, orders and administrations with their original encounter links, including an encounter marked entered-in-error; append cancellation provenance. |
 | Swap compatibility | Two distinct admitted patients owning distinct active occupied beds; complete signed board scope; no additional unit/service compatibility restriction. |
 | ADT simulation and transport | Provisional movement/error rates and cleaning/transport delays; `adt.json` is an administrative stream, with physical transport represented separately and no change to bedside clinical effort. |
 | Workload dispatch and coverage | One serial clinician/coverage chain; priority/deadline/arrival ordering; task-boundary dispatch with event-boundary communication preemption; 15-minute hospital overlap; finite successor coverage and clinic weekend closure. ESI queue deadlines are 10/30/60 minutes for ESI ≤2/3/≥4. |
-| Workload scope and endpoints | Wave-3 source worlds include night/weekend cases; horizon schedules merge subsequent arrivals. Successors have private memory and explicit simulated handover acceptance; live human acceptance remains outside the model. Completed tasks use documentation endpoints; abandoned MAR attempts use service finish, carried doses use the coverage horizon. Result response requires completion. Missing source timing uses planned readiness. |
+| Workload scope and endpoints | Source worlds include night/weekend cases; horizon schedules merge subsequent arrivals. Successors have private memory and explicit simulated handover acceptance; live human acceptance remains outside the model. Completed tasks use documentation endpoints; abandoned MAR attempts use service finish, carried doses use the coverage horizon. Result response requires completion. Missing source timing uses planned readiness. |
 | Draft ownership and authority | Frames bind clinician, source patient and task; any workspace must remain selected and bound to that patient to restore. Current receipt rules filter stale evidence; changed chart data requires reconfirmation. Incomplete unsent drafts are discarded with reasons. Responsibility transfers only after the named recipient accepts, without sign authority or another clinician's draft. |
-| Interruption service and calibration | Role/activity minute-bin rates, channel service, fixed exposure, urgency/type mix, protected-popup triage and return costs are provisional; parameter provenance and opt-outs are in [wave-3 methods](docs/methods/wave3-simulation.md). Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
+| Interruption service and calibration | Role/activity minute-bin rates, channel service, fixed exposure, urgency/type mix, protected-popup triage and return costs are provisional; parameter provenance and opt-outs are in [simulation methods](docs/methods/wave3-simulation.md). Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
 | Commit and ADT protocol assumptions | [Models and storage contract](docs/methods/commit-protocol.md): sole writer, consistent imports, locked current snapshots and atomic durable publication; host refinement remains tested. |
 | Completion interaction rules | [Scenario checker](docs/methods/completion-checker.md): acknowledgment before commit and Back retention; general property 6 and patient-switch durability remain open. |
 | Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G9, safety-text preservation and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
 | Release and user-model choices | [Cadence](docs/methods/discovery-and-cadence.md) uses a provisional effect floor, movement proxy and auto-approval; [bounded learning and preferences](docs/methods/simulation.md) are uncalibrated. [Tool-driven arm E](docs/methods/agent-loop.md) stays opt-in: in the 35-decision B/E paired run B accepted 88.6% and E 0%, because every E sample hit its 120K cumulative token ceiling before submitting, a ceiling B did not have. [Arm R](docs/methods/rlm-night.md), an opt-in recursive-language-model agent with a confined REPL, submitted within budget on all 70 full-study samples but accepted 57/70 versus B’s 58/70, using 1.86× the input tokens and 1.43× the charged sample wall time. |
-
 
 The [full 35-decision paired B/R study](docs/methods/rlm-night.md#full-paired-results) accepted 81.4% for R versus 82.9% for B; the [Luna-root pilot](docs/methods/rlm-night.md#cheaper-model-pilots) accepted 2/7. R remains opt-in.
 
@@ -324,7 +315,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Architecture and trust boundaries | [Architecture](docs/architecture.md), [assurance](docs/assurance.md), [generated proof map](docs/proof-map.md) |
 | Setup, tests and CI | [Live validation](docs/methods/live-validation.md), [reproduction](docs/reproduction.md), [CI workflow](.github/workflows/ci.yml) |
 | Clinical scope and rules | [Workflow inventory](docs/methods/ehr-scope.md), [regulations](docs/regulations.md), [rule catalog](docs/rules/catalog.md) |
-| Simulation and calibration | [Bounded clinician](docs/methods/simulation.md), [workload/interruptions](docs/methods/workload-and-interruptions.md), [wave-3 clocks](docs/methods/wave3-simulation.md), [workflow phases](docs/methods/workflow-phases.md), [public-evidence calibration plan](docs/design/workflow-calibration.md) |
+| Simulation and calibration | [Bounded clinician](docs/methods/simulation.md), [workload/interruptions](docs/methods/workload-and-interruptions.md), [simulation clocks](docs/methods/wave3-simulation.md), [workflow phases](docs/methods/workflow-phases.md), [public-evidence calibration plan](docs/design/workflow-calibration.md) |
 | Clinical scenario policies | [Medication outcomes](docs/methods/medication-outcomes.md), [information needs](docs/methods/information-needs.md), [ADT](docs/methods/adt.md) |
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
 | Interface research | [UI library](docs/methods/ui-library.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |

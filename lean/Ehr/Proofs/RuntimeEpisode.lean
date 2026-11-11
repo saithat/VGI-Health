@@ -24,7 +24,9 @@ namespace BoundEpisode
 /-- New specification for owner review: the first state of the episode, the
 hydrated chart. `Workspace.bind` builds it from a fresh `init`, goes to the
 selected clinical screen, restores the workspace clock and binds the patient.
-It is the effective input of the hydrating API call, not an API output. -/
+It then restores the patient's stored draft: the human entries and the
+acknowledgments of the chart as the clinician last left it. It is the
+effective input of the hydrating API call, not an API output. -/
 def start (E : BoundEpisode) : State :=
   Workspace.bind E.spec E.prog E.facts E.user E.opened
 
@@ -66,6 +68,15 @@ def BoundEpisode.Stays (E : BoundEpisode) (s : State) (e : Event) : Prop :=
 instance (E : BoundEpisode) (s : State) (e : Event) : Decidable (E.Stays s e) := by
   unfold BoundEpisode.Stays; infer_instance
 
+/-- New specification for owner review: the events that the call hydrating a
+chart refuses with `Workspace.loading`: an acknowledgment, and a click on a
+commit button of the hydrated chart's screen. The clinician has not seen the
+chart that call loads. -/
+def loadingEvent (p : Program) (s : State) : Event → Bool
+  | .click id => Workspace.commitClick p s id
+  | .ack _ => true
+  | _ => false
+
 /-- New specification for owner review: **the states of one bound patient
 episode.** They are the hydrated chart `E.start`; the state the hydrating API
 call returns; every state a later API call returns for an event that is not
@@ -81,7 +92,8 @@ inductive InEpisode (E : BoundEpisode) : State → Prop
   /-- The hydrated chart. -/
   | hydrated : E.Hydrates → InEpisode E E.start
   /-- The state returned by the API call that hydrates the chart. Its event is
-  applied to the hydrated chart. -/
+  applied to the hydrated chart, unless it is refused (`loadingEvent`); then
+  the call returns the hydrated chart. -/
   | first (e : Event) : E.Hydrates → E.Stays E.start e → InEpisode E (E.next E.opened e)
   /-- A later API call with an event that is not workspace navigation. -/
   | event {s : State} (e : Event) : InEpisode E s → E.Stays s e → InEpisode E (E.next s e)
@@ -111,8 +123,10 @@ theorem workspace_core (sp p f u s e) (hb : Workspace.bound f s = true)
     (hn : workspaceEvent p f s e = false) :
     Workspace.step sp p f u s e = step sp p f u .human s e := by
   have hpat := bound_patient f s hb
+  have hy : Workspace.hydrates sp p f u s = false := by
+    simp only [Workspace.hydrates, hb, Bool.not_true, Bool.false_and]
   unfold Workspace.step
-  simp only [bind_of_bound sp p f u s hb]
+  simp only [hy, bind_of_bound sp p f u s hb]
   have hnone : (s.patientContext?.bind (·.patient?)).isNone = false := by
     cases hc : s.patientContext?.bind (·.patient?) with
     | none => simp [hc] at hpat
@@ -121,7 +135,7 @@ theorem workspace_core (sp p f u s e) (hb : Workspace.bound f s = true)
   | click id =>
     have ha : Workspace.action? p f s id = none := by
       simpa only [workspaceEvent, Option.isSome_eq_false_iff, Option.isNone_iff_eq_none] using hn
-    simp only [ha, hb, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
+    simp only [ha, hb, Bool.not_true, Bool.false_and, Bool.false_eq_true, ↓reduceIte]
   | enter comp v =>
     split <;> first
       | (rename_i heq; cases heq; done)
@@ -129,6 +143,41 @@ theorem workspace_core (sp p f u s e) (hb : Workspace.bound f s = true)
       | simp only [hb, ↓reduceIte]
   | search q => simp only [hnone, hb, Bool.false_eq_true, ↓reduceIte]
   | _ => simp only [hb, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
+
+/-- New specification for owner review: on the call that hydrates a chart,
+an event that is not workspace navigation is refused with the hydrated chart
+returned if it is an acknowledgment or a commit click, and is otherwise
+exactly one human step of the clinical interpreter on the hydrated chart. -/
+theorem workspace_first (sp p f u s e) (hy : Workspace.hydrates sp p f u s = true)
+    (hn : workspaceEvent p f (Workspace.bind sp p f u s) e = false) :
+    Workspace.step sp p f u s e =
+      if loadingEvent p (Workspace.bind sp p f u s) e
+      then (Workspace.bind sp p f u s, Workspace.loading)
+      else step sp p f u .human (Workspace.bind sp p f u s) e := by
+  have hb : Workspace.bound f (Workspace.bind sp p f u s) = true := by
+    simp only [Workspace.hydrates, Bool.and_eq_true] at hy
+    exact hy.2
+  have hpat := bound_patient f _ hb
+  have hnone : ((Workspace.bind sp p f u s).patientContext?.bind (·.patient?)).isNone = false := by
+    cases hc : (Workspace.bind sp p f u s).patientContext?.bind (·.patient?) with
+    | none => simp [hc] at hpat
+    | some _ => rfl
+  unfold Workspace.step
+  simp only [hy]
+  cases e with
+  | click id =>
+    have ha : Workspace.action? p f (Workspace.bind sp p f u s) id = none := by
+      simpa only [workspaceEvent, Option.isSome_eq_false_iff, Option.isNone_iff_eq_none] using hn
+    simp only [ha, hb, loadingEvent, Bool.not_true, Bool.true_and, Bool.false_eq_true, ↓reduceIte]
+    rfl
+  | enter comp v =>
+    split <;> first
+      | (rename_i heq; cases heq; done)
+      | (rename_i heq; cases heq; simp [workspaceEvent] at hn)
+      | simp only [hb, loadingEvent, Bool.false_eq_true, ↓reduceIte]
+  | search q => simp only [hnone, hb, loadingEvent, Bool.false_eq_true, ↓reduceIte]
+  | ack a => simp only [hb, loadingEvent, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
+  | _ => simp only [hb, loadingEvent, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
 
 /-- New specification for owner review: workspace navigation that is not
 refused leaves the chart: the returned state is not bound to any patient's
@@ -140,7 +189,7 @@ theorem navigation_leaves (sp p f u s id action) (f' : Facts)
     Workspace.bound f' (Workspace.step sp p f u s (.click id)).1 = false := by
   unfold Workspace.step
   simp only [ha, hpop, Option.isSome_none, Bool.false_eq_true, ↓reduceIte]
-  cases action <;> simp [Workspace.bound, Workspace.openPatient, Workspace.init]
+  cases action <;> simp [Workspace.bound, Workspace.openPatient, Workspace.showList, Workspace.init]
 
 /-- An API call whose state is the critical handler's or the interpreter's is,
 up to the critical workflow fields, no step or the core human step. -/
@@ -178,20 +227,24 @@ theorem episode_step (henabled : Workspace.enabled E.prog = true) (s : State) (e
   simp only [next, runStep, henabled, hb, Bool.not_true, Bool.and_false, Bool.false_eq_true,
     ↓reduceIte, workspace_core E.spec E.prog E.facts E.user s e hb hn]
 
-/-- New specification for owner review: the hydrating API call applies its
-event to the hydrated chart as one core human step. The critical-result
-handler is not offered an event before the chart is bound. -/
+/-- New specification for owner review: the hydrating API call. An
+acknowledgment or a commit click is refused and the call returns the hydrated
+chart. Every other event that is not workspace navigation is applied to the
+hydrated chart as one core human step. The critical-result handler is not
+offered an event before the chart is bound. -/
 theorem first_step (hyd : E.Hydrates) (e : Event) (hn : E.Stays E.start e) :
-    E.next E.opened e = E.toEpisode.next .human E.start e := by
-  have hw : Workspace.step E.spec E.prog E.facts E.user E.opened e =
-      Workspace.step E.spec E.prog E.facts E.user E.start e := by
-    unfold Workspace.step
-    simp only [bind_of_bound E.spec E.prog E.facts E.user E.start hyd.bound]
-    rfl
+    E.next E.opened e =
+      if loadingEvent E.prog E.start e then E.start else E.toEpisode.next .human E.start e := by
+  have hy : Workspace.hydrates E.spec E.prog E.facts E.user E.opened = true := by
+    simp only [Workspace.hydrates, hyd.unbound, Bool.not_false, Bool.true_and]
+    exact hyd.bound
   simp only [BoundEpisode.next, next, runStep, hyd.enabled, hyd.unbound, Bool.not_false,
-    Bool.and_self, ↓reduceIte, Option.getD_none, hw,
-    workspace_core E.spec E.prog E.facts E.user E.start e hyd.bound hn]
-  rfl
+    Bool.and_self, ↓reduceIte, Option.getD_none]
+  rw [workspace_first E.spec E.prog E.facts E.user E.opened e hy hn]
+  change (if loadingEvent E.prog E.start e = true then (E.start, Workspace.loading)
+      else step E.spec E.prog E.facts E.user .human E.start e).1 =
+    if loadingEvent E.prog E.start e = true then E.start else E.toEpisode.next .human E.start e
+  cases loadingEvent E.prog E.start e <;> rfl
 
 /-- New specification for owner review: every state of an episode has the
 patient context of the hydrated chart. No event inside the episode changes the
@@ -202,7 +255,9 @@ theorem episode_context {s : State} (h : InEpisode E s) :
   | hydrated _ => rfl
   | first e hyd hn =>
     rw [first_step E hyd e hn]
-    exact step_context ..
+    split
+    · rfl
+    · exact step_context ..
   | @event s e hs hn ih =>
     have hb : Workspace.bound E.facts s = true :=
       (bound_of_context E.facts ih).trans hs.hydrates.bound
@@ -242,6 +297,7 @@ theorem episode_runView {s : State} (h : InEpisode E s) :
 #print axioms InEpisode.hydrates
 #print axioms bound_patient
 #print axioms workspace_core
+#print axioms workspace_first
 #print axioms navigation_leaves
 #print axioms handled_or_core
 #print axioms episode_step

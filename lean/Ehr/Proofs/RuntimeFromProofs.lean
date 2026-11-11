@@ -70,16 +70,20 @@ theorem humanCaptured_from (h0 : Check.HumanCaptured ep.spec s₀) :
   | step actor e _ ih => exact Check.step_humanCaptured _ _ _ _ _ _ _ ih
   | wait d _ ih => exact ih
 
-/-- New specification for owner review: property 5's human-entry clause from `s₀`. -/
-theorem humanStepsByHuman_from
-    (hnone : ∀ x ∈ s₀.captured, ∀ el, ep.spec.element? x.element = some el → ¬ HumanMustEnter el)
-    (h0 : Check.HumanCaptured ep.spec s₀) : HumanStepsByHumanFrom ep s₀ := by
-  refine ⟨hnone, ?_⟩
+/-- New specification for owner review: property 5's per-step human-entry
+clause from a start whose human-only values are confirmed human entries. -/
+theorem humanEntries_from (h0 : Check.HumanCaptured ep.spec s₀) : HumanEntriesFrom ep s₀ := by
   intro s hs actor e x hx hnew el hel hh
   by_cases hn : actor = .human ∧ ∃ cid v, e = .enter cid v
   · exact hn
   · exact False.elim (hnew (Check.step_noNewHuman _ _ _ _ _ _ _
       (humanCaptured_from ep s₀ h0 s hs) hn x hx el hel hh))
+
+/-- New specification for owner review: property 5's human-entry clause from `s₀`. -/
+theorem humanStepsByHuman_from
+    (hnone : ∀ x ∈ s₀.captured, ∀ el, ep.spec.element? x.element = some el → ¬ HumanMustEnter el)
+    (h0 : Check.HumanCaptured ep.spec s₀) : HumanStepsByHumanFrom ep s₀ :=
+  ⟨hnone, humanEntries_from ep s₀ h0⟩
 
 /-- New specification for owner review: property 5's commit/acknowledgment clause from any `s₀`. -/
 theorem onlyHumanCommitsAndAcks_from : OnlyHumanCommitsAndAcksFrom ep s₀ :=
@@ -140,6 +144,7 @@ theorem interruptsOnce_from (h0 : s₀.popup? = none) : InterruptsOnceFrom ep s�
 #print axioms commitReviewsMet_from
 #print axioms commitScreenShowsReviews_from
 #print axioms humanCaptured_from
+#print axioms humanEntries_from
 #print axioms humanStepsByHuman_from
 #print axioms onlyHumanCommitsAndAcks_from
 #print axioms cosignIsSecondUser_from

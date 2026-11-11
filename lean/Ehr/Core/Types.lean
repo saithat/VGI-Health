@@ -917,6 +917,17 @@ structure CriticalDraft where
   text : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- One patient's unsigned work, kept while the clinician is outside that
+patient's chart: the captures and the alert acknowledgments of the chart as it
+was left. Commits, receipts and the popup are not kept; signed work is in the
+record. New specification for owner review (2026-11-11). -/
+structure PatientDraft where
+  /-- Source `Patient.id`, as in `PatientContext.patient?`. -/
+  patient : String
+  captured : List Captured
+  acked : List (AlertId × String)
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Interpreter state for one episode (one patient task). -/
 structure State where
   screen : ScreenId
@@ -941,6 +952,12 @@ structure State where
   clock : Nat
   /-- Present only for programs using in-UI patient selection. -/
   patientContext? : Option PatientContext := none
+  /-- Per-patient drafts of the signed-in session, written when the clinician
+  leaves a bound chart and read when the same patient is hydrated again. Only
+  `Ehr.Workspace` reads or writes it. Absent from JSON when `none`; it is
+  `none` whenever no draft is stored. Specification-surface change for owner
+  review (2026-11-11). -/
+  patientDrafts? : Option (List PatientDraft) := none
   criticalResults? : Option (List Multi.Critical.Ticket) := none
   /-- Draft critical-result action text, with named result and text fields. It is kept
   apart from `captured`, so it is never a clinical capture; only the

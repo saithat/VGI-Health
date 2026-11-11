@@ -35,14 +35,16 @@ read instead of six.
 
 ## 2. Definitions to review
 
-Behaviour (trusted code, about 350 lines):
+Behaviour (trusted code, about 430 lines):
 
 | Definition | Location | What to check |
 |---|---|---|
 | `runInit`, `runStep`, `runView` | `Ehr/Api.lean:17-34` | The order: the critical handler runs first (only on a bound state for workspace programs); otherwise `Workspace.step` or `step` with actor `.human`. |
 | `CriticalRuntime.handle` | `Ehr/Core/CriticalRuntime.lean` | Matches four `critical.*:<result id>` component IDs for a current ticket; refuses under an open popup; writes only `criticalResults?` and `criticalDrafts?`. |
-| `Workspace.enabled`, `bound`, `bind`, `step` | `Ehr/Core/Workspace.lean:24,129,135,148` | `bind` hydrates a fresh `init` for the selected patient, loads that patient's receipts from facts, and navigates to the destination screen. |
+| `Workspace.enabled`, `bound`, `bind`, `step` | `Ehr/Core/Workspace.lean` | `bind` hydrates a fresh `init` for the selected patient, loads that patient's receipts from facts, navigates to the destination screen, and restores that patient's stored draft. `step` refuses a commit click and an acknowledgment on the hydrating call. |
+| `Workspace.chart?`, `draft`, `others`, `save`, `restorable`, `restore`, `openPatient`, `showList`, `hydrates`, `commitClick`, `loading` | `Ehr/Core/Workspace.lean` | Per-patient drafts (2026-11-11). `save` keeps the captures and acknowledgments of a hydrated chart being left; `restore` puts back only confirmed human entries for spec elements the role may enter, and the stored acknowledgments. Commits, receipts and the popup are not kept. |
 | `CriticalDraft`, `State.criticalDrafts?` | `Ehr/Core/Types.lean` | Named `result`/`text` draft structure (2026-11-11), with byte-identical historical pair-array JSON and the option omitted when `none`. A change to the specification surface. |
+| `PatientDraft`, `State.patientDrafts?` | `Ehr/Core/Types.lean` | New type and field (2026-11-11), absent from JSON when `none`. A change to the specification surface. |
 
 Specification (in `Ehr/Proofs/Runtime*.lean` until moved):
 
@@ -55,9 +57,14 @@ Specification (in `Ehr/Proofs/Runtime*.lean` until moved):
 | `withCritical`, `forgetCritical` | `RuntimeModel.lean:66`, `RuntimeBlind.lean:12` | Replace or clear exactly the two critical fields. |
 | `Record`, `record` | `RuntimeRefinement.lean:50,58` | The fields an open popup protects: captured, commits, acked, receipts, popup. |
 | `next`, `FixedAlways`, `FixedEveryStep` | `RuntimeRefinement.lean:108,166,172` | Runtime analogues of `Episode.next`, `Props.Always`, `Props.EveryStep`, over human API calls. |
-| Episode model: `BoundEpisode`, `start`, `Hydrates`, `workspaceEvent`, `Stays`, `InEpisode` | `RuntimeEpisode.lean:18-80` | One patient's chart from hydration until the clinician leaves or switches it, with fixed facts. `opened` is any unbound state from which hydration succeeds, not only a reachable one; hydration rebuilds the chart from a fresh `init`, so this makes the theorems stronger. The hydrated chart `start` is in the episode although it is never an API output, and the hydrating call is measured from it. Refused navigation events (under a popup) are also excluded. `unselected_not_inEpisode` rules out the landing view. |
+| Episode model: `BoundEpisode`, `start`, `Hydrates`, `workspaceEvent`, `Stays`, `InEpisode` | `RuntimeEpisode.lean:18-103` | One patient's chart from hydration until the clinician leaves or switches it, with fixed facts. `opened` is any unbound state from which hydration succeeds, not only a reachable one; hydration rebuilds the chart from a fresh `init`, so this makes the theorems stronger. `start` includes the restored draft. `loadingEvent` (line 75) names the events the hydrating call refuses. The hydrated chart `start` is in the episode although it is never an API output, and the hydrating call is measured from it. Refused navigation events (under a popup) are also excluded. `unselected_not_inEpisode` rules out the landing view. |
+| `pending`, `remaining` | `RuntimeModel.lean:179,184` | The stored draft of the selected patient, which hydration restores, and the store hydration leaves. |
+| `Hydrated` | `RuntimeDrafts.lean:213` | The exact hydrating case of `Workspace.bind`. |
+| `sessionCaptured`, `sessionAcked`, `CallShape` | `RuntimeSession.lean:18,24,53` | One patient's work wherever it is (open chart or stored draft), and the exact cases of an API call. |
+| `Settled`, 4 `Session…` forms, `FixedCommitsByClick`, `SelectionGlobal` | `RuntimeGlobal.lean:20,169-207` | Invariants of API-reachable states, and properties 2, 5 and 11 across workspace navigation. Compare each `Session…` body with the `Fixed…` body of the same clause: `captured`/`acked` become `sessionCaptured pid`/`sessionAcked pid` for every patient; `SessionEnteredOnce` adds the `restorable` premise and reads the macro condition at `inputState`. |
+| `Unselected`, `WorkspaceOnly` | `RuntimeUnselected.lean:13,46` | New property: what "no patient data" means for `runView` before a patient is selected. The patient directory counts as navigation data. |
 | `ReachableFrom`, 14 `…From` forms | `RuntimeFrom.lean:21` | Core runs from an arbitrary start. Each `…From_start` equivalence (`XFrom ep ep.start ↔ Props.X ep`) is closed by a generic lemma, so the kernel checks the bodies agree. |
-| `EpisodeAlways`, `EpisodeEveryStep`, 14 `Episode…` properties, `EpisodeAccepted` | `RuntimeEpisodeRefinement.lean:106,115`, `RuntimeEpisodeProps.lean:20-109` | Same bodies as the `Fixed…` forms with episode reachability; per-step clauses cover only non-navigation calls. `EpisodeHumanStepsByHuman`'s first clause is about the hydrated chart, not `runInit`. Bodies use `view`; `episode_runView` proves it equals `runView` in every episode state. |
+| `EpisodeAlways`, `EpisodeEveryStep`, 14 `Episode…` properties, `EpisodeAccepted` | `RuntimeEpisodeRefinement.lean:127,137`, `RuntimeEpisodeProps.lean:20-121` | Same bodies as the `Fixed…` forms with episode reachability; per-step clauses cover only non-navigation calls. `EpisodeHumanStepsByHuman`'s first clause is about the hydrated chart, not `runInit`: every human-required value there is a confirmed human entry of the stored draft. Bodies use `view`; `episode_runView` proves it equals `runView` in every episode state. |
 | 14 `Fixed…` properties, `FixedAccepted` | `RuntimeOrdinary.lean:57-142` | Each repeats the `Props` body with `FixedReachable` and the API step. 11 are checked against the `Props` body by the kernel, because the proof passes the core property through unchanged. `FixedEnteredOnce`, `FixedHumanStepsByHuman`, `FixedOnlyHumanCommitsAndAcks` also drop `actor = .human` conjuncts, so compare those three by eye with `Props/Properties.lean:88,174,183`. |
 
 ## 3. Statements proposed for the catalog
@@ -68,15 +75,19 @@ All are in namespace `Ehr.Runtime`. Priority order:
    `T0_entry_values`, `T3_cosign_distinct`, `T2_receipts_sound`,
    `T2_shownOnCommit_shown`. A commit that is new relative to the API input
    satisfies the guard, entry, cosign and review obligations at `inputState`.
-   They do not claim the host displayed the hydrated state before the event.
-2. **A2/A4** (`Runtime.lean:105-196`): `A2_popup_holds` (a newly opened popup
+   With `commit_input` (`RuntimeHydration.lean`), `inputState` is the API
+   state at every commit, because the hydrating call refuses commits.
+2. **A2/A4** (`Runtime.lean:105-199`): `A2_popup_holds` (a newly opened popup
    has a firing, unacknowledged key at the effective input), `A2_view_shown`
    (every shown alert in `runView` is true; an unbound workspace view shows
    nothing), `A4_step`, `A4_run` (no passive popup in any `Reachable` state,
    with no acceptance premise).
 3. **Evidence origin**: `commit_core`, `ack_origin`, `receipt_origin`. The
-   wrappers never add a commit or an acknowledgment; a receipt in the output was
-   in the input, in the host's facts, or produced by `step`.
+   wrappers never add a commit. An acknowledgment in the output was in the
+   input, was stored for the selected patient and restored by hydration, or
+   was produced by `step`; `draft_origin` (`RuntimeSession.lean`) shows stored
+   acknowledgments come only from a chart being left. A receipt in the output
+   was in the input, in the host's facts, or produced by `step`.
 4. **`accepted_severityTiers`** (`RuntimeProperties.lean`): property 12 over
    `Reachable`, that is, any facts and every workspace state.
 5. **`popup_blocks`** (`RuntimeRefinement.lean:83`): with a popup open at the
@@ -90,14 +101,25 @@ All are in namespace `Ehr.Runtime`. Priority order:
 7. **`accepted_ordinary`** (`RuntimeOrdinary.lean:272`): checker acceptance
    implies `FixedAccepted` for an ordinary program, any facts, and any user of
    the program's role.
-8. **`accepted_episode`** (`RuntimeEpisodeAccepted.lean:81`): checker
+8. **`accepted_episode`** (`RuntimeEpisodeAccepted.lean:143`): checker
    acceptance implies `EpisodeAccepted` for a patient-selection program, any
    facts, any user of the program's role, and any pre-hydration state. It is
    proved directly, not through a refinement: `episode_not_core` shows episode
    states are never `Props.Reachable` (core runs have no patient context), and
    `Witness.start_history_not_core` shows the hydrated chart's Back history
    differs from every core run of the witness program. `episode_refines` gives
-   the weaker refinement to core runs from the hydrated chart.
+   the weaker refinement to core runs from the hydrated chart. It holds for
+   any stored draft, because hydration restores only confirmed human entries
+   for spec elements the role may enter.
+9. **Hydrating call** (`RuntimeHydration.lean`): `hydrating_refuses`,
+   `hydrating_adds_nothing`, `commit_input`.
+10. **`unselected_view`** (`RuntimeUnselected.lean`): no patient data is shown
+    before a patient is selected. A new property, not a counterpart of a
+    catalog entry.
+11. **`selection_global`** (`RuntimeGlobal.lean`): properties 2, 5 and 11
+    across workspace navigation, with the per-call theorems `session_acks`,
+    `session_captures`, `session_humanEntries` and `popup_kept`. No checker
+    premise.
 
 Not proposed: the concrete witnesses and regressions (`Runtime.Witness.*`,
 `Runtime.ClinicalWitness.*`), the static bundle `accepted_static`, and the
@@ -106,10 +128,10 @@ evidence outside the catalog.
 
 ## 4. Points that need a judgment
 
-- **Effective input.** For workspace programs a commit's obligations are proved
-  at the hydrated state, which the user may never have seen rendered. Decide
-  whether that is the intended contract or whether the host must paint the
-  hydrated state first.
+- **Effective input.** Decided 2026-11-11: the hydrating call refuses a commit
+  click and an acknowledgment, so a commit's obligations are proved at the
+  state the client sent (`commit_input`). The hydrating call can still apply an
+  entry or a navigation click to a chart the user has not seen rendered.
 - **Fixed facts.** Every ordinary-program property assumes the host does not
   replace facts between calls. Live updates while a popup is open are listed
   as an open proposal in the coverage note.
@@ -127,11 +149,17 @@ evidence outside the catalog.
   `critical_handle_reserved` and `accepted_critical_no_shadow` prove that every
   handler-matched event names no component of an accepted program. These new
   statements are specification surface for owner review, outside Comparator.
-- **Episode scope.** Reopening the same patient starts a new episode with no
-  captures or acknowledgments, so an acknowledged interruptive alert interrupts
-  again. Hydration jumps straight to the destination screen, skipping
-  intermediate prefills. Both are current behaviour; the per-episode theorems
-  describe it and do not endorse it.
+- **Episode scope.** Decided 2026-11-11: reopening the same patient starts a
+  new episode with that patient's human entries and acknowledgments restored,
+  so an acknowledged interruptive alert does not interrupt again unless its
+  fact changed. Prefill confirmations and commits are not restored, and
+  entries behind a signed commit stay in the draft; check that this is the
+  policy you want (coverage note, "Per-patient drafts"). Hydration jumps
+  straight to the destination screen, skipping intermediate prefills; the
+  owner accepted this.
+- **Host.** The theorems are about `runStep`. The live app's host replaces the
+  state with a fresh `init` when the clinician leaves a chart, which discards
+  the drafts; that code is outside Lean.
 - **Small handler items:** successful resolve now removes that result's draft;
   refusal retains it, and unrelated drafts are preserved (`UrgencyTests`).
   `CriticalDraft` uses named Lean fields while emitting/decoding the historical

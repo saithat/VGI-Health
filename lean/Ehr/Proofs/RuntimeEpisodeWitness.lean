@@ -68,7 +68,7 @@ theorem acknowledged_landmark :
 
 /-- New specification for owner review: property 2 per episode on the
 witness. Every later call that is not workspace navigation, not an entry and
-not a macro click keeps each confirmed capture. Compare `return_loses_capture`. -/
+not a macro click keeps each confirmed capture. Compare `return_empties_captured`. -/
 theorem acknowledged_keeps_captures (e : Event) (hstay : chartEpisode.Stays acknowledged e)
     (hentry : ∀ cid v, e ≠ .enter cid v)
     (hmacro : ∀ cid, e = .click cid →
@@ -81,7 +81,7 @@ theorem acknowledged_keeps_captures (e : Event) (hstay : chartEpisode.Stays ackn
 /-- New specification for owner review: properties 5 and 11 per episode on
 the witness. Every later call that is not workspace navigation keeps each
 acknowledgment, and changes the list only by an `ack` event. Compare
-`return_loses_ack`. -/
+`return_empties_acked`. -/
 theorem acknowledged_keeps_acks (e : Event) (hstay : chartEpisode.Stays acknowledged e) :
     (∀ p ∈ acknowledged.acked, p ∈ (chartEpisode.next acknowledged e).acked) ∧
     ((chartEpisode.next acknowledged e).acked ≠ acknowledged.acked → ∃ a, e = .ack a) :=
