@@ -591,7 +591,7 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
         let m := r.resumption.metrics
         let protocolWait := (workflow.map (·.waitingMs)).getD 0
         timings := timings ++ [Scheduling.withClocks (Scheduling.withInterruptions
-          (Workflow.withAdministration source (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs)) w.endMs m)
+          (Workflow.withAdministration source (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs)) w.endMs m protocolWait)
           (clinical + (workflow.map (·.activeMs)).getD 0) r.readingMs documentedMs
           { m with closureWaitMs := m.closureWaitMs + protocolWait } actor handover]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }

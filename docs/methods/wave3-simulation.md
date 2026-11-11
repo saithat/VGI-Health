@@ -30,6 +30,8 @@ Guarded workflow protocol phases ([workflow phases](workflow-phases.md)) are
 excluded from `klmDeciSec` too; in `clocks` their active phase time is counted
 as clinical service and their response wait as passive wait, so the partition
 still sums to task duration (wave-3 merge decision).
+Response waits also remain outside overtime: only the part of the passive tail
+after shift end is removed, preserving any active overrun before the wait.
 
 | New parameter | Value | Evidence classification |
 |---|---|---|
@@ -91,6 +93,10 @@ measure next-day queue carry-over alongside new arrivals. Independent daily
 simulations reset queues and do not measure that endpoint. The native CLI accepts
 explicit multi-day source dates and exports complete unserved tasks with
 `--carry-out`. No fixture/run data is tracked.
+Each task's clinical facts and selected-day MAR use its own `sourceDates` entry,
+falling back to that task's historical workday date. The shared directory loads
+the schedule-origin context file and calendar date once; it is an initial
+directory snapshot, not a per-task clinical date.
 
 ## Ownership and acceptance
 

@@ -108,4 +108,30 @@ def copiedOps := noteEntryOps (authored "copied" 181 1) "assessment" entryValue 
   (.enter "assessmentField" entryValue)).readingMs == read.readingMs
 #print axioms noteEntryOps
 #print axioms typedKeys
+
+-- A workflow response is a passive tail after all active phase work. Check
+-- both policies with the shift before, inside and after that tail; active
+-- overrun must remain overtime and the full wait must still delay dispatch.
+def responseTask (wait : Nat) : Task := { task with workflowPlan? := some {
+  kind := .refill, owner := "P1", delegateAccepted := true, phaseMs := 5000, responseWaitMs := wait } }
+def responseDay (wait shiftEnd : Nat) : DaySchedule := {
+  day := 1, persona := "P1", load := "quiet", tasks := [responseTask wait],
+  shifts? := some [{id := "day", startMs := 0, endMs := shiftEnd}] }
+def responseTiming (bounded : Bool) (wait shiftEnd : Nat) : Scheduling.Timing :=
+  let schedule := responseDay wait shiftEnd
+  let result := if bounded then
+    (Bounded.simulate fixtureSpec (fixtureProgram []) params schedule
+      (fun _ => Ehr.Examples.Tiny.facts) 7 {} Bounded.lexicalScent Discovery.helpDesk
+      none {mode := .fixedCost}).toDayResult
+    else simulate fixtureSpec (fixtureProgram []) params schedule
+      (fun _ => Ehr.Examples.Tiny.facts) 7 {mode := .fixedCost}
+  result.workload?.get!.timings.head!
+#guard [false, true].all fun bounded =>
+  let activeEnd := (responseTiming bounded 0 1000000).finishMs?.get!
+  [activeEnd - 1000, activeEnd, activeEnd + 30000, activeEnd + 60000].all fun shiftEnd =>
+    let row := responseTiming bounded 60000 shiftEnd
+    row.disposition == "finished" &&
+    row.finishMs? == some (activeEnd + 60000) &&
+    row.clocks?.get!.passiveWaitMs == 60000 &&
+    row.overtimeMs == activeEnd - shiftEnd
 end Ehr.Sim.Scheduling.Wave3Tests
