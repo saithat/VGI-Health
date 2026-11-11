@@ -95,13 +95,19 @@ def CommitScreenShowsReviewsFrom (ep : Episode) (s₀ : State) : Prop :=
   AlwaysFrom ep s₀ fun s => ∀ c, CommitButtonShown ep s c →
     ∀ rq ∈ ep.spec.reviews, rq.commit = c → rq.waivedBy? = none → ReviewMetIn ep s rq
 
+/-- New specification for owner review: the per-step clause of
+`Props.HumanStepsByHuman` from `s₀` (property 5): a new value for an element a
+human must enter comes from a human entry event. -/
+def HumanEntriesFrom (ep : Episode) (s₀ : State) : Prop :=
+  EveryStepFrom ep s₀ fun s actor e => ∀ x ∈ (ep.next actor s e).captured, x ∉ s.captured →
+    ∀ el, ep.spec.element? x.element = some el → HumanMustEnter el →
+      actor = .human ∧ ∃ cid v, e = .enter cid v
+
 /-- New specification for owner review: `Props.HumanStepsByHuman` from `s₀`
 (property 5). The first clause is about the captures already present at `s₀`. -/
 def HumanStepsByHumanFrom (ep : Episode) (s₀ : State) : Prop :=
   (∀ x ∈ s₀.captured, ∀ el, ep.spec.element? x.element = some el → ¬ HumanMustEnter el) ∧
-  EveryStepFrom ep s₀ fun s actor e => ∀ x ∈ (ep.next actor s e).captured, x ∉ s.captured →
-    ∀ el, ep.spec.element? x.element = some el → HumanMustEnter el →
-      actor = .human ∧ ∃ cid v, e = .enter cid v
+  HumanEntriesFrom ep s₀
 
 /-- New specification for owner review: `Props.OnlyHumanCommitsAndAcks` from `s₀` (property 5). -/
 def OnlyHumanCommitsAndAcksFrom (ep : Episode) (s₀ : State) : Prop :=

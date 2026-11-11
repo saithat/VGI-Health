@@ -14,23 +14,38 @@ is made and no screen between the start screen and `first` is prefilled. -/
 def chart (ep : Episode) (first : ScreenId) : State :=
   (goTo ep.spec ep.prog ep.facts ep.start first).1
 
-/-- Hydration returns its input, or the chart with the workspace clock and a
-patient context. -/
+/-- Hydration returns its input, or the chart with the selected patient's
+stored draft restored, the workspace clock, a patient context and the
+draft store without that draft. -/
 theorem bind_cases (sp p f u s) :
     Workspace.bind sp p f u s = s ∨
     ∃ first c, Workspace.bind sp p f u s =
-      { chart ⟨sp, p, f, u⟩ first with clock := s.clock, patientContext? := some c } := by
+      { Workspace.restore sp u (chart ⟨sp, p, f, u⟩ first) (pending s) with
+        clock := s.clock, patientContext? := some c, patientDrafts? := remaining s } := by
   unfold Workspace.bind
-  repeat' (first | exact Or.inl rfl | exact Or.inr ⟨_, _, rfl⟩ | split)
+  split
+  · exact Or.inl rfl
+  · rename_i c hc
+    have hp : pending s = Workspace.draft s (c.patient?.getD "") := by
+      simp only [pending, hc, Option.bind_some]
+    have hr : remaining s = Workspace.others s (c.patient?.getD "") := by
+      simp only [remaining, hc, Option.bind_some]
+    rw [hp, hr]
+    repeat' (first | exact Or.inl rfl | exact Or.inr ⟨_, _, rfl⟩ | split)
 
 variable (E : BoundEpisode)
 
 /-- New specification for owner review: the shape of the hydrated chart. It
-is `chart` for the screen `Workspace.bind` selects, with the clock of the
-opened state and a patient context. Every other field is the chart's. -/
+is `chart` for the screen `Workspace.bind` selects, with the stored draft of
+the selected patient restored (`Workspace.restore`: the human entries and the
+acknowledgments), the clock of the opened state, a patient context and the
+opened state's draft store without that draft. Every other field is the
+chart's. -/
 theorem start_eq (hyd : E.Hydrates) :
     ∃ first c, E.start =
-      { chart E.toEpisode first with clock := E.opened.clock, patientContext? := some c } := by
+      { Workspace.restore E.spec E.user (chart E.toEpisode first) (pending E.opened) with
+        clock := E.opened.clock, patientContext? := some c,
+        patientDrafts? := remaining E.opened } := by
   rcases bind_cases E.spec E.prog E.facts E.user E.opened with h | h
   · have hb := hyd.bound
     rw [BoundEpisode.start, h, hyd.unbound] at hb
@@ -49,7 +64,10 @@ theorem chart_critical (ep : Episode) (first : ScreenId) :
 theorem start_critical (hyd : E.Hydrates) : forgetCritical E.start = E.start := by
   obtain ⟨first, c, h⟩ := start_eq E hyd
   rw [h]
-  exact congrArg (fun x : State => { x with clock := E.opened.clock, patientContext? := some c })
+  exact congrArg (fun x : State =>
+    { Workspace.restore E.spec E.user x (pending E.opened) with
+      clock := E.opened.clock, patientContext? := some c,
+      patientDrafts? := remaining E.opened })
     (chart_critical E.toEpisode first)
 
 /-- New specification for owner review: **refinement within an episode.**
@@ -65,6 +83,9 @@ theorem episode_refines {s : State} (hs : InEpisode E s) :
     have h := congrArg Prod.fst
       (step_critical E.spec E.prog E.facts E.user .human E.start e none none)
     rw [first_step E hyd e hn]
+    split
+    · rw [start_critical E hyd]
+      exact .start
     change ReachableFrom E.toEpisode E.start (forgetCritical (E.toEpisode.next .human E.start e))
     have hc : forgetCritical (E.toEpisode.next .human E.start e) =
         E.toEpisode.next .human (forgetCritical E.start) e := h.symm
@@ -110,7 +131,8 @@ def EpisodeAlways (E : BoundEpisode) (P : State → Prop) : Prop :=
 calls of one bound patient episode. `Q s e s'` relates a state, an event that
 is not workspace navigation there, and the state the API returns. The first
 clause is the hydrating call: `s` is its effective input, the hydrated chart
-`E.start`, not the API input `E.opened`. The second clause is every later
+`E.start`, not the API input `E.opened`; a refused acknowledgment or commit
+click returns `E.start` itself. The second clause is every later
 call. Calls that leave or switch the chart are not covered. -/
 def EpisodeEveryStep (E : BoundEpisode) (Q : State → Event → State → Prop) : Prop :=
   (E.Hydrates → ∀ e, E.Stays E.start e → Q E.start e (E.next E.opened e)) ∧
@@ -134,7 +156,9 @@ theorem episode_everyStep {Q : State → Event → State → Prop}
     EpisodeEveryStep E Q := by
   refine ⟨fun hyd e hn => ?_, fun s hs e hn => ?_⟩
   · rw [first_step E hyd e hn]
-    exact hp hyd _ .start e
+    split
+    · exact hstutter _ e
+    · exact hp hyd _ .start e
   · apply hblind
     rcases episode_step E hs.hydrates.enabled s e (episode_bound E hs) hn with h | h
     · exact h ▸ hstutter _ e

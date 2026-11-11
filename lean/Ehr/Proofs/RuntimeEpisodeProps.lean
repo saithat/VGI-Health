@@ -26,7 +26,8 @@ def EpisodeCommitCapturesAll (E : BoundEpisode) : Prop :=
     ∀ rq ∈ E.spec.entries, rq.commit = c → EntryMetIn E.toEpisode s rq
 
 /-- New specification for owner review: property 2's retention clause per
-episode. Workspace navigation, which clears captures, is outside the episode. -/
+episode. Workspace navigation, which moves the captures to the patient's
+stored draft, is outside the episode. -/
 def EpisodeEnteredOnce (E : BoundEpisode) : Prop :=
   EpisodeEveryStep E fun s e s' =>
     (∀ cid v, e ≠ .enter cid v) →
@@ -52,11 +53,17 @@ def EpisodeCommitScreenShowsReviews (E : BoundEpisode) : Prop :=
     ∀ rq ∈ E.spec.reviews, rq.commit = c → rq.waivedBy? = none → ReviewMetIn E.toEpisode s rq
 
 /-- New specification for owner review: property 5's human-entry clause per
-episode. The first clause is about the hydrated chart instead of `runInit`:
-hydration prefills no human-required value. Every API event is human. -/
+episode. The first clause is about the hydrated chart instead of `runInit`.
+Hydration prefills no human-required value, but it restores the patient's
+stored draft: every human-required value in the hydrated chart is a confirmed
+human entry from the draft stored for the selected patient
+(`Ehr.Runtime.draft_origin` gives where stored entries come from). This
+replaces the earlier clause "the hydrated chart holds no such value", which
+restoring drafts makes false. Every API event is human. -/
 def EpisodeHumanStepsByHuman (E : BoundEpisode) : Prop :=
   (E.Hydrates → ∀ x ∈ E.start.captured, ∀ el,
-    E.spec.element? x.element = some el → ¬ HumanMustEnter el) ∧
+    E.spec.element? x.element = some el → HumanMustEnter el →
+      x ∈ (pending E.opened).captured ∧ x.byHuman = true ∧ x.confirmed = true) ∧
   EpisodeEveryStep E fun s e s' => ∀ x ∈ s'.captured, x ∉ s.captured →
     ∀ el, E.spec.element? x.element = some el → HumanMustEnter el → ∃ cid v, e = .enter cid v
 
@@ -156,12 +163,18 @@ theorem episode_commitScreenShowsReviews
   episode_always E (fun s hs => by
     simpa only [forgetCritical, commitButtonShown_critical, reviewMetIn_critical] using hs) h
 
-/-- New specification for owner review: property 5's human-entry clause per episode. -/
-theorem episode_humanStepsByHuman (h : E.Hydrates → HumanStepsByHumanFrom E.toEpisode E.start) :
+/-- New specification for owner review: property 5's human-entry clause per
+episode, from the restored-draft clause for the hydrated chart and the
+per-step clause of core runs from it. -/
+theorem episode_humanStepsByHuman
+    (hstart : E.Hydrates → ∀ x ∈ E.start.captured, ∀ el,
+      E.spec.element? x.element = some el → HumanMustEnter el →
+        x ∈ (pending E.opened).captured ∧ x.byHuman = true ∧ x.confirmed = true)
+    (h : E.Hydrates → HumanEntriesFrom E.toEpisode E.start) :
     EpisodeHumanStepsByHuman E :=
-  ⟨fun hyd => (h hyd).1, episode_everyStep E (fun _ _ _ hq => hq)
+  ⟨hstart, episode_everyStep E (fun _ _ _ hq => hq)
     (fun _ _ _ hx hn => absurd hx hn)
-    (fun hyd s hs e x hx hn el hel hm => ((h hyd).2 s hs .human e x hx hn el hel hm).2)⟩
+    (fun hyd s hs e x hx hn el hel hm => (h hyd s hs .human e x hx hn el hel hm).2)⟩
 
 /-- New specification for owner review: property 5's commit/acknowledgment clause per episode. -/
 theorem episode_onlyHumanCommitsAndAcks

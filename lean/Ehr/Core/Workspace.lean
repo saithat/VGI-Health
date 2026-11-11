@@ -3,7 +3,9 @@ import Ehr.Core.Navigation
 import Ehr.Core.Json
 
 /-! Patient selection surrounds the unchanged, patient-scoped clinical interpreter.
-The day directory never supplies clinical captures or review receipts. -/
+The day directory never supplies clinical captures or review receipts. Leaving
+a chart saves its captures and acknowledgments as that patient's draft in
+`State.patientDrafts?`; hydrating the same patient again restores them. -/
 namespace Ehr.Workspace
 
 /-- An actual workspace action, declared by the fixed semantic control builder. -/
@@ -118,12 +120,68 @@ def init (p : Program) : State :=
     expanded := [], tabSel := [], currentSlot := 0, clock := 0,
     patientContext? := some { activity := primary p } }
 
-/-- Opening another chart clears all patient-specific state before any data is loaded. -/
+/-- The patient whose chart the state holds: selected and hydrated. Unlike
+`bound`, this does not read the facts. New specification for owner review. -/
+def chart? (s : State) : Option String :=
+  s.patientContext?.bind fun c => if c.patient?.isSome && c.bound? == c.patient? then c.patient? else none
+
+/-- The stored draft of one patient; empty when none is stored. New
+specification for owner review. -/
+def draft (s : State) (id : String) : PatientDraft :=
+  ((s.patientDrafts?.getD []).find? (·.patient == id)).getD { patient := id, captured := [], acked := [] }
+
+/-- The per-patient store without one patient's draft. It is `none` when it
+would be empty, so states without drafts serialize as before. New
+specification for owner review. -/
+def others (s : State) (id : String) : Option (List PatientDraft) :=
+  let rest := (s.patientDrafts?.getD []).filter (·.patient != id)
+  if rest.isEmpty then none else some rest
+
+/-- The per-patient store after the clinician leaves the state's chart. A
+hydrated chart's captures and acknowledgments replace that patient's earlier
+draft; a chart with neither leaves no entry. Commits, receipts and the popup
+are not kept. Without a hydrated chart the store is unchanged. New
+specification for owner review. -/
+def save (s : State) : Option (List PatientDraft) :=
+  match chart? s with
+  | none => s.patientDrafts?
+  | some id =>
+    if s.captured.isEmpty && s.acked.isEmpty then others s id
+    else some ((others s id).getD [] ++ [{ patient := id, captured := s.captured, acked := s.acked }])
+
+/-- A stored capture is restored only if a human entered it and the signed-in
+role may still enter its element. Prefilled values, confirmed or not, are not
+restored: hydration computes them again from the record. New specification for
+owner review. -/
+def restorable (sp : Spec) (u : User) (x : Captured) : Bool :=
+  x.byHuman && x.confirmed && (sp.element? x.element).any (fun el => el.enteredBy.contains u.role)
+
+/-- The stored captures that hydration restores. -/
+def restored (sp : Spec) (u : User) (d : PatientDraft) : List Captured :=
+  d.captured.filter (restorable sp u)
+
+/-- Put a stored draft into a freshly hydrated chart. A restored entry
+replaces a fresh prefill of the same element and order line. The
+acknowledgments are the stored ones. Every other field is the fresh chart's.
+New specification for owner review. -/
+def restore (sp : Spec) (u : User) (fresh : State) (d : PatientDraft) : State :=
+  { fresh with
+    captured := fresh.captured.filter (fun y =>
+      !(restored sp u d).any (fun x => x.element == y.element && x.slot == y.slot)) ++ restored sp u d
+    acked := d.acked }
+
+/-- Opening a chart starts from an empty workspace state before any data is
+loaded. The chart being left, if any, is saved as that patient's draft. -/
 def openPatient (p : Program) (s : State) (id target : String) : State :=
-  { init p with clock := s.clock, patientContext? := some {
+  { init p with clock := s.clock, patientDrafts? := save s, patientContext? := some {
       patient? := some id, target? := some target,
       activity := (s.patientContext?.map (·.activity)).getD (primary p),
       query := (s.patientContext?.map (·.query)).getD "" } }
+
+/-- Showing a list leaves the chart: the workspace state is empty again and
+the chart being left, if any, is saved as that patient's draft. -/
+def showList (p : Program) (s : State) (activity : String) : State :=
+  { init p with clock := s.clock, patientDrafts? := save s, patientContext? := some { activity } }
 
 /-- A clinical page is usable only with facts loaded from the selected source Patient.id. -/
 def bound (f : Facts) (s : State) : Bool :=
@@ -131,7 +189,9 @@ def bound (f : Facts) (s : State) : Bool :=
   | some c => c.patient?.isSome && c.patient? == c.bound? && c.patient? == f.sourcePatientId?
   | none => false
 
-/-- Hydration initializes only the selected patient's interpreter. A stale response cannot bind. -/
+/-- Hydration initializes only the selected patient's interpreter, then
+restores that patient's stored draft and takes it out of the store. A stale
+response cannot bind. -/
 def bind (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) : State :=
   match s.patientContext? with
   | none => s
@@ -141,11 +201,32 @@ def bind (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) : State :=
     else
       let fresh := Ehr.init sp p f u
       let first := if p.screens.any (·.id == "chartSummary") then "chartSummary" else c.target?.getD p.start
-      let entered := (goTo sp p f fresh first).1
-      { entered with clock := s.clock, patientContext? := some { c with bound? := c.patient? } }
+      let entered := restore sp u (goTo sp p f fresh first).1 (draft s (c.patient?.getD ""))
+      { entered with clock := s.clock, patientContext? := some { c with bound? := c.patient? },
+                     patientDrafts? := others s (c.patient?.getD "") }
 
-/-- Workspace navigation cannot acknowledge a clinical popup or operate without a patient. -/
+/-- This call hydrates the chart: the incoming state is not bound to the
+facts' patient and binding it gives a state that is. New specification for
+owner review. -/
+def hydrates (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) : Bool :=
+  !bound f s && bound f (bind sp p f u s)
+
+/-- A click on a commit button of the current screen. New specification for
+owner review. -/
+def commitClick (p : Program) (s : State) (id : CompId) : Bool :=
+  (p.compsOf s.screen).any fun c => c.id == id && match c.kind with
+    | .button (.commit _) => true
+    | _ => false
+
+/-- The refusal of a commit click or an acknowledgment on the call that
+hydrates a chart, and of a search before the chart is loaded. -/
+def loading : StepResult := .blocked "Chart is loading"
+
+/-- Workspace navigation cannot acknowledge a clinical popup or operate
+without a patient. The call that hydrates a chart refuses a commit click and
+an acknowledgment: the clinician has not yet seen the chart. -/
 def step (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) (e : Event) : State × StepResult :=
+  let first := hydrates sp p f u s
   let s := bind sp p f u s
   match e with
   | .click id =>
@@ -154,9 +235,10 @@ def step (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) (e : Event
       if s.popup?.isSome then (s, .blocked "Acknowledge the clinical alert before leaving this chart") else
       match action with
       | .openPatient patient target => (openPatient p s patient target, .ok)
-      | .showList activity => ({ init p with clock := s.clock, patientContext? := some { activity } }, .ok)
+      | .showList activity => (showList p s activity, .ok)
     | none =>
       if !bound f s then (s, .blocked "Select a patient before opening clinical work") else
+      if first && commitClick p s id then (s, loading) else
       Ehr.step sp p f u .human s e
   | .scroll _ => if !bound f s then (s, .ok) else Ehr.step sp p f u .human s e
   | .enter "workspace.search" (.text query) =>
@@ -166,7 +248,10 @@ def step (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) (e : Event
   | .search query =>
     if (s.patientContext?.bind (·.patient?)).isNone then
       ({ s with patientContext? := some { (s.patientContext?.getD {}) with query := query } }, .ok)
-    else if bound f s then Ehr.step sp p f u .human s e else (s, .blocked "Chart is loading")
+    else if bound f s then Ehr.step sp p f u .human s e else (s, loading)
+  | .ack _ =>
+    if !bound f s then (s, .blocked "Select a patient before clinical entry") else
+    if first then (s, loading) else Ehr.step sp p f u .human s e
   | _ => if bound f s then Ehr.step sp p f u .human s e else (s, .blocked "Select a patient before clinical entry")
 
 end Ehr.Workspace

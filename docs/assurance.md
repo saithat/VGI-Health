@@ -19,11 +19,16 @@ every program; the other nine are proved for programs without patient selection
 run with fixed facts (`accepted_ordinary`). With patient selection, all nine
 are proved per bound patient episode (`accepted_episode`): from the hydration
 of one patient's chart until the clinician leaves or switches it, with fixed
-facts. In their global form five of the nine (1, 2, 5, 9, 11) keep their
-kernel-checked counterexamples, because leaving a chart clears that patient's
-state and the landing view shows no chart; the global form of the other four
-is not stated. The owner approved the per-episode scope on 2026-11-11; the new
-statements await review. The critical-result handler was repaired on
+facts. Leaving a chart keeps that patient's unsigned entries and alert
+acknowledgments as a draft for the signed-in session and reopening the chart
+restores them; signed work is not restored. Across such navigation, properties
+2, 5 and 11 are proved with each patient's work read from the open chart or
+the draft (`selection_global`). The call that loads a chart refuses commits
+and acknowledgments, and no patient data is shown before a patient is selected
+(`unselected_view`). Properties 1 and 9 keep their global counterexamples on
+the landing view; the global form of the other four is not stated. The owner
+decided these points on 2026-11-11; the new statements await review, and the
+live app's host does not keep drafts yet. The critical-result handler was repaired on
 2026-11-10: its action text is a draft outside `captured`, and it is refused
 while an alert popup is open.
 
