@@ -1,16 +1,18 @@
 import Ehr.Proofs.RuntimeWitnesses
 
-/-! A clinical alert counterexample that avoids trusting evaluation of
-reprStr (its pretty printer contains opaque partial functions). The handler
-changes a confirmed coded capture into text, so the key's known-true prefix
-becomes unknown. Distinct prefixes suffice for a kernel proof. Every
-declaration is a new specification for owner review, outside Comparator. -/
+/-! Regression for the former clinical-key counterexample. The spec declares a
+coded element named like a critical-result action endpoint, and a clinical
+alert reads it. The handler used to overwrite that capture with text while the
+alert popup was open, leaving the popup with a key that no longer fired. It is
+now refused under the popup, and afterwards stores a draft without touching
+the capture. Every declaration is a new specification for owner review,
+outside Comparator. -/
 
 namespace Ehr.Runtime.ClinicalWitness
 open Ehr Props Check
 
-/-- New specification for owner review: a clinical predicate on the element
-that the critical-result handler can overwrite. The namespace is not reserved
+/-- New specification for owner review: a clinical predicate on an element
+named like a critical-result action endpoint. The namespace is not reserved
 by the checker for element IDs. -/
 def predicate : ClinicalPredicate := .capturedCode "critical.action:k1" 0 "ready"
 
@@ -43,9 +45,10 @@ def ready : State :=
 /-- New specification for owner review: open the alert for its known-true key. -/
 def opened : State := (runStep (input ready (.click "alert"))).state
 
-/-- New specification for owner review: the handler replaces the code with
-text while keeping the previous popup, changing its key's clinical snapshot. -/
-def documented : State := (runStep (input opened Witness.action)).state
+/-- New specification for owner review: acknowledge the alert, then send the
+critical-result entry that names the declared element. -/
+def documented : State :=
+  (runStep (input (runStep (input opened (.ack "clinicalAlert"))).state Witness.action)).state
 
 /-- New specification for owner review: the clinical-key witness is accepted. -/
 theorem accepted : check spec none program program = .ok := by decide
@@ -56,40 +59,37 @@ theorem user_role : Examples.Tiny.user.role = program.role := by decide
 /-- New specification for owner review: a real fixed-facts deployed run. -/
 theorem reachable :
     FixedReachable ⟨spec, program, Witness.facts, Examples.Tiny.user⟩ documented :=
-  .event Witness.action (.event (.click "alert")
-    (.event (.enter "assessmentField" (.code "ready")) .start))
+  .event Witness.action (.event (.ack "clinicalAlert") (.event (.click "alert")
+    (.event (.enter "assessmentField" (.code "ready")) .start)))
 
-/-- New specification for owner review: the handler changes the clinical
-predicate from known true to unknown, and the core keeps unknown alerts active. -/
-theorem clinical_changed :
+/-- New specification for owner review: with the clinical popup open, the
+critical-result entry is refused and the state, including the popup key and
+the capture it was computed from, is unchanged. -/
+theorem blocked_under_popup :
+    runStep (input opened Witness.action) =
+      { state := opened, result := .blocked "popup: acknowledge the alert first" } :=
+  popup_blocks_ordinary (input opened Witness.action) rfl (by decide) rfl
+
+/-- New specification for owner review: after the acknowledgment the entry is
+stored as a draft. The declared coded capture is not overwritten, so the
+clinical predicate stays known true. -/
+theorem clinical_unchanged :
     clinicalEval Witness.facts opened predicate = some true ∧
-    clinicalEval Witness.facts documented predicate = none := by decide
+    clinicalEval Witness.facts documented predicate = some true ∧
+    documented.captured = ready.captured ∧
+    documented.criticalDrafts? = some [("k1", "called ICU")] := by decide
 
-/-- New specification for owner review: an accepted ordinary program reaches
-a popup whose key is not in any matching rule's current clinical keys.
-This is a kernel counterexample to runtime AlertsOnlyWhenTrue at fixed facts. -/
-theorem stale_clinical_key :
-    ∃ a k, documented.popup? = some (a, k) ∧
-      ∀ al ∈ spec.alerts, al.id = a → k ∉ alertKeys Witness.facts documented al.cond := by
-  refine ⟨"clinicalAlert", "clinical:true:" ++
-    reprStr (Witness.facts.clinical?, Witness.facts.artifactBindings?, ready.captured), rfl, ?_⟩
-  intro al hal _
-  have he : al = Scalar.alert (.clinical predicate) .interruptive := by
-    simpa only [spec, Scalar.spec, List.mem_singleton] using hal
-  subst al
-  change _ ∉ ["clinical:unknown:" ++
-    reprStr (Witness.facts.clinical?, Witness.facts.artifactBindings?, documented.captured)]
-  simp only [List.mem_singleton]
-  intro he
-  have hp := congrArg (fun s : String => s.toList.take 10) he
-  simp only [String.toList_append] at hp
-  change ['c', 'l', 'i', 'n', 'i', 'c', 'a', 'l', ':', 't'] =
-    ['c', 'l', 'i', 'n', 'i', 'c', 'a', 'l', ':', 'u'] at hp
-  contradiction
+/-- New specification for owner review: the former counterexample program now
+has runtime property 10, by the general theorem for accepted ordinary programs. -/
+theorem alerts_only_when_true :
+    FixedAlertsOnlyWhenTrue ⟨spec, program, Witness.facts, Examples.Tiny.user⟩ :=
+  (accepted_ordinary spec none program program accepted rfl Witness.facts Examples.Tiny.user
+    user_role).alertsOnlyWhenTrue
 
 #print axioms accepted
 #print axioms user_role
 #print axioms reachable
-#print axioms clinical_changed
-#print axioms stale_clinical_key
+#print axioms blocked_under_popup
+#print axioms clinical_unchanged
+#print axioms alerts_only_when_true
 end Ehr.Runtime.ClinicalWitness

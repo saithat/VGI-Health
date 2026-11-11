@@ -17,28 +17,43 @@ def tickets (f : Facts) (s : State) : List Ticket :=
 def effectiveFacts (f : Facts) (s : State) : Facts :=
   { f with now := now f s, criticalResults? := some (tickets f s) }
 
+/-- The drafted action text for one result, read from `State.criticalDrafts?`.
+It is never read from `State.captured`. -/
 def actionText (s : State) (id : String) : String :=
-  ((s.captured.find? (fun c => c.element == "critical.action:" ++ id)).map fun c =>
-    match c.value with | .text text => text | _ => "").getD ""
+  (((s.criticalDrafts?.getD []).find? (fun d => d.1 == id)).map (·.2)).getD ""
+
+/-- The draft list after documenting `text` for result `id`: one draft per
+result, the newest first. -/
+def setDraft (s : State) (id text : String) : List (String × String) :=
+  (id, text) :: (s.criticalDrafts?.getD []).filter (fun d => d.1 != id)
+
+/-- The refusal while an alert popup is open; the same message as `stepCore`. -/
+def popupBlocked : StepResult := .blocked "popup: acknowledge the alert first"
 
 /-- A separate workflow endpoint, using the same executable multi-actor reducer.
-Ordinary alert acknowledgment still goes to the original interpreter. -/
+Ordinary alert acknowledgment still goes to the original interpreter. A handled
+event changes only `criticalResults?` and `criticalDrafts?`; the action text is
+a draft, not a clinical capture. While an alert popup is open, every event this
+handler matches is refused with the state unchanged. Events it does not match
+return `none` and go to the original interpreter. -/
 def handle (f : Facts) (u : User) (s : State) (e : Event) : Option (State × StepResult) := do
   let ts := tickets f s
   match e with
   | .enter comp (.text text) =>
     let t ← ts.find? (fun t => comp == "critical.action:" ++ t.result.id)
-    if !authorized t u.id then return (s, .blocked "responsible clinician only")
-    return ({ s with captured :=
-      { element := comp, slot := 0, value := .text text, byHuman := true, confirmed := true } ::
-        s.captured.filter (·.element != comp), criticalResults? := some ts }, .ok)
+    if s.popup?.isSome then return (s, popupBlocked)
+    else if !authorized t u.id then return (s, .blocked "responsible clinician only")
+    else return ({ s with criticalDrafts? := some (setDraft s t.result.id text),
+                          criticalResults? := some ts }, .ok)
   | .click comp =>
     let t ← ts.find? fun t => ["critical.receive:", "critical.resolve:", "critical.escalate:"].any
       (fun head => comp == head ++ t.result.id)
-    let updated := if comp == "critical.escalate:" ++ t.result.id then advance (now f s) t
-      else step (now f s) u.id t (if comp == "critical.receive:" ++ t.result.id then .receive
-        else .resolve (actionText s t.result.id))
-    let next := { s with criticalResults? := some (ts.map fun row => if row.result.id == t.result.id then updated else row) }
-    return (next, if updated == t then .blocked "receipt, responsible clinician and documented action required; escalation only at deadline" else .ok)
+    if s.popup?.isSome then return (s, popupBlocked)
+    else
+      let updated := if comp == "critical.escalate:" ++ t.result.id then advance (now f s) t
+        else step (now f s) u.id t (if comp == "critical.receive:" ++ t.result.id then .receive
+          else .resolve (actionText s t.result.id))
+      let next := { s with criticalResults? := some (ts.map fun row => if row.result.id == t.result.id then updated else row) }
+      return (next, if updated == t then .blocked "receipt, responsible clinician and documented action required; escalation only at deadline" else .ok)
   | _ => none
 end Ehr.CriticalRuntime

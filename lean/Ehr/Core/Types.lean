@@ -934,6 +934,11 @@ structure State where
   /-- Present only for programs using in-UI patient selection. -/
   patientContext? : Option PatientContext := none
   criticalResults? : Option (List Multi.Critical.Ticket) := none
+  /-- Draft critical-result action text, as (result id, text) pairs. It is kept
+  apart from `captured`, so it is never a clinical capture; only the
+  critical-result handler and its renderer read it. Absent from JSON when
+  `none`. Specification-surface change for owner review (2026-11-10). -/
+  criticalDrafts? : Option (List (String × String)) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A user (or macro) action. -/

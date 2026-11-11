@@ -114,7 +114,11 @@ timeliness monitoring must refine this executable model.
 The canonical semantic renderer supplies receipt, escalation status, documented
 action and resolution controls. The shared native/WASM `runStep` API routes these
 to the multi-actor reducer independently of the certified commit interpreter.
-Workflow state is episode state, not a server notification ledger. Exact source snapshot identity prevents a corrected observation from inheriting an earlier resolution. Clinical
+Workflow state is episode state, not a server notification ledger. The
+documented action text is a draft in `State.criticalDrafts?`, never a clinical
+capture, and resolution reads it from there. While an alert popup is open these
+controls are refused, like every other non-acknowledgment event
+([runtime coverage](../methods/runtime-coverage.md)). Exact source snapshot identity prevents a corrected observation from inheriting an earlier resolution. Clinical
 commits and `ackResult` do not resolve it. A critical FHIR flag (`HH`, `LL`, `AA`)
 creates a warning even without routing; absent recipients leave an explicit
 manual-notification finding and cannot authorize resolution. The synthetic

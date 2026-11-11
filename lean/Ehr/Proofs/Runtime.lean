@@ -99,8 +99,9 @@ theorem new_receipt_core (i : StepInput) (r : Receipt)
     contradiction
 
 /-- New specification for owner review: runtime A2 at popup creation, using
-the effective input. It does not assert truth of an existing popup's key after
-a critical-result capture changes the clinical snapshot. -/
+the effective input. It does not by itself assert that an existing popup's key
+still fires later; for ordinary fixed-facts runs that is
+`ordinary_alertsOnlyWhenTrue`. -/
 theorem A2_popup_holds (i : StepInput) (a : AlertId) (k : String)
     (hnew : i.state.popup? ≠ some (a, k))
     (hpop : (runStep i).state.popup? = some (a, k)) :

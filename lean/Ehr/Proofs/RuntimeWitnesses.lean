@@ -1,10 +1,11 @@
-import Ehr.Proofs.Runtime
-import Ehr.Check.Sound
+import Ehr.Proofs.RuntimeOrdinary
 
-/-! Kernel-reduced counterexamples for deployed execution. Every declaration
-here is a new specification for owner review, outside Comparator. All witnesses
-use accepted programs and actual runs from runInit; no fabricated popup state
-is assumed. `decide` is confined to these concrete finite computations. -/
+/-! Kernel-reduced witnesses for deployed execution. Every declaration here is
+a new specification for owner review, outside Comparator. All witnesses use
+accepted programs and actual runs from runInit; no fabricated popup state is
+assumed. `decide` is confined to these concrete finite computations. The
+ordinary witness is a regression for the repaired critical-result handler; the
+workspace witnesses are counterexamples to global runtime properties. -/
 
 namespace Ehr.Runtime.Witness
 open Ehr Props Check
@@ -27,11 +28,6 @@ def facts : Facts :=
 /-- New specification for owner review: the exact handler entry event. -/
 def action : Event := .enter "critical.action:k1" (.text "called ICU")
 
-/-- New specification for owner review: the extra confirmed human capture. -/
-def capture : Captured :=
-  { element := "critical.action:k1", slot := 0, value := .text "called ICU",
-    byHuman := true, confirmed := true }
-
 /-- New specification for owner review: API input assembly for the fixed run. -/
 def input (s : State) (e : Event) : StepInput :=
   ⟨spec, program, facts, Examples.Tiny.user, s, e⟩
@@ -43,8 +39,12 @@ def initial : State := runInit ⟨spec, program, facts, Examples.Tiny.user⟩
 component, before documenting a critical result. -/
 def opened : State := (runStep (input initial (.click "alert"))).state
 
-/-- New specification for owner review: document while the popup stays open. -/
-def documented : State := (runStep (input opened action)).state
+/-- New specification for owner review: acknowledge the open alert. -/
+def cleared : State := (runStep (input opened (.ack "clinicalAlert"))).state
+
+/-- New specification for owner review: document the action after the
+acknowledgment. -/
+def documented : State := (runStep (input cleared action)).state
 
 /-- New specification for owner review: the fixed ordinary witness is accepted. -/
 theorem accepted : check spec none program program = .ok := by decide
@@ -55,41 +55,40 @@ theorem opened_popup : opened.popup?.isSome = true := by decide
 /-- New specification for owner review: this is a fixed-facts runtime run. -/
 theorem documented_reachable :
     FixedReachable ⟨spec, program, facts, Examples.Tiny.user⟩ documented :=
-  .event action (.event (.click "alert") .start)
+  .event action (.event (.ack "clinicalAlert") (.event (.click "alert") .start))
 
-/-- New specification for owner review: a checked program reaches a capture
-with no spec element, refuting the captured-value clause of WritesAllowed. -/
-theorem writes_not_allowed :
-    Examples.Tiny.user.role = program.role ∧ capture ∈ documented.captured ∧
-    spec.element? capture.element = none := by decide
+/-- New specification for owner review: regression for the former popup
+counterexample. With the alert popup open, the critical-result entry is
+refused by the API exactly as by the core interpreter, and the state is unchanged. -/
+theorem popup_blocks_action :
+    runStep (input opened action) =
+      { state := opened, result := .blocked "popup: acknowledge the alert first" } ∧
+    step spec program facts Examples.Tiny.user .human opened action =
+      (opened, .blocked "popup: acknowledge the alert first") := by decide
 
-/-- New specification for owner review: even this ordinary fixed-facts
-runtime state has no exact core reachable counterpart. A wholesale identity
-refinement is impossible because core WritesAllowed excludes its extra capture. -/
-theorem not_core_reachable :
-    ¬ Props.Reachable ⟨spec, program, facts, Examples.Tiny.user⟩ documented := by
-  intro hs
-  have hw := (Check.accepted_writesOnly spec none program program accepted).2
-    facts Examples.Tiny.user writes_not_allowed.1 documented hs
-  obtain ⟨el, hel, _⟩ := hw.1 capture writes_not_allowed.2.1
-  rw [writes_not_allowed.2.2] at hel
-  contradiction
+/-- New specification for owner review: regression for the former
+writes-not-allowed counterexample. After the acknowledgment the entry is
+accepted; its text is a draft, `captured` is unchanged, and every capture is
+for a spec element. -/
+theorem action_is_draft :
+    (runStep (input cleared action)).result = .ok ∧
+    documented.captured = opened.captured ∧
+    documented.criticalDrafts? = some [("k1", "called ICU")] ∧
+    ∀ x ∈ documented.captured, (spec.element? x.element).isSome = true := by decide
 
-/-- New specification for owner review: the popup-blocks rule fails in a
-reachable state of an accepted ordinary program. The core refuses the event,
-while runStep returns ok, changes captures and retains the open popup. -/
-theorem popup_does_not_block :
-    (step spec program facts Examples.Tiny.user .human opened action).2 =
-      .blocked "popup: acknowledge the alert first" ∧
-    (runStep (input opened action)).result = .ok ∧
-    documented.captured ≠ opened.captured ∧ documented.popup? = opened.popup? := by decide
+/-- New specification for owner review: the handler authorizes by responsible
+or covering user ID, not by role. An RN signed in with the responsible ID may
+still draft the action text; this now changes only critical workflow state. -/
+theorem role_not_checked :
+    let nurse : StepInput := { input cleared action with user := { Examples.Tiny.user with role := .rn } }
+    (runStep nurse).result = .ok ∧ (runStep nurse).state.captured = cleared.captured := by decide
 
-/-- New specification for owner review: the responsible clinician's role is
-not checked by the critical handler, even with the clinical popup open. -/
-theorem nurse_can_document :
-    (runStep { input opened action with user := { Examples.Tiny.user with role := .rn } }).result = .ok ∧
-    capture ∈ (runStep { input opened action with
-      user := { Examples.Tiny.user with role := .rn } }).state.captured := by decide
+/-- New specification for owner review: the former counterexample program now
+has the runtime writes property, by the general theorem for accepted ordinary
+programs. -/
+theorem writes_allowed : FixedWritesAllowed ⟨spec, program, facts, Examples.Tiny.user⟩ :=
+  (accepted_ordinary spec none program program accepted rfl facts Examples.Tiny.user
+    (by decide)).writesAllowed
 
 /-- New specification for owner review: fixed workspace witness program. -/
 def workspace : Program := { program with patientSelection? := some true }
@@ -202,10 +201,10 @@ theorem passive_landing_reachable :
 #print axioms accepted
 #print axioms opened_popup
 #print axioms documented_reachable
-#print axioms writes_not_allowed
-#print axioms not_core_reachable
-#print axioms popup_does_not_block
-#print axioms nurse_can_document
+#print axioms popup_blocks_action
+#print axioms action_is_draft
+#print axioms role_not_checked
+#print axioms writes_allowed
 #print axioms workspace_accepted
 #print axioms acknowledged_reachable
 #print axioms return_loses_capture

@@ -61,25 +61,59 @@ theorem bind_of_bound (sp p f u s) (h : Workspace.bound f s = true) :
       exact h.1.2.symm
     simp [Workspace.bind, hc, he]
 
-/-- New specification for owner review: a handled critical-result event adds
-no commit, acknowledgment, receipt or popup, even when it changes captures. -/
-theorem critical_evidence (f u s e out)
+/-- New specification for owner review: the state with its two critical-result
+workflow fields replaced and every other field kept. -/
+def withCritical (s : State) (c : Option (List Multi.Critical.Ticket))
+    (d : Option (List (String × String))) : State :=
+  { s with criticalResults? := c, criticalDrafts? := d }
+
+/-- New specification for owner review: a handled critical-result event
+changes only the two critical workflow fields. In particular it preserves
+`captured`, `commits`, `acked`, `receipts`, `popup?` and `screen`. -/
+theorem critical_frame (f u s e out)
     (h : CriticalRuntime.handle f u s e = some out) :
-    evidence out.1 = evidence s := by
+    out.1 = withCritical s out.1.criticalResults? out.1.criticalDrafts? := by
   unfold CriticalRuntime.handle at h
   split at h
   · dsimp only [Bind.bind, Option.bind, Pure.pure] at h
     split at h
     · simp at h
     · dsimp only at h
-      split at h <;> cases h <;> rfl
+      repeat' split at h
+      all_goals cases h; rfl
   · dsimp only [Bind.bind, Option.bind, Pure.pure] at h
     split at h
     · simp at h
-    · simp only [Option.some.injEq] at h
-      rw [← h]
-      rfl
+    · dsimp only at h
+      repeat' split at h
+      all_goals cases h; rfl
   · simp_all
+
+/-- New specification for owner review: while an alert popup is open, every
+event the critical-result handler matches is refused with the state unchanged,
+using the interpreter's own popup message. -/
+theorem critical_popup (f u s e out) (hp : s.popup?.isSome = true)
+    (h : CriticalRuntime.handle f u s e = some out) :
+    out = (s, .blocked "popup: acknowledge the alert first") := by
+  unfold CriticalRuntime.handle at h
+  split at h
+  · dsimp only [Bind.bind, Option.bind, Pure.pure] at h
+    split at h
+    · simp at h
+    · simpa only [hp, ↓reduceIte, Option.some.injEq, CriticalRuntime.popupBlocked, eq_comm] using h
+  · dsimp only [Bind.bind, Option.bind, Pure.pure] at h
+    split at h
+    · simp at h
+    · simpa only [hp, ↓reduceIte, Option.some.injEq, CriticalRuntime.popupBlocked, eq_comm] using h
+  · simp_all
+
+/-- New specification for owner review: a handled critical-result event adds
+no commit, acknowledgment, receipt or popup. -/
+theorem critical_evidence (f u s e out)
+    (h : CriticalRuntime.handle f u s e = some out) :
+    evidence out.1 = evidence s := by
+  rw [critical_frame f u s e out h]
+  rfl
 
 /-- New specification for owner review: workspace event handling either calls
 the clinical interpreter on the bound state, preserves its evidence, or clears
@@ -215,6 +249,8 @@ theorem input_popup (i : StepInput) :
 
 #print axioms fixed_reachable
 #print axioms bind_of_bound
+#print axioms critical_frame
+#print axioms critical_popup
 #print axioms critical_evidence
 #print axioms workspace_shape
 #print axioms step_shape
