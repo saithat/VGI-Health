@@ -169,13 +169,17 @@ theorem documentation_preserves_schedule (row documentedMs) :
   split <;> exact ⟨rfl, rfl⟩
 
 /-- Attach actual owned suspension boundaries and remove passive closure waits
-from overtime. Communication and return work remain active paid service. -/
-def withInterruptions (row : Timing) (shiftEnd : Nat) (m : Resumption.InterruptionMetrics) : Timing :=
+from overtime, including the workflow response tail after active phases.
+Communication and return work remain active paid service. -/
+def withInterruptions (row : Timing) (shiftEnd : Nat) (m : Resumption.InterruptionMetrics)
+    (responseWaitMs : Nat := 0) : Timing :=
+  let finish := row.finishMs?.getD 0
+  let responseOvertime := finish - max (finish - responseWaitMs) shiftEnd
   { row with
     suspensions := m.frames.filterMap fun f =>
       if f.task == row.task && f.disposition == .resumed then
         some { suspendedMs := f.suspendedAtMs, resumedMs := f.closedAtMs, reason := f.reason } else none
-    overtimeMs := row.overtimeMs - (m.idle.map (fun w => w.finishMs - max w.startMs shiftEnd)).foldl (· + ·) 0 }
+    overtimeMs := row.overtimeMs - (m.idle.map (fun w => w.finishMs - max w.startMs shiftEnd)).foldl (· + ·) 0 - responseOvertime }
 
 theorem interruption_timing_preserves_finish (row shiftEnd m) :
     (withInterruptions row shiftEnd m).startMs? = row.startMs? ∧

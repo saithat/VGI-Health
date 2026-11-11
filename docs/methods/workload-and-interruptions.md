@@ -37,6 +37,10 @@ receive incomplete effort rows so denominators retain every source task.
 `ehr simulate --carry-out FILE` exports full unserved source tasks as a schedule;
 recipient coverage must use the same time origin and replace the exhausted shifts.
 This is simulator queue ownership, not the live clinical handoff acceptance protocol.
+Wave-3 workflow response waits, like interruption closure idle, advance service
+finish and the next dispatch without adding active effort or overtime. Excluding
+their overlap with the period after shift end preserves active overtime before
+the response wait.
 
 World timing projection (`world/src/timing/`) uses existing ED arrival clocks and
 acuity, clinic slots, inbox resources/backlog and medication passes. Exogenous

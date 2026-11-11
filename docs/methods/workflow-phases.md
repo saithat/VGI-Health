@@ -16,6 +16,9 @@ clinical completion, closure, active milliseconds and passive waiting separately
 Phase service and waiting contribute to serial elapsed time; both are reported
 separately from UI KLM effort. It is distinct
 from UI events and interruption work; phase reports do not invent UI clicks.
+Passive response waiting advances the serial clock but contributes no overtime,
+including when shift end falls inside the wait. Active phase work beyond shift
+end remains overtime in both policies.
 
 Ownership is a named persona. Optional support delegation explicitly offers,
 accepts, reviews and returns work to the responsible clinician; an unaccepted
@@ -117,6 +120,15 @@ counts need not equal the reference means. Advice/call/consult tasks require
 signed clinical notes, not fabricated result acknowledgments. Results retain
 actual result acknowledgment and downstream orders/notes. Every task has an
 owner; call review has an explicit accepted support delegate and return.
+Planned W2 documentation retains supplied section text and authoring metadata;
+its separate W1 note episode clears acknowledgment and order choices so those
+actions are not repeated. Native `min-clicks` uses the same task episodes as
+simulation, including note-only inbox tasks and acknowledgment-plus-note tasks.
+Historical W2 schedules without a plan keep their original episodes. Sharing
+task resolution also corrects minima for older focused refill requests: these
+can acquire a real approval/signing path instead of the previous empty exact
+certificate. Invalid or unresolved task contexts now fail the minimum search
+as they do simulation; `exact` still refers only to the reported search space.
 
 There is no burst handling cap. The generator's historical `handled` counter
 now means dispatched to a clinical task; it does not claim successful service.

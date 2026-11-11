@@ -47,6 +47,20 @@ def messageTask : Task := { task with choices := { ackResult := true, noteSectio
 #guard (taskEpisodes Ehr.Examples.Tiny.facts { messageTask with workflowPlan? := none }).length == 1
 #guard (Check.Workload.fields Specs.V3.specV3 [messageTask]).contains "hpi"
 
+-- Inbox documentation must type the supplied section, including its authoring
+-- metadata, rather than charging for it while entering the placeholder.
+def hpi : NoteText := {
+  id := "hpi", text := String.ofList (List.replicate 2000 'x'),
+  authoring? := some { origin := "copied", typedCharacters := 100, selections := 1 } }
+def typedMessage : Task := { messageTask with choices := { messageTask.choices with
+  noteTexts? := some [hpi] } }
+def documentation := (taskEpisodes Ehr.Examples.Tiny.facts typedMessage).getLast?.getD
+  { facts := Ehr.Examples.Tiny.facts, choices := {}, orders := [] }
+#guard documentation.choices.noteTexts? == some [hpi]
+#guard sectionText documentation.choices "hpi" == hpi.text
+#guard episodeWorkflow typedMessage documentation == .W1
+#guard !documentation.choices.ackResult && documentation.orders.isEmpty
+
 def imaging : OrderChoice :=
   { drug := ""
     kind? := some .imaging

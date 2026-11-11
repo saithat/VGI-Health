@@ -33,6 +33,12 @@ def closed := checkpoint reviewSpec reviewProgram f actor shiftedTask draft 500 
 #guard closed.2.2.metrics.reorientations.isEmpty
 #guard (withInterruptions (timing [] shiftedTask {id := "tour", startMs := 0, endMs := 650000}
   600500 (closed.2.1 - 500) true) 650000 closed.2.2.metrics).overtimeMs == 38000
+-- Communication closure idle and a later workflow response are disjoint.
+-- Removing both still retains the 38 seconds of active communication service.
+#guard (withInterruptions (timing [] shiftedTask {id := "tour", startMs := 0, endMs := 650000}
+  600500 (closed.2.1 - 500 + 60000) true) 650000 closed.2.2.metrics 60000).overtimeMs == 38000
+#guard (withInterruptions (timing [] shiftedTask {id := "tour", startMs := 0, endMs := 850000}
+  600500 (closed.2.1 - 500 + 60000) true) 850000 closed.2.2.metrics 60000).overtimeMs == 0
 
 -- Clinical documentation ends before the closure queue; its outcome endpoints
 -- do not move to the later task-service finish.

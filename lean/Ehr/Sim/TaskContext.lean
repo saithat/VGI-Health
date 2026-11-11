@@ -70,7 +70,7 @@ def taskEpisodes (facts : Facts) (task : Task) : List Episode :=
   else if task.workflow == .W2 && task.workflowPlan?.isSome && !choices.noteSections.isEmpty then
     let clinical := if choices.ackResult || !choices.orders.isEmpty then
       episodes facts .W2 { choices with noteSections := [] } else []
-    clinical ++ [{ facts, choices := { noteSections := choices.noteSections }, orders := [] }]
+    clinical ++ [{ facts, choices := { choices with ackResult := false, orders := [] }, orders := [] }]
   else episodes facts task.workflow choices
 
 /-- New inbox note phases use the guarded note workflow. Historical W2 schedules

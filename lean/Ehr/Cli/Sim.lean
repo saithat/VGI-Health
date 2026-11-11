@@ -163,7 +163,7 @@ def loadClinical (root world : System.FilePath) (schedule : DaySchedule) : IO (L
         let rs := mergeResources (bundleResourcesWithIds b) today
         let merged := Json.mkObj [("resourceType", .str "Bundle"),
           ("entry", toJson (rs.map fun r => Json.mkObj [("resource", r)]))]
-        let ctx : Render.FactsContext := { today := (schedule.sourceDates?.getD []).lookup schedule.day |>.getD (dateOf task.day), now := task.startMin, record := (clinicalRecord rs).reverse }
+        let ctx : Render.FactsContext := { today := (schedule.sourceDates?.getD []).lookup task.day |>.getD (dateOf task.day), now := task.startMin, record := (clinicalRecord rs).reverse }
         match Render.Fhir.parseBundle ctx merged with
         | .error e => throw (IO.userError s!"{task.id}: FHIR facts: {e}")
         | .ok (f, display) => pure (f, display)
@@ -220,7 +220,7 @@ def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
   let user : User := { id := prog.owner, role := prog.role }
   let tasks ← schedule.tasks.mapM fun task => do
     let facts := { factsFor task with now := task.startMin }
-    let eps := episodes facts task.workflow task.choices
+    let eps := taskEpisodes facts task
     if eps.isEmpty then throw s!"{task.id}: no clinical episode is defined by the scenario"
     let contexts := eps.map fun ep =>
       let g := deriveGoals sp ep.facts user (episodeWorkflow task ep) ep.choices ep.orders ep.med?
