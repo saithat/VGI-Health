@@ -5,7 +5,9 @@
 "Proved" means a Lean theorem checked by the kernel using only the standard
 axioms (`propext`, `Classical.choice`, `Quot.sound`). The clinical statements are
 cross-checked by Lean's Comparator (`make verify`). The protocol and experimental
-UI-library theorems are kernel checked and are not yet in Comparator.
+UI-library theorems are kernel checked and are not yet in Comparator. The
+runtime statements are [proposed for Comparator](design/runtime-comparator-review.md)
+and await review.
 
 The headline `Ehr.Proofs.*` and original `accepted_*` theorems below cover
 `Ehr.step`/`init` and `Props.Reachable`. The deployed API calls
