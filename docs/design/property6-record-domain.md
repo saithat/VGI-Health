@@ -5,6 +5,9 @@
 Status: **draft, 2026-11-10. Nothing in `lean/` has changed.** Changing property 6
 is a specification change and needs owner approval of the exact text.
 
+Owner, 2026-11-10: the canonical program may not be kept in the long run. That
+weighs against option B; option D below does not use it. No option is chosen yet.
+
 ## The problem
 
 Property 6 (`Completable`, `lean/Ehr/Props/Properties.lean`) says that for
@@ -44,7 +47,7 @@ the list follows `extraGuard` and must grow with it. It also does not cover
 time: `Reachable` lets any amount of time pass, after which an expiry or a
 deadline blocks the commit for good. A would need a second premise about time.
 
-**B. Make the property relative to the canonical program (recommended).** Ask
+**B. Make the property relative to the canonical program.** Ask
 only that the program never strands a task the vendor's canonical program
 could still complete for the same record, user and elapsed time. Records and
 times at which the task is impossible for every program drop out by
@@ -54,6 +57,12 @@ themselves, with no list to maintain.
 keep the restricted-family proofs, and say in the documentation that the
 property is false for V1–V3 over unrestricted records. The documentation now
 says this; C is the state of the repository if nothing else is approved.
+
+**D. Make the property relative to what is possible at all.** Ask that the
+program never strands a task that *some* program could still complete for the
+same record, user and elapsed time. Like B it needs no list and handles time,
+and its premise does not mention the canonical program. It asks at least as
+much as B: whenever the canonical program can commit, some program can.
 
 ## Draft text for option B
 
@@ -92,6 +101,59 @@ repository (standard axioms only):
   `¬ CanonicalCanCommit` at every clock. The obstruction above therefore no
   longer refutes the property: the relative form asks nothing for that record.
 
+## Draft text for option D
+
+```lean
+/-- Some program can still perform commit `c` for this record and user at elapsed time
+`clock`: under these rules the task is possible at all. -/
+def CommitFeasible (spec : Spec) (facts : Facts) (user : User) (clock : Nat) (c : CommitId) : Prop :=
+  ∃ (p : Program) (es : List Event),
+    c ∈ ((⟨spec, p, facts, user⟩ : Episode).afterHuman
+      { (⟨spec, p, facts, user⟩ : Episode).start with clock := clock } es).commits
+
+/-- **Property 6, feasibility form.** The program never strands a required task that is
+still possible, for the same record, user and elapsed time, in any program at all. -/
+def CompletableWhereFeasible (spec : Spec) (canonical prog : Program) : Prop :=
+  ∀ facts user, user.role = prog.role → RecordAllowsScans spec facts →
+    Always ⟨spec, prog, facts, user⟩ fun s =>
+      ∀ c ∈ requiredCommitsFor spec canonical prog facts user, c ∉ s.commits →
+        CommitFeasible spec facts user s.clock c →
+        ∃ es : List Event, c ∈ ((⟨spec, prog, facts, user⟩ : Episode).afterHuman s es).commits
+```
+
+Checked the same way as option B:
+
+- `Completable → CompletableWhereFeasible → CompletableWhereCanonical`, so D sits
+  between the present property and B, and existing completion proofs carry over.
+- With a missing trusted payload under an always-active display requirement,
+  `¬ CommitFeasible` at every clock, so the obstruction is excluded here too.
+
+Two cautions for D:
+
+- The witness program is unconstrained. It need not pass the checker. If some
+  task can only be completed by a program that breaks another rule (depth, the
+  banner, a budget), D would demand the impossible of every accepted program.
+  Restricting the witness to accepted programs fixes that, but `check` takes
+  the canonical program as an argument today.
+- D removes the canonical program from the premise only. The set of required
+  commits (`requiredCommitsFor`) still starts from the canonical program's
+  commit buttons.
+
+## The canonical program elsewhere
+
+Dropping the canonical program is a larger change than property 6. It is an
+argument of `check` and of `Satisfies`, and it defines:
+
+- the required commits in properties 1 and 6 (`requiredCommits`);
+- the depth requirement in property 1 (`RequiredWithinDepth`);
+- the popup budget in property 8 (`AlertBudget`);
+- the checker's rule that passive-alert workflows of the canonical program are kept
+  (it supports property 9), and its patient-selection retention rule.
+
+If it goes, each of these needs a replacement source, for example a task list
+declared in the rule set. That decision should come before choosing between B
+and D.
+
 ## What option B does and does not say
 
 - It is a comparison, not an absolute guarantee. If the canonical program
@@ -112,6 +174,7 @@ repository (standard axioms only):
 
 ## Decision needed
 
-Choose A, B or C. For B, also choose between the fresh-session premise drafted
-here and the stricter every-reachable-state variant, and whether
-`RecordAllowsScans` stays.
+Choose A, B, C or D, after deciding whether the canonical program stays. For B
+and D, also choose between the fresh-session premise drafted here and the
+stricter every-reachable-state variant, and whether `RecordAllowsScans` stays.
+For D, choose whether the witness program must be an accepted one.
