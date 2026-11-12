@@ -22,6 +22,8 @@ async function armAHashes(specs:'archived'|'current') {
 }
 // Frozen builder hashes refreshed for neutral terms and deterministic core-recording manual examples.
 // Archived nights use the specs in force when they ran (pinned fixtures), so later releases cannot move these hashes.
+// The prompts also embed live sources (Lean property docstrings, generated types, the core-model design rules), so
+// changing those legitimately moves both fixture files; refresh them together after such a change.
 withData('runs/core-10day/decisions').it('arm A matches frozen propose, choose and repair bytes on all 35 frozen contexts',async()=>{
   const actual=await armAHashes('archived');
   expect(Object.keys(actual)).toHaveLength(35);expect(actual).toEqual(hashes);

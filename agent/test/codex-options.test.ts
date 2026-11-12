@@ -96,7 +96,8 @@ query=subprocess.run(['/usr/bin/node','query.mjs','screens'],capture_output=True
 r['query']=json.loads(query.stdout)['query']
 print(json.dumps(r))`;
  const run=spawnSync('bwrap',confinedArgs(dir,'/usr/local/bin/codex',['sandbox','-P',':read-only','--include-managed-config','-C',dir,'--','/usr/bin/python3','-c',probe],true),{cwd:dir,encoding:'utf8'});
- expect(run.stderr).toBe('');expect(run.status).toBe(0);expect(JSON.parse(run.stdout)).toEqual({train:'allowed',credential:'denied',write:'denied',query:'screens'});
+ // codex >=0.167 warns that it will not create PATH helper aliases under /tmp; any other stderr output fails.
+ expect(run.stderr.split('\n').filter(l=>l&&!l.startsWith('WARNING: proceeding, even though we could not create PATH aliases:'))).toEqual([]);expect(run.status).toBe(0);expect(JSON.parse(run.stdout)).toEqual({train:'allowed',credential:'denied',write:'denied',query:'screens'});
 });
 
 it('rejects arm C transcript overflow rather than losing command provenance (stub, no model)',async()=>{

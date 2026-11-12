@@ -1,7 +1,7 @@
 {
   "program": "P1 v3 copy with only curesReport panels removed",
   "command": "ehr check --spec releases/v3/spec.json --program <copy> --canonical releases/v3/personas/P1.json",
-  "binarySha256": "2459b7641e9e21f80f4414b2064dae2ebc6a17b408f7d0774ef664e29dbbbcd3",
+  "binarySha256": "26af075f63487353e848083c558e38b7f5991d65873c4e489df6ac8a94940c32",
   "programSha256": "f452ad7cc6213a6ffc3363f553d94913fda1343766db6ed070e2c95c37512b9b",
   "specSha256": "5a2b5f38bd5a741abbc7c1d6697f202c9b97f14cb27418496c870a8ed8751859",
   "exitCode": 1,

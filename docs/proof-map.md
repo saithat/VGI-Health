@@ -16,7 +16,7 @@ run.
 flowchart TB
   subgraph guar_g["Guarantees"]
     proofs["Clinical guarantees<br/>553 theorems, 219 headline"]:::guar
-    check["Program checker<br/>337 theorems, 69 headline"]:::guar
+    check["Program checker<br/>379 theorems, 72 headline"]:::guar
     render["Screen renderer<br/>190 theorems, 12 headline"]:::guar
     layout["UI library &amp; geometry<br/>189 theorems, 36 headline"]:::guar
     commit["Commit reducers<br/>22 theorems, 8 headline"]:::guar
@@ -991,7 +991,7 @@ flowchart LR
 
 </details>
 
-<details><summary><b>Program checker</b>: 69 headline claims. The checker that admits agent-written programs and its soundness: acceptance implies the screen properties (accepted_*), plus completability.</summary>
+<details><summary><b>Program checker</b>: 72 headline claims. The checker that admits agent-written programs and its soundness: acceptance implies the screen properties (accepted_*), plus completability.</summary>
 
 ```mermaid
 flowchart LR
@@ -1029,158 +1029,167 @@ flowchart LR
   n31["Check.alertsAcked_of_no_candidates"]:::head
   n32["Check.automated_lines_satisfies"]:::head
   n33["Check.cached_completion_eq"]:::head
-  n34["Check.completion_dependency_rejected"]:::head
-  n35["Check.critical_handle_reserved"]:::head
-  n36["Check.enteredOnce_at"]:::head
-  n37["Check.fixed_lines_pending_nonempty"]:::head
-  n38["Check.fixed_lines_satisfies"]:::head
-  n39["Check.goTo_noNewHuman"]:::head
-  n40["Check.goTo_writesState"]:::head
-  n41["Check.human_finish_ready"]:::head
-  n42["Check.human_finish_ready_unique"]:::head
-  n43["Check.interruptsOnce_at"]:::head
-  n44["Check.landmarksPinned_at"]:::head
-  n45["Check.many_alerts_satisfies"]:::head
-  n46["Check.many_alerts_two_acknowledgments"]:::head
-  n47["Check.onlyHumanCommitsAndAcks_at"]:::head
-  n48["Check.passivePinned_at"]:::head
-  n49["Check.popupKeys_step"]:::head
-  n50["Check.popupUnacked_step"]:::head
-  n51["Check.prefill_macro_human_completion"]:::head
-  n52["Check.reachable_drugSlots"]:::head
-  n53["Check.receipt_lines_satisfies"]:::head
-  n54["Check.receipt_review_transition"]:::head
-  n55["Check.reviewsPinned_at"]:::head
-  n56["Check.satisfies_of_checked_automated_lines"]:::head
-  n57["Check.satisfies_of_checked_completable"]:::head
-  n58["Check.satisfies_of_checked_fixed_lines"]:::head
-  n59["Check.satisfies_of_checked_many_alerts"]:::head
-  n60["Check.satisfies_of_checked_receipt_lines"]:::head
-  n61["Check.satisfies_of_checked_scalar"]:::head
-  n62["Check.scalar_identity_satisfies"]:::head
-  n63["Check.step_humanCaptured"]:::head
-  n64["Check.step_noNewHuman"]:::head
-  n65["Check.step_writesState"]:::head
-  n66["Check.tiny_bad_automation"]:::head
-  n67["Check.tiny_bad_catalog"]:::head
-  n68["Check.tiny_bad_role"]:::head
-  n69["Check.CompletionModel.accepted_episode_complete"]:::lemma
-  n70["Check.CompletionModel.run_closed"]:::lemma
-  n71["Check.DoseCompletionObstruction.after_reachable"]:::lemma
-  n72["Check.DoseCompletionObstruction.cannot_add"]:::lemma
-  n73["Check.DoseCompletionObstruction.no_drug_fields"]:::lemma
-  n74["Check.FixedLine.fixed_slots"]:::lemma
-  n75["Check.FixedLine.on_screen"]:::lemma
-  n76["Check.FixedLine.shown_assessment"]:::lemma
-  n77["Check.FixedLine.shown_button"]:::lemma
-  n78["Check.NoNewHuman.preserves"]:::lemma
-  n79["Check.OkRun.append"]:::lemma
-  n80["Check.Scalar.on_screen"]:::lemma
-  n81["Check.Scalar.shown_button"]:::lemma
-  n82["Check.Scalar.shown_field"]:::lemma
-  n83["Check.accepted_depth"]:::lemma
-  n84["Check.accepted_pins"]:::lemma
-  n85["Check.accepted_structural"]:::lemma
-  n86["Check.acked_monotone"]:::lemma
-  n87["Check.alertBudget_sound"]:::lemma
-  n88["Check.alertKeys_captured"]:::lemma
-  n89["Check.alert_lookup_unique"]:::lemma
-  n90["Check.alertsOnlyWhenTrue"]:::lemma
-  n91["Check.check_ok_iff"]:::lemma
-  n92["Check.commitCapturesAll"]:::lemma
-  n93["Check.commitContracts"]:::lemma
-  n94["Check.commitReviewsMet"]:::lemma
-  n95["Check.commitUnitsRight"]:::lemma
-  n96["Check.cosignIsSecondUser"]:::lemma
-  n97["Check.currentScreen"]:::lemma
-  n98["Check.declared_value_witness"]:::lemma
-  n99["Check.enterCore_human_quality"]:::lemma
-  n100["Check.enteredOnce"]:::lemma
-  n101["Check.extends_contracts"]:::lemma
-  n102["Check.extends_entries"]:::lemma
-  n103["Check.extends_reviews"]:::lemma
-  n104["Check.extends_static"]:::lemma
-  n105["Check.firstFinding_some"]:::lemma
-  n106["Check.fixedShown_sound"]:::lemma
-  n107["Check.followHops_sound"]:::lemma
-  n108["Check.goTo_noHuman"]:::lemma
-  n109["Check.goTo_writes"]:::lemma
-  n110["Check.humanStepsByHuman"]:::lemma
-  n111["Check.human_clear_popup"]:::lemma
-  n112["Check.human_enter"]:::lemma
-  n113["Check.infoShown_iff"]:::lemma
-  n114["Check.interruptiveHandled"]:::lemma
-  n115["Check.interruptsOnce"]:::lemma
-  n116["Check.landmarksPinned_sound"]:::lemma
-  n117["Check.onlyHumanCommitsAndAcks"]:::lemma
-  n118["Check.orderLines_slots"]:::lemma
-  n119["Check.passiveNeverPopsUp"]:::lemma
-  n120["Check.passivePinned_sound"]:::lemma
-  n121["Check.pinnedForReview_sound"]:::lemma
-  n122["Check.popup_acked"]:::lemma
-  n123["Check.popup_captured"]:::lemma
-  n124["Check.popup_continues"]:::lemma
-  n125["Check.prefillScreen_slots"]:::lemma
-  n126["Check.replayOk_sound"]:::lemma
-  n127["Check.reserved_append"]:::lemma
-  n128["Check.reviewMet_iff"]:::lemma
-  n129["Check.reviewsPinned_sound"]:::lemma
-  n130["Check.runMacro_writes"]:::lemma
-  n131["Check.stepCore_ack_witness"]:::lemma
-  n132["Check.stepCore_commit_witness"]:::lemma
-  n133["Check.stepCore_keeps"]:::lemma
-  n134["Check.stepCore_writes"]:::lemma
-  n135["Check.step_drugSlots"]:::lemma
-  n136["Check.step_eq_core"]:::lemma
-  n137["Check.step_noHuman"]:::lemma
-  n138["Check.tableReach_eq"]:::lemma
-  n139["Check.writesAllowed"]:::lemma
-  n140["Proofs.A2_popup_holds"]:::other
-  n141["Proofs.MacroSafe.acked"]:::other
-  n142["Proofs.MacroSafe.commits"]:::other
-  n143["Proofs.T3_macro_step"]:::other
-  n144["Proofs.prefillScreen_frame"]:::other
-  n145["Proofs.runMacro_safe"]:::other
-  n146["Sim.Certificate.lookup_mem"]:::other
-  n147["Specs.V2.specV2_extends_specV1"]:::other
-  n148["Specs.V3.specV3_extends_specV2"]:::other
-  n149["linkedDependents_not_self"]:::other
-  n0 --> n69
-  n1 --> n70
-  n1 --> n146
-  n2 --> n72
-  n2 --> n73
-  n2 --> n52
-  n2 --> n144
-  n3 --> n71
+  n34["Check.completable_imp_completableWhereFeasible"]:::head
+  n35["Check.completion_dependency_rejected"]:::head
+  n36["Check.critical_handle_reserved"]:::head
+  n37["Check.enteredOnce_at"]:::head
+  n38["Check.fixed_lines_pending_nonempty"]:::head
+  n39["Check.fixed_lines_satisfies"]:::head
+  n40["Check.goTo_noNewHuman"]:::head
+  n41["Check.goTo_writesState"]:::head
+  n42["Check.human_finish_ready"]:::head
+  n43["Check.human_finish_ready_unique"]:::head
+  n44["Check.interruptsOnce_at"]:::head
+  n45["Check.landmarksPinned_at"]:::head
+  n46["Check.many_alerts_satisfies"]:::head
+  n47["Check.many_alerts_two_acknowledgments"]:::head
+  n48["Check.missing_payload_not_commitFeasible"]:::head
+  n49["Check.onlyHumanCommitsAndAcks_at"]:::head
+  n50["Check.passivePinned_at"]:::head
+  n51["Check.popupKeys_step"]:::head
+  n52["Check.popupUnacked_step"]:::head
+  n53["Check.prefill_macro_human_completion"]:::head
+  n54["Check.reachable_drugSlots"]:::head
+  n55["Check.receipt_lines_satisfies"]:::head
+  n56["Check.receipt_review_transition"]:::head
+  n57["Check.reviewsPinned_at"]:::head
+  n58["Check.satisfies_of_checked_automated_lines"]:::head
+  n59["Check.satisfies_of_checked_completable"]:::head
+  n60["Check.satisfies_of_checked_fixed_lines"]:::head
+  n61["Check.satisfies_of_checked_many_alerts"]:::head
+  n62["Check.satisfies_of_checked_receipt_lines"]:::head
+  n63["Check.satisfies_of_checked_scalar"]:::head
+  n64["Check.scalar_identity_satisfies"]:::head
+  n65["Check.step_humanCaptured"]:::head
+  n66["Check.step_noNewHuman"]:::head
+  n67["Check.step_writesState"]:::head
+  n68["Check.tiny_bad_automation"]:::head
+  n69["Check.tiny_bad_catalog"]:::head
+  n70["Check.tiny_bad_role"]:::head
+  n71["Check.v1_v2_v3_not_acceptedCompletableWhereFeasible"]:::head
+  n72["Check.CompletionModel.accepted_episode_complete"]:::lemma
+  n73["Check.CompletionModel.run_closed"]:::lemma
+  n74["Check.DoseCompletionObstruction.after_reachable"]:::lemma
+  n75["Check.DoseCompletionObstruction.cannot_add"]:::lemma
+  n76["Check.DoseCompletionObstruction.no_drug_fields"]:::lemma
+  n77["Check.FixedLine.fixed_slots"]:::lemma
+  n78["Check.FixedLine.on_screen"]:::lemma
+  n79["Check.FixedLine.shown_assessment"]:::lemma
+  n80["Check.FixedLine.shown_button"]:::lemma
+  n81["Check.NoNewHuman.preserves"]:::lemma
+  n82["Check.OkRun.append"]:::lemma
+  n83["Check.Scalar.on_screen"]:::lemma
+  n84["Check.Scalar.shown_button"]:::lemma
+  n85["Check.Scalar.shown_field"]:::lemma
+  n86["Check.accepted_depth"]:::lemma
+  n87["Check.accepted_pins"]:::lemma
+  n88["Check.accepted_structural"]:::lemma
+  n89["Check.acked_monotone"]:::lemma
+  n90["Check.alertBudget_sound"]:::lemma
+  n91["Check.alertKeys_captured"]:::lemma
+  n92["Check.alert_lookup_unique"]:::lemma
+  n93["Check.alertsOnlyWhenTrue"]:::lemma
+  n94["Check.check_ok_iff"]:::lemma
+  n95["Check.commitCapturesAll"]:::lemma
+  n96["Check.commitContracts"]:::lemma
+  n97["Check.commitReviewsMet"]:::lemma
+  n98["Check.commitUnitsRight"]:::lemma
+  n99["Check.completableWhereFeasible_imp_completableWhereAcceptedFeasible"]:::lemma
+  n100["Check.cosignIsSecondUser"]:::lemma
+  n101["Check.currentScreen"]:::lemma
+  n102["Check.declared_value_witness"]:::lemma
+  n103["Check.enterCore_human_quality"]:::lemma
+  n104["Check.enteredOnce"]:::lemma
+  n105["Check.extends_contracts"]:::lemma
+  n106["Check.extends_entries"]:::lemma
+  n107["Check.extends_reviews"]:::lemma
+  n108["Check.extends_static"]:::lemma
+  n109["Check.firstFinding_some"]:::lemma
+  n110["Check.fixedShown_sound"]:::lemma
+  n111["Check.followHops_sound"]:::lemma
+  n112["Check.goTo_noHuman"]:::lemma
+  n113["Check.goTo_writes"]:::lemma
+  n114["Check.humanStepsByHuman"]:::lemma
+  n115["Check.human_clear_popup"]:::lemma
+  n116["Check.human_enter"]:::lemma
+  n117["Check.infoShown_iff"]:::lemma
+  n118["Check.init_clock"]:::lemma
+  n119["Check.interruptiveHandled"]:::lemma
+  n120["Check.interruptsOnce"]:::lemma
+  n121["Check.landmarksPinned_sound"]:::lemma
+  n122["Check.missing_payload_blocks_commit"]:::lemma
+  n123["Check.newCommit_witness"]:::lemma
+  n124["Check.onlyHumanCommitsAndAcks"]:::lemma
+  n125["Check.orderLines_slots"]:::lemma
+  n126["Check.passiveNeverPopsUp"]:::lemma
+  n127["Check.passivePinned_sound"]:::lemma
+  n128["Check.pinnedForReview_sound"]:::lemma
+  n129["Check.popup_acked"]:::lemma
+  n130["Check.popup_captured"]:::lemma
+  n131["Check.popup_continues"]:::lemma
+  n132["Check.prefillScreen_slots"]:::lemma
+  n133["Check.replayOk_sound"]:::lemma
+  n134["Check.reserved_append"]:::lemma
+  n135["Check.reviewMet_iff"]:::lemma
+  n136["Check.reviewsPinned_sound"]:::lemma
+  n137["Check.runMacro_writes"]:::lemma
+  n138["Check.stepCore_ack_witness"]:::lemma
+  n139["Check.stepCore_commit_witness"]:::lemma
+  n140["Check.stepCore_keeps"]:::lemma
+  n141["Check.stepCore_writes"]:::lemma
+  n142["Check.step_drugSlots"]:::lemma
+  n143["Check.step_eq_core"]:::lemma
+  n144["Check.step_noHuman"]:::lemma
+  n145["Check.tableReach_eq"]:::lemma
+  n146["Check.v1TrapProg_not_completableWhereAcceptedFeasible"]:::lemma
+  n147["Check.v1_accepted_not_completableWhereAcceptedFeasible"]:::lemma
+  n148["Check.writesAllowed"]:::lemma
+  n149["Proofs.A2_popup_holds"]:::other
+  n150["Proofs.MacroSafe.acked"]:::other
+  n151["Proofs.MacroSafe.commits"]:::other
+  n152["Proofs.T3_macro_step"]:::other
+  n153["Proofs.prefillScreen_frame"]:::other
+  n154["Proofs.runMacro_safe"]:::other
+  n155["Sim.Certificate.lookup_mem"]:::other
+  n156["Specs.V2.specV2_extends_specV1"]:::other
+  n157["Specs.V3.specV3_extends_specV2"]:::other
+  n158["linkedDependents_not_self"]:::other
+  n0 --> n72
+  n1 --> n73
+  n1 --> n155
+  n2 --> n75
+  n2 --> n76
+  n2 --> n54
+  n2 --> n153
+  n3 --> n74
   n3 --> n2
   n5 --> n6
-  n6 --> n74
-  n6 --> n75
-  n6 --> n76
   n6 --> n77
-  n6 --> n98
-  n6 --> n111
-  n6 --> n112
-  n6 --> n42
-  n6 --> n118
-  n6 --> n121
-  n6 --> n52
+  n6 --> n78
+  n6 --> n79
+  n6 --> n80
+  n6 --> n102
+  n6 --> n115
+  n6 --> n116
+  n6 --> n43
+  n6 --> n125
   n6 --> n128
+  n6 --> n54
   n6 --> n135
-  n6 --> n149
-  n7 --> n80
-  n7 --> n81
-  n7 --> n82
-  n7 --> n98
-  n7 --> n111
-  n7 --> n112
-  n7 --> n41
-  n8 --> n79
-  n8 --> n107
-  n8 --> n126
+  n6 --> n142
+  n6 --> n158
+  n7 --> n83
+  n7 --> n84
+  n7 --> n85
+  n7 --> n102
+  n7 --> n115
+  n7 --> n116
+  n7 --> n42
+  n8 --> n82
+  n8 --> n111
+  n8 --> n133
   n9 --> n8
-  n9 --> n105
+  n9 --> n109
   n10 --> n14
   n10 --> n16
   n10 --> n20
@@ -1189,148 +1198,158 @@ flowchart LR
   n10 --> n25
   n10 --> n26
   n10 --> n27
-  n10 --> n101
-  n10 --> n102
-  n10 --> n103
-  n10 --> n104
-  n11 --> n101
-  n11 --> n102
-  n11 --> n103
-  n11 --> n104
+  n10 --> n105
+  n10 --> n106
+  n10 --> n107
+  n10 --> n108
+  n11 --> n105
+  n11 --> n106
+  n11 --> n107
+  n11 --> n108
   n12 --> n10
-  n12 --> n147
+  n12 --> n156
   n13 --> n10
-  n13 --> n148
-  n14 --> n84
-  n14 --> n85
-  n14 --> n114
-  n14 --> n120
-  n15 --> n87
-  n15 --> n91
-  n16 --> n85
-  n16 --> n92
-  n16 --> n100
-  n17 --> n93
-  n18 --> n91
+  n13 --> n157
+  n14 --> n87
+  n14 --> n88
+  n14 --> n119
+  n14 --> n127
+  n15 --> n90
+  n15 --> n94
+  n16 --> n88
+  n16 --> n95
+  n16 --> n104
+  n17 --> n96
+  n18 --> n94
   n19 --> n18
-  n19 --> n35
-  n20 --> n85
-  n20 --> n96
-  n20 --> n110
-  n20 --> n117
-  n21 --> n91
-  n22 --> n85
-  n22 --> n90
-  n23 --> n85
-  n23 --> n115
-  n24 --> n84
-  n25 --> n84
-  n25 --> n85
-  n25 --> n94
-  n25 --> n129
-  n26 --> n85
-  n26 --> n119
-  n27 --> n85
-  n27 --> n95
-  n28 --> n83
-  n28 --> n84
-  n28 --> n85
-  n28 --> n116
-  n29 --> n85
-  n29 --> n139
-  n30 --> n88
-  n31 --> n89
-  n32 --> n56
-  n33 --> n138
-  n34 --> n4
-  n35 --> n127
-  n36 --> n133
-  n36 --> n136
-  n38 --> n58
-  n39 --> n108
-  n40 --> n109
-  n42 --> n31
-  n42 --> n41
-  n43 --> n86
-  n43 --> n124
-  n44 --> n97
-  n44 --> n106
-  n44 --> n113
-  n45 --> n59
-  n47 --> n131
-  n47 --> n132
-  n47 --> n141
-  n47 --> n142
-  n47 --> n143
-  n47 --> n145
-  n48 --> n106
-  n49 --> n88
-  n49 --> n123
-  n49 --> n140
-  n50 --> n122
-  n50 --> n140
-  n52 --> n125
-  n52 --> n135
-  n53 --> n60
-  n55 --> n97
-  n55 --> n121
-  n56 --> n6
-  n56 --> n28
-  n56 --> n57
-  n57 --> n14
-  n57 --> n15
-  n57 --> n16
-  n57 --> n20
-  n57 --> n21
-  n57 --> n22
-  n57 --> n23
-  n57 --> n25
-  n57 --> n26
-  n57 --> n27
-  n57 --> n28
-  n57 --> n29
-  n58 --> n5
-  n58 --> n57
-  n59 --> n6
+  n19 --> n36
+  n20 --> n88
+  n20 --> n100
+  n20 --> n114
+  n20 --> n124
+  n21 --> n94
+  n22 --> n88
+  n22 --> n93
+  n23 --> n88
+  n23 --> n120
+  n24 --> n87
+  n25 --> n87
+  n25 --> n88
+  n25 --> n97
+  n25 --> n136
+  n26 --> n88
+  n26 --> n126
+  n27 --> n88
+  n27 --> n98
+  n28 --> n86
+  n28 --> n87
+  n28 --> n88
+  n28 --> n121
+  n29 --> n88
+  n29 --> n148
+  n30 --> n91
+  n31 --> n92
+  n32 --> n58
+  n33 --> n145
+  n35 --> n4
+  n36 --> n134
+  n37 --> n140
+  n37 --> n143
+  n39 --> n60
+  n40 --> n112
+  n41 --> n113
+  n43 --> n31
+  n43 --> n42
+  n44 --> n89
+  n44 --> n131
+  n45 --> n101
+  n45 --> n110
+  n45 --> n117
+  n46 --> n61
+  n48 --> n118
+  n48 --> n122
+  n48 --> n123
+  n48 --> n153
+  n49 --> n138
+  n49 --> n139
+  n49 --> n150
+  n49 --> n151
+  n49 --> n152
+  n49 --> n154
+  n50 --> n110
+  n51 --> n91
+  n51 --> n130
+  n51 --> n149
+  n52 --> n129
+  n52 --> n149
+  n54 --> n132
+  n54 --> n142
+  n55 --> n62
+  n57 --> n101
+  n57 --> n128
+  n58 --> n6
+  n58 --> n28
+  n58 --> n59
+  n59 --> n14
+  n59 --> n15
+  n59 --> n16
+  n59 --> n20
+  n59 --> n21
+  n59 --> n22
+  n59 --> n23
+  n59 --> n25
+  n59 --> n26
+  n59 --> n27
   n59 --> n28
-  n59 --> n57
+  n59 --> n29
   n60 --> n5
-  n60 --> n57
-  n61 --> n7
-  n61 --> n57
-  n62 --> n61
-  n63 --> n78
-  n63 --> n99
-  n63 --> n64
-  n64 --> n137
-  n65 --> n130
-  n65 --> n134
-  n83 --> n91
-  n84 --> n91
-  n85 --> n91
-  n86 --> n47
-  n90 --> n88
-  n90 --> n49
-  n94 --> n128
-  n100 --> n36
-  n101 --> n93
-  n107 --> n79
-  n107 --> n126
-  n110 --> n137
-  n115 --> n43
-  n115 --> n50
-  n116 --> n44
-  n117 --> n47
-  n120 --> n48
-  n121 --> n113
-  n122 --> n47
-  n128 --> n113
-  n129 --> n55
-  n131 --> n141
-  n132 --> n142
-  n139 --> n65
-  n143 --> n141
-  n143 --> n142
+  n60 --> n59
+  n61 --> n6
+  n61 --> n28
+  n61 --> n59
+  n62 --> n5
+  n62 --> n59
+  n63 --> n7
+  n63 --> n59
+  n64 --> n63
+  n65 --> n81
+  n65 --> n103
+  n65 --> n66
+  n66 --> n144
+  n67 --> n137
+  n67 --> n141
+  n71 --> n99
+  n71 --> n146
+  n71 --> n147
+  n86 --> n94
+  n87 --> n94
+  n88 --> n94
+  n89 --> n49
+  n93 --> n91
+  n93 --> n51
+  n97 --> n135
+  n104 --> n37
+  n105 --> n96
+  n111 --> n82
+  n111 --> n133
+  n114 --> n144
+  n120 --> n44
+  n120 --> n52
+  n121 --> n45
+  n122 --> n96
+  n124 --> n49
+  n127 --> n50
+  n128 --> n117
+  n129 --> n49
+  n135 --> n117
+  n136 --> n57
+  n138 --> n150
+  n139 --> n151
+  n147 --> n99
+  n147 --> n146
+  n148 --> n67
+  n152 --> n150
+  n152 --> n151
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46
