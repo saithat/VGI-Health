@@ -91,6 +91,22 @@ def requiredCommitsFor (spec : Spec) (canonical prog : Program) (facts : Facts)
     (user : User) : List CommitId :=
   (requiredCommits spec canonical prog).filter (commitRoleOk spec facts user)
 
+/-- New specification for owner review.
+Canonical-free required commits derived solely from `spec`: every commit in
+`spec.commits` whose `roles` list includes `role`. Because `CommitSpec`
+carries role and optional encounter-role scopes (`roles`, `encounterRoles?`)
+but no workflow or persona tag (`W1`–`W7`, `P1`–`P5`), this set includes every
+task the spec allows `role` to perform across all workflows. -/
+def specRequiredCommits (spec : Spec) (role : Role) : List CommitId :=
+  (spec.commits.filter fun cs => cs.roles.contains role).map (·.id)
+
+/-- New specification for owner review.
+Canonical-free required commits for one episode: the commits in
+`specRequiredCommits spec role` that pass `commitRoleOk spec facts user`. -/
+def specRequiredCommitsFor (spec : Spec) (role : Role) (facts : Facts)
+    (user : User) : List CommitId :=
+  (specRequiredCommits spec role).filter (commitRoleOk spec facts user)
+
 /-! ## Shown -/
 
 /-- Some component the page shows in state `s` satisfies `p`. -/

@@ -19,6 +19,9 @@ import Ehr.Check.SeveritySound
 import Ehr.Check.BudgetSound
 import Ehr.Check.DomainObstruction
 import Ehr.Check.DisplayObstruction
+import Ehr.Check.FeasibleCompletion
+import Ehr.Check.FeasibleCompletionObstruction
+import Ehr.Check.FeasibleV1Obstruction
 import Ehr.Check.CertificationTests
 import Ehr.Check.WritesSound
 import Ehr.Check.EnterOnceSound

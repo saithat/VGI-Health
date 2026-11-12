@@ -16,6 +16,27 @@ listed value predicate; it does not supply those transition proofs. Current
 canonical programs do not yet have these adapters; ordinary checker acceptance
 still does not imply general property 6.
 
+[Property 6 record domain](../design/property6-record-domain.md) adds the
+feasibility form (`CommitFeasible` and `CompletableWhereFeasible` in
+`lean/Ehr/Props/Properties.lean`, with canonical-free
+`specRequiredCommitsFor`/`CompletableWhereFeasibleSpec` and the
+checker-accepted witness form `AcceptedCommitFeasible`/`CompletableWhereAcceptedFeasible`
+in `lean/Ehr/Check/FeasibleCompletion.lean`, all marked for owner review)
+alongside the unchanged `Completable`. `completable_imp_completableWhereFeasible`
+carries `CompletionModel.accepted_completable`
+(`CompletionModel.accepted_completableWhereFeasible`) and the `Scalar` and
+`FixedLine` completion families over to `CompletableWhereFeasible`, and
+`missing_payload_not_commitFeasible` (`DisplayObstruction.lean`) together with
+`v1_payload_domain_not_commitFeasible` (`FullDisplayObstruction.lean`,
+`EhrHeavy`) excludes the missing-payload record obstruction. Static acceptance
+(`check sp prev can p = .ok`) still does not imply `CompletableWhereFeasible`
+or `CompletableWhereAcceptedFeasible` for `specV1`–`specV3`
+(`v1_v2_v3_not_acceptedCompletableWhereFeasible` in
+`FeasibleV1Obstruction.lean`): `v1TrapProg` is accepted by `check` and completes
+`"ackResult"` from `start`, yet entering an incompatible `"drug"`/`"doseUnit"`
+pair on an unrelated order slot before taking a one-way `goto` to `"inbox"`
+permanently falsifies `validationsOk`.
+
 `ehr check-completion --spec S --program P --canonical C [--prev P0]
 --scenarios FILE` adds an opt-in scenario gate after the existing static check.
 `FILE` is a nonempty JSON array of `{id, facts, user, goals, space, bound}`;
