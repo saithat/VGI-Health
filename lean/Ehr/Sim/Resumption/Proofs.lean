@@ -115,10 +115,10 @@ theorem queued_work_accounted (u atMs runtime) (w : InterruptWork) (pending : w 
 
 /-- The resumed communication frame cannot contaminate the interrupting
 patient's clinical workspace: its initial chart has no draft/evidence. -/
-theorem interrupting_patient_empty (prog : Program) (frame : DraftFrame) (patient : String) :
-    (Workspace.openPatient prog frame.state patient prog.start).captured = [] ∧
-    (Workspace.openPatient prog frame.state patient prog.start).receipts = [] := by
-  have h := Workspace.opening_clears_patient_state prog frame.state patient prog.start
+theorem interrupting_patient_empty (sp : Spec) (prog : Program) (frame : DraftFrame) (patient : String) :
+    (Workspace.openPatient sp prog frame.state patient prog.start).captured = [] ∧
+    (Workspace.openPatient sp prog frame.state patient prog.start).receipts = [] := by
+  have h := Workspace.opening_clears_patient_state sp prog frame.state patient prog.start
   exact ⟨h.1, h.2.1⟩
 
 #print axioms resume_foreign_patient

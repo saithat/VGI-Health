@@ -159,10 +159,10 @@ theorem others_ne (s : State) {pid id : String} (h : pid ≠ id) :
   rw [others_getD, lookup_filter_ne _ h, draft_lookup]
 
 /-- New specification for owner review: leaving a hydrated chart stores
-exactly its captures and acknowledgments as that patient's draft. -/
-theorem save_self (s : State) (id : String) (h : Workspace.chart? s = some id) :
-    lookup ((Workspace.save s).getD []) id =
-      { patient := id, captured := s.captured, acked := s.acked } := by
+exactly its unsigned captures and acknowledgments as that patient's draft. -/
+theorem save_self (sp : Spec) (s : State) (id : String) (h : Workspace.chart? s = some id) :
+    lookup ((Workspace.save sp s).getD []) id =
+      { patient := id, captured := Workspace.unsigned sp s, acked := s.acked } := by
   unfold Workspace.save
   rw [h]
   dsimp only
@@ -176,8 +176,8 @@ theorem save_self (s : State) (id : String) (h : Workspace.chart? s = some id) :
 
 /-- New specification for owner review: leaving a chart keeps every other
 patient's stored draft, and leaving without a hydrated chart keeps them all. -/
-theorem save_ne (s : State) (pid : String) (h : Workspace.chart? s ≠ some pid) :
-    lookup ((Workspace.save s).getD []) pid = Workspace.draft s pid := by
+theorem save_ne (sp : Spec) (s : State) (pid : String) (h : Workspace.chart? s ≠ some pid) :
+    lookup ((Workspace.save sp s).getD []) pid = Workspace.draft s pid := by
   unfold Workspace.save
   cases hc : Workspace.chart? s with
   | none => rfl
@@ -189,6 +189,26 @@ theorem save_ne (s : State) (pid : String) (h : Workspace.chart? s ≠ some pid)
     · have hd : (id == pid) = false := beq_eq_false_iff_ne.mpr (Ne.symm hne)
       simp only [lookup, draft_lookup, others_getD, List.find?_append, find_filter_ne _ hne,
         List.find?_cons, hd, List.find?_nil, Option.or_none, Option.getD_some]
+
+/-- New specification for owner review: after a signed chart is left and
+its saved draft is restored on reopen, no restored capture has an element
+required by that signed commit. Fresh record prefills are separate from restored
+captures. Conditional requirements and every order slot are included. -/
+theorem signed_leave_reopen (sp : Spec) (p : Program) (s : State) (u : User)
+    (pid activity : String) (c : CommitId) (hchart : Workspace.chart? s = some pid)
+    (hc : c ∈ s.commits) (rq : EntryReq) (hrq : rq ∈ sp.entries) (hrc : rq.commit = c) :
+    ∀ x ∈ Workspace.restored sp u (Workspace.draft (Workspace.showList sp p s activity) pid),
+      x.element ≠ rq.element := by
+  change ∀ x ∈ Workspace.restored sp u (lookup ((Workspace.save sp s).getD []) pid), _
+  rw [save_self sp s pid hchart]
+  intro x hx he
+  have hs : Workspace.signedEntry sp s x = true := by
+    apply List.any_eq_true.mpr
+    exact ⟨rq, hrq, by simp [hrc, hc, he]⟩
+  have hu := (List.mem_filter.mp (List.mem_filter.mp hx).1).2
+  simp [hs] at hu
+
+#print axioms signed_leave_reopen
 
 /-- A chart bound to the facts' patient is a hydrated chart. -/
 theorem bound_chart (f : Facts) (s : State) (h : Workspace.bound f s = true) :

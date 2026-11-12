@@ -137,17 +137,29 @@ def others (s : State) (id : String) : Option (List PatientDraft) :=
   let rest := (s.patientDrafts?.getD []).filter (·.patient != id)
   if rest.isEmpty then none else some rest
 
-/-- The per-patient store after the clinician leaves the state's chart. A
-hydrated chart's captures and acknowledgments replace that patient's earlier
-draft; a chart with neither leaves no entry. Commits, receipts and the popup
-are not kept. Without a hydrated chart the store is unchanged. New
-specification for owner review. -/
-def save (s : State) : Option (List PatientDraft) :=
+/-- New specification for owner review: a capture belongs to signed work
+when its element is named by an entry requirement of any commit in `s.commits`.
+Requirements identify elements, not individual capture identities; remove all
+slots of that element, including conditional/per-order-line requirements. This
+conservative rule needs no stale facts and prevents signing the same work again. -/
+def signedEntry (sp : Spec) (s : State) (x : Captured) : Bool :=
+  sp.entries.any fun rq => s.commits.contains rq.commit && rq.element == x.element
+
+/-- New specification for owner review: captures not covered by a signed
+commit's entry requirements. Acknowledgments are independent of signatures. -/
+def unsigned (sp : Spec) (s : State) : List Captured :=
+  s.captured.filter fun x => !signedEntry sp s x
+
+/-- The per-patient store after leaving the chart: only unsigned captures
+and all acknowledgments replace its draft. Commits, receipts and popup are not
+kept. Without a hydrated chart the store is unchanged. New specification for
+owner review. -/
+def save (sp : Spec) (s : State) : Option (List PatientDraft) :=
   match chart? s with
   | none => s.patientDrafts?
   | some id =>
-    if s.captured.isEmpty && s.acked.isEmpty then others s id
-    else some ((others s id).getD [] ++ [{ patient := id, captured := s.captured, acked := s.acked }])
+    if (unsigned sp s).isEmpty && s.acked.isEmpty then others s id
+    else some ((others s id).getD [] ++ [{ patient := id, captured := unsigned sp s, acked := s.acked }])
 
 /-- A stored capture is restored only if a human entered it and the signed-in
 role may still enter its element. Prefilled values, confirmed or not, are not
@@ -172,16 +184,16 @@ def restore (sp : Spec) (u : User) (fresh : State) (d : PatientDraft) : State :=
 
 /-- Opening a chart starts from an empty workspace state before any data is
 loaded. The chart being left, if any, is saved as that patient's draft. -/
-def openPatient (p : Program) (s : State) (id target : String) : State :=
-  { init p with clock := s.clock, patientDrafts? := save s, patientContext? := some {
+def openPatient (sp : Spec) (p : Program) (s : State) (id target : String) : State :=
+  { init p with clock := s.clock, patientDrafts? := save sp s, patientContext? := some {
       patient? := some id, target? := some target,
       activity := (s.patientContext?.map (·.activity)).getD (primary p),
       query := (s.patientContext?.map (·.query)).getD "" } }
 
 /-- Showing a list leaves the chart: the workspace state is empty again and
 the chart being left, if any, is saved as that patient's draft. -/
-def showList (p : Program) (s : State) (activity : String) : State :=
-  { init p with clock := s.clock, patientDrafts? := save s, patientContext? := some { activity } }
+def showList (sp : Spec) (p : Program) (s : State) (activity : String) : State :=
+  { init p with clock := s.clock, patientDrafts? := save sp s, patientContext? := some { activity } }
 
 /-- A clinical page is usable only with facts loaded from the selected source Patient.id. -/
 def bound (f : Facts) (s : State) : Bool :=
@@ -234,8 +246,8 @@ def step (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) (e : Event
     | some action =>
       if s.popup?.isSome then (s, .blocked "Acknowledge the clinical alert before leaving this chart") else
       match action with
-      | .openPatient patient target => (openPatient p s patient target, .ok)
-      | .showList activity => (showList p s activity, .ok)
+      | .openPatient patient target => (openPatient sp p s patient target, .ok)
+      | .showList activity => (showList sp p s activity, .ok)
     | none =>
       if !bound f s then (s, .blocked "Select a patient before opening clinical work") else
       if first && commitClick p s id then (s, loading) else

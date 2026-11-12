@@ -83,7 +83,8 @@ export class Store {
   db: pg.Pool;
   lean: Lean;
   config: Config;
-  constructor(db: pg.Pool, lean: Lean, config: Config) { this.db = db; this.lean = lean; this.config = config; }
+  private now: () => number;
+  constructor(db: pg.Pool, lean: Lean, config: Config, now: () => number = Date.now) { this.db = db; this.lean = lean; this.config = config; this.now = now; }
   authorize(actor: Actor, patient: string) {
     if (!actor.patients.includes(patient)) throw new Fault(403, 'patient_forbidden');
   }
@@ -279,7 +280,7 @@ export class Store {
     this.authorize(actor, r.rows[0].patient);
     return r.rows[0].outcome;
   }
-  async openSession(actor: Actor, input: { patient: string; release: string; workflow: string; expectedVersion?: number; encounter?: string; task?: string; bed?: string }) {
+  async openSession(actor: Actor, input: { patient: string; release: string; workflow: string; expectedVersion?: number; encounter?: string; task?: string; bed?: string; checkpointId?: string; workspaceActivity?: string }) {
     this.authorize(actor, input.patient);
     const release = this.release(input.release);
     const w = release.workflows[input.workflow];
@@ -288,10 +289,21 @@ export class Store {
     this.requireMarUnit(actor, w);
     if (w.mar && (actor.user.role !== 'rn' || w.mar.patient !== input.patient)) throw new Fault(403, 'mar_scope_forbidden');
     return transaction(this.db, async c => {
-      // Hold the same row lock used by commits so session snapshot/version agree.
+      // A checkpoint was derived at departure. Its source patient/version
+      // and short-lived command session are deliberately not consulted here.
+      let workspaceState: Obj | undefined;
+      if (input.checkpointId) {
+        const checkpoint = await c.query('SELECT workspace_state,release_hash FROM commit_draft_checkpoints WHERE tenant=$1 AND id=$2 AND actor=$3 AND auth_session=$4',
+          [this.config.tenant, input.checkpointId, actor.user.id, this.draftScope(actor)]);
+        if (!checkpoint.rowCount) throw new Fault(404, 'checkpoint_not_found');
+        if (!w.project || !release.program.patientSelection || checkpoint.rows[0].release_hash !== digest(release))
+          throw new Fault(409, 'checkpoint_release_mismatch');
+        workspaceState = obj(checkpoint.rows[0].workspace_state);
+      }
       const p = await this.stream(c, `patient:${input.patient}`, true);
-      this.requireMarBinding(p.snapshot, w);
-      let context: Obj = await this.workflowContext(p.snapshot.context, w, p.snapshot.bundle);
+      this.requireMarBinding(obj(p.snapshot), w);
+      const snapshot = obj(p.snapshot);
+      let context: Obj = await this.workflowContext(obj(snapshot.context), w, obj(snapshot.bundle));
       if (w.project) {
         if (input.expectedVersion !== p.version) throw new Fault(409, 'version_conflict');
         if (input.release !== clinicalPersona(actor) && !input.release.startsWith(`${clinicalPersona(actor)}-`)) throw new Fault(403, 'release_forbidden');
@@ -306,12 +318,25 @@ export class Store {
           directoryDate: p.snapshot.context.today, bed: bed?.id, encounterId: encounter.id, taskId: task?.id,
           record: [['viewerPersona', clinicalPersona(actor)], ['selectedEncounterId', encounter.id]] };
       }
-      const facts = await this.lean.call('facts', { bundle: p.snapshot.bundle, context, ...(w.project ? { worldContext: await this.directory(actor) } : {}) });
-      const state = await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
+      if (w.project && release.program.patientSelection) context = { ...context, draftScope: this.draftScope(actor) };
+      const directory = w.project ? await this.directory(actor) : undefined;
+      const selection = w.project && release.program.patientSelection;
+      const facts = await this.lean.call('facts', selection
+        ? { bundle: directory, directoryOnly: true, context: { ...context, today: context.directoryDate ?? context.today } }
+        : { bundle: p.snapshot.bundle, context, ...(directory ? { worldContext: directory } : {}) });
+      let state = workspaceState ?? await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
+      if (input.workspaceActivity) {
+        if (!selection) throw new Fault(422, 'workspace_required');
+        const event = { click: { comp: input.workspaceActivity === 'lookup' ? 'workspace.lookup' : `workspace.activity|${input.workspaceActivity}` } };
+        state = obj((await this.lean.call('step', { ...release, ...facts, user: actor.user, state, event })).state);
+        if (maybeObj(state.patientContext)?.activity !== input.workspaceActivity)
+          throw new Fault(422, 'workspace_activity_unavailable');
+      }
+      if (workspaceState || input.workspaceActivity) context = { ...context, workspaceState: state };
       const id = randomUUID();
-      await c.query(`INSERT INTO commit_sessions(tenant,id,actor,patient,release_name,release_hash,workflow,base_version,context)
-        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      [this.config.tenant, id, actor.user.id, input.patient, input.release, digest(release), input.workflow, p.version, context]);
+      await c.query(`INSERT INTO commit_sessions(tenant,id,actor,patient,release_name,release_hash,workflow,base_version,context,created_at)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`,
+      [this.config.tenant, id, actor.user.id, input.patient, input.release, digest(release), input.workflow, p.version, context, new Date(this.now())]);
       const key = sharedKey(input.patient, w);
       const resource = key ? await this.stream(c, key) : undefined;
       const boardRows = w.project && this.config.adt ? (await c.query('SELECT key,version FROM commit_streams WHERE tenant=$1 AND key=ANY($2) ORDER BY key COLLATE "C"', [this.config.tenant, boardKeys(this.config)])).rows : undefined;
@@ -321,13 +346,61 @@ export class Store {
         ...(resource ? { shared: { key, version: resource.version, state: resource.snapshot } } : {}) };
     });
   }
-  private async session(c: PoolClient, actor: Actor, id: string) {
+  private draftScope(actor: Actor) {
+    // OIDC sid is stable across access-token refresh and changes on a new
+    // login. Static-token test/prototype deployments use that credential's hash.
+    if (this.config.oidc && !actor.loginSession) throw new Fault(403, 'login_session_required');
+    return digest(this.config.oidc ? actor.loginSession : required(actor.token));
+  }
+  async checkpoint(actor: Actor, input: { sessionId: string; revision: number; event: Obj }) {
+    const scope = this.draftScope(actor);
+    const binding = [this.config.tenant, actor.user.id, scope, input.sessionId, input.revision, digest(input.event)];
+    return transaction(this.db, async c => {
+      // Recover a lost departure reply even after its source expires/changes.
+      const existing = await c.query('SELECT id FROM commit_draft_checkpoints WHERE tenant=$1 AND actor=$2 AND auth_session=$3 AND source_session=$4 AND source_revision=$5 AND leave_hash=$6', binding);
+      if (existing.rowCount) return { checkpointId: existing.rows[0].id };
+      const { s, release, workflow } = await this.session(c, actor, input.sessionId);
+      if (!workflow.project || !release.program.patientSelection || s.revision !== input.revision)
+        throw new Fault(409, 'checkpoint_revision_mismatch');
+      const p = await this.stream(c, `patient:${s.patient}`, true);
+      if (s.base_version !== p.version) throw new Fault(409, 'version_conflict');
+      const replay = await this.reconstruct(actor, release, p.snapshot, s, true);
+      const state = obj((await this.lean.call('step', { ...replay.base, state: replay.state, event: input.event })).state);
+      if (!state.patientContext || maybeObj(state.patientContext)?.patient || maybeObj(state.patientContext)?.bound)
+        throw new Fault(422, 'checkpoint_requires_directory');
+      const inserted = await c.query(`INSERT INTO commit_draft_checkpoints(tenant,actor,auth_session,source_session,source_revision,leave_hash,id,release_hash,workspace_state)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (tenant,actor,auth_session,source_session,source_revision,leave_hash) DO NOTHING RETURNING id`,
+      [...binding, randomUUID(), digest(release), state]);
+      if (inserted.rowCount) return { checkpointId: inserted.rows[0].id };
+      return { checkpointId: (await c.query('SELECT id FROM commit_draft_checkpoints WHERE tenant=$1 AND actor=$2 AND auth_session=$3 AND source_session=$4 AND source_revision=$5 AND leave_hash=$6', binding)).rows[0].id };
+    });
+  }
+  async renewSession(actor: Actor, id: string, revision: number) {
+    return transaction(this.db, async c => {
+      // Expired sessions still cannot commit or accept events. A new session
+      // can reproduce their same server journal and screen interval only after
+      // all actor, release, revision and current-patient version checks pass.
+      const { s, release } = await this.session(c, actor, id, true);
+      if (s.revision !== revision) throw new Fault(409, 'session_revision_conflict');
+      const p = await this.stream(c, `patient:${s.patient}`, true);
+      if (s.base_version !== p.version) throw new Fault(409, 'version_conflict');
+      const { base, state } = await this.reconstruct(actor, release, p.snapshot, s, true);
+      const next = randomUUID();
+      await c.query(`INSERT INTO commit_sessions(tenant,id,actor,patient,release_name,release_hash,workflow,base_version,context,events,revision,screen_start,created_at)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
+      [this.config.tenant, next, actor.user.id, s.patient, s.release_name, s.release_hash, s.workflow, s.base_version, s.context, JSON.stringify(s.events), s.revision, s.screen_start, new Date(this.now())]);
+      return { sessionId: next, revision: s.revision, version: p.version, state,
+        projection: { facts: base.facts, display: base.display } };
+    });
+  }
+  private async session(c: PoolClient, actor: Actor, id: string, renewing = false) {
     const r = await c.query('SELECT * FROM commit_sessions WHERE tenant=$1 AND id=$2 AND actor=$3 FOR UPDATE',
       [this.config.tenant, id, actor.user.id]);
     if (!r.rowCount) throw new Fault(404, 'session_not_found');
     const s = r.rows[0];
     this.authorize(actor, s.patient);
-    if (Date.now() - new Date(s.created_at).getTime() > 5 * 60_000) throw new Fault(409, 'session_expired');
+    if (s.context.draftScope && s.context.draftScope !== this.draftScope(actor)) throw new Fault(404, 'session_not_found');
+    if (!renewing && this.now() - new Date(s.created_at).getTime() > 5 * 60_000) throw new Fault(409, 'session_expired');
     const release = this.release(s.release_name);
     if (digest(release) !== s.release_hash) throw new Fault(409, 'release_changed');
     const workflow = release.workflows[str(s.workflow)];
@@ -354,7 +427,7 @@ export class Store {
     const selection = project && obj(release.program).patientSelection;
     const workspace = selection ? await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...obj(s.context), today: obj(s.context).directoryDate ?? obj(s.context).today } }) : undefined;
     if (workspace) base = { ...base, ...workspace };
-    let state = await this.lean.call('init', base);
+    let state = maybeObj(obj(s.context).workspaceState) ?? await this.lean.call('init', base);
     const frames: { step: number; phase: 'ready' | 'loading'; hash: string }[] = [];
     const record = async (step: number, phase: 'ready' | 'loading') => {
       if (!screens || step < num(s.screen_start)) return;

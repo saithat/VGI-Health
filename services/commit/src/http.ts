@@ -1,4 +1,4 @@
-import { Fault, adtCommandInput, clinicalPersona, commandInput, cosignInput, encounterInput, eventInput, required, sessionInput, version } from './types.ts';
+import { Fault, adtCommandInput, clinicalPersona, commandInput, cosignInput, encounterInput, eventInput, required, sessionInput, checkpointInput, renewInput, version } from './types.ts';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { AdtStore } from './adt.ts';
 import { authenticator } from './auth.ts';
@@ -135,6 +135,12 @@ export function server(store: Store, notifications: Notifications) {
       }
       if (req.method === 'POST' && url.pathname === '/sessions') {
         return json(res, 201, await store.openSession(actor, sessionInput.parse(await body(req))));
+      }
+      if (req.method === 'POST' && url.pathname === '/draft-checkpoints') {
+        return json(res, 201, await store.checkpoint(actor, checkpointInput.parse(await body(req))));
+      }
+      if (req.method === 'POST' && parts[0] === 'sessions' && parts.length === 3 && parts[2] === 'renew') {
+        return json(res, 201, await store.renewSession(actor, z.uuid().parse(parts[1]), renewInput.parse(await body(req)).revision));
       }
       if (req.method === 'POST' && parts[0] === 'sessions' && parts.length === 3 && parts[2] === 'events') {
         const id = z.uuid().parse(parts[1]);

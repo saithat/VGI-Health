@@ -138,7 +138,7 @@ unchanged (`#guard`s in `Ehr.Proofs.RuntimeDraftWitness`). Only
 
 - **Saving** (`Workspace.save`). Workspace navigation that leaves a hydrated
   chart (Return to the list, an activity list, Patient Lookup, and through them
-  opening another patient) stores the chart's `captured` and `acked` as that
+  opening another patient) stores the chart's unsigned captures and `acked` as that
   patient's draft, replacing an earlier one. A chart with neither leaves no
   entry. A state that holds no hydrated chart (`Workspace.chart? = none`) leaves
   the store unchanged, so leaving a selected but not yet hydrated patient does
@@ -154,7 +154,7 @@ unchanged (`#guard`s in `Ehr.Proofs.RuntimeDraftWitness`). Only
   the facts as before.
 - **Other patients.** Hydration and saving keep every other patient's draft
   (`others_ne`, `save_ne`), and a chart receives only its own patient's draft:
-  `Workspace.opening_clears_patient_state` is unchanged, and the two-patient
+  `Workspace.opening_clears_patient_state` still holds, and the two-patient
   `#guard`s open B after A and then A again.
 
 Decisions taken here, **for owner review**:
@@ -178,11 +178,15 @@ Decisions taken here, **for owner review**:
   gives a new key, which is not acknowledged in the hydrated chart
   (`start_unacked`), so the alert interrupts again; the witness
   `changed_fact_interrupts` runs this. This was confirmed in Lean as asked.
-- **Signed captures are restored too.** Leaving a chart clears `commits`, and
-  the captures behind a commit stay in the draft. After reopening, the same
-  entries can be signed again with one click, subject to the guard and the
-  current facts. Before this change they had to be entered again. Whether a
-  signed entry should leave the draft is an open question for the owner.
+- **Signed captures are excluded.** `Workspace.signedEntry` associates a capture
+  with signed work when an entry requirement names its element and its commit
+  is in `s.commits`. `save` filters all slots of such elements, including
+  conditional requirements, without consulting stale facts. Shared elements
+  are excluded even if another unsigned commit also requires them; unrelated
+  elements remain. Acknowledgments are unchanged. `signed_leave_reopen`
+  proves no restored capture belongs to a signed commit's entry requirements;
+  `signed_not_restored` and executable guards cover signing and reopening.
+  Fresh record prefills can still appear; they are not restored captures.
 
 Where stored entries come from: `Ehr.Runtime.draft_origin` proves that after
 any API call an entry of a patient's stored draft was already stored for that
@@ -506,7 +510,7 @@ with patient selection, any facts and any user, over `FixedReachable`:
 | Clause | Form proved | Per-call theorem |
 |---|---|---|
 | 2, commits capture all | Original `FixedCommitCapturesAll` | `commit_entries` with `commit_input` |
-| 2, entered once | **Session form** `SessionEnteredOnce`: each patient's confirmed, restorable session captures are kept by every non-entry, non-macro call | `session_captures` |
+| 2, entered once | **Session form** `SessionEnteredOnce`: each patient's confirmed, restorable session captures are kept by every non-entry, non-macro call, or belong to a signed commit in the chart being left | `session_captures` |
 | 5, human entries, start | Original first clause of `FixedHumanStepsByHuman` | (the landing state has no capture) |
 | 5, human entries, per step | **Session form** `SessionHumanEntries`: a human-required value new in a patient's session captures comes from an entry event | `session_humanEntries` (needs `Settled`) |
 | 5, commits by a commit click | Original commit clause, `FixedCommitsByClick`, on the screen of the API state | `commit_byClick` |
@@ -598,7 +602,7 @@ is not the right statement.
 | Critical handler changes only critical workflow state | **Proved**, every call: `Ehr.Runtime.critical_frame` (all fields except `criticalResults?` and `criticalDrafts?` are kept), `critical_evidence`. |
 | Popup blocks every nonacknowledgment event | **Proved**. Every program, popup open at effective input: `Ehr.Runtime.popup_blocks` keeps `captured`, `commits`, `acked`, `receipts` and `popup?`; a workspace lookup query may still change the patient-selection context (`workspace_popup_blocks`). Ordinary programs: `popup_blocks_ordinary` returns the same state and the interpreter's popup refusal. Handler alone: `critical_popup`. Regression on the former counterexample: `Ehr.Runtime.Witness.popup_blocks_action`. |
 | 1 — `accepted_wellFormed` | **Proved** for ordinary programs: `Ehr.Runtime.ordinary_landmarksShown`. **Proved per episode** with patient selection: `Ehr.Runtime.episode_landmarksShown` (`EpisodeLandmarksShown`), with `episode_runView`; regression `Ehr.Runtime.Witness.acknowledged_landmark`. **Refuted in the global form** (runtime-view landmark clause on the unselected landing view): `Ehr.Runtime.Witness.landing_has_no_landmark`, `workspace_accepted`; the landing view is in no episode (`landing_not_inEpisode`), and what holds there is `Ehr.Runtime.unselected_view`. Static catalog/ID/reference/depth clauses are retained by `Ehr.Runtime.accepted_static`. |
-| 2 — `accepted_capturesAllOnce` | **Proved** for ordinary programs: `Ehr.Runtime.ordinary_commitCapturesAll`, `ordinary_enteredOnce`. **Proved per episode** with patient selection: `Ehr.Runtime.episode_commitCapturesAll`, `episode_enteredOnce`; regression `Ehr.Runtime.Witness.acknowledged_keeps_captures`. **Across navigation:** the commit clause holds in the original form and retention in the session form (`Ehr.Runtime.selection_global`, `session_captures`); regression `Ehr.Runtime.Witness.return_keeps_capture`. **Still refuted in the original global form** of retention: `Ehr.Runtime.Witness.return_empties_captured`, `acknowledged_reachable`, `workspace_accepted`: Return moves the captures to the stored draft, so `State.captured` is empty on the list; that click leaves the episode (`return_leaves`). Commit entry obligations at effective input for every call: `Ehr.Runtime.commit_entries`; linked-prefill structure is retained by `Ehr.Runtime.accepted_static`. |
+| 2 — `accepted_capturesAllOnce` | **Proved** for ordinary programs: `Ehr.Runtime.ordinary_commitCapturesAll`, `ordinary_enteredOnce`. **Proved per episode** with patient selection: `Ehr.Runtime.episode_commitCapturesAll`, `episode_enteredOnce`; regression `Ehr.Runtime.Witness.acknowledged_keeps_captures`. **Across navigation:** the commit clause holds in the original form and unsigned retention in the session form (`Ehr.Runtime.selection_global`, `session_captures`); regression `Ehr.Runtime.Witness.return_keeps_capture`. **Still refuted in the original global form** of retention: `Ehr.Runtime.Witness.return_empties_captured`, `acknowledged_reachable`, `workspace_accepted`: Return moves the captures to the stored draft, so `State.captured` is empty on the list; that click leaves the episode (`return_leaves`). Commit entry obligations at effective input for every call: `Ehr.Runtime.commit_entries`; linked-prefill structure is retained by `Ehr.Runtime.accepted_static`. |
 | 3 — `accepted_writesOnly` / `WritesAllowed` | **Proved** for ordinary programs: `Ehr.Runtime.ordinary_writesAllowed` (in `accepted_ordinary`). Regressions on the former counterexample: `Ehr.Runtime.Witness.action_is_draft`, `writes_allowed`. **Proved per episode** with patient selection: `Ehr.Runtime.episode_writesAllowed` (`EpisodeWritesAllowed`); receipts loaded at hydration are the facts' receipts (`chart_writes`). No global-form statement or counterexample with patient selection is supplied. Declared field/button structure is retained by `Ehr.Runtime.accepted_static`. |
 | 4 — `accepted_reviewsBeforeCommit` | **Proved** for ordinary programs: `Ehr.Runtime.ordinary_commitReviewsMet`, `ordinary_commitScreenShowsReviews`. **Proved per episode** with patient selection, including the commit-screen view clause: `Ehr.Runtime.episode_commitReviewsMet`, `episode_commitScreenShowsReviews`, with `episode_runView`. The hydrating call is related to the hydrated chart, its effective input. For every call, `Ehr.Runtime.commit_reviews` and the runtime T2 theorems prove the commit obligations at effective input. |
 | 5 — `accepted_humanOnlyKept` | **Proved** for ordinary programs: `Ehr.Runtime.ordinary_humanStepsByHuman`, `ordinary_onlyHumanCommitsAndAcks`, `ordinary_cosignIsSecondUser`. **Proved per episode** with patient selection: `Ehr.Runtime.episode_humanStepsByHuman`, `episode_onlyHumanCommitsAndAcks`, `episode_cosignIsSecondUser`; the acknowledgment-change clause is the original one; regression `Ehr.Runtime.Witness.acknowledged_keeps_acks`. **Across navigation:** the commit and cosign clauses hold in the original form, the acknowledgment and per-step human-entry clauses in the session form (`Ehr.Runtime.selection_global`, `session_acks`, `session_humanEntries`, `commit_byClick`). **Still refuted in the original global form:** the acknowledgment clause (`Ehr.Runtime.Witness.return_empties_acked`: a workspace click moves the acknowledgments to the stored draft) and the per-step human-entry clause (`reopen_restores_entry`: the hydrating call moves a stored human entry back). Neither exhibits an automated acknowledgment, an automated entry or a self-cosign. Static automation prohibitions are retained by `Ehr.Runtime.accepted_static`. |
@@ -731,15 +735,13 @@ behavior.
 - **Decided 2026-11-11 and applied, for review: unselected views.**
   `Unselected`, `WorkspaceOnly`. Landmarks and alert obligations are not
   wanted before selection; the property says the opposite holds.
-- **Open: the live host discards the state on leaving a chart.**
-  `app/src/core/liveSession.ts` replaces the state with a fresh `init` and
-  clears its event journal when the clinician leaves a chart, so in the live
-  app the drafts do not survive yet. Keeping them needs a host change (keep
-  the returned state, or carry `patientDrafts` over) and a decision on the
-  commit service's event journal, which replays a session from `init`. Not
-  changed in this lane.
-- **Open: signed captures in the draft.** See [Per-patient
-  drafts](#per-patient-drafts).
+- **Applied: live draft persistence and signed-entry removal.** The host keeps
+  Lean's navigation result. At departure the service freshly replays the
+  source journal and leave event into an immutable actor/login/release-bound
+  checkpoint. New charts start from it without depending on the previous
+  patient's later versions or short-lived session. Renewing a command session
+  preserves its journal and screen interval; current-patient checks remain.
+  [Live draft protocol and validation](live-drafts.md).
 - **Open: drafts and the simulator.** `Ehr.Sim.Resumption` models interrupted
   work with its own frames and rule (a clinical fact change clears
   acknowledgments and unconfirms all entries). The runtime rule here differs:

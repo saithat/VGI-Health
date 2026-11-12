@@ -209,6 +209,28 @@ def chartA : State :=
 #guard (runStep (workspaceInput reselected (.ack "clinicalAlert"))).result == .blocked "Chart is loading"
 #guard (runStep (workspaceInput reselected (.click "recordButton"))).state == reopened
 #guard (runStep (workspaceInput reopened (.click "recordButton"))).result == .ok
+/-- New specification for owner review: sign, leave and reopen the witness. -/
+def signed : State := call directoryFacts reopened (.click "recordButton")
+def signedLeft : State := call directoryFacts signed (.click "workspace.return")
+def signedReopened : State :=
+  call directoryFacts (call directoryFacts signedLeft selectPatient) (.scroll "clinical")
+
+/-- New specification for owner review: signed work is absent after reopen;
+acknowledgments survive and the missing required entry prevents a second sign. -/
+theorem signed_not_restored :
+    signed.commits = ["recordReview"] ∧ assessment ∉ signedReopened.captured ∧
+    signedReopened.acked = signed.acked ∧
+    (runStep (workspaceInput signedReopened (.click "recordButton"))).state.commits = [] := by decide
+#print axioms signed_not_restored
+#guard signedReopened.captured.isEmpty
+#guard (Workspace.draft signedLeft "source-A").captured.isEmpty
+#guard signedReopened.acked == acknowledged.acked
+-- Shared elements and nonzero order slots are covered; unrelated work stays.
+#guard Workspace.unsigned spec { signed with captured :=
+    [assessment, { assessment with slot := 2 }, { assessment with element := "unrelated" }] }
+  == [{ assessment with element := "unrelated" }]
+#guard Workspace.unsigned spec { signed with commits := ["otherCommit"] } == signed.captured
+
 -- JSON: a state without stored drafts serializes as before the field existed.
 #guard encodeJson landing ==
   "{\"acked\":[],\"captured\":[],\"clock\":0,\"commits\":[],\"currentSlot\":0,\"expanded\":[]," ++

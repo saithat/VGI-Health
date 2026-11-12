@@ -9,11 +9,11 @@ namespace Ehr.Workspace
 #guard !patientMatches "," { id := "B", name := "Ellis, Riley", mrn := "SH00001675" }
 /-- Patient B never inherits captures, acknowledgments, commits or receipts from patient A.
 Patient A's captures and acknowledgments are kept apart, in A's stored draft. -/
-theorem opening_clears_patient_state (p : Program) (s : State) (patient target : String) :
-    (openPatient p s patient target).captured = [] ∧
-    (openPatient p s patient target).receipts = [] ∧
-    (openPatient p s patient target).acked = [] ∧
-    (openPatient p s patient target).commits = [] := by simp [openPatient, init]
+theorem opening_clears_patient_state (sp : Spec) (p : Program) (s : State) (patient target : String) :
+    (openPatient sp p s patient target).captured = [] ∧
+    (openPatient sp p s patient target).receipts = [] ∧
+    (openPatient sp p s patient target).acked = [] ∧
+    (openPatient sp p s patient target).commits = [] := by simp [openPatient, init]
 
 /-- The landing workspace cannot be bound to any patient's facts. -/
 theorem initial_not_bound (p : Program) (f : Facts) : bound f (init p) = false := by
@@ -32,7 +32,7 @@ theorem foreign_facts_not_bound (f : Facts) (s : State)
     simp [bound, hc, h]
 
 /-- A real entry in A's state is absent when the same interpreter opens B. -/
-example : (openPatient Ehr.Examples.Tiny.program
+example : (openPatient Ehr.Examples.Tiny.spec Ehr.Examples.Tiny.program
     { (init Ehr.Examples.Tiny.program) with captured := [{
       element := "patientIdReentry", slot := 0, value := .text "patient-A", byHuman := true, confirmed := true }] }
     "patient-B" "orders").captured = [] := rfl

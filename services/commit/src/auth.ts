@@ -36,6 +36,7 @@ export function authenticator(config: Config) {
       const units = Array.isArray(payload.units) ? provision.units?.filter(u => claimedUnits.includes(u)) ?? [] : [];
       // Both Lean identity and role come from the verified claims, not provisioning's UI metadata.
       return { ...provision, user: { id: required(payload.sub), role: roles[0] ?? bedRoles[0] }, adtRoles: bedRoles, units, expires: payload.exp,
+        ...(typeof payload.sid === 'string' && payload.sid ? { loginSession: payload.sid } : {}),
         persona: typeof payload.persona === 'string' ? payload.persona : undefined,
         name: typeof payload.name === 'string' ? payload.name : payload.sub };
     } catch (e) { if (e instanceof Fault) throw e; throw new Fault(401, 'invalid_token'); }
