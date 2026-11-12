@@ -736,9 +736,11 @@ behavior.
   `Unselected`, `WorkspaceOnly`. Landmarks and alert obligations are not
   wanted before selection; the property says the opposite holds.
 - **Applied: live draft persistence and signed-entry removal.** The host keeps
-  Lean's navigation result. The commit service freshly replays an actor-bound
-  predecessor and the leave event to seed the next session's context. New
-  chart journals reproduce that seed and keep the full painted-screen check.
+  Lean's navigation result. At departure the service freshly replays the
+  source journal and leave event into an immutable actor/login/release-bound
+  checkpoint. New charts start from it without depending on the previous
+  patient's later versions or short-lived session. Renewing a command session
+  preserves its journal and screen interval; current-patient checks remain.
   [Live draft protocol and validation](live-drafts.md).
 - **Open: drafts and the simulator.** `Ehr.Sim.Resumption` models interrupted
   work with its own frames and rule (a clinical fact change clears

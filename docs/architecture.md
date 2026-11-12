@@ -130,11 +130,15 @@ position and displayed evidence. Each native ready screen since the previous
 successful command is mandatory. Loading screens are compared when React
 actually paints them; batched-away loading frames require no evidence. Returning
 to the directory keeps unsigned patient drafts and acknowledgments in Lean's
-navigation state. Before switching, the host flushes the outgoing journal; a
-continuation binds its actor-scoped service session, revision and leave event.
-The service checks the source version under lock, freshly replays that journal,
-applies the leave event and stores the resulting directory state as the next
-session's replay context. Only the selected patient's draft is restored into a
+navigation state. At departure, the host flushes the outgoing journal and the
+service checks its source version under lock, freshly replays it and applies
+the leave event. The resulting directory state is stored as an immutable
+checkpoint bound to the actor, login session and pinned release. The next chart
+references that checkpoint without consulting the previous chart's session or
+later versions. If no draft changes, departure is local. Short-lived command
+sessions are renewed by fresh replay with the same journal and screen interval;
+current-patient version checks and the five-minute commit limit still apply.
+Only the selected patient's draft is restored into a
 fresh chart, so another patient's evidence cannot authorize a command. The next
 journal and painted-screen interval start at that server-derived directory
 state ([draft protocol](methods/live-drafts.md)). Chart hydration and

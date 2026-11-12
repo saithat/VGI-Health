@@ -17,10 +17,10 @@ export async function fixture() {
 const framesSchema = z.array(z.object({ step: z.number(), phase: z.enum(['ready', 'loading']), hash: z.string() }));
 const interpreters = new Map<string, Lean>();
 const screenSessions = new Map<string, Obj>();
-export async function host(url: string, config: Config, port = 0) {
+export async function host(url: string, config: Config, port = 0, now?: () => number) {
   const db = pool(url);
   const lean = new Lean(resolve(process.env.EHR_BIN ?? '../../lean/.lake/build/bin/ehr'), 20_000);
-  const store = new Store(db, lean, config);
+  const store = new Store(db, lean, config, now);
   const notifications = new Notifications(url);
   await notifications.start();
   const app = server(store, notifications);
@@ -37,6 +37,11 @@ export async function api(base: string, actor: Actor, path: string, body?: unkno
     headers: { Authorization: `Bearer ${actor.token}`, 'Content-Type': 'application/json' },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   const result = { status: res.status, body: obj(await res.json()) };
+  if (res.status === 201 && path.startsWith('/sessions/') && path.endsWith('/renew')) {
+    const previous = screenSessions.get(path.split('/')[2]);
+    if (previous) screenSessions.set(str(result.body.sessionId), { ...previous, ...result.body });
+    return result;
+  }
   // Test clients act as painters: hash each native wire object returned for the
   // pinned release/state. Production never returns trusted fingerprints to UI.
   let session: Obj | undefined;

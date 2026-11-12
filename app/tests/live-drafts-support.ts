@@ -9,7 +9,9 @@ const serviceSchema = z.object({
   token: z.string(),
   spec: z.unknown(),
   program: z.unknown(),
-  directory: z.unknown().refine(value => bundleSchema.safeParse(value).success),
+  directory: z
+    .unknown()
+    .refine((value) => bundleSchema.safeParse(value).success),
 });
 /** Run service sources in their own Node process and TypeScript configuration. */
 export async function startDraftService() {
@@ -28,11 +30,14 @@ export async function startDraftService() {
           new URL("../../lean/.lake/build/bin/ehr", import.meta.url),
         ),
       },
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: ["ignore", "pipe", "pipe", "ipc"],
     },
   );
+  const stdout = child.stdout;
+  const stderr = child.stderr;
+  if (!stdout || !stderr) throw new Error("Missing service output pipes");
   let errors = "";
-  child.stderr.on("data", (bytes) => {
+  stderr.on("data", (bytes) => {
     errors += String(bytes);
   });
   const ready = await new Promise<z.infer<typeof serviceSchema>>(
@@ -46,7 +51,7 @@ export async function startDraftService() {
         reject(new Error(`Draft service exited ${code}: ${errors}`));
       });
       let output = "";
-      child.stdout.on("data", (bytes) => {
+      stdout.on("data", (bytes) => {
         output += String(bytes);
         if (output.includes("\n")) {
           clearTimeout(timer);
@@ -63,8 +68,31 @@ export async function startDraftService() {
     },
   );
   const directory: Bundle = JSON.parse(JSON.stringify(ready.directory));
+  let nextControl = 0;
+  async function control(input: {
+    advanceMs?: number;
+    changePatient?: string;
+  }) {
+    const id = ++nextControl;
+    await new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(
+        () => reject(new Error("Draft service control timeout")),
+        5000,
+      );
+      const receive = (message: unknown) => {
+        if (z.object({ id: z.number() }).parse(message).id !== id) return;
+        clearTimeout(timer);
+        child.off("message", receive);
+        resolve();
+      };
+      child.on("message", receive);
+      child.send({ id, ...input });
+    });
+  }
   return {
     ...ready,
+    advance: (advanceMs: number) => control({ advanceMs }),
+    changePatient: (changePatient: string) => control({ changePatient }),
     directory,
     async close() {
       const exited = once(child, "exit");

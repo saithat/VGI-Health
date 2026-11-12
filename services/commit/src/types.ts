@@ -98,14 +98,16 @@ export const configSchema = z.object({
     ctx.addIssue({ code: 'custom', message: 'duplicate user id' });
 });
 export type Config = z.infer<typeof configSchema>;
-export type Actor = Config['actors'][number];
+export type Actor = Config['actors'][number] & { loginSession?: string };
 /** RN2 is an independent authenticated nurse using the P3 clinical layout. */
 export const clinicalPersona = (actor: Actor) => actor.persona === 'RN2' ? 'P3' : actor.persona ?? actor.user.id;
 export type Release = Config['releases'][string];
 export type Workflow = Release['workflows'][string];
-export const sessionInput = z.object({ patient: id, release: id, workflow: id, expectedVersion: version.optional(), encounter: id.optional(), task: id.optional(), bed: id.optional(), continuation: z.object({ sessionId: z.uuid(), revision: version, event: z.record(z.string(), z.unknown()) }).strict().optional() }).strict();
-export const cosignInput = sessionInput.omit({ continuation: true }).extend({ expectedVersion: version }).strict();
+export const sessionInput = z.object({ patient: id, release: id, workflow: id, expectedVersion: version.optional(), encounter: id.optional(), task: id.optional(), bed: id.optional(), checkpointId: z.uuid().optional(), workspaceActivity: id.optional() }).strict();
+export const cosignInput = sessionInput.omit({ checkpointId: true, workspaceActivity: true }).extend({ expectedVersion: version }).strict();
 export const eventInput = z.object({ revision: version, event: z.record(z.string(), z.unknown()) }).strict();
+export const checkpointInput = eventInput.extend({ sessionId: z.uuid() }).strict();
+export const renewInput = z.object({ revision: version }).strict();
 export const commandInput = z.object({
   requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/), sessionId: z.uuid(),
   revision: version, expectedVersion: version, expectedSharedVersion: version.optional(), commit: id.optional(), bed: id.optional(), expectedBoard: z.array(z.object({ key: z.string(), version }).strict()).max(128).optional(),

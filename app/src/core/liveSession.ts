@@ -5,6 +5,7 @@ import type {
   Event,
   FactsOutput,
   Receipt,
+  State,
 } from "../../../lean/generated/ehr-types";
 import { fhirDisplayContext } from "../data/fhirContext";
 import { keepFocusedTask, selectedRowSource } from "../data/patientDirectory";
@@ -275,8 +276,9 @@ export async function createLiveSession(
   let pending = false;
   let refreshNeeded = false;
   let remote: MarOpened | undefined;
-  let continuation:
-    { sessionId: string; revision: number; event: Event } | undefined;
+  let checkpointId: string | undefined;
+  let checkpointDrafts: State["patientDrafts"];
+  let workspaceActivity: string | undefined;
   const screensSeen = screenJournal(interp.screenCanonical);
   const history: Event[] = [];
   let unsent: Event[] = [];
@@ -285,6 +287,23 @@ export async function createLiveSession(
     { requestId: string; body: unknown; event: string } | undefined;
   async function synchronize() {
     if (remote) {
+      // Create a fresh command session with the same server journal and screen
+      // interval. The old five-minute session remains ineligible for commits.
+      if (selectionEnabled) {
+        const renewed = z
+          .object({ sessionId: z.string(), revision: z.number() })
+          .passthrough()
+          .parse(
+            await marRequest(`/sessions/${remote.sessionId}/renew`, {
+              revision: remote.revision,
+            }),
+          );
+        remote = {
+          ...remote,
+          sessionId: renewed.sessionId,
+          revision: renewed.revision,
+        };
+      }
       while (unsent.length) {
         const event = unsent[0];
         if (!event) break;
@@ -303,7 +322,8 @@ export async function createLiveSession(
       expectedVersion: patientVersion(context.patient.id),
       ...(context.task?.id ? { task: context.task.id } : {}),
       ...(context.bed?.id ? { bed: context.bed.id } : {}),
-      ...(continuation ? { continuation } : {}),
+      ...(checkpointId ? { checkpointId } : {}),
+      ...(workspaceActivity ? { workspaceActivity } : {}),
     });
     if (
       JSON.stringify([opened.spec, opened.program]) !==
@@ -378,12 +398,24 @@ export async function createLiveSession(
         if (priorPatient) {
           pending = true;
           try {
-            const authority = await synchronize();
-            continuation = {
-              sessionId: authority.sessionId,
-              revision: authority.revision,
-              event,
-            };
+            // An unchanged draft store needs no service call, including an
+            // empty chart visited between two charts with existing drafts.
+            if (
+              JSON.stringify(staged.state.patientDrafts ?? []) !==
+              JSON.stringify(checkpointDrafts ?? [])
+            ) {
+              const authority = await synchronize();
+              const saved = z.object({ checkpointId: z.string() }).parse(
+                await marRequest("/draft-checkpoints", {
+                  sessionId: authority.sessionId,
+                  revision: authority.revision,
+                  event,
+                }),
+              );
+              checkpointId = saved.checkpointId;
+              checkpointDrafts = staged.state.patientDrafts;
+            }
+            workspaceActivity = staged.state.patientContext?.activity;
             remote = undefined;
             unsent = [];
             history.length = 0;
@@ -392,8 +424,10 @@ export async function createLiveSession(
             // Keep Lean's navigation state, including patientDrafts. Isolation
             // follows Ehr.Runtime.bind_hydrates / Hydrated.eq: a fresh chart
             // receives only its own draft; hydrating_refuses bars unseen signs.
-            // The next service session starts from the same freshly replayed
-            // departure checkpoint, then replays this directory's journal.
+            // The immutable service checkpoint was created at departure; later
+            // source-patient writes and command-session expiry cannot affect it.
+            // Directory activity is navigation input; the service applies it
+            // natively before replaying this directory's new journal.
             session.accept(
               { state: staged.state, result: staged.result },
               directory,

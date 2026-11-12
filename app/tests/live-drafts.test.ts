@@ -14,11 +14,16 @@ import { nativeInterp } from "../../services/commit/test/native-interp";
 import { createLiveSession } from "../src/core/liveSession";
 import type { Event } from "../../lean/generated/ehr-types";
 
-const transport = vi.hoisted(() => ({ base: "", token: "" }));
+const transport = vi.hoisted(() => ({
+  base: "",
+  token: "",
+  requests: new Array<string>(),
+}));
 vi.mock("../src/data/commitService", async (original) => {
   const actual = await original<typeof import("../src/data/commitService")>();
   async function request(path: string, body?: unknown) {
     // Test transport forwards every request to the real isolated authority.
+    transport.requests.push(path);
     // eslint-disable-next-line boundary/single-data-module
     const response = await fetch(transport.base + path, {
       method: body === undefined ? "GET" : "POST",
@@ -98,9 +103,18 @@ it.skipIf(!process.env.DATABASE_URL)(
     await select("draft-B");
     expect(session.getSnapshot().state.captured).toEqual([]);
     expect(session.getSnapshot().state.acked).toEqual([]);
+    const beforeEmptyLeave = transport.requests.length;
+    await dispatch({ click: { comp: "workspace.lookup" } });
+    expect(transport.requests.length).toBe(beforeEmptyLeave);
+    await select("draft-B");
     await dispatch({
       enter: { comp: "noteField", value: { text: { s: "Patient B note" } } },
     });
+    await service.advance(6 * 60_000);
+    await service.changePatient("draft-A");
+    await dispatch(alert);
+    await dispatch(ack);
+    expect((await dispatch(sign))?.message).toBe("Saved: Sign note");
     await dispatch(leave);
     await select("draft-A");
     expect(session.getSnapshot().state.captured).toEqual(original.captured);
@@ -116,5 +130,5 @@ it.skipIf(!process.env.DATABASE_URL)(
     expect(session.getSnapshot().state.captured).toEqual([]);
     expect(session.getSnapshot().state.acked).toEqual(original.acked);
   },
-  120_000,
+  180_000,
 );

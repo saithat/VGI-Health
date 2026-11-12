@@ -196,8 +196,8 @@ the draft (`selection_global`). The call that loads a chart refuses commits
 and acknowledgments, and no patient data is shown before a patient is selected
 (`unselected_view`). Properties 1 and 9 keep their global counterexamples on
 the landing view; the global form of the other four is not stated. The live
-app keeps unsigned drafts across charts using context reconstructed by the service
-([drafts and signing](docs/methods/live-drafts.md)). Critical-result action text is a
+app keeps unsigned drafts across charts after long visits and changes to other
+patients' records ([drafts and signing](docs/methods/live-drafts.md)). Critical-result action text is a
 draft outside `captured`, cleared on a successful resolve; the handler is
 refused while an alert popup is open, and the checker reserves all `critical.`
 component IDs so the handler cannot shadow a program control

@@ -113,6 +113,19 @@ test("live drafts A/B/A restore entries and acknowledged alerts, then sign throu
     expect((await state()).acked).toEqual([]);
     await page.getByRole("textbox", { name: /^HPI/ }).fill("Patient B note");
     await settled();
+    await service.advance(6 * 60_000);
+    await service.changePatient("draft-A");
+    await page.getByRole("button", { name: "Sign note", exact: true }).click();
+    await settled();
+    await page.getByRole("button", { name: /^Acknowledge/ }).click();
+    await settled();
+    const savedB = page.waitForResponse((r) =>
+      r.url().endsWith("/commit/commands"),
+    );
+    await page.getByRole("button", { name: "Sign note", exact: true }).click();
+    const responseB = await savedB;
+    expect(responseB.status(), await responseB.text()).toBe(201);
+    await settled();
     await leave();
     await select("draft-A");
     await expect(page.getByRole("textbox", { name: /^HPI/ })).toHaveValue(

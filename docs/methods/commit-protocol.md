@@ -86,19 +86,30 @@ are the stated Postgres assumption.
 For the native administrative reducer, cancellation policy and separate machine,
 see [Administrative ADT](adt.md).
 
-### Patient draft continuation
+### Patient draft checkpoints
 
-A clinical selection session may continue an actor's previous session at an
-exact revision, with the actual leave event. The service checks the pinned
-release and source patient version, freshly replays the previous journal, and
-applies that event through native Lean. Only an unselected result is accepted.
-The resulting directory state (including patient drafts) is stored in the new
-session's server-created context. Client-supplied states remain forbidden.
-Reconstruction starts from this immutable context and replays the new journal;
-all ready screen positions, the fresh guard and locked versions remain checked.
-This host behavior is tested, not covered by the generic fixed-input cache
-model. See [live drafts](live-drafts.md) for the precise signed-entry rule and
-validation commands.
+`POST /draft-checkpoints` binds a source session's exact revision and leave
+event. While the source is fresh and its patient version matches under lock,
+the service freshly replays its journal and applies the event through Lean.
+Only an unselected result is saved. `007-draft-checkpoints.sql` stores that
+immutable result under the actor, OIDC login `sid` (or static credential hash)
+and pinned release. Duplicate departure requests return the original ID.
+
+The next session references only this checkpoint ID. Opening patient B never
+rechecks patient A's later version or session expiry. The host skips departure
+network work if the exact native draft store is unchanged. Directory activity
+is separately replayed as native navigation when starting the new session.
+
+`POST /sessions/:id/renew` reconstructs a fresh command session after checking
+actor/login, release, exact revision and the current patient's locked version.
+It copies the server-owned journal and `screen_start`, preserving the painted
+interval across renewal. The original expired session still cannot accept a
+command or event. Every command retains the fresh guard, locked version checks,
+full screen comparison and command-endpoint prohibition on clinical writes
+elsewhere. No caller-supplied state is accepted by either endpoint.
+
+This host behavior is tested, outside the generic fixed-input cache model.
+See [live drafts](live-drafts.md) for the signed-entry rule and validation.
 
 ### Veil evaluation
 

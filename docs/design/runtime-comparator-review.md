@@ -161,12 +161,15 @@ evidence outside the catalog.
   owner accepted this.
 - **Host.** The live app keeps the navigation state from `runStep`, including
   drafts. Isolation relies on `bind_hydrates` / `Hydrated.eq`: fresh patient
-  initialization plus only that patient's restored draft. A service-created
-  continuation context contains the departure state derived by fresh native
-  replay of the prior session and leave event; the next chart's journal starts
-  there. Actor, release, revision and source patient version are checked before
-  carrying state. Screen comparison and the fresh commit guard still apply.
-  TypeScript and SQL remain outside Lean; see [live drafts](../methods/live-drafts.md).
+  initialization plus only that patient's restored draft. At departure the
+  service freshly replays the source journal and leave event, checks source
+  version/release/revision, and stores an immutable actor/login/release-bound
+  checkpoint. Opening the next chart uses that checkpoint without consulting
+  the old session's expiry or later patient versions. Fresh command sessions
+  preserve the journal and painted interval on renewal; all current-patient
+  guard/version and screen checks still apply. Empty unchanged drafts leave
+  locally. TypeScript and SQL remain outside Lean; see
+  [live drafts](../methods/live-drafts.md).
 - **Small handler items:** successful resolve now removes that result's draft;
   refusal retains it, and unrelated drafts are preserved (`UrgencyTests`).
   `CriticalDraft` uses named Lean fields while emitting/decoding the historical
