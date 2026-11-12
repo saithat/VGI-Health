@@ -103,8 +103,8 @@ export type Actor = Config['actors'][number];
 export const clinicalPersona = (actor: Actor) => actor.persona === 'RN2' ? 'P3' : actor.persona ?? actor.user.id;
 export type Release = Config['releases'][string];
 export type Workflow = Release['workflows'][string];
-export const sessionInput = z.object({ patient: id, release: id, workflow: id, expectedVersion: version.optional(), encounter: id.optional(), task: id.optional(), bed: id.optional() }).strict();
-export const cosignInput = sessionInput.extend({ expectedVersion: version }).strict();
+export const sessionInput = z.object({ patient: id, release: id, workflow: id, expectedVersion: version.optional(), encounter: id.optional(), task: id.optional(), bed: id.optional(), continuation: z.object({ sessionId: z.uuid(), revision: version, event: z.record(z.string(), z.unknown()) }).strict().optional() }).strict();
+export const cosignInput = sessionInput.omit({ continuation: true }).extend({ expectedVersion: version }).strict();
 export const eventInput = z.object({ revision: version, event: z.record(z.string(), z.unknown()) }).strict();
 export const commandInput = z.object({
   requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/), sessionId: z.uuid(),

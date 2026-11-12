@@ -279,7 +279,7 @@ export class Store {
     this.authorize(actor, r.rows[0].patient);
     return r.rows[0].outcome;
   }
-  async openSession(actor: Actor, input: { patient: string; release: string; workflow: string; expectedVersion?: number; encounter?: string; task?: string; bed?: string }) {
+  async openSession(actor: Actor, input: { patient: string; release: string; workflow: string; expectedVersion?: number; encounter?: string; task?: string; bed?: string; continuation?: { sessionId: string; revision: number; event: Obj } }) {
     this.authorize(actor, input.patient);
     const release = this.release(input.release);
     const w = release.workflows[input.workflow];
@@ -288,10 +288,31 @@ export class Store {
     this.requireMarUnit(actor, w);
     if (w.mar && (actor.user.role !== 'rn' || w.mar.patient !== input.patient)) throw new Fault(403, 'mar_scope_forbidden');
     return transaction(this.db, async c => {
-      // Hold the same row lock used by commits so session snapshot/version agree.
-      const p = await this.stream(c, `patient:${input.patient}`, true);
-      this.requireMarBinding(p.snapshot, w);
-      let context: Obj = await this.workflowContext(p.snapshot.context, w, p.snapshot.bundle);
+      // A continuation is server-derived, actor/release/version bound evidence,
+      // never a client-supplied draft. Lock the source session before streams,
+      // and both patient streams in sorted order, as event/submit do.
+      const previous = input.continuation ? await this.session(c, actor, input.continuation.sessionId) : undefined;
+      if (previous && (!w.project || !release.program.patientSelection || !previous.workflow.project ||
+          previous.s.release_hash !== digest(release) || previous.s.revision !== input.continuation?.revision))
+        throw new Fault(409, 'continuation_mismatch');
+      const locked = new Map<string, Awaited<ReturnType<Store['stream']>>>();
+      for (const patient of [...new Set([input.patient, ...(previous ? [str(previous.s.patient)] : [])])].sort())
+        locked.set(patient, await this.stream(c, `patient:${patient}`, true));
+      const p = required(locked.get(input.patient));
+      let workspaceState: Obj | undefined;
+      if (previous) {
+        const source = required(locked.get(str(previous.s.patient)));
+        if (source.version !== previous.s.base_version) throw new Fault(409, 'version_conflict');
+        // Fresh replay, including accepted commands, establishes the checkpoint.
+        const replay = await this.reconstruct(actor, previous.release, obj(source.snapshot), previous.s, true);
+        workspaceState = obj((await this.lean.call('step', { ...replay.base, state: replay.state,
+          event: required(input.continuation).event })).state);
+        if (!workspaceState.patientContext || maybeObj(workspaceState.patientContext)?.patient ||
+            maybeObj(workspaceState.patientContext)?.bound) throw new Fault(422, 'continuation_requires_directory');
+      }
+      this.requireMarBinding(obj(p.snapshot), w);
+      const snapshot = obj(p.snapshot);
+      let context: Obj = await this.workflowContext(obj(snapshot.context), w, obj(snapshot.bundle));
       if (w.project) {
         if (input.expectedVersion !== p.version) throw new Fault(409, 'version_conflict');
         if (input.release !== clinicalPersona(actor) && !input.release.startsWith(`${clinicalPersona(actor)}-`)) throw new Fault(403, 'release_forbidden');
@@ -306,8 +327,13 @@ export class Store {
           directoryDate: p.snapshot.context.today, bed: bed?.id, encounterId: encounter.id, taskId: task?.id,
           record: [['viewerPersona', clinicalPersona(actor)], ['selectedEncounterId', encounter.id]] };
       }
-      const facts = await this.lean.call('facts', { bundle: p.snapshot.bundle, context, ...(w.project ? { worldContext: await this.directory(actor) } : {}) });
-      const state = await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
+      if (workspaceState) context = { ...context, workspaceState };
+      const directory = w.project ? await this.directory(actor) : undefined;
+      const selection = w.project && release.program.patientSelection;
+      const facts = await this.lean.call('facts', selection
+        ? { bundle: directory, directoryOnly: true, context: { ...context, today: context.directoryDate ?? context.today } }
+        : { bundle: p.snapshot.bundle, context, ...(directory ? { worldContext: directory } : {}) });
+      const state = workspaceState ?? await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
       const id = randomUUID();
       await c.query(`INSERT INTO commit_sessions(tenant,id,actor,patient,release_name,release_hash,workflow,base_version,context)
         VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
@@ -354,7 +380,7 @@ export class Store {
     const selection = project && obj(release.program).patientSelection;
     const workspace = selection ? await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...obj(s.context), today: obj(s.context).directoryDate ?? obj(s.context).today } }) : undefined;
     if (workspace) base = { ...base, ...workspace };
-    let state = await this.lean.call('init', base);
+    let state = maybeObj(obj(s.context).workspaceState) ?? await this.lean.call('init', base);
     const frames: { step: number; phase: 'ready' | 'loading'; hash: string }[] = [];
     const record = async (step: number, phase: 'ready' | 'loading') => {
       if (!screens || step < num(s.screen_start)) return;

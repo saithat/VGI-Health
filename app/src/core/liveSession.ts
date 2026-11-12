@@ -275,6 +275,8 @@ export async function createLiveSession(
   let pending = false;
   let refreshNeeded = false;
   let remote: MarOpened | undefined;
+  let continuation:
+    { sessionId: string; revision: number; event: Event } | undefined;
   const screensSeen = screenJournal(interp.screenCanonical);
   const history: Event[] = [];
   let unsent: Event[] = [];
@@ -301,6 +303,7 @@ export async function createLiveSession(
       expectedVersion: patientVersion(context.patient.id),
       ...(context.task?.id ? { task: context.task.id } : {}),
       ...(context.bed?.id ? { bed: context.bed.id } : {}),
+      ...(continuation ? { continuation } : {}),
     });
     if (
       JSON.stringify([opened.spec, opened.program]) !==
@@ -372,26 +375,32 @@ export async function createLiveSession(
       const priorPatient = before.state.patientContext?.patient;
       const selected = staged.state.patientContext?.patient;
       if (selectionEnabled && selected !== priorPatient) {
-        remote = undefined;
-        unsent = [];
-        // Directory interactions contain no clinical evidence. A new patient
-        // starts from a fresh native state and must earn its own guards.
         if (priorPatient) {
-          // Returning to the directory starts a fresh patient session. Discard
-          // clinical state and its journal together; no prior patient's evidence
-          // may authorize the next chart. Paint the same native init baseline.
-          history.length = 0;
-          screensSeen.clear();
-          const state = JSON.parse(
-            interp.init(
-              JSON.stringify(spec),
-              JSON.stringify(program),
-              JSON.stringify(directory),
-              JSON.stringify({ id: user.practitioner.id, role: user.role }),
-            ),
-          );
-          context = undefined;
-          session.accept({ state, result: "ok" }, directory);
+          pending = true;
+          try {
+            const authority = await synchronize();
+            continuation = {
+              sessionId: authority.sessionId,
+              revision: authority.revision,
+              event,
+            };
+            remote = undefined;
+            unsent = [];
+            history.length = 0;
+            screensSeen.clear();
+            context = undefined;
+            // Keep Lean's navigation state, including patientDrafts. Isolation
+            // follows Ehr.Runtime.bind_hydrates / Hydrated.eq: a fresh chart
+            // receives only its own draft; hydrating_refuses bars unseen signs.
+            // The next service session starts from the same freshly replayed
+            // departure checkpoint, then replays this directory's journal.
+            session.accept(
+              { state: staged.state, result: staged.result },
+              directory,
+            );
+          } finally {
+            pending = false;
+          }
           return undefined;
         }
         history.push(event);

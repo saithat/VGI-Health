@@ -135,8 +135,7 @@ theorem session_humanEntries (pid : String) :
     rw [(session_query pid q hq hs).2] at hx
     exact (fromBind hx).elim
   | leave ctx hc _ hs =>
-    rw [(session_leave pid ctx hc hs).2] at hx
-    exact (fromBind hx).elim
+    exact (fromBind (((session_leave pid ctx hc hs).2 x).mp hx).1).elim
   | core _ _ hs =>
     obtain ⟨hch, hd⟩ := session_core pid i.event hs
     by_cases hc : Workspace.chart? (Workspace.bind i.spec i.program i.facts i.user i.state) = some pid
@@ -164,7 +163,8 @@ theorem commit_byClick (i : StepInput) (c : CommitId)
   exact h
 
 /-- New specification for owner review: property 2's retention clause across
-workspace navigation, in the session form. The macro condition is read at the
+workspace navigation, in the session form, allowing signed entries to leave
+the draft when their chart is left. The macro condition is read at the
 effective input, which is the API state unless the call hydrates. -/
 def SessionEnteredOnce (ep : Episode) : Prop :=
   FixedEveryStep ep fun s e s' =>
@@ -174,7 +174,10 @@ def SessionEnteredOnce (ep : Episode) : Prop :=
         (inputState ⟨ep.spec, ep.prog, ep.facts, ep.user, s, e⟩) cid = none ∨
         (inputState ⟨ep.spec, ep.prog, ep.facts, ep.user, s, e⟩).popup?.isSome) →
     ∀ pid, ∀ x ∈ sessionCaptured pid s, x.confirmed = true →
-      Workspace.restorable ep.spec ep.user x = true → x ∈ sessionCaptured pid s'
+      Workspace.restorable ep.spec ep.user x = true →
+      x ∈ sessionCaptured pid s' ∨
+        (Workspace.chart? (inputState ⟨ep.spec, ep.prog, ep.facts, ep.user, s, e⟩) = some pid ∧
+          Workspace.signedEntry ep.spec (inputState ⟨ep.spec, ep.prog, ep.facts, ep.user, s, e⟩) x = true)
 
 /-- New specification for owner review: property 5's per-step human-entry
 clause across workspace navigation, in the session form. -/

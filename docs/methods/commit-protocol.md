@@ -86,6 +86,20 @@ are the stated Postgres assumption.
 For the native administrative reducer, cancellation policy and separate machine,
 see [Administrative ADT](adt.md).
 
+### Patient draft continuation
+
+A clinical selection session may continue an actor's previous session at an
+exact revision, with the actual leave event. The service checks the pinned
+release and source patient version, freshly replays the previous journal, and
+applies that event through native Lean. Only an unselected result is accepted.
+The resulting directory state (including patient drafts) is stored in the new
+session's server-created context. Client-supplied states remain forbidden.
+Reconstruction starts from this immutable context and replays the new journal;
+all ready screen positions, the fresh guard and locked versions remain checked.
+This host behavior is tested, not covered by the generic fixed-input cache
+model. See [live drafts](live-drafts.md) for the precise signed-entry rule and
+validation commands.
+
 ### Veil evaluation
 
 Inspected upstream revision `57447722e7f25f06c75cff8735d10d41697afc14`

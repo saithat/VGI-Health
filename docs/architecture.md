@@ -129,9 +129,16 @@ human-event journal before the next command; every field edit retains its
 position and displayed evidence. Each native ready screen since the previous
 successful command is mandatory. Loading screens are compared when React
 actually paints them; batched-away loading frames require no evidence. Returning
-to the directory discards clinical state and starts a fresh patient session at
-native init, so another patient's evidence cannot authorize a command. Chart
-hydration and post-command rendering use native projections, avoiding browser
+to the directory keeps unsigned patient drafts and acknowledgments in Lean's
+navigation state. Before switching, the host flushes the outgoing journal; a
+continuation binds its actor-scoped service session, revision and leave event.
+The service checks the source version under lock, freshly replays that journal,
+applies the leave event and stores the resulting directory state as the next
+session's replay context. Only the selected patient's draft is restored into a
+fresh chart, so another patient's evidence cannot authorize a command. The next
+journal and painted-screen interval start at that server-derived directory
+state ([draft protocol](methods/live-drafts.md)). Chart hydration and
+post-command rendering use native projections, avoiding browser
 recomputation of the authoritative display. Version-bound native caches remain available for interaction previews. Commands
 bypass them for reconstruction; a stale cache cannot suppress comparison of a new step.
 The final native guard and locked version checks remain authoritative. Request IDs bind exact

@@ -42,7 +42,7 @@ Behaviour (trusted code, about 430 lines):
 | `runInit`, `runStep`, `runView` | `Ehr/Api.lean:17-34` | The order: the critical handler runs first (only on a bound state for workspace programs); otherwise `Workspace.step` or `step` with actor `.human`. |
 | `CriticalRuntime.handle` | `Ehr/Core/CriticalRuntime.lean` | Matches four `critical.*:<result id>` component IDs for a current ticket; refuses under an open popup; writes only `criticalResults?` and `criticalDrafts?`. |
 | `Workspace.enabled`, `bound`, `bind`, `step` | `Ehr/Core/Workspace.lean` | `bind` hydrates a fresh `init` for the selected patient, loads that patient's receipts from facts, navigates to the destination screen, and restores that patient's stored draft. `step` refuses a commit click and an acknowledgment on the hydrating call. |
-| `Workspace.chart?`, `draft`, `others`, `save`, `restorable`, `restore`, `openPatient`, `showList`, `hydrates`, `commitClick`, `loading` | `Ehr/Core/Workspace.lean` | Per-patient drafts (2026-11-11). `save` keeps the captures and acknowledgments of a hydrated chart being left; `restore` puts back only confirmed human entries for spec elements the role may enter, and the stored acknowledgments. Commits, receipts and the popup are not kept. |
+| `Workspace.chart?`, `draft`, `others`, `signedEntry`, `unsigned`, `save`, `restorable`, `restore`, `openPatient`, `showList`, `hydrates`, `commitClick`, `loading` | `Ehr/Core/Workspace.lean` | Per-patient drafts (2026-11-11). `save` keeps unsigned captures and acknowledgments of a hydrated chart being left; `restore` puts back only confirmed human entries for spec elements the role may enter, and the stored acknowledgments. Commits, receipts and the popup are not kept. |
 | `CriticalDraft`, `State.criticalDrafts?` | `Ehr/Core/Types.lean` | Named `result`/`text` draft structure (2026-11-11), with byte-identical historical pair-array JSON and the option omitted when `none`. A change to the specification surface. |
 | `PatientDraft`, `State.patientDrafts?` | `Ehr/Core/Types.lean` | New type and field (2026-11-11), absent from JSON when `none`. A change to the specification surface. |
 
@@ -61,7 +61,7 @@ Specification (in `Ehr/Proofs/Runtime*.lean` until moved):
 | `pending`, `remaining` | `RuntimeModel.lean:179,184` | The stored draft of the selected patient, which hydration restores, and the store hydration leaves. |
 | `Hydrated` | `RuntimeDrafts.lean:213` | The exact hydrating case of `Workspace.bind`. |
 | `sessionCaptured`, `sessionAcked`, `CallShape` | `RuntimeSession.lean:18,24,53` | One patient's work wherever it is (open chart or stored draft), and the exact cases of an API call. |
-| `Settled`, 4 `Session…` forms, `FixedCommitsByClick`, `SelectionGlobal` | `RuntimeGlobal.lean:20,169-207` | Invariants of API-reachable states, and properties 2, 5 and 11 across workspace navigation. Compare each `Session…` body with the `Fixed…` body of the same clause: `captured`/`acked` become `sessionCaptured pid`/`sessionAcked pid` for every patient; `SessionEnteredOnce` adds the `restorable` premise and reads the macro condition at `inputState`. |
+| `Settled`, 4 `Session…` forms, `FixedCommitsByClick`, `SelectionGlobal` | `RuntimeGlobal.lean:20,169-207` | Invariants of API-reachable states, and properties 2, 5 and 11 across workspace navigation. Compare each `Session…` body with the `Fixed…` body of the same clause: `captured`/`acked` become `sessionCaptured pid`/`sessionAcked pid` for every patient; `SessionEnteredOnce` adds the `restorable` premise, permits removal of signed entries on leaving their chart, and reads the macro condition at `inputState`. |
 | `Unselected`, `WorkspaceOnly` | `RuntimeUnselected.lean:13,46` | New property: what "no patient data" means for `runView` before a patient is selected. The patient directory counts as navigation data. |
 | `ReachableFrom`, 14 `…From` forms | `RuntimeFrom.lean:21` | Core runs from an arbitrary start. Each `…From_start` equivalence (`XFrom ep ep.start ↔ Props.X ep`) is closed by a generic lemma, so the kernel checks the bodies agree. |
 | `EpisodeAlways`, `EpisodeEveryStep`, 14 `Episode…` properties, `EpisodeAccepted` | `RuntimeEpisodeRefinement.lean:127,137`, `RuntimeEpisodeProps.lean:20-121` | Same bodies as the `Fixed…` forms with episode reachability; per-step clauses cover only non-navigation calls. `EpisodeHumanStepsByHuman`'s first clause is about the hydrated chart, not `runInit`: every human-required value there is a confirmed human entry of the stored draft. Bodies use `view`; `episode_runView` proves it equals `runView` in every episode state. |
@@ -153,13 +153,20 @@ evidence outside the catalog.
   new episode with that patient's human entries and acknowledgments restored,
   so an acknowledged interruptive alert does not interrupt again unless its
   fact changed. Prefill confirmations and commits are not restored, and
-  entries behind a signed commit stay in the draft; check that this is the
-  policy you want (coverage note, "Per-patient drafts"). Hydration jumps
+  entries whose elements are required by a signed commit are removed from the
+  saved draft (all slots, including conditional requirements). The runtime
+  session retention statement now permits exactly that removal; original
+  episode properties and Comparator statements are unchanged. Hydration jumps
   straight to the destination screen, skipping intermediate prefills; the
   owner accepted this.
-- **Host.** The theorems are about `runStep`. The live app's host replaces the
-  state with a fresh `init` when the clinician leaves a chart, which discards
-  the drafts; that code is outside Lean.
+- **Host.** The live app keeps the navigation state from `runStep`, including
+  drafts. Isolation relies on `bind_hydrates` / `Hydrated.eq`: fresh patient
+  initialization plus only that patient's restored draft. A service-created
+  continuation context contains the departure state derived by fresh native
+  replay of the prior session and leave event; the next chart's journal starts
+  there. Actor, release, revision and source patient version are checked before
+  carrying state. Screen comparison and the fresh commit guard still apply.
+  TypeScript and SQL remain outside Lean; see [live drafts](../methods/live-drafts.md).
 - **Small handler items:** successful resolve now removes that result's draft;
   refusal retains it, and unrelated drafts are preserved (`UrgencyTests`).
   `CriticalDraft` uses named Lean fields while emitting/decoding the historical

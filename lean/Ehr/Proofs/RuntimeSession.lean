@@ -43,9 +43,9 @@ def withQuery (b : State) (q : String) : State :=
 /-- New specification for owner review: the state after leaving `b` for the
 workspace context `ctx`: an empty workspace state with the clock of `b` and
 the draft store after saving the chart of `b`, if it holds one. -/
-def afterLeaving (p : Program) (b : State) (ctx : PatientContext) : State :=
+def afterLeaving (sp : Spec) (p : Program) (b : State) (ctx : PatientContext) : State :=
   { Workspace.init p with
-    clock := b.clock, patientDrafts? := Workspace.save b, patientContext? := some ctx }
+    clock := b.clock, patientDrafts? := Workspace.save sp b, patientContext? := some ctx }
 
 /-- New specification for owner review: the cases of one API call of a
 program with patient selection, relative to the effective input
@@ -69,7 +69,7 @@ inductive CallShape (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State)
   and saved as its patient's draft. -/
   | leave (ctx : PatientContext) (hc : ctx.bound? = none)
       (hp : (Workspace.bind sp p f u s).popup? = none)
-      (h : t = afterLeaving p (Workspace.bind sp p f u s) ctx)
+      (h : t = afterLeaving sp p (Workspace.bind sp p f u s) ctx)
 
 /-- The cases of `Workspace.step`. -/
 theorem workspace_cases (sp p f u s e) :
@@ -147,23 +147,25 @@ theorem session_query (q : String)
   exact ⟨rfl, rfl⟩
 
 /-- New specification for owner review: leaving a chart keeps every
-patient's session work: the chart's captures and acknowledgments become its
-patient's stored draft, and the other drafts are unchanged. -/
+patient's unsigned session work: the chart's unsigned captures and all
+acknowledgments become its patient's stored draft, and the other drafts are unchanged. -/
 theorem session_leave (ctx : PatientContext) (hc : ctx.bound? = none)
-    (h : t = afterLeaving p b ctx) :
-    sessionAcked pid t = sessionAcked pid b ∧ sessionCaptured pid t = sessionCaptured pid b := by
+    (h : t = afterLeaving sp p b ctx) :
+    sessionAcked pid t = sessionAcked pid b ∧
+    (∀ x, x ∈ sessionCaptured pid t ↔ x ∈ sessionCaptured pid b ∧
+      (Workspace.chart? b = some pid → Workspace.signedEntry sp b x = false)) := by
   have hch : Workspace.chart? t ≠ some pid := by
     rw [chart_unbound (t := t) (ctx := ctx) (by rw [h]; rfl) hc]
     nofun
-  have hd : Workspace.draft t pid = lookup ((Workspace.save b).getD []) pid := by
+  have hd : Workspace.draft t pid = lookup ((Workspace.save sp b).getD []) pid := by
     rw [h]
     rfl
   rw [(session_closed hch).1, (session_closed hch).2, hd]
   by_cases hb : Workspace.chart? b = some pid
-  · rw [save_self b pid hb, (session_open hb).1, (session_open hb).2]
-    exact ⟨rfl, rfl⟩
-  · rw [save_ne b pid hb, (session_closed hb).1, (session_closed hb).2]
-    exact ⟨rfl, rfl⟩
+  · rw [save_self sp b pid hb, (session_open hb).1, (session_open hb).2]
+    exact ⟨rfl, fun x => by simp [Workspace.unsigned, List.mem_filter, hb]⟩
+  · rw [save_ne sp b pid hb, (session_closed hb).1, (session_closed hb).2]
+    exact ⟨rfl, fun x => by simp [hb]⟩
 
 /-- An interpreter step keeps the chart's patient and every stored draft. -/
 theorem session_core (e : Event) (h : t = (step sp p f u .human b e).1) :
@@ -229,14 +231,14 @@ include henabled
 
 /-- New specification for owner review: what one API call does to a
 patient's stored draft. It is the draft after hydration, or, when the call
-leaves that patient's chart, exactly the chart's captures and acknowledgments. -/
+leaves that patient's chart, exactly the chart's unsigned captures and acknowledgments. -/
 theorem draft_call :
     Workspace.draft (runStep i).state pid =
       Workspace.draft (Workspace.bind i.spec i.program i.facts i.user i.state) pid ∨
     (Workspace.chart? (Workspace.bind i.spec i.program i.facts i.user i.state) = some pid ∧
       Workspace.draft (runStep i).state pid =
         { patient := pid,
-          captured := (Workspace.bind i.spec i.program i.facts i.user i.state).captured,
+          captured := Workspace.unsigned i.spec (Workspace.bind i.spec i.program i.facts i.user i.state),
           acked := (Workspace.bind i.spec i.program i.facts i.user i.state).acked }) := by
   cases call_shape i henabled with
   | handled hs =>
@@ -250,8 +252,8 @@ theorem draft_call :
   | leave ctx _ _ hs =>
     rw [hs]
     by_cases hb : Workspace.chart? (Workspace.bind i.spec i.program i.facts i.user i.state) = some pid
-    · exact Or.inr ⟨hb, save_self _ pid hb⟩
-    · exact Or.inl (save_ne _ pid hb)
+    · exact Or.inr ⟨hb, save_self i.spec _ pid hb⟩
+    · exact Or.inl (save_ne i.spec _ pid hb)
 
 /-- New specification for owner review: **where stored draft entries come
 from.** After any API call, a capture or an acknowledgment in a patient's
@@ -276,7 +278,7 @@ theorem draft_origin :
     · rw [hb]
       exact ⟨fun _ hx => absurd hx List.not_mem_nil, fun _ ha => absurd ha List.not_mem_nil⟩
   · rw [h]
-    exact ⟨fun _ hx => Or.inr ⟨hc, hx⟩, fun _ ha => Or.inr ⟨hc, ha⟩⟩
+    exact ⟨fun _ hx => Or.inr ⟨hc, (List.mem_filter.mp hx).1⟩, fun _ ha => Or.inr ⟨hc, ha⟩⟩
 
 /-- New specification for owner review: **acknowledgments are kept across
 workspace navigation.** For a program with patient selection and every API
@@ -311,7 +313,8 @@ theorem session_acks :
 across workspace navigation.** For a program with patient selection and every
 API call whose event is not an entry and not a macro click at the effective
 input, each patient's confirmed session captures that hydration restores
-(`Workspace.restorable`) are kept. This is the form of property 2's retention
+(`Workspace.restorable`) are kept, or are signed entries in the chart
+being left. This is the form of property 2's retention
 clause that holds across leaving and reopening a chart. Prefilled values are
 not restorable: hydration computes them again. -/
 theorem session_captures (hentry : ∀ cid v, i.event ≠ .enter cid v)
@@ -319,24 +322,38 @@ theorem session_captures (hentry : ∀ cid v, i.event ≠ .enter cid v)
       clickedMacro? i.spec i.program i.facts (inputState i) cid = none ∨
         (inputState i).popup?.isSome) :
     ∀ x ∈ sessionCaptured pid i.state, x.confirmed = true →
-      Workspace.restorable i.spec i.user x = true → x ∈ sessionCaptured pid (runStep i).state := by
+      Workspace.restorable i.spec i.user x = true →
+      x ∈ sessionCaptured pid (runStep i).state ∨
+        (Workspace.chart? (inputState i) = some pid ∧
+          Workspace.signedEntry i.spec (inputState i) x = true) := by
   intro x hx hconf hr
   have hin : inputState i = Workspace.bind i.spec i.program i.facts i.user i.state := by
     simp only [inputState, henabled, ↓reduceIte]
   rw [hin] at hmacro
   have hb := (session_bind i.spec i.program i.facts i.user i.state pid).2.1 x hx hr
   cases call_shape i henabled with
-  | handled h => rw [(session_handled pid h).2]; exact hb
-  | query q hq h => rw [(session_query pid q hq h).2]; exact hb
-  | leave ctx hc _ h => rw [(session_leave pid ctx hc h).2]; exact hb
+  | handled h => exact Or.inl (by rw [(session_handled pid h).2]; exact hb)
+  | query q hq h => exact Or.inl (by rw [(session_query pid q hq h).2]; exact hb)
+  | leave ctx hc _ h =>
+    by_cases hs : Workspace.chart? (inputState i) = some pid ∧
+        Workspace.signedEntry i.spec (inputState i) x = true
+    · exact Or.inr hs
+    · left
+      apply ((session_leave pid ctx hc h).2 x).mpr
+      refine ⟨hb, fun hchart => ?_⟩
+      cases he : Workspace.signedEntry i.spec (Workspace.bind i.spec i.program i.facts i.user i.state) x
+      · rfl
+      · exact (hs (by simpa only [hin] using And.intro hchart he)).elim
   | core _ _ h =>
     obtain ⟨hch, hd⟩ := session_core pid i.event h
     by_cases hc : Workspace.chart? (Workspace.bind i.spec i.program i.facts i.user i.state) = some pid
-    · rw [(session_open (hch.trans hc)).2, h]
+    · left
+      rw [(session_open (hch.trans hc)).2, h]
       rw [(session_open hc).2] at hb
       exact Check.enteredOnce_at ⟨i.spec, i.program, i.facts, i.user⟩ _ .human i.event hentry
         (fun _ => hmacro) x hb hconf
-    · rw [(session_closed (hch ▸ hc)).2, hd]
+    · left
+      rw [(session_closed (hch ▸ hc)).2, hd]
       rw [(session_closed hc).2] at hb
       exact hb
 
