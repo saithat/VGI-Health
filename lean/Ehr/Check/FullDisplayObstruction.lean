@@ -55,8 +55,53 @@ theorem v3_payload_domain_not_satisfies (can p : Program)
     ¬ Satisfies Specs.V3.specV3 none can p :=
   fun h => release_payload_domain_obstruction Specs.V3.specV3 can p rfl tasks h.2.2.2.2.2.1
 
+set_option maxRecDepth 16384 in
+/-- New specification for owner review.
+Option D (`CommitFeasible`) excludes the payload-less obstruction record at
+every clock and for every commit whenever `sp` inherits the v1 display rules. -/
+theorem release_payload_domain_not_commitFeasible (sp : Spec)
+    (displays : sp.displays? = Specs.V1.specV1.displays?)
+    (user : User) (clock : Nat) (c : CommitId) :
+    ¬ CommitFeasible sp { replayFacts with medToGive? := some "acetaminophen" } user clock c := by
+  apply missing_payload_not_commitFeasible sp
+    { replayFacts with medToGive? := some "acetaminophen" } user clock c
+    Specs.Rules.Features.display002
+  · rw [displays]
+    decide +kernel
+  · rfl
+  · intro _ _
+    rfl
+
+set_option maxRecDepth 16384 in
+/-- New specification for owner review.
+Under `specV1`, the payload-less record is excluded by `¬ CommitFeasible`. -/
+theorem v1_payload_domain_not_commitFeasible (user : User) (clock : Nat) (c : CommitId) :
+    ¬ CommitFeasible Specs.V1.specV1
+      { replayFacts with medToGive? := some "acetaminophen" } user clock c :=
+  release_payload_domain_not_commitFeasible Specs.V1.specV1 rfl user clock c
+
+set_option maxRecDepth 16384 in
+/-- New specification for owner review.
+Under `specV2`, the payload-less record is excluded by `¬ CommitFeasible`. -/
+theorem v2_payload_domain_not_commitFeasible (user : User) (clock : Nat) (c : CommitId) :
+    ¬ CommitFeasible Specs.V2.specV2
+      { replayFacts with medToGive? := some "acetaminophen" } user clock c :=
+  release_payload_domain_not_commitFeasible Specs.V2.specV2 rfl user clock c
+
+set_option maxRecDepth 16384 in
+/-- New specification for owner review.
+Under `specV3`, the payload-less record is excluded by `¬ CommitFeasible`. -/
+theorem v3_payload_domain_not_commitFeasible (user : User) (clock : Nat) (c : CommitId) :
+    ¬ CommitFeasible Specs.V3.specV3
+      { replayFacts with medToGive? := some "acetaminophen" } user clock c :=
+  release_payload_domain_not_commitFeasible Specs.V3.specV3 rfl user clock c
+
 #print axioms release_payload_domain_obstruction
 #print axioms v1_payload_domain_not_satisfies
 #print axioms v2_payload_domain_not_satisfies
 #print axioms v3_payload_domain_not_satisfies
+#print axioms release_payload_domain_not_commitFeasible
+#print axioms v1_payload_domain_not_commitFeasible
+#print axioms v2_payload_domain_not_commitFeasible
+#print axioms v3_payload_domain_not_commitFeasible
 end Ehr.Check

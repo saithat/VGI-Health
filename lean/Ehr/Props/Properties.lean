@@ -245,6 +245,58 @@ def Completable (spec : Spec) (canonical prog : Program) : Prop :=
   ∀ facts user, user.role = prog.role → RecordAllowsScans spec facts →
     CommitsStayReachable ⟨spec, prog, facts, user⟩ (requiredCommitsFor spec canonical prog facts user)
 
+/-- New specification for owner review.
+Commit `c` is feasible under `spec` for `(facts, user)` at `clock`: some
+program `p` for `user.role` lets the human perform `c` from `p`'s initial state
+with the clock set to `clock`. Sub-choice defaults: fresh-session premise from
+`start` with `clock := clock`, `RecordAllowsScans` retained on the outer
+property, and an unconstrained witness program `p` (see
+`AcceptedCommitFeasible` in `Ehr.Check` for the checker-accepted witness
+restriction). -/
+def CommitFeasible (spec : Spec) (facts : Facts) (user : User) (clock : Nat)
+    (c : CommitId) : Prop :=
+  ∃ (p : Program) (es : List Event), p.role = user.role ∧
+    c ∈ (Episode.afterHuman ⟨spec, p, facts, user⟩
+      { (⟨spec, p, facts, user⟩ : Episode).start with clock := clock } es).commits
+
+/-- New specification for owner review.
+From every reachable state `s`, each commit in `commits` not yet done that is
+feasible under `ep.spec` for `(ep.facts, ep.user)` at `s.clock` can still be
+done by the human in `ep.prog`. -/
+def CommitsStayReachableWhereFeasible (ep : Episode) (commits : List CommitId) : Prop :=
+  Always ep fun s => ∀ c ∈ commits, c ∉ s.commits →
+    CommitFeasible ep.spec ep.facts ep.user s.clock c →
+    ∃ es : List Event, c ∈ (ep.afterHuman s es).commits
+
+/-- New specification for owner review.
+**Property 6 (feasibility form, option D).** For each patient record and user
+allowed to perform the commit in that encounter, whenever the commit is
+feasible under `spec` at the current clock, it stays reachable from every
+reachable state of `prog`. Sub-choice defaults: fresh-session feasibility
+premise from `start` with `clock := s.clock`, `RecordAllowsScans` retained, and
+an unconstrained witness program in `CommitFeasible` (restricted to checker-
+accepted witnesses in `CompletableWhereAcceptedFeasible`). Keeps the canonical
+required-commit set `requiredCommitsFor spec canonical prog facts user` with a
+note because `CommitSpec` has no workflow or persona scope (`W1`–`W7`,
+`P1`–`P5`) to distinguish persona projections from full-role programs; see
+`CompletableWhereFeasibleSpec` for the canonical-free spec-derived variant. -/
+def CompletableWhereFeasible (spec : Spec) (canonical prog : Program) : Prop :=
+  ∀ facts user, user.role = prog.role → RecordAllowsScans spec facts →
+    CommitsStayReachableWhereFeasible ⟨spec, prog, facts, user⟩
+      (requiredCommitsFor spec canonical prog facts user)
+
+/-- New specification for owner review.
+Canonical-free variant of `CompletableWhereFeasible`: derives the required
+commits solely from `spec` (`specRequiredCommitsFor spec prog.role facts user`)
+without referencing `canonical`. Implies `CompletableWhereFeasible` for every
+`canonical`, and coincides with it on single-workflow specs (`Scalar.spec`,
+`FixedLine.spec`), but is strictly stronger when `spec` declares role-permitted
+commits for workflows outside a persona program's scope. -/
+def CompletableWhereFeasibleSpec (spec : Spec) (prog : Program) : Prop :=
+  ∀ facts user, user.role = prog.role → RecordAllowsScans spec facts →
+    CommitsStayReachableWhereFeasible ⟨spec, prog, facts, user⟩
+      (specRequiredCommitsFor spec prog.role facts user)
+
 /-! ## 7. Units -/
 
 /-- At commit, each applicable whole-episode quantity requirement has a
@@ -417,6 +469,25 @@ def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) :
   ReviewsBeforeCommit spec prog ∧         -- 4
   HumanOnlyKept spec prog ∧               -- 5
   Completable spec canonical prog ∧       -- 6
+  UnitsRight spec prog ∧                  -- 7
+  WithinBudgets spec prev canonical prog ∧ -- 8
+  AlertsFire spec prog ∧                  -- 9  (A1)
+  NoFalseAlarms spec prog ∧               -- 10 (A2)
+  NoRepeatInterruptions spec prog ∧       -- 11 (A3)
+  SeverityTiers spec prog ∧               -- 12 (A4)
+  NavigationSane prog                    -- 13 (D5)
+
+/-- New specification for owner review.
+**A certified program under the feasibility form of property 6 (option D).**
+Same thirteen conjuncts as `Satisfies`, with `CompletableWhereFeasible` in
+place of `Completable`. -/
+def SatisfiesWhereFeasible (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
+  WellFormed spec canonical prog ∧        -- 1
+  CapturesAllOnce spec prog ∧             -- 2
+  WritesOnly spec prog ∧                  -- 3
+  ReviewsBeforeCommit spec prog ∧         -- 4
+  HumanOnlyKept spec prog ∧               -- 5
+  CompletableWhereFeasible spec canonical prog ∧ -- 6 (option D)
   UnitsRight spec prog ∧                  -- 7
   WithinBudgets spec prev canonical prog ∧ -- 8
   AlertsFire spec prog ∧                  -- 9  (A1)
