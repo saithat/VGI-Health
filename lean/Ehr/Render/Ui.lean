@@ -18,10 +18,9 @@ def uiLabel (s fallback : String) : String := if s = "" then fallback else s
 
 /-- Source identifiers remain proof metadata; clinicians see the source's name. -/
 def uiSourceText (cx : Ctx) (source : String) : String :=
-  if source == "needsReconciliation" then "Needs reconciliation"
-  else if source == "reconciled:keep" then "Reconciled (keep)"
-  else if source == "reconciled:change" then "Reconciled (change)"
-  else if source == "reconciled:discontinue" then "Reconciled (discontinue)"
+  if source == reconcileTag then "Needs reconciliation after transfer"
+  else if source == "reconciled:keep" then "Kept after transfer"
+  else if source == "reconciled:change" then "Changed after transfer"
   else if source.startsWith "record:" then
     let key := (source.drop 7).toString
     let name := ((cx.sp.elements.find? (·.recordFact? == some key)).map (·.label)).getD ""
@@ -665,10 +664,9 @@ def uiWorkspace (cx : Ctx) : List UiNode :=
 
 /-- Public source descriptions are separate from exact machine provenance. -/
 def uiProvenanceSourceLabel (source : String) : String :=
-  if source == "needsReconciliation" then "Needs reconciliation"
-  else if source == "reconciled:keep" then "Reconciled (keep)"
-  else if source == "reconciled:change" then "Reconciled (change)"
-  else if source == "reconciled:discontinue" then "Reconciled (discontinue)"
+  if source == reconcileTag then "Needs reconciliation after transfer"
+  else if source == "reconciled:keep" then "Kept after transfer"
+  else if source == "reconciled:change" then "Changed after transfer"
   else if source.startsWith "record:" then
     match (source.toSlice.drop 7).toString with
     | "weightToday" => "Chart weight recorded today"

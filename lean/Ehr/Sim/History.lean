@@ -264,12 +264,21 @@ def backId (prog : Program) (cid : CompId) : Bool :=
   | «macro» mid => simp only [clickCore, hk]; cases actor <;> rfl
   | _ => simp only [clickCore, hk]; rfl
 
+ theorem reconcileCore_history (sp user actor s cid v h) :
+    forgetOutput (reconcileCore sp user actor (withHistory s h) cid v) =
+      forgetOutput (reconcileCore sp user actor s cid v) := by
+  have hs : reconcileSlots (withHistory s h) = reconcileSlots s := rfl
+  unfold reconcileCore
+  rw [hs]
+  cases actor <;> simp only [withHistory_captured]
+  all_goals repeat' first | rfl | (split <;> try simp_all [forgetOutput, forgetHistory, withHistory])
+
  theorem enterCore_history (sp prog facts user actor s cid v h) :
     forgetOutput (enterCore sp prog facts user actor (withHistory s h) cid v) =
       forgetOutput (enterCore sp prog facts user actor s cid v) := by
   simp only [enterCore, shownComp_history]
   cases actor <;> simp only [resolveSlot_history, withHistory_captured, elementValueValid_history]
-  all_goals repeat' first | rfl | (split <;> try simp_all)
+  all_goals repeat' first | rfl | exact reconcileCore_history .. | (split <;> try simp_all)
 
  theorem confirmCore_history (sp prog facts user actor s cid h) :
     forgetOutput (confirmCore sp prog facts user actor (withHistory s h) cid) =

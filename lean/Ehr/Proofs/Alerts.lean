@@ -140,7 +140,7 @@ theorem enterCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     (actor : Actor) (s : State) (cid : CompId) (v : Value) :
     (enterCore sp prog facts user actor s cid v).1.popup? = s.popup? := by
   unfold enterCore
-  repeat' (first | rfl | split | dsimp only)
+  repeat' (first | rfl | exact reconcileCore_popup .. | split | dsimp only)
 
 theorem confirmCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (actor : Actor) (s : State) (cid : CompId) :

@@ -99,7 +99,10 @@ private theorem enterCore_writes (sp p f u actor s cid v) (h : WritesState sp f 
     WritesState sp f u (enterCore sp p f u actor s cid v).1 := by
   unfold enterCore
   split
-  · exact h
+  · refine ⟨?_, by rw [reconcileCore_commits]; exact h.2.1, by rw [reconcileCore_receipts]; exact h.2.2⟩
+    intro x hx
+    obtain ⟨y, hy, he, -⟩ := reconcileCore_captured sp u actor s cid v x hx
+    rw [he]; exact h.1 y hy
   · split
     · rename_i e slot pf hk
       split

@@ -2824,5 +2824,10 @@ export interface FactsInput {
   worldContext?: unknown;
   directoryOnly?: boolean;
   extraPatients?: PatientChoice[];
+  /**
+   * Server-computed activities added after the dated lists, such as the
+   * signed-in clinician's deficiency list. They carry rows, never captures.
+   */
+  extraActivities?: PatientActivity[];
 }
 

@@ -59,7 +59,7 @@ theorem stepCore_keepsHistory (sp facts user actor s e) :
         obtain ⟨sc, hsc, hcc⟩ := Sim.compsOf_mem (List.mem_of_find?_eq_some hc)
         exact clickCore_keepsHistory _ _ _ _ _ _ _ (hnav sc hsc c hcc).1 (hnav sc hsc c hcc).2.1
     case selectTab cid idx => unfold selectTabCore; repeat' (first | rfl | split | dsimp only)
-    case enter cid v => unfold enterCore; repeat' (first | rfl | split | dsimp only)
+    case enter cid v => unfold enterCore; repeat' (first | rfl | exact reconcileCore_history_eq .. | split | dsimp only)
     case confirm cid => unfold confirmCore; repeat' (first | rfl | split | dsimp only)
     case ack a => unfold ackCore; repeat' (first | rfl | split | dsimp only)
     all_goals split <;> rfl

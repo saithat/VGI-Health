@@ -31,8 +31,13 @@ def patient? (f : Facts) (id : String) : Option PatientChoice :=
   | [p] => if id == "" then none else some p
   | _ => none
 
-/-- Clinical entry points are existing program screens, never data-supplied routes. -/
+/-- Clinical entry points are existing program screens, never data-supplied routes.
+The deficiency list opens charts where the role's own landing list does. -/
 def target (p : Program) (info : String) : Option ScreenId :=
+  let info := if info == "deficiencies" then
+    (match p.presetOwner with
+     | "P2" => "edTrackBoard" | "P3" => "shiftWorklist" | "P5" => "orSchedule" | _ => "scheduleTasks")
+    else info
   let candidates := match info with
     | "edTrackBoard" => ["w3Triage"]
     | "shiftWorklist" | "unitCensus" => ["w4Mar"]

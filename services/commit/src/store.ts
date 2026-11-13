@@ -1,7 +1,6 @@
 import { Fault, clinicalPersona, digest, emptyShared, maybeObj, maybeObjs, num, obj, objs, required, sharedAction, sharedKey, str, type Actor, type Command, type Config, type Obj, type Patient, type Release, type Workflow } from './types.ts';
 import { protocolTrace, type ProtocolTrace } from './protocol-trace.ts';
 import { boardKeys, boardFrom, clinicalAction, normalizeAdtStream, projectAdt } from './clinical-adt.ts';
-import { adtPatientSchema } from './projection-codecs.ts';
 import { projectCommand, storedReviewReceipts } from './projection.ts';
 import { z } from 'zod';
 import pg, { type PoolClient } from 'pg';
@@ -75,8 +74,8 @@ export function versions(bundle: Obj) {
   return vs;
 }
 
-export function currentContext(context: Obj, nowMs: number = Date.now()) {
-  const now = new Date(nowMs);
+export function currentContext(context: Obj) {
+  const now = new Date();
   return { ...context, today: now.toISOString().slice(0, 10), now: now.getUTCHours() * 60 + now.getUTCMinutes() };
 }
 
@@ -293,15 +292,13 @@ export class Store {
       // A checkpoint was derived at departure. Its source patient/version
       // and short-lived command session are deliberately not consulted here.
       let workspaceState: Obj | undefined;
-      let checkpointRow: Obj | undefined;
       if (input.checkpointId) {
-        const checkpoint = await c.query('SELECT * FROM commit_draft_checkpoints WHERE tenant=$1 AND id=$2 AND actor=$3 AND auth_session=$4',
+        const checkpoint = await c.query('SELECT workspace_state,release_hash FROM commit_draft_checkpoints WHERE tenant=$1 AND id=$2 AND actor=$3 AND auth_session=$4',
           [this.config.tenant, input.checkpointId, actor.user.id, this.draftScope(actor)]);
         if (!checkpoint.rowCount) throw new Fault(404, 'checkpoint_not_found');
         if (!w.project || !release.program.patientSelection || checkpoint.rows[0].release_hash !== digest(release))
           throw new Fault(409, 'checkpoint_release_mismatch');
-        checkpointRow = obj(checkpoint.rows[0]);
-        workspaceState = obj(checkpointRow.workspace_state);
+        workspaceState = obj(checkpoint.rows[0].workspace_state);
       }
       const p = await this.stream(c, `patient:${input.patient}`, true);
       this.requireMarBinding(obj(p.snapshot), w);
@@ -327,64 +324,6 @@ export class Store {
       const facts = await this.lean.call('facts', selection
         ? { bundle: directory, directoryOnly: true, context: { ...context, today: context.directoryDate ?? context.today } }
         : { bundle: p.snapshot.bundle, context, ...(directory ? { worldContext: directory } : {}) });
-      if (workspaceState && checkpointRow) {
-        const drafts = objs(workspaceState.patientDrafts ?? []);
-        const draft = drafts.find((d: Obj) => d.patient === input.patient);
-        if (draft) {
-          const patientCpResult = await c.query(
-            `SELECT * FROM commit_draft_checkpoints
-             WHERE tenant=$1 AND actor=$2 AND auth_session=$3 AND patient=$4 AND NOT superseded AND NOT discarded_at_discharge
-             ORDER BY created_at DESC LIMIT 1`,
-            [this.config.tenant, actor.user.id, this.draftScope(actor), input.patient],
-          );
-          const cpRow = patientCpResult.rows[0] ?? checkpointRow;
-          const encounterId = typeof context.encounterId === 'string' ? str(context.encounterId) :
-            typeof cpRow.encounter_id === 'string' ? str(cpRow.encounter_id) : '';
-          const resources = objs(obj(obj(p.snapshot).bundle).entry).map((e: Obj) => obj(e.resource));
-          const encounter = resources.find((r: Obj) => r.resourceType === 'Encounter' && (!encounterId || r.id === encounterId));
-          const encounterKind = typeof cpRow.encounter_kind === 'string' && cpRow.encounter_kind ? str(cpRow.encounter_kind) :
-            maybeObj(encounter?.class)?.code === 'IMP' ? 'inpatient' :
-            maybeObj(encounter?.class)?.code === 'EMER' ? 'emergency' : 'outpatient';
-          const currentAdt = this.currentAdtState(input.patient, obj(p.snapshot), encounterId || undefined);
-          const freshInit = await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
-          const reconciled = await this.lean.call('restore-checkpoint', {
-            spec: release.spec,
-            user: actor.user,
-            fresh: { ...freshInit, captured: [], acked: [] },
-            checkpoint: {
-              id: str(cpRow.id),
-              author: actor.user.id,
-              patient: input.patient,
-              encounter: encounterId,
-              encounterKind,
-              adtRevision: typeof cpRow.adt_revision === 'number' ? cpRow.adt_revision : 0,
-              ...(typeof cpRow.saved_at_minute === 'number' ? { savedAtMinute: cpRow.saved_at_minute } : {}),
-              captured: objs(draft.captured ?? []),
-              acked: objs(draft.acked ?? []),
-              discardedAtDischarge: Boolean(cpRow.discarded_at_discharge),
-            },
-            adt: currentAdt,
-          });
-          const discardedOrders = objs(reconciled.discardedOrders ?? []);
-          if (discardedOrders.length > 0) {
-            await c.query(
-              'UPDATE commit_draft_checkpoints SET discarded_at_discharge=true, discarded_captures=$2 WHERE tenant=$1 AND id=$3',
-              [this.config.tenant, JSON.stringify(discardedOrders), cpRow.id],
-            );
-          }
-          if (reconciled.transferred || reconciled.discharged) {
-            const nextCaptured = objs(obj(reconciled.state).captured ?? []);
-            const nextAcked = objs(draft.acked ?? []);
-            const otherDrafts = drafts.filter((d: Obj) => d.patient !== input.patient);
-            const nextDrafts = nextCaptured.length === 0 && nextAcked.length === 0
-              ? otherDrafts
-              : [...otherDrafts, { patient: input.patient, captured: nextCaptured, acked: nextAcked }];
-            workspaceState = { ...workspaceState };
-            if (nextDrafts.length === 0) delete workspaceState.patientDrafts;
-            else workspaceState.patientDrafts = nextDrafts;
-          }
-        }
-      }
       let state = workspaceState ?? await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
       if (input.workspaceActivity) {
         if (!selection) throw new Fault(422, 'workspace_required');
@@ -406,23 +345,6 @@ export class Store {
         projection: facts, spec: release.spec, program: release.program, user: actor.user,
         ...(resource ? { shared: { key, version: resource.version, state: resource.snapshot } } : {}) };
     });
-  }
-  private currentAdtState(patientId: string, snapshot: Obj, encounterId?: string): z.infer<typeof adtPatientSchema> {
-    const resources = objs(obj(snapshot.bundle).entry).map((e: Obj) => obj(e.resource));
-    const targetEncId = encounterId ?? (typeof obj(snapshot.context ?? {}).encounterId === 'string' ? str(obj(snapshot.context).encounterId) : undefined);
-    const encounter = resources.find((r: Obj) => r.resourceType === 'Encounter' && (!targetEncId || r.id === targetEncId));
-    if (snapshot.adt) {
-      const parsed = adtPatientSchema.parse(snapshot.adt);
-      if (parsed.admitted && encounter?.status === 'finished') {
-        return { ...parsed, admitted: false, bed: null, revision: parsed.revision + 1, last: { kind: 'discharge', source: parsed.bed, target: null } };
-      }
-      return parsed;
-    }
-    const isImp = maybeObj(encounter?.class)?.code === 'IMP' || obj(snapshot.context ?? {}).encounterKind === 'inpatient';
-    if (isImp && encounter?.status === 'finished') {
-      return { id: patientId, admitted: false, bed: null, revision: 1, encounter: 1, last: { kind: 'discharge', source: null, target: null } };
-    }
-    return { id: patientId, admitted: Boolean(isImp && encounter?.status === 'in-progress'), bed: null, revision: 0, encounter: isImp ? 1 : 0, last: null };
   }
   private draftScope(actor: Actor) {
     // OIDC sid is stable across access-token refresh and changes on a new
@@ -446,165 +368,12 @@ export class Store {
       const state = obj((await this.lean.call('step', { ...replay.base, state: replay.state, event: input.event })).state);
       if (!state.patientContext || maybeObj(state.patientContext)?.patient || maybeObj(state.patientContext)?.bound)
         throw new Fault(422, 'checkpoint_requires_directory');
-      const snapshot = obj(p.snapshot);
-      const encounterId = typeof obj(s.context).encounterId === 'string' ? str(obj(s.context).encounterId) :
-        typeof obj(snapshot.context ?? {}).encounterId === 'string' ? str(obj(snapshot.context).encounterId) : '';
-      const resources = objs(obj(snapshot.bundle).entry).map((e: Obj) => obj(e.resource));
-      const encounter = resources.find((r: Obj) => r.resourceType === 'Encounter' && (!encounterId || r.id === encounterId));
-      const encounterKind = typeof obj(s.context).encounterKind === 'string' ? str(obj(s.context).encounterKind) :
-        maybeObj(encounter?.class)?.code === 'IMP' ? 'inpatient' :
-        maybeObj(encounter?.class)?.code === 'EMER' ? 'emergency' : 'outpatient';
-      const adtState = this.currentAdtState(s.patient, snapshot, encounterId || undefined);
-      const savedAtMinute = Math.floor(this.now() / 60_000) + Math.floor(num(replay.state.clock ?? 0) / 600);
-      const hasDraft = objs(state.patientDrafts ?? []).some((d: Obj) => d.patient === s.patient && objs(d.captured ?? []).length > 0);
-      await c.query(
-        'UPDATE commit_draft_checkpoints SET superseded=true WHERE tenant=$1 AND actor=$2 AND auth_session=$3 AND patient=$4 AND NOT discarded_at_discharge',
-        [this.config.tenant, actor.user.id, scope, s.patient],
-      );
-      const inserted = await c.query(`INSERT INTO commit_draft_checkpoints(
-        tenant,actor,auth_session,source_session,source_revision,leave_hash,id,release_hash,workspace_state,
-        patient,encounter_id,encounter_kind,adt_revision,saved_at_minute,superseded)
-        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
-        ON CONFLICT (tenant,actor,auth_session,source_session,source_revision,leave_hash) DO NOTHING RETURNING id`,
-      [...binding, randomUUID(), digest(release), state, s.patient, encounterId, encounterKind, adtState.revision, savedAtMinute, !hasDraft]);
+      const inserted = await c.query(`INSERT INTO commit_draft_checkpoints(tenant,actor,auth_session,source_session,source_revision,leave_hash,id,release_hash,workspace_state)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (tenant,actor,auth_session,source_session,source_revision,leave_hash) DO NOTHING RETURNING id`,
+      [...binding, randomUUID(), digest(release), state]);
       if (inserted.rowCount) return { checkpointId: inserted.rows[0].id };
       return { checkpointId: (await c.query('SELECT id FROM commit_draft_checkpoints WHERE tenant=$1 AND actor=$2 AND auth_session=$3 AND source_session=$4 AND source_revision=$5 AND leave_hash=$6', binding)).rows[0].id };
     });
-  }
-  async deficiencies(actor: Actor) {
-    if (!['rn', 'physician', 'np', 'surgeon'].includes(actor.user.role)) throw new Fault(403, 'role_forbidden');
-    const persona = clinicalPersona(actor);
-    const release = this.config.releases[persona] ??
-      Object.values(this.config.releases).find(r => r.program.role === actor.user.role);
-    if (!release) throw new Fault(404, 'release_not_found');
-    const scope = this.draftScope(actor);
-    const streamRows = (await this.db.query(
-      `SELECT s.key, s.version, s.snapshot,
-         COALESCE((SELECT jsonb_agg(e.event->'guard'->'input'->>'commit' ORDER BY e.version)
-           FROM commit_events e
-           WHERE e.tenant=s.tenant AND e.stream=s.key AND e.event->>'kind'='command'
-             AND e.event->'guard'->'input'->>'commit' IS NOT NULL), '[]'::jsonb) AS commits
-       FROM commit_streams s
-       WHERE s.tenant=$1 AND s.kind='patient' AND substring(s.key from 9)=ANY($2)
-       ORDER BY s.key COLLATE "C"`,
-      [this.config.tenant, actor.patients],
-    )).rows;
-    const checkpointRows = (await this.db.query(
-      `SELECT * FROM commit_draft_checkpoints
-       WHERE tenant=$1 AND actor=$2 AND auth_session=$3 AND (NOT superseded OR discarded_at_discharge)
-       ORDER BY created_at ASC, id ASC`,
-      [this.config.tenant, actor.user.id, scope],
-    )).rows;
-    const records: Obj[] = [];
-    for (const row of streamRows) {
-      const patientId = str(row.key).slice(8);
-      const snapshot = obj(row.snapshot);
-      const resources = objs(obj(snapshot.bundle).entry).map((e: Obj) => obj(e.resource));
-      const contextEncId = typeof obj(snapshot.context ?? {}).encounterId === 'string' ? str(obj(snapshot.context).encounterId) : undefined;
-      const encounter = (contextEncId ? resources.find((r: Obj) => r.resourceType === 'Encounter' && r.id === contextEncId) : undefined) ??
-        resources.find((r: Obj) => r.resourceType === 'Encounter' && r.status === 'in-progress') ??
-        resources.find((r: Obj) => r.resourceType === 'Encounter');
-      const encounterId = typeof encounter?.id === 'string' ? str(encounter.id) : (contextEncId ?? '');
-      const patientRes = resources.find((r: Obj) => r.resourceType === 'Patient' && r.id === patientId);
-      const nameEntry = maybeObjs(patientRes?.name)?.[0];
-      const patientName = typeof nameEntry?.text === 'string' ? str(nameEntry.text) :
-        [...(Array.isArray(nameEntry?.given) ? nameEntry.given.map(String) : []), typeof nameEntry?.family === 'string' ? nameEntry.family : ''].filter(Boolean).join(' ') || patientId;
-      const encounterKind = maybeObj(encounter?.class)?.code === 'IMP' ? 'inpatient' :
-        maybeObj(encounter?.class)?.code === 'EMER' ? 'emergency' :
-        typeof obj(snapshot.context ?? {}).encounterKind === 'string' ? str(obj(snapshot.context).encounterKind) : undefined;
-      const baseContext = currentContext({
-        ...obj(snapshot.context ?? {}),
-        ...(encounterId ? { encounterId } : {}),
-        ...(encounterKind ? { encounterKind } : {}),
-        record: [
-          ...objs(obj(snapshot.context ?? {}).record ?? []).filter((pair: unknown) => Array.isArray(pair) && !['viewerPersona', 'selectedEncounterId'].includes(String(pair[0]))),
-          ['viewerPersona', persona],
-          ...(encounterId ? [['selectedEncounterId', encounterId]] : []),
-        ],
-      }, this.now());
-      const projected = await this.lean.call('facts', { bundle: snapshot.bundle, context: baseContext });
-      const facts = {
-        ...obj(projected.facts),
-        ...(snapshot.facts ? obj(snapshot.facts) : {}),
-        epochMinute: typeof maybeObj(snapshot.facts)?.epochMinute === 'number'
-          ? num(obj(snapshot.facts).epochMinute)
-          : Math.floor(this.now() / 60_000),
-      };
-      const baseState = maybeObj(maybeObj(snapshot.lastCommand)?.state) ?? maybeObj(snapshot.state) ?? {};
-      const committedIds = [...new Set([
-        ...(Array.isArray(row.commits) ? row.commits.filter((c: unknown): c is string => typeof c === 'string') : []),
-        ...(Array.isArray(baseState.commits) ? baseState.commits.filter((c: unknown): c is string => typeof c === 'string') : []),
-      ])];
-      const state = {
-        screen: typeof baseState.screen === 'string' ? baseState.screen : 'home',
-        history: Array.isArray(baseState.history) ? baseState.history : [],
-        captured: Array.isArray(baseState.captured) ? baseState.captured : [],
-        receipts: Array.isArray(baseState.receipts) ? baseState.receipts : [],
-        acked: Array.isArray(baseState.acked) ? baseState.acked : [],
-        commits: committedIds,
-        expanded: Array.isArray(baseState.expanded) ? baseState.expanded : [],
-        tabSel: Array.isArray(baseState.tabSel) ? baseState.tabSel : [],
-        currentSlot: typeof baseState.currentSlot === 'number' ? baseState.currentSlot : 0,
-        clock: typeof baseState.clock === 'number' ? baseState.clock : 0,
-      };
-      const adt = this.currentAdtState(patientId, snapshot, encounterId || undefined);
-      const checkpoints: Obj[] = [];
-      for (const cpRow of checkpointRows) {
-        if (cpRow.patient && cpRow.patient !== patientId) continue;
-        if (cpRow.discarded_at_discharge && Array.isArray(cpRow.discarded_captures) && cpRow.discarded_captures.length > 0) {
-          if (cpRow.patient === patientId) {
-            checkpoints.push({
-              id: str(cpRow.id),
-              author: actor.user.id,
-              patient: patientId,
-              encounter: typeof cpRow.encounter_id === 'string' && cpRow.encounter_id ? cpRow.encounter_id : encounterId,
-              ...(typeof cpRow.encounter_kind === 'string' && cpRow.encounter_kind ? { encounterKind: cpRow.encounter_kind } : (encounterKind ? { encounterKind } : {})),
-              adtRevision: typeof cpRow.adt_revision === 'number' ? cpRow.adt_revision : 0,
-              ...(typeof cpRow.saved_at_minute === 'number' ? { savedAtMinute: cpRow.saved_at_minute } : {}),
-              captured: objs(cpRow.discarded_captures),
-              acked: [],
-              discardedAtDischarge: true,
-            });
-          }
-          continue;
-        }
-        const drafts = objs(obj(cpRow.workspace_state).patientDrafts ?? []);
-        const draft = drafts.find((d: Obj) => d.patient === patientId);
-        if (!draft || objs(draft.captured ?? []).length === 0) continue;
-        checkpoints.push({
-          id: str(cpRow.id),
-          author: actor.user.id,
-          patient: patientId,
-          encounter: typeof cpRow.encounter_id === 'string' && cpRow.encounter_id ? cpRow.encounter_id : encounterId,
-          ...(typeof cpRow.encounter_kind === 'string' && cpRow.encounter_kind ? { encounterKind: cpRow.encounter_kind } : (encounterKind ? { encounterKind } : {})),
-          adtRevision: typeof cpRow.adt_revision === 'number' ? cpRow.adt_revision : 0,
-          ...(typeof cpRow.saved_at_minute === 'number' ? { savedAtMinute: cpRow.saved_at_minute } : {}),
-          captured: objs(draft.captured ?? []),
-          acked: objs(draft.acked ?? []),
-          discardedAtDischarge: Boolean(cpRow.discarded_at_discharge),
-        });
-      }
-      records.push({
-        patient: patientId,
-        patientName,
-        encounter: encounterId,
-        facts,
-        state,
-        adt,
-        checkpoints,
-      });
-    }
-    const computed = await this.lean.call('deficiencies', { spec: release.spec, user: actor.user, records });
-    for (const d of objs(computed.deficiencies ?? [])) {
-      if (d.status === 'discardedAtDischarge' && maybeObj(d.kind)?.unsignedDraft) {
-        const cpId = str(obj(obj(d.kind).unsignedDraft).checkpointId);
-        await this.db.query(
-          'UPDATE commit_draft_checkpoints SET discarded_at_discharge=true WHERE tenant=$1 AND id=$2 AND NOT discarded_at_discharge',
-          [this.config.tenant, cpId],
-        );
-      }
-    }
-    return { deficiencies: computed.deficiencies, activity: computed.activity };
   }
   async renewSession(actor: Actor, id: string, revision: number) {
     return transaction(this.db, async c => {

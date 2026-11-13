@@ -238,8 +238,8 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
     match sp.entries.find? (fun rq => rq.commit == c && !entryMet sp facts user s rq) with
     | some rq => entryReason sp facts user s rq
     | none =>
-      if isOrderCommit sp c && !orderDraftsReconciled sp s then
-        "order reconciliation required: choose keep, change, or discontinue for each transferred order line"
+      if isOrderCommit sp c && reconcilePending s then
+        "Needs reconciliation: choose keep, change or discontinue for each order line restored after the transfer"
       else if !signingHasOrder sp s c then "entry required: drug or complete service order" else
       match sp.reviews.find? (fun rq => rq.commit == c && !reviewMet sp prog facts s rq) with
       | some rq => s!"review required: {rq.info} must be shown" ++

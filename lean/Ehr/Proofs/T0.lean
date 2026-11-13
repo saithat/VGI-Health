@@ -85,7 +85,7 @@ theorem enterCore_commits (sp : Spec) (prog : Program) (facts : Facts) (user : U
     (actor : Actor) (s : State) (cid : CompId) (v : Value) :
     (enterCore sp prog facts user actor s cid v).1.commits = s.commits := by
   unfold enterCore
-  repeat' (first | rfl | split | (dsimp only; done) | dsimp only)
+  repeat' (first | rfl | exact reconcileCore_commits .. | split | (dsimp only; done) | dsimp only)
 
 theorem confirmCore_commits (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (actor : Actor) (s : State) (cid : CompId) :

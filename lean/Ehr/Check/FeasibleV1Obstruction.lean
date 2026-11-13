@@ -102,7 +102,10 @@ private theorem setCaptured_preserves_trap {cap : List Captured} {xNew : Capture
     have hany : cap.any (fun y => y.element == xNew.element && y.slot == xNew.slot &&
         y.provenance? == some "linked-source-changed") = false :=
       List.any_eq_false.mpr fun y hy => by simp [hprov y hy]
-    unfold storedCapture; rw [hdep, hany]; cases xNew; simp
+    have htag : cap.any (fun y => y.element == xNew.element && y.slot == xNew.slot &&
+        y.provenance? == some reconcileTag) = false :=
+      List.any_eq_false.mpr fun y hy => by simp [hprov y hy]
+    unfold storedCapture; rw [htag, hdep, hany]; cases xNew; simp
   refine ⟨?_, ?_, ?_⟩
   · unfold setCaptured; rw [hdep]
     apply List.mem_append.mpr; left; apply List.mem_filter.mpr
@@ -197,7 +200,8 @@ theorem inboxTrap_step (sp : Spec) (f : Facts) (u : User)
           repeat' (first | exact ⟨hscr, hunit, hdrug, hprov⟩ | split)
     | enter cid v =>
       simp only [stepEvent, enterCore]; split
-      · exact ⟨hscr, hunit, hdrug, hprov⟩
+      · rw [reconcileCore_idle _ _ _ _ _ _ (fun x hx => by simp [hprov x hx])]
+        exact ⟨hscr, hunit, hdrug, hprov⟩
       · rename_i c hc
         have hmem : c ∈ v1TrapProg.compsOf "inbox" := by
           unfold shownComp? at hc; rw [hscr] at hc; exact List.mem_of_find?_eq_some hc

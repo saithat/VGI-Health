@@ -99,7 +99,9 @@ private theorem enterCore_slots (sp p f u actor s cid v slots)
     DrugSlotsWithin slots (enterCore sp p f u actor s cid v).1 := by
   unfold enterCore
   split
-  · exact h
+  · intro x hx he
+    obtain ⟨y, hy, hel, hsl, -⟩ := reconcileCore_captured sp u actor s cid v x hx
+    rw [hsl]; exact h y hy (hel ▸ he)
   · rename_i comp shown
     have member : comp ∈ p.compsOf s.screen := List.mem_of_find?_eq_some shown
     split

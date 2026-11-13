@@ -90,7 +90,7 @@ private theorem enterCore_macro_noHuman (sp p f u s cid v) :
     NoNewHuman sp s (enterCore sp p f u .«macro» s cid v).1 := by
   unfold enterCore
   split
-  · exact .refl _ _
+  · rw [reconcileCore_macro]; exact .refl _ _
   · split
     · split
       · exact .refl _ _
@@ -117,6 +117,12 @@ private theorem enterCore_macro_noHuman (sp p f u s cid v) :
 private theorem enterCore_human_quality (sp p f u s cid v) (hi : HumanCaptured sp s) :
     HumanCaptured sp (enterCore sp p f u .human s cid v).1 := by
   unfold enterCore
+  split
+  · intro x hx el hel hh
+    obtain ⟨y, hy, he, -, -, hb, hc⟩ := reconcileCore_captured sp u .human s cid v x hx
+    rw [he] at hel
+    obtain ⟨h1, h2⟩ := hi y hy el hel hh
+    exact ⟨hb.trans h1, hc.trans h2⟩
   repeat' (first | contradiction | exact hi | split | dsimp only)
   intro x hx el hel hh
   simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hx

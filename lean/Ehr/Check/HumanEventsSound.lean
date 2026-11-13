@@ -92,7 +92,7 @@ private theorem stepCore_acked_nonAck (sp p f u actor s e) (he : e.isAck = false
   · rfl
   · cases e with
     | click cid => simp only [stepEvent]; split; rfl; exact clickCore_acked ..
-    | enter cid v => simp only [stepEvent]; unfold enterCore; repeat' (first | rfl | split | dsimp only)
+    | enter cid v => simp only [stepEvent]; unfold enterCore; repeat' (first | rfl | exact reconcileCore_acked .. | split | dsimp only)
     | confirm cid => simp only [stepEvent]; unfold confirmCore; repeat' (first | rfl | split | dsimp only)
     | ack a => contradiction
     | selectTab cid idx => exact (selectTabCore_safe ..).acked
