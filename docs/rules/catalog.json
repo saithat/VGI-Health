@@ -3542,10 +3542,14 @@
     ],
     "fit": "core-feature:record-level-completeness",
     "fitReason": "Requires date/time metadata on every medical record entry; a user-entered date on one screen cannot guarantee universal stamping.",
-    "existingInSpec": false,
+    "existingInSpec": true,
     "needsCoreFeature": "record-level-completeness",
-    "encodedIn": [],
-    "encodingSkippedReason": "core-feature:record-level-completeness: Requires date/time metadata on every medical record entry; a user-entered date on one screen cannot guarantee universal stamping."
+    "encodedIn": [
+      "Captured.enteredAt?",
+      "EntryTimes.records",
+      "Commit.accepted_observed_le_signed"
+    ],
+    "implementationScope": "Trusted UTC epoch-minute entry stamps in interpreter captures and persisted command/FHIR provenance. Historical clockless captures remain unstamped; SQL/FHIR refinement is tested, not proved. See docs/design/chart-timing.md."
   },
   {
     "id": "cms-482.24-c1-timed",
@@ -3605,10 +3609,14 @@
     ],
     "fit": "core-feature:record-level-completeness",
     "fitReason": "Requires date/time metadata on every medical record entry; a user-entered date on one screen cannot guarantee universal stamping.",
-    "existingInSpec": false,
+    "existingInSpec": true,
     "needsCoreFeature": "record-level-completeness",
-    "encodedIn": [],
-    "encodingSkippedReason": "core-feature:record-level-completeness: Requires date/time metadata on every medical record entry; a user-entered date on one screen cannot guarantee universal stamping."
+    "encodedIn": [
+      "Captured.enteredAt?",
+      "EntryTimes.records",
+      "Commit.accepted_observed_le_signed"
+    ],
+    "implementationScope": "Trusted UTC epoch-minute entry stamps in interpreter captures and persisted command/FHIR provenance. Historical clockless captures remain unstamped; SQL/FHIR refinement is tested, not proved. See docs/design/chart-timing.md."
   },
   {
     "id": "cms-482.24-c1-responsible-authentication",

@@ -92,6 +92,17 @@ def withRequiredReviews (s : Screen) : Screen :=
       ((Specs.V1.specV1.info? id).map (·.label) |>.getD id)
   { s with components := s.components.take 1 ++ panels ++ s.components.drop 1 }
 
+/-- New specification for owner review: optional companion beside its observation,
+with identical slot, visibility and parent. -/
+def withObservationTimes (s : Screen) : Screen :=
+  { s with components := s.components.flatMap fun c =>
+      c :: (match c.kind with
+      | .field e slot _ =>
+        if (Specs.V1.specV1.element? e).any (fun el => el.observation? == some true) then
+          [{ c with id := c.id ++ ".observedAt", kind := .field (e ++ ".observedAt") slot .none, label := c.label ++ " — Time taken", hotkey? := none, copyOf? := c.copyOf?.map (· ++ ".observedAt"), tag := c.tag ++ ".observationTime" }]
+        else []
+      | _ => []) }
+
 /-- **The canonical program, version 1** (spec "v1"). -/
 def canonicalV1 : Program where
   patientSelection? := some true
@@ -104,7 +115,7 @@ def canonicalV1 : Program where
   screens := Density.screens ((Blueprint.screens (let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
     W5.screens ++ W6.screens ++ W7.screens
     if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base.map CorePlacements.augment)).map
-      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews))
+      (withObservationTimes ∘ withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews))
   macros := Blueprint.macros (W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros)
 

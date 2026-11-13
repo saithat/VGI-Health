@@ -71,16 +71,16 @@ def prefillRecord (facts : Facts) (s : State) (e : ElementId) (el : ElementSpec)
     if el.recordFact? != some f then none else
     (recordValue facts el.kind f).map fun v =>
       { element := e, slot := n, value := v, byHuman := false, confirmed := false
-        provenance? := some ("record:" ++ f) }
+        provenance? := some ("record:" ++ f), enteredAt? := epochNow facts s }
   | .default d =>
     (parseElementValue s el n d).map fun v =>
       { element := e, slot := n, value := v, byHuman := false, confirmed := false
-        provenance? := some "default" }
+        provenance? := some "default", enteredAt? := epochNow facts s }
   | .linked src =>
     (linkedSource? s src n).map fun x =>
       { element := e, slot := n, value := x.value, byHuman := false
         confirmed := el.prefill == .autoLinked && x.confirmed && x.provenance? != some "linked-source-changed"
-        provenance? := some ("linked:" ++ src) }
+        provenance? := some ("linked:" ++ src), enteredAt? := epochNow facts s }
 
 /-- Validate generated prefills, preserving the original policy/source rules. -/
 def prefillValueValid (facts : Facts) (s : State) (el : ElementSpec) (n : Nat) (pf : Prefill) : Bool :=
@@ -179,7 +179,7 @@ must be allowed; a macro may not do it if the element is human-only or
 the current slot has no order or already has a confirmed capture. Human-only
 and never-policy elements must be captured through a human field entry, not
 this convenience action. -/
-def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : State × StepResult :=
+def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) (time : Option Int := none) : State × StepResult :=
   match sp.element? priorAuthElement with
   | none => (s, .blocked s!"unknown element {priorAuthElement}")
   | some el =>
@@ -196,7 +196,7 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
         else
           let x : Captured :=
             { element := priorAuthElement, slot := s.currentSlot, value := .flag true
-              byHuman := false, confirmed := false, provenance? := some "macro" }
+              byHuman := false, confirmed := false, provenance? := some "macro", enteredAt? := time }
           ({ s with captured := setCaptured s.captured x }, .ok)
       | .human =>
         if needsHuman el || el.prefill == .never then
@@ -204,7 +204,7 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
         else
           let x : Captured :=
             { element := priorAuthElement, slot := s.currentSlot, value := .flag true
-              byHuman := true, confirmed := true, provenance? := none }
+              byHuman := true, confirmed := true, provenance? := none, enteredAt? := time }
           ({ s with captured := setCaptured s.captured x }, .ok)
 
 /-- The current drug line meets every applicable per-line requirement in the
@@ -246,7 +246,7 @@ def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
     if currentLineComplete sp facts user s then
       (prefillScreen sp prog facts { s with currentSlot := s.currentSlot + 1 }, .ok)
     else (s, .blocked "finish this order line first")
-  | .button .requestPriorAuth => requestPriorAuth sp user actor s
+  | .button .requestPriorAuth => requestPriorAuth sp user actor s (epochNow facts s)
   | .group true _ => ({ s with expanded := toggle s.expanded c.id }, .ok)
   | .«macro» _ =>
     match actor with
@@ -289,7 +289,7 @@ def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
             else
               let x : Captured :=
                 { element := e, slot := resolveSlot s slot, value := v, byHuman := false
-                  confirmed := false, provenance? := (el.linkedFrom?.map ("linked:" ++ ·)).or (some "macro") }
+                  confirmed := false, provenance? := (el.linkedFrom?.map ("linked:" ++ ·)).or (some "macro"), enteredAt? := epochNow facts s }
               ({ s with captured := setCaptured s.captured x }, .ok)
           | .human =>
             if (!valueAccepted facts user el.kind v ||
@@ -297,7 +297,7 @@ def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
             else
               let x : Captured :=
                 { element := e, slot := resolveSlot s slot, value := v, byHuman := true
-                  confirmed := true, provenance? := el.linkedFrom?.map ("linked:" ++ ·) }
+                  confirmed := true, provenance? := (if ".observedAt".toList.isSuffixOf e.toList then el.observationOf?.or el.linkedFrom? else el.linkedFrom?).map ("linked:" ++ ·), enteredAt? := epochNow facts s }
               ({ s with captured := setCaptured s.captured x }, .ok)
     | .search _ =>
       match v with

@@ -8,6 +8,8 @@ Read 578 source rows; excluded 22 nonqualifying rows; retained 556 unique rules 
 
 The source `verified`, quotes, URLs, confidence and notes are preserved, not newly certified here. Research guesses are retained under `sourceAssessment`; only `fit`, `fitReason`, `existingSpecItems` and `proposedEncoding` are the audited classification. Source JSON basis omissions on binding rules are normalized to `law`. Nonbinding rows are accepted only with `basis: entrenched` and a concrete `entrenchedBecause`; accreditation, self-assessment and local checklist adoption are not relabeled law.
 
+The dated/timed entry rules (`cms-482.24-c1-dated`, `cms-482.24-c1-timed`) now have trusted capture timestamps and persisted provenance. Historical clockless entries remain unstamped; see [entry-time implementation and proof scope](../design/chart-timing.md). Classification totals below retain their research categories.
+
 ## Totals
 
 | Fit | Rules |

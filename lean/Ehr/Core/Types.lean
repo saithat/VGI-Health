@@ -114,6 +114,8 @@ inductive Validation
   | udiGs1
   | supplyDaysCeil (quantity dose frequency : ElementId)
   | doseByWeight (weight : ElementId) (factorTenths capTenths : Nat) (unit : UnitKind)
+  /-- New specification for owner review: source-entry and encounter bounds. -/
+  | observationTime (source : ElementId)
   | and (left right : Validation)
   deriving DecidableEq, Repr, Inhabited
 
@@ -144,6 +146,10 @@ structure ElementSpec where
   fhirTarget : String
   validation? : Option Validation := none
   defaultValue? : Option String := none
+  /-- New specification for owner review: this element describes a moment of care. -/
+  observation? : Option Bool := none
+  /-- New specification for owner review: human-entered epoch-minute companion. -/
+  observationOf? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Closed patient/episode dimensions. Values retain their source coding. -/
@@ -573,7 +579,12 @@ structure DesignRules where
   landmarks : List InfoId
   /-- Allowed component kind tags. -/
   catalog : List String
+  /-- New specification for owner review: local policy, absent means 1440 minutes. -/
+  lateEntryMinutes? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
+
+/-- New specification for owner review: local late-entry policy default. -/
+def DesignRules.lateEntryMinutes (d : DesignRules) : Nat := d.lateEntryMinutes?.getD 1440
 
 /-- A hospital governance spec (one version). -/
 structure Spec where
@@ -857,6 +868,8 @@ structure Facts where
   episodeId? : Option String := none
   /-- Absolute time; the existing receipt clock retains its original meaning. -/
   epochMinute? : Option Int := none
+  /-- New specification for owner review: selected encounter start, when known. -/
+  encounterStart? : Option Int := none
   artifactBindings? : Option (List ArtifactBinding) := none
   eventEvidence? : Option (List EventEvidence) := none
   calendars? : Option (List BusinessCalendar) := none
@@ -901,6 +914,8 @@ structure Captured where
   confirmed : Bool
   /-- Where a prefilled value came from, e.g. `"record:weightToday"`. -/
   provenance? : Option String := none
+  /-- New specification for owner review: trusted entry time; absent in legacy captures. -/
+  enteredAt? : Option Int := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- The signed-in user. -/

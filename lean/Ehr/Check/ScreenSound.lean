@@ -56,8 +56,8 @@ theorem markReviewed_names (sp p f u s i) (h : ScreenNames p s) :
   repeat' (first | exact h | split | (dsimp only; exact h) | dsimp only)
 
 /-- A prior-authorization request preserves valid screen and back-stack names. -/
-theorem requestPriorAuth_names (sp p u actor s) (h : ScreenNames p s) :
-    ScreenNames p (requestPriorAuth sp u actor s).1 := by
+theorem requestPriorAuth_names (sp p u actor s) (h : ScreenNames p s) (time : Option Int) :
+    ScreenNames p (requestPriorAuth sp u actor s time).1 := by
   unfold requestPriorAuth
   repeat' (first | exact h | split | (dsimp only; exact h) | dsimp only)
 
@@ -86,7 +86,7 @@ theorem clickCore_names (sp p f u actor s c) (h : ScreenNames p s) :
   · split
     · exact prefillScreen_names _ _ _ _ h
     · exact h
-  · exact requestPriorAuth_names _ _ _ _ _ h
+  · exact requestPriorAuth_names _ _ _ _ _ h (epochNow f s)
   · exact h
   · cases actor <;> exact h
   · exact h
@@ -175,4 +175,7 @@ theorem reachable_screenNames (ep : Episode)
   | wait d _ ih => exact ih
 
 #print axioms reachable_screenNames
+#print axioms requestPriorAuth_names
+#print axioms clickCore_names
+
 end Ehr.Check

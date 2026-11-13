@@ -285,30 +285,42 @@ export async function createLiveSession(
 
   let uncertain:
     { requestId: string; body: unknown; event: string } | undefined;
-  async function synchronize() {
+  async function renewAuthority() {
+    if (!remote) throw new Error("No chart session to renew");
+    const renewed = z
+      .object({ sessionId: z.string(), revision: z.number() })
+      .passthrough()
+      .parse(
+        await marRequest(`/sessions/${remote.sessionId}/renew`, {
+          revision: remote.revision,
+        }),
+      );
+    remote = {
+      ...remote,
+      sessionId: renewed.sessionId,
+      revision: renewed.revision,
+    };
+  }
+  async function synchronize(renew = true) {
     if (remote) {
-      // Create a fresh command session with the same server journal and screen
-      // interval. The old five-minute session remains ineligible for commits.
-      if (selectionEnabled) {
-        const renewed = z
-          .object({ sessionId: z.string(), revision: z.number() })
-          .passthrough()
-          .parse(
-            await marRequest(`/sessions/${remote.sessionId}/renew`, {
-              revision: remote.revision,
-            }),
-          );
-        remote = {
-          ...remote,
-          sessionId: renewed.sessionId,
-          revision: renewed.revision,
-        };
-      }
+      // The existing guarded renewal has no age cap. Ordinary interactions reuse
+      // their session and renew only if the service reports that it expired.
+      if (selectionEnabled && renew) await renewAuthority();
       while (unsent.length) {
         const event = unsent[0];
         if (!event) break;
-        remote = { ...remote, ...(await marEvent(remote, event)) };
-        unsent.shift();
+        try {
+          remote = { ...remote, ...(await marEvent(remote, event)) };
+          unsent.shift();
+        } catch (error) {
+          if (
+            selectionEnabled &&
+            error instanceof MarConflict &&
+            error.code === "session_expired"
+          ) {
+            await renewAuthority();
+          } else throw error;
+        }
       }
       return remote;
     }
@@ -578,7 +590,18 @@ export async function createLiveSession(
           );
         history.push(event);
         if (remote) unsent.push(event);
-        session.accept(staged, remote?.projection);
+        if (remote) {
+          pending = true;
+          try {
+            const authority = await synchronize(false);
+            session.accept(
+              { state: authority.state, result: staged.result },
+              authority.projection,
+            );
+          } finally {
+            pending = false;
+          }
+        } else session.accept(staged);
         return undefined;
       }
       if (!context)

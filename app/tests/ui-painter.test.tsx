@@ -1816,3 +1816,74 @@ it("scopes compact IDs to their patient pane and preserves strict wire validatio
       .success,
   ).toBe(false);
 });
+
+it("paints Time taken as local date/time and dispatches UTC minutes or a human reset", () => {
+  const onEvent = vi.fn();
+  render(
+    <MantineProvider>
+      <UiNodeView
+        node={{
+          field: {
+            ...field,
+            comp: "weight.observedAt",
+            label: "Weight — Time taken",
+            kind: "observation-time",
+            humanOnly: true,
+            value: String(
+              Math.floor(Date.parse("2026-11-12T20:00:00Z") / 60000),
+            ),
+          },
+        }}
+        onEvent={onEvent}
+      />
+    </MantineProvider>,
+  );
+  const input = screen.getByLabelText("Weight — Time taken");
+  expect(input.getAttribute("type")).toBe("datetime-local");
+  fireEvent.change(input, { target: { value: "2026-11-12T10:30" } });
+  expect(onEvent).toHaveBeenLastCalledWith({
+    enter: {
+      comp: "weight.observedAt",
+      value: {
+        text: { s: String(Math.floor(Date.parse("2026-11-12T10:30") / 60000)) },
+      },
+    },
+  });
+  fireEvent.change(input, { target: { value: "" } });
+  expect(onEvent).toHaveBeenLastCalledWith({
+    enter: { comp: "weight.observedAt", value: { text: { s: "" } } },
+  });
+});
+
+it("paints the native late-entry label with readable times and no action", () => {
+  const onEvent = vi.fn();
+  const observed = Math.floor(Date.parse("2026-11-10T20:00:00Z") / 60000);
+  render(
+    <MantineProvider>
+      <UiNodeView
+        node={{
+          info: {
+            comp: "",
+            label: "Late entry",
+            infoId: "entryTimes",
+            display: "status",
+            rows: [
+              [
+                ["Observed", String(observed)],
+                ["Signed", String(observed + 1441)],
+                ["Local policy (minutes)", "1440"],
+              ],
+            ],
+          },
+        }}
+        onEvent={onEvent}
+      />
+    </MantineProvider>,
+  );
+  const label = screen.getByRole("status", { name: "Late entry" });
+  expect(label.textContent).toContain(
+    new Date(observed * 60000).toLocaleString(),
+  );
+  fireEvent.click(label);
+  expect(onEvent).not.toHaveBeenCalled();
+});

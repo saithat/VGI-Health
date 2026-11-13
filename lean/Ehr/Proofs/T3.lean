@@ -12,8 +12,8 @@ open Ehr
 
 /-- A macro's prior-auth request captures only the (non-human-only) request
 element. -/
-theorem requestPriorAuth_macro_safe (sp : Spec) (user : User) (s : State) :
-    MacroSafe sp s (requestPriorAuth sp user .«macro» s).1 := by
+theorem requestPriorAuth_macro_safe (sp : Spec) (user : User) (s : State) (time : Option Int) :
+    MacroSafe sp s (requestPriorAuth sp user .«macro» s time).1 := by
   unfold requestPriorAuth
   repeat' (first | exact MacroSafe.refl _ _ | split | dsimp only)
   all_goals
@@ -165,5 +165,7 @@ theorem T3_prefill_never_human_only (sp : Spec) (prog : Program) (facts : Facts)
     ∀ x ∈ (prefillScreen sp prog facts s).captured, sp.isHumanOnly x.element = true →
       x ∈ s.captured :=
   (prefillScreen_frame sp prog facts s).2.2.2.2.2
+
+#print axioms requestPriorAuth_macro_safe
 
 end Ehr.Proofs

@@ -51,7 +51,7 @@ private theorem clickCore_keeps (sp p f u actor s c) (x : Captured)
   · split
     · exact prefillScreen_keeps _ _ _ _ _ hx
     · exact hx
-  · exact requestPriorAuth_preserves_confirmed _ _ _ _ _ hx hc
+  · exact requestPriorAuth_preserves_confirmed _ _ _ _ _ hx hc (epochNow f s)
   · exact hx
   · cases actor <;> exact hx
   · exact hx
@@ -135,4 +135,6 @@ theorem accepted_capturesAllOnce (sp prev can p) (h : check sp prev can p = .ok)
 #print axioms enteredOnce_at
 #print axioms enteredOnce
 #print axioms accepted_capturesAllOnce
+#print axioms clickCore_keeps
+
 end Ehr.Check

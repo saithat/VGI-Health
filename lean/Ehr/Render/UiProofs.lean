@@ -320,6 +320,42 @@ theorem uiSide_source (cx : Ctx) (n : UiNode) (hn : n ∈ uiAtomsList (uiSide cx
           · trivial
           · exact ih (by simpa only [List.any_eq_true, Bool.and_eq_true] using hn)
 
+/-- New specification for owner review: timing labels add read-only context. -/
+theorem uiLateEntries_readOnly (cx : Ctx) (n : UiNode)
+    (hn : n ∈ uiAtomsList (uiLateEntries cx)) : UiReadOnly n := by
+  unfold uiLateEntries at hn
+  split at hn
+  · generalize (EntryTimes.records cx.sp cx.facts cx.s).filter _ = ts at hn
+    induction ts with
+    | nil => simp at hn
+    | cons t ts ih =>
+      simp [uiAtoms] at hn
+      rcases hn with rfl | hn
+      · trivial
+      · exact ih hn
+  · simp at hn
+
+/-- New specification for owner review: on a signing screen there are no late
+labels exactly when every capture's observation-to-sign gap is within policy. -/
+theorem uiLateEntries_exact (cx : Ctx)
+    (signing : (cx.v.items.any fun it => it.shown && match it.comp.kind with
+      | .button (.commit _) => true | _ => false) = true) :
+    uiLateEntries cx = [] ↔ ∀ t ∈ EntryTimes.records cx.sp cx.facts cx.s,
+      t.signedAt - t.observedAt ≤ Int.ofNat cx.sp.design.lateEntryMinutes := by
+  unfold uiLateEntries
+  split
+  · simp only [List.map_eq_nil_iff, List.filter_eq_nil_iff]
+    constructor
+    · intro absent t ht
+      have noLate : ¬ t.signedAt - t.observedAt > Int.ofNat cx.sp.design.lateEntryMinutes :=
+        fun gap => absent t ht ((EntryTimes.records_late_exact cx.sp cx.facts cx.s t ht).mpr gap)
+      omega
+    · intro bounded t ht labeled
+      have gap := (EntryTimes.records_late_exact cx.sp cx.facts cx.s t ht).mp labeled
+      have within := bounded t ht
+      omega
+  · contradiction
+
 /-- Every addressable node on the screen has a shown interpreter witness.
 Only the clinical shell, progress overview and read-only supplements are added. -/
 theorem uiPresent_source (cx : Ctx) (n : UiNode)
@@ -328,7 +364,9 @@ theorem uiPresent_source (cx : Ctx) (n : UiNode)
   simp only [UiPresent, renderUi, Ctx.rebuild, uiDatedWorkspace_atoms, uiWorkspace, uiAtomsList_append, uiPlaceFooter_mem,
     List.mem_append, List.mem_singleton] at hn
   rcases hn with ((((hn | (hn | hn)) | hn) | hn) | hn)
-  · exact Or.inr (uiProgress_readOnly cx n hn)
+  · rcases hn with hn | hn
+    · exact Or.inr (uiProgress_readOnly cx n hn)
+    · exact Or.inr (uiLateEntries_readOnly cx n hn)
   · obtain ⟨it, hi, hs, _, hn⟩ := (uiComponentsWhere_mem cx _ n).mp hn
     exact Or.inl ⟨it, hi, hs, hn⟩
   · exact Or.inr (uiMissing_readOnly cx n hn)
@@ -700,6 +738,8 @@ theorem uiNotes_complete (cx : Ctx) (r : NoteRow) (hr : r ∈ cx.disp.notes)
   · exact ⟨comp, label, display, rows, hm, hs ▸ List.mem_map.mpr ⟨r, hr, rfl⟩⟩
 
 #print axioms T10_ui_shown
+#print axioms uiLateEntries_exact
+#print axioms uiLateEntries_readOnly
 #print axioms uiPresent_source
 #print axioms T11_ui_full_info
 #print axioms D2_workspace_required

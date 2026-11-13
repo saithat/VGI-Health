@@ -2645,6 +2645,8 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let f := baseFactsOf ctx rs p
   let previews := chartPayloads ctx rs p f (displayOf ctx rs p)
   { f with
+    epochMinute? := chartMinute ctx.today (ctx.now % 1440)
+    encounterStart? := (selectedChartEncounter ctx rs p).bind (fun e => chartMinute (str (field e "period") "start"))
     infoPayloads? := some ((f.infoPayloads?.getD []) ++ previews),
     artifactBindings? := some ((f.artifactBindings?.getD []) ++ surgicalBindings previews) }
 

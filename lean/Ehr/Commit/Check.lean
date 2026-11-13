@@ -1,5 +1,5 @@
 import Ehr.Core.Json
-import Ehr.Core.Interp
+import Ehr.Core.EntryTimes
 import Ehr.Render.Fhir
 
 /-!
@@ -136,7 +136,8 @@ def checkCurrent (i : Request) (current : Current) : Decision :=
 def check (i : Request) : Decision :=
   match prepare i with
   | .error reason => .reject reason
-  | .ok current => checkCurrent i current
+  | .ok current => if EntryTimes.valid i.spec current.facts i.state then checkCurrent i current
+      else .reject "entry time is after signing time"
 
 /-- Acceptance implies the unmodified guard on the supplied current projection,
 and returns exactly its version preconditions and recomputed human step state. -/
@@ -170,9 +171,24 @@ theorem accepted_current_guard (i : Request) (ps : List Precondition) (staged : 
   cases hp : prepare i with
   | error reason => simp [hp] at h
   | ok current =>
-    rw [hp] at h
-    exact ⟨current, rfl, checkCurrent_sound i current ps staged h⟩
+    simp only [hp] at h
+    split at h
+    · exact ⟨current, rfl, checkCurrent_sound i current ps staged h⟩
+    · contradiction
 
+/-- New specification for owner review: accepted stored timing projection has no
+observation after the trusted signing clock. -/
+theorem accepted_observed_le_signed (i : Request) (current : Current)
+    (ps : List Precondition) (staged : Ehr.State) (prepared : prepare i = .ok current)
+    (h : check i = .accept ps staged) (t : EntryTimes.StoredTime)
+    (ht : t ∈ EntryTimes.records i.spec current.facts i.state) :
+    t.observedAt ≤ t.signedAt := by
+  simp only [check, prepared] at h
+  split at h
+  · exact EntryTimes.stored_observed_le_signed i.spec current.facts i.state ‹_› t ht
+  · contradiction
+
+#print axioms accepted_observed_le_signed
 #print axioms checkCurrent_sound
 #print axioms accepted_current_guard
 

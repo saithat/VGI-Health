@@ -90,8 +90,9 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-The retained recording was re-certified against the current build on
-2026-11-11; its layouts, rule inputs and outcome scenarios are frozen.
+The retained recording was re-certified on 2026-11-11; its layouts, rule inputs
+and outcome scenarios are frozen. The entry-time controls change the certified
+app hash; that recording has not been re-certified for these changes.
 
 | Evidence | Result and caveat |
 |---|---|
@@ -196,7 +197,10 @@ and acknowledgments, and no patient data is shown before a patient is selected
 (`unselected_view`). Properties 1 and 9 keep their global counterexamples on
 the landing view; the global form of the other four is not stated. The live
 app keeps unsigned drafts across charts after long visits and changes to other
-patients' records ([drafts and signing](docs/methods/live-drafts.md)). Critical-result action text is a
+patients' records ([drafts and signing](docs/methods/live-drafts.md)). Observation
+fields offer “Time taken”; entry, observation and signing times stay separate.
+“Late entry” is informational, using a 24-hour local policy default
+([timing](docs/design/chart-timing.md)). Critical-result action text is a
 draft outside `captured`, cleared on a successful resolve; the handler is
 refused while an alert popup is open, and the checker reserves all `critical.`
 component IDs so the handler cannot shadow a program control

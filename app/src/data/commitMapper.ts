@@ -121,9 +121,20 @@ const supportedTargets: Readonly<Record<string, string>> = {
   abxIndication: "MedicationRequest.reasonCode",
 };
 
+/** Native Lean timing projection; never supplied by a browser command. */
+export interface EntryTiming {
+  element: string;
+  slot: number;
+  enteredAt: number;
+  observedAt: number;
+  signedAt: number;
+  lateEntry: boolean;
+}
+
 export interface CommitInput {
   commitId: string;
   captured: readonly Captured[];
+  entryTimes?: readonly EntryTiming[];
   elements: readonly Pick<ElementSpec, "id" | "label" | "fhirTarget">[];
   patient: Patient;
   encounter: Encounter;
@@ -191,6 +202,52 @@ export function mapCommit(input: CommitInput): Bundle {
     if (supportedTargets[c.element] && target !== supportedTargets[c.element])
       throw new Error(`Unsupported fhirTarget for ${c.element}: ${target}`);
   }
+  const times = input.entryTimes ?? [];
+  const stamp = (minute: number) => {
+    if (!Number.isSafeInteger(minute))
+      throw new Error("Invalid entry timestamp");
+    return new Date(minute * 60000).toISOString();
+  };
+  for (const t of times) {
+    if (
+      t.observedAt > t.signedAt ||
+      t.enteredAt > t.signedAt ||
+      t.observedAt > t.enteredAt
+    )
+      throw new Error("Entry time exceeds its trusted bounds");
+  }
+  if (
+    input.commitId !== "markReviewed" &&
+    captured.some((c) => c.enteredAt !== undefined) &&
+    !input.entryTimes
+  )
+    throw new Error("Native entry timing projection required");
+  const observationTiming = (ids: readonly string[], slot = 0) => {
+    const relevant = times.filter(
+      (t) => ids.includes(t.element) && t.slot === slot,
+    );
+    const first = relevant[0];
+    return {
+      effectiveDateTime: first ? stamp(first.observedAt) : now,
+      ...(first ? { issued: stamp(first.signedAt) } : {}),
+      ...(relevant.some((t) => t.lateEntry)
+        ? {
+            extension: relevant
+              .filter((t) => t.lateEntry)
+              .map((t) =>
+                ext(
+                  "late-entry",
+                  JSON.stringify({
+                    element: t.element,
+                    observedAt: stamp(t.observedAt),
+                    signedAt: stamp(t.signedAt),
+                  }),
+                ),
+              ),
+          }
+        : {}),
+    };
+  };
   const field = (id: string, slot = 0) =>
     captured.find((c) => c.element === id && c.slot === slot);
   const text = (id: string, slot = 0) => {
@@ -524,7 +581,7 @@ export function mapCommit(input: CommitInput): Bundle {
           subject,
           encounter: context,
           performer: [actor],
-          effectiveDateTime: now,
+          ...observationTiming([id]),
           code: cc(code, systems.loinc),
           category: [
             cc(
@@ -540,14 +597,20 @@ export function mapCommit(input: CommitInput): Bundle {
           },
         });
     }
-    if (field("bpSystolic") || field("bpDiastolic"))
+    const bpGroups = new Map<string, string[]>();
+    for (const id of ["bpSystolic", "bpDiastolic"]) {
+      if (!field(id)) continue;
+      const key = observationTiming([id]).effectiveDateTime;
+      bpGroups.set(key, [...(bpGroups.get(key) ?? []), id]);
+    }
+    for (const ids of bpGroups.values())
       add({
         resourceType: "Observation",
         status: "final",
         subject,
         encounter: context,
         performer: [actor],
-        effectiveDateTime: now,
+        ...observationTiming(ids),
         code: cc("85354-9", systems.loinc),
         category: [
           cc(
@@ -559,7 +622,7 @@ export function mapCommit(input: CommitInput): Bundle {
           ["bpSystolic", "8480-6"],
           ["bpDiastolic", "8462-4"],
         ].flatMap(([id, code]) =>
-          id && code && field(id)
+          id && code && ids.includes(id) && field(id)
             ? [
                 {
                   code: cc(code, systems.loinc),
@@ -630,7 +693,7 @@ export function mapCommit(input: CommitInput): Bundle {
         subject,
         encounter: context,
         performer: [actor],
-        effectiveDateTime: now,
+        ...observationTiming(["nursingAssessment"]),
         code: {
           ...cc(
             "nursing-assessment",
@@ -647,7 +710,7 @@ export function mapCommit(input: CommitInput): Bundle {
           subject,
           encounter: context,
           performer: [actor],
-          effectiveDateTime: now,
+          ...observationTiming(["painReassessment"]),
           code: {
             ...cc(
               "pain-reassessment",
@@ -1097,6 +1160,44 @@ export function mapCommit(input: CommitInput): Bundle {
   if (encounterChanged) update(changedEncounter);
   if (!entries.length)
     throw new Error(`No writable values for ${input.commitId}`);
+  if (times.length && input.commitId !== "markReviewed") {
+    const targets = entries.map((e) => ({
+      reference: e.fullUrl ?? e.request?.url ?? "",
+    }));
+    add({
+      resourceType: "Provenance",
+      recorded: now,
+      target: targets,
+      agent: [{ who: actor }],
+      activity: cc("entry-times", `${systems.local}/CodeSystem/activity`),
+      extension: [
+        ext(
+          "entry-times",
+          JSON.stringify(
+            times.map((t) => ({
+              ...t,
+              enteredAt: stamp(t.enteredAt),
+              observedAt: stamp(t.observedAt),
+              signedAt: stamp(t.signedAt),
+            })),
+          ),
+        ),
+        ...times
+          .filter((t) => t.lateEntry)
+          .map((t) =>
+            ext(
+              "late-entry",
+              JSON.stringify({
+                element: t.element,
+                slot: t.slot,
+                observedAt: stamp(t.observedAt),
+                signedAt: stamp(t.signedAt),
+              }),
+            ),
+          ),
+      ],
+    });
+  }
   return {
     resourceType: "Bundle",
     type: "transaction",

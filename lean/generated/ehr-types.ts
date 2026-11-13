@@ -168,6 +168,8 @@ export type Validation =
   | "udiGs1"
   | { supplyDaysCeil: { quantity: ElementId; dose: ElementId; frequency: ElementId } }
   | { doseByWeight: { weight: ElementId; factorTenths: number; capTenths: number; unit: UnitKind } }
+  /** New specification for owner review: source-entry and encounter bounds. */
+  | { observationTime: { source: ElementId } }
   | { and: { left: Validation; right: Validation } };
 
 /**
@@ -211,6 +213,14 @@ export interface ElementSpec {
   fhirTarget: string;
   validation?: Validation;
   defaultValue?: string;
+  /**
+   * New specification for owner review: this element describes a moment of care.
+   */
+  observation?: boolean;
+  /**
+   * New specification for owner review: human-entered epoch-minute companion.
+   */
+  observationOf?: ElementId;
 }
 
 /**
@@ -781,6 +791,10 @@ export interface DesignRules {
    * Allowed component kind tags.
    */
   catalog: string[];
+  /**
+   * New specification for owner review: local policy, absent means 1440 minutes.
+   */
+  lateEntryMinutes?: number;
 }
 
 /**
@@ -1151,6 +1165,10 @@ export interface Facts {
    * Absolute time; the existing receipt clock retains its original meaning.
    */
   epochMinute?: number;
+  /**
+   * New specification for owner review: selected encounter start, when known.
+   */
+  encounterStart?: number;
   artifactBindings?: ArtifactBinding[];
   eventEvidence?: EventEvidence[];
   calendars?: BusinessCalendar[];
@@ -1209,6 +1227,10 @@ export interface Captured {
    * Where a prefilled value came from, e.g. `"record:weightToday"`.
    */
   provenance?: string;
+  /**
+   * New specification for owner review: trusted entry time; absent in legacy captures.
+   */
+  enteredAt?: number;
 }
 
 /**

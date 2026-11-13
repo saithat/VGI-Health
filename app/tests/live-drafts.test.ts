@@ -21,6 +21,7 @@ const transport = vi.hoisted(() => ({
 }));
 vi.mock("../src/data/commitService", async (original) => {
   const actual = await original<typeof import("../src/data/commitService")>();
+  const { z } = await import("zod");
   async function request(path: string, body?: unknown) {
     // Test transport forwards every request to the real isolated authority.
     transport.requests.push(path);
@@ -34,6 +35,10 @@ vi.mock("../src/data/commitService", async (original) => {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
     });
     const data = await response.json();
+    if (response.status === 409) {
+      const error = z.object({ error: z.string().optional() }).parse(data);
+      throw new actual.MarConflict(error.error ?? "Conflict", error.error);
+    }
     if (!response.ok) throw new Error(JSON.stringify(data));
     return data;
   }

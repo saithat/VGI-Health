@@ -105,7 +105,7 @@ private theorem enterCore_slots (sp p f u actor s cid v slots)
     split
     · rename_i eid slot pf hk
       have store (human confirmed : Bool) (provenance : Option String) : DrugSlotsWithin slots
-          { s with captured := setCaptured s.captured { element := eid, slot := resolveSlot s slot, value := v, byHuman := human, confirmed := confirmed, provenance? := provenance } } := by
+          { s with captured := setCaptured s.captured { element := eid, slot := resolveSlot s slot, value := v, byHuman := human, confirmed := confirmed, provenance? := provenance, enteredAt? := epochNow f s } } := by
         intro x hx he
         simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hx
         rcases hx with ⟨hx, _⟩ | rfl
@@ -132,8 +132,8 @@ private theorem confirmCore_slots (sp p f u actor s cid slots) (h : DrugSlotsWit
     rw [ite_eq_right hh] at he
     exact h y hy he
 
-private theorem request_slots (sp u actor s slots) (h : DrugSlotsWithin slots s) :
-    DrugSlotsWithin slots (requestPriorAuth sp u actor s).1 := by
+private theorem request_slots (sp u actor s slots) (h : DrugSlotsWithin slots s) (time : Option Int) :
+    DrugSlotsWithin slots (requestPriorAuth sp u actor s time).1 := by
   unfold requestPriorAuth
   repeat' (first | exact h | split | dsimp only)
   all_goals
@@ -175,7 +175,7 @@ private theorem clickCore_slots (sp p f u actor s comp slots) (bound : FixedDrug
   · split
     · exact prefillScreen_slots sp p f slots bound _ h
     · exact h
-  · exact request_slots _ _ _ _ _ h
+  · exact request_slots _ _ _ _ _ h (epochNow f s)
   · exact h
   · cases actor <;> exact h
   · exact h
@@ -239,4 +239,8 @@ theorem reachable_drugSlots (ep : Episode) (slots : List Nat) (bound : FixedDrug
   | wait d _ ih => exact ih
 
 #print axioms reachable_drugSlots
+#print axioms enterCore_slots
+#print axioms request_slots
+#print axioms clickCore_slots
+
 end Ehr.Check

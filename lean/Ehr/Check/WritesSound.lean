@@ -130,8 +130,8 @@ private theorem confirmCore_writes (sp p f u actor s cid) (h : WritesState sp f 
   obtain ⟨y, hy, rfl⟩ := List.mem_map.mp hx
   split <;> exact h.1 y hy
 
-private theorem requestPriorAuth_writes (sp f u actor s) (h : WritesState sp f u s) :
-    WritesState sp f u (requestPriorAuth sp u actor s).1 := by
+private theorem requestPriorAuth_writes (sp f u actor s) (h : WritesState sp f u s) (time : Option Int) :
+    WritesState sp f u (requestPriorAuth sp u actor s time).1 := by
   unfold requestPriorAuth
   split
   · exact h
@@ -203,7 +203,7 @@ private theorem clickCore_writes (sp p f u actor s c) (h : WritesState sp f u s)
   · split
     · exact prefillScreen_writes _ _ _ _ _ h hd hu
     · exact h
-  · exact requestPriorAuth_writes _ _ _ _ _ h
+  · exact requestPriorAuth_writes _ _ _ _ _ h (epochNow f s)
   · exact h
   · cases actor <;> exact h
   · exact h
@@ -287,4 +287,7 @@ theorem accepted_writesOnly (sp prev can p) (h : check sp prev can p = .ok) :
 #print axioms step_writesState
 #print axioms writesAllowed
 #print axioms accepted_writesOnly
+#print axioms requestPriorAuth_writes
+#print axioms clickCore_writes
+
 end Ehr.Check

@@ -74,8 +74,13 @@ export function versions(bundle: Obj) {
   return vs;
 }
 
-export function currentContext(context: Obj) {
-  const now = new Date();
+/** Journal clock metadata is host-owned and is not part of Lean's Event codec. */
+function clinicalEvent(event: Obj): Obj {
+  return Object.fromEntries(Object.entries(event).filter(([key]) => key !== 'entryEpochMinute'));
+}
+
+export function currentContext(context: Obj, time = Date.now()) {
+  const now = new Date(time);
   return { ...context, today: now.toISOString().slice(0, 10), now: now.getUTCHours() * 60 + now.getUTCMinutes() };
 }
 
@@ -176,10 +181,10 @@ export class Store {
       throw new Fault(409, 'scheduled_binding_changed');
   }
   private async workflowContext(context: Obj, w: Pick<Workflow, 'shared' | 'mar'>, bundle: Obj, initial = false) {
-    if (!w.mar) return currentContext(context);
+    if (!w.mar) return currentContext(context, this.now());
     const resolved = currentContext({ ...context, encounterKind: 'inpatient', encounterId: obj(w.mar).encounter,
       record: [...z.array(z.tuple([z.string(), z.string()])).parse(context.record ?? []).filter(([k]) => !['selectedMedicationRequestId', 'selectedEncounterId'].includes(k)),
-        ['selectedMedicationRequestId', obj(w.mar).medicationRequest], ['selectedEncounterId', obj(w.mar).encounter]] });
+        ['selectedMedicationRequestId', obj(w.mar).medicationRequest], ['selectedEncounterId', obj(w.mar).encounter]] }, this.now());
     return this.lean.call(initial ? 'mar-import-context' : 'mar-context', { bundle, context: resolved, ...w.mar });
   }
   private release(name: string) {
@@ -436,12 +441,15 @@ export class Store {
     };
     await record(0, 'ready');
     for (const [index, event] of objs(s.events).entries()) {
+      // Trusted host metadata is replayed, never re-read from the wall clock.
+      if (Number.isSafeInteger(event.entryEpochMinute)) base = { ...base, facts: { ...obj(base.facts), epochMinute: event.entryEpochMinute } };
       const before = maybeObj(state.patientContext)?.patient;
-      state = obj((await this.lean.call('step', { ...base, state, event })).state);
+      state = obj((await this.lean.call('step', { ...base, state, event: clinicalEvent(event) })).state);
       if (selection && maybeObj(state.patientContext)?.patient !== before) {
         if (maybeObj(state.patientContext)?.patient && obj(state.patientContext).patient !== patient.patient) throw new Fault(422, 'session_patient_mismatch');
         if (maybeObj(state.patientContext)?.patient) await record(index + 1, 'loading');
         base = { ...base, ...(maybeObj(state.patientContext)?.patient ? projection : workspace) };
+        if (Number.isSafeInteger(event.entryEpochMinute)) base = { ...base, facts: { ...obj(base.facts), epochMinute: event.entryEpochMinute } };
         if (maybeObj(state.patientContext)?.patient) state = obj((await this.lean.call('step', { ...base, state, event: { scroll: { screen: state.screen } } })).state);
       }
       await record(index + 1, 'ready');
@@ -455,22 +463,26 @@ export class Store {
       const p = await this.stream(c, `patient:${s.patient}`, true);
       if (s.base_version !== p.version) throw new Fault(409, 'version_conflict');
       if (s.events.length >= 256) throw new Fault(422, 'session_event_limit');
-      const { base, state } = await this.reconstruct(actor, release, p.snapshot, s);
-      const next = await this.lean.call('step', { ...base, state, event: input.event });
+      const replay = await this.reconstruct(actor, release, p.snapshot, s);
+      // Discard caller metadata: the service owns every interaction timestamp.
+      const event = { ...input.event, entryEpochMinute: Math.floor(this.now() / 60000) };
+      const base = { ...replay.base, facts: { ...obj(replay.base.facts), epochMinute: event.entryEpochMinute } };
+      const state = replay.state;
+      const next = await this.lean.call('step', { ...base, state, event: clinicalEvent(event) });
       // Reject effects of the human event before chart hydration. Hydration can
       // restore this actor's already-persisted receipts from the locked chart;
       // those are not new reviews and must not prevent opening the patient.
       if (digest(obj(next.state).commits) !== digest(state.commits) || (workflow.project && digest(obj(next.state).receipts) !== digest(state.receipts))) throw new Fault(422, 'use_commit_endpoint');
-      let cacheFacts = base.facts;
+      let cacheFacts: unknown = base.facts;
       let display = base.display;
       if (workflow.project && release.program.patientSelection && maybeObj(state.patientContext)?.patient !== maybeObj(obj(next.state).patientContext)?.patient) {
-        const hydrated = await this.reconstruct(actor, release, p.snapshot, { ...s, native_state: null, events: [...s.events, input.event] });
+        const hydrated = await this.reconstruct(actor, release, p.snapshot, { ...s, native_state: null, events: [...s.events, event] });
         next.state = hydrated.state; cacheFacts = hydrated.base.facts; display = hydrated.base.display;
       }
       // Events have revision CAS; an uncertain response is recovered by opening a
       // new session and reviewing again, never by blindly replaying an event.
       await c.query('UPDATE commit_sessions SET events=$3,revision=revision+1,native_state=$4,native_facts=$5,native_version=$6,native_display=$7 WHERE tenant=$1 AND id=$2',
-        [this.config.tenant, id, JSON.stringify([...s.events, input.event]), next.state, cacheFacts, p.version, display]);
+        [this.config.tenant, id, JSON.stringify([...s.events, event]), next.state, cacheFacts, p.version, display]);
       return { revision: s.revision + 1, ...next, state: obj(next.state), projection: { facts: cacheFacts, display } };
     });
   }
@@ -541,10 +553,11 @@ export class Store {
       };
       const commit = command.commit ?? workflow.commit;
       if (commit !== workflow.commit && !workflow.commits?.includes(commit)) return finish(422, { outcome: 'rejected', reason: 'unsupported_command' });
+      const signedAt = this.now();
       const requestInput = {
         spec: release.spec, program: release.program, user: actor.user, patient: s.patient,
         state, event: command.event, commit, currentBundle: this.sourceBundle(obj(obj(p.snapshot).bundle), s.context),
-        factsVersions: versions(this.sourceBundle(obj(obj(p.snapshot).bundle), s.context)), context: currentContext(s.context),
+        factsVersions: versions(this.sourceBundle(obj(obj(p.snapshot).bundle), s.context)), context: currentContext(s.context, signedAt),
       };
       const decision = await this.lean.call(commit === 'markReviewed' && workflow.project ? 'review-check' : 'commit-check', requestInput);
       trace?.emit('native', { accept: Boolean(decision.accept), version: p.version });
@@ -577,7 +590,7 @@ export class Store {
       let projection: Obj | undefined;
       const projecting = workflow.project || workflow.mar && commit !== 'administerMed';
       if (projecting) {
-        try { projection = projectCommand(obj(obj(p).snapshot), release, s.context, actor, commit, obj(obj(decision.accept).state), transactionId, clinicalAdt ? { state: obj(clinicalAdt.state), config: this.config, bed: selectedBed } : undefined); }
+        try { projection = projectCommand(obj(obj(p).snapshot), release, s.context, actor, commit, obj(obj(decision.accept).state), transactionId, clinicalAdt ? { state: obj(clinicalAdt.state), config: this.config, bed: selectedBed } : undefined, obj(decision.accept).entryTimes); }
         catch (error) { if (error instanceof Fault) return finish(error.status, { outcome: 'rejected', reason: error.message }); throw error; }
       }
       let mar: Obj | undefined;
@@ -648,12 +661,13 @@ export class Store {
         trace?.emit('write', { key: trace.key(k), before: stream.version, after: num(stream.version) + 1, projection: digest(snapshot) });
       }
       if (projecting) await c.query('UPDATE commit_sessions SET base_version=$3,events=$4,screen_start=jsonb_array_length($4::jsonb),revision=revision+1,native_state=NULL,native_facts=NULL,native_version=NULL,native_display=NULL WHERE tenant=$1 AND id=$2',
-        [t, s.id, p.version + 1, JSON.stringify([...s.events, command.event])]);
+        [t, s.id, p.version + 1, JSON.stringify([...s.events, { ...command.event, entryEpochMinute: Math.floor(signedAt / 60000) }])]);
       const refreshed = projecting ? await this.stream(c, `patient:${s.patient}`) : undefined;
       const screenProjection = projecting ? await this.lean.call('facts', {
         bundle: this.sourceBundle(required(refreshed).snapshot.bundle, s.context), context: s.context,
         ...(workflow.project ? { worldContext: await this.directory(actor, c) } : {}),
       }) : undefined;
+      if (screenProjection) screenProjection.facts = { ...obj(screenProjection.facts), epochMinute: Math.floor(signedAt / 60000) };
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
       return finish(201, { outcome: 'persisted', transactionId, version: p.version + 1, revision: s.revision + 1,
         ...(clinicalAdt ? { board: boardKeys(this.config).map(key => ({ key, version: num(required(streams.get(key)).version) + (key === `patient:${s.patient}` || required(streams.get(key)).kind === 'bed' && digest(required(streams.get(key)).snapshot) !== digest(objs(obj(clinicalAdt.state).beds).find((b: Obj) => `bed:${b.id}` === key)) ? 1 : 0) })) } : {}),

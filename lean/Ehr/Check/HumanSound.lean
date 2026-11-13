@@ -81,7 +81,7 @@ private theorem clickCore_noHuman (sp p f u actor s c) :
   · split
     · exact prefillScreen_noHuman _ _ _ _
     · exact .refl _ _
-  · exact requestPriorAuth_no_human_capture _ _ _ _
+  · exact requestPriorAuth_no_human_capture _ _ _ _ (epochNow f s)
   · exact .refl _ _
   · cases actor <;> exact .refl _ _
   · exact .refl _ _
@@ -118,11 +118,12 @@ private theorem enterCore_human_quality (sp p f u s cid v) (hi : HumanCaptured s
     HumanCaptured sp (enterCore sp p f u .human s cid v).1 := by
   unfold enterCore
   repeat' (first | contradiction | exact hi | split | dsimp only)
-  intro x hx el hel hh
-  simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hx
-  rcases hx with ⟨hx, _⟩ | rfl
-  · exact hi x hx el hel hh
-  · exact ⟨rfl, rfl⟩
+  all_goals
+    intro x hx el hel hh
+    simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hx
+    rcases hx with ⟨hx, _⟩ | rfl
+    · exact hi x hx el hel hh
+    · exact ⟨rfl, rfl⟩
 
 private theorem confirmCore_noHuman (sp p f u actor s cid) (hi : HumanCaptured sp s) :
     NoNewHuman sp s (confirmCore sp p f u actor s cid).1 := by
@@ -243,4 +244,7 @@ theorem humanStepsByHuman (ep : Episode) : HumanStepsByHuman ep := by
 #print axioms step_humanCaptured
 #print axioms reachable_humanCaptured
 #print axioms humanStepsByHuman
+#print axioms clickCore_noHuman
+#print axioms enterCore_human_quality
+
 end Ehr.Check

@@ -323,6 +323,7 @@ export interface Observation {
   focus?: Reference[];
   encounter?: Reference;
   effectiveDateTime?: string;
+  issued?: string;
   effectivePeriod?: Period;
   performer?: Reference[];
   valueQuantity?: Quantity;

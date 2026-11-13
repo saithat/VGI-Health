@@ -13,14 +13,15 @@ export const adtBedSchema = z.object({ id: z.number().int().nonnegative(), unit:
   active: z.boolean().default(true), phase: z.enum(['ready', 'occupied', 'dirty', 'cleaning']), occupant: z.string().nullable() });
 
 export const capturedSchema = z.array(z.object({
-  element: z.string(), slot: z.number(), byHuman: z.boolean(), confirmed: z.boolean(), provenance: z.string().optional(),
+  element: z.string(), slot: z.number(), byHuman: z.boolean(), confirmed: z.boolean(), provenance: z.string().optional(), enteredAt: z.number().int().optional(),
   value: z.union([
     z.object({ qty: z.object({ tenths: z.number(), unit: z.enum(UnitKindValues) }) }),
     z.object({ code: z.object({ c: z.string() }) }), z.object({ text: z.object({ s: z.string() }) }),
     z.object({ flag: z.object({ b: z.boolean() }) }), z.object({ user: z.object({ u: z.string() }) }),
   ]),
 }));
-export const elementsSchema = z.array(z.object({ id: z.string(), label: z.string(), fhirTarget: z.string() }));
+export const elementsSchema = z.array(z.object({ id: z.string(), label: z.string(), fhirTarget: z.string(), observationOf: z.string().optional() }));
+export const entryTimesSchema = z.array(z.object({ element: z.string(), slot: z.number().int(), enteredAt: z.number().int(), observedAt: z.number().int(), signedAt: z.number().int(), lateEntry: z.boolean() }));
 export const receiptSchema = z.object({ info: z.string(), dataVersion: z.number(), time: z.number(), role: z.enum(RoleValues), user: z.string() });
 export const patientSchema = z.looseObject({ resourceType: z.literal('Patient') });
 export const practitionerSchema = z.looseObject({ resourceType: z.literal('Practitioner') });

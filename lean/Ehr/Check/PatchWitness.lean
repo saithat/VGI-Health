@@ -225,6 +225,8 @@ theorem canonical_keeps_plain_field (c : Component)
     rcases split with h | h
     · exact List.mem_append_left _ (List.mem_append_left _ h)
     · exact List.mem_append_right _ h
+  apply List.mem_flatMap.mpr
+  refine ⟨c, ?_, by simp⟩
   apply List.mem_map.mpr
   refine ⟨c, List.mem_append_left _ kept, ?_⟩
   change (match c.kind with

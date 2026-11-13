@@ -153,7 +153,13 @@ async function accessToken() {
   if (!tokens) throw new Error("Sign in again.");
   return tokens.access_token;
 }
-export class MarConflict extends Error {}
+export class MarConflict extends Error {
+  readonly code: string | undefined;
+  constructor(message: string, code?: string) {
+    super(message);
+    this.code = code;
+  }
+}
 export class MarRejected extends Error {}
 export async function marRequest(
   path: string,
@@ -179,6 +185,7 @@ export async function marRequest(
           : error.reason === "dose_already_administered"
             ? "This scheduled dose was already administered. MAR refreshed; review the recorded dose."
             : "This chart changed. Reopen it and review current data before continuing.",
+        error.error,
       );
     const message =
       error.error === "screen_fingerprint_mismatch"

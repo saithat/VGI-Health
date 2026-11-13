@@ -1,5 +1,5 @@
 import { Fault, maybeObj, maybeObjs, maybeStr, obj, objs, required, str, type Actor, type Config, type Obj } from './types.ts';
-import { reviewedSchema, capturedSchema, elementsSchema, patientSchema, encounterSchema, practitionerSchema, receiptSchema, taskSchema, medicationSchema, locationSchema } from './projection-codecs.ts';
+import { entryTimesSchema, reviewedSchema, capturedSchema, elementsSchema, patientSchema, encounterSchema, practitionerSchema, receiptSchema, taskSchema, medicationSchema, locationSchema } from './projection-codecs.ts';
 
 /** Storage projection of native-authorized actions. No browser supplies effects. */
 import { mapCommit } from '../../../app/src/data/commitMapper.ts';
@@ -22,7 +22,7 @@ export function storedReviewReceipts(bundle: Obj, actor: Actor, now: string) {
   });
 }
 
-export function projectCommand(snapshot: Obj, release: Obj, context: Obj, actor: Actor, commit: string, state: Obj, transactionId: string, adt?: { state: Obj; config: Config; bed?: number }) {
+export function projectCommand(snapshot: Obj, release: Obj, context: Obj, actor: Actor, commit: string, state: Obj, transactionId: string, adt?: { state: Obj; config: Config; bed?: number }, entryTimes?: unknown) {
   const resources = objs(obj(snapshot.bundle).entry).map((e: Obj) => obj(e.resource));
   const profile = resources.find((r: Obj) => r.resourceType === 'Practitioner' && r.id === actor.user.id) ?? {
     resourceType: 'Practitioner', id: actor.user.id, meta: { versionId: '1' }, name: [{ text: actor.name ?? actor.persona ?? actor.user.id }],
@@ -48,7 +48,7 @@ export function projectCommand(snapshot: Obj, release: Obj, context: Obj, actor:
   try {
     effects = mapCommit({ commitId: commit, captured: capturedSchema.parse(state.captured), elements: elementsSchema.parse(obj(release.spec).elements),
       patient: patientSchema.parse(patient), encounter: encounterSchema.parse(encounter), user: practitionerSchema.parse(profile),
-      now: new Date().toISOString(), transactionId, ...(bed ? { bed: { ...locationSchema.parse(bed), operationalStatus: { code: 'U' } } } : {}), ...(task ? { task: taskSchema.parse(task) } : {}), ...(renewal ? { renewal: medicationSchema.parse(renewal) } : {}),
+      now: new Date().toISOString(), transactionId, ...(entryTimes ? { entryTimes: entryTimesSchema.parse(entryTimes) } : {}), ...(bed ? { bed: { ...locationSchema.parse(bed), operationalStatus: { code: 'U' } } } : {}), ...(task ? { task: taskSchema.parse(task) } : {}), ...(renewal ? { renewal: medicationSchema.parse(renewal) } : {}),
       ...(receipt ? { receipt: receiptSchema.parse(receipt), reviewed: reviewedSchema.parse(reviewed.length ? reviewed : [patient]) } : {}) });
   } catch (error) { throw new Fault(422, 'projection_refused', String(error)); }
   const replacements = new Map(effects.entry?.filter(e => e.fullUrl).map(e => [required(e.fullUrl), `${required(e.resource).resourceType}/${required(e.fullUrl).slice(9)}`]));

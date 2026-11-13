@@ -323,6 +323,14 @@ def clinicalUsesCapture : ClinicalPredicate → Bool
   | .not p => clinicalUsesCapture p
   | _ => false
 
+/-- New specification for owner review: optional time overrides have a total
+human reset (empty text means use entry time). Required or other validated
+fields retain the conservative completion refusal. -/
+def optionalObservationTime (spec : Spec) (el : ElementSpec) : Bool :=
+  el.observationOf?.any (fun source => el.validation? == some (.observationTime source)) &&
+  el.humanOnly && el.prefill == .never && el.kind == .text &&
+  !(spec.entries.any (fun rq => rq.element == el.id))
+
 /-- Additional contracts can depend on trusted evidence that no UI event
 creates. Until a total collection/refusal-path construction is proved, the
 checker must not certify universal completion from one sample record. This
@@ -344,7 +352,7 @@ def additionalCompletionIssue (spec : Spec) (prog : Program) (c : CommitId) : Op
     else if (spec.displays?.getD []).any (fun rq => match rq.scope with
         | .commit target => target == c | .phase _ _ => true) then
       some s!"commit {c}: structured payload may be absent; universal payload collection/phase coverage is not established"
-    else if spec.elements.any (fun el => el.validation?.isSome) then
+    else if spec.elements.any (fun el => el.validation?.isSome && !optionalObservationTime spec el) then
       some s!"commit {c}: validated values and relational dependencies need a universal repair construction"
     else if !defaultsOk spec prog then
       some s!"commit {c}: required default declarations do not match the program"

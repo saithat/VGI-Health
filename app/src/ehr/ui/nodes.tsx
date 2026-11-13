@@ -424,7 +424,30 @@ export function FieldNode({
           </Badge>
         )}
       </Group>
-      {kind === "flag" ? (
+      {kind === "observation-time" ? (
+        <TextInput
+          {...common}
+          type="datetime-local"
+          value={
+            node.value && Number.isSafeInteger(Number(node.value))
+              ? new Date(
+                  Number(node.value) * 60000 -
+                    new Date(Number(node.value) * 60000).getTimezoneOffset() *
+                      60000,
+                )
+                  .toISOString()
+                  .slice(0, 16)
+              : ""
+          }
+          onChange={(e) => {
+            const value = e.currentTarget.value;
+            if (!value) send("");
+            else if (Number.isFinite(Date.parse(value)))
+              send(String(Math.floor(Date.parse(value) / 60000)));
+          }}
+          description="Time taken (local time). Must be within this encounter and no later than entry."
+        />
+      ) : kind === "flag" ? (
         <Checkbox
           {...common}
           checked={node.value === "true"}
@@ -652,6 +675,36 @@ function ReportedMedicationList({ node }: { node: NodeOf<"info"> }) {
 export function InfoNode({ node, onEvent }: Props<"info">) {
   const presentation = useContext(PresentationContext);
   const density = useDensity(node.comp);
+  if (node.infoId === "entryTimes")
+    return (
+      <section
+        role="status"
+        aria-label={node.label}
+        className="clinical-info"
+        data-info-id={node.infoId}
+      >
+        <Text fw={600}>{node.label}</Text>
+        {node.rows.map((row, index) => (
+          <div key={index}>
+            {row.map(([key, value]) => (
+              <Text key={key} size="sm">
+                {key}:{" "}
+                {key === "Observed" || key === "Signed" ? (
+                  <time
+                    dateTime={new Date(Number(value) * 60000).toISOString()}
+                    title={new Date(Number(value) * 60000).toISOString()}
+                  >
+                    {new Date(Number(value) * 60000).toLocaleString()}
+                  </time>
+                ) : (
+                  value
+                )}
+              </Text>
+            ))}
+          </div>
+        ))}
+      </section>
+    );
   if (node.display === "document") return <ClinicalDocument node={node} />;
   if (node.display === "status") {
     return (

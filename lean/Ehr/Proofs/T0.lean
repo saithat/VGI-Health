@@ -52,8 +52,8 @@ theorem markReviewed_commits (sp : Spec) (prog : Program) (facts : Facts) (user 
   unfold markReviewed
   repeat' (first | rfl | split | (dsimp only; done) | dsimp only)
 
-theorem requestPriorAuth_commits (sp : Spec) (user : User) (actor : Actor) (s : State) :
-    (requestPriorAuth sp user actor s).1.commits = s.commits := by
+theorem requestPriorAuth_commits (sp : Spec) (user : User) (actor : Actor) (s : State) (time : Option Int) :
+    (requestPriorAuth sp user actor s time).1.commits = s.commits := by
   unfold requestPriorAuth
   repeat' (first | rfl | split | (dsimp only; done) | dsimp only)
 
@@ -446,5 +446,7 @@ theorem T0_extra_contract (sp : Spec) (prog : Program) (facts : Facts) (user : U
     (T0_commit_needs_guard sp prog facts user actor s e c hnew hafter)).2.2.2.2
 
 #print axioms T0_extra_contract
+
+#print axioms requestPriorAuth_commits
 
 end Ehr.Proofs

@@ -122,7 +122,7 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
   have accepted : valueAccepted f u k v = true := by
     cases k <;> cases v <;> simp_all [valueSatisfies, valueAccepted]
   let capture (n : Nat) : Captured :=
-    { element := "assessment", slot := n, value := v, byHuman := true, confirmed := true, provenance? := none }
+    { element := "assessment", slot := n, value := v, byHuman := true, confirmed := true, provenance? := none, enteredAt? := epochNow f s₀ }
   let s₁ := { s₀ with captured := setCaptured s₀.captured (capture 0) }
   let s₂ := { s₁ with captured := setCaptured s₁.captured (capture 1) }
   have enter0 : step 𝕊 ℙ f u .human s₀ (.enter (assessmentField 0).id v) = (s₁, .ok) :=

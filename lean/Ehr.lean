@@ -37,6 +37,7 @@ import Ehr.Sim.Goals
 import Ehr.Sim.GoalsTests
 import Ehr.Sim.InformationNeedsTests
 import Ehr.Proofs.Frame
+import Ehr.Proofs.EntryTimes
 import Ehr.Proofs.T3
 import Ehr.Proofs.T0
 import Ehr.Proofs.Alerts
@@ -72,6 +73,7 @@ import Ehr.Sim.BoundedTests
 import Ehr.Sim.PolicyTests
 import Ehr.Sim.Resumption.Tests
 import Ehr.Core.Tests
+import Ehr.Core.EntryTimesTests
 import Ehr.Sim.MinClicksTests
 import Ehr.Sim.TaskMinimumTests
 import Ehr.Sim.FactsTests

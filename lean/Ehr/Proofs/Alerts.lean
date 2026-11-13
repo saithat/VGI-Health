@@ -107,8 +107,8 @@ theorem markReviewed_popup (sp : Spec) (prog : Program) (facts : Facts) (user : 
   unfold markReviewed
   repeat' (first | rfl | split | dsimp only)
 
-theorem requestPriorAuth_popup (sp : Spec) (user : User) (actor : Actor) (s : State) :
-    (requestPriorAuth sp user actor s).1.popup? = s.popup? := by
+theorem requestPriorAuth_popup (sp : Spec) (user : User) (actor : Actor) (s : State) (time : Option Int) :
+    (requestPriorAuth sp user actor s time).1.popup? = s.popup? := by
   unfold requestPriorAuth
   repeat' (first | rfl | split | dsimp only)
 
@@ -377,5 +377,7 @@ theorem tiny_passive_popup_state_rejected : ¬ PopupNotPassive spec { s0 with po
   exact hnp rfl
 
 end Examples
+
+#print axioms requestPriorAuth_popup
 
 end Ehr.Proofs

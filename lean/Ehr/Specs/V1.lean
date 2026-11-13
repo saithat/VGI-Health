@@ -1,7 +1,7 @@
 import Ehr.Specs.Profile
 import Ehr.Specs.ChartInfo
 import Ehr.Specs.ClinicalTables
-import Ehr.Core.Types
+import Ehr.Core.EntryTimes
 import Ehr.Specs.Rules.Cms
 import Ehr.Specs.Rules.Title22
 import Ehr.Specs.Rules.CaStatutes
@@ -125,6 +125,7 @@ vitals with its source shown, and a human confirms it. Pounds never count.
 
 ISMP Targeted Medication Safety Best Practices 2026–2027, BP 3 (kg only); best practice, not law (docs/regulations.md §3.1 E5). -/
 def weight : ElementSpec where
+  observation? := some true
   id := "weight"
   label := "Weight (kg)"
   kind := .quantity .kg
@@ -137,6 +138,7 @@ def weight : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Height in centimetres. -/
 def height : ElementSpec where
+  observation? := some true
   id := "height"
   label := "Height (cm)"
   kind := .quantity .none
@@ -148,6 +150,7 @@ def height : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Head circumference in centimetres (children under 3). -/
 def headCircumference : ElementSpec where
+  observation? := some true
   id := "headCircumference"
   label := "Head circumference (cm)"
   kind := .quantity .none
@@ -159,6 +162,7 @@ def headCircumference : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Systolic blood pressure (mmHg). -/
 def bpSystolic : ElementSpec where
+  observation? := some true
   id := "bpSystolic"
   label := "BP systolic (mmHg)"
   kind := .quantity .none
@@ -170,6 +174,7 @@ def bpSystolic : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Diastolic blood pressure (mmHg). -/
 def bpDiastolic : ElementSpec where
+  observation? := some true
   id := "bpDiastolic"
   label := "BP diastolic (mmHg)"
   kind := .quantity .none
@@ -181,6 +186,7 @@ def bpDiastolic : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Heart rate (beats per minute). -/
 def heartRate : ElementSpec where
+  observation? := some true
   id := "heartRate"
   label := "Heart rate (/min)"
   kind := .quantity .none
@@ -192,6 +198,7 @@ def heartRate : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Respiratory rate (breaths per minute). -/
 def respRate : ElementSpec where
+  observation? := some true
   id := "respRate"
   label := "Respiratory rate (/min)"
   kind := .quantity .none
@@ -203,6 +210,7 @@ def respRate : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Body temperature (degrees Celsius). -/
 def temperature : ElementSpec where
+  observation? := some true
   id := "temperature"
   label := "Temperature (°C)"
   kind := .quantity .none
@@ -214,6 +222,7 @@ def temperature : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Oxygen saturation (percent). -/
 def spo2 : ElementSpec where
+  observation? := some true
   id := "spo2"
   label := "SpO₂ (%)"
   kind := .quantity .none
@@ -228,6 +237,7 @@ asked each time, so it is human-only.
 
 Per-dose pain scoring is our hospital policy; 22 CCR 70215(a)(1) requires a general RN assessment per shift, not per dose (docs/regulations.md §3.1 E13). -/
 def painScore : ElementSpec where
+  observation? := some true
   id := "painScore"
   label := "Pain score (0–10)"
   kind := .coded "pain-0-10"
@@ -242,6 +252,7 @@ Pain score (0–10) taken again after a pain medication has had time to work.
 
 Hospital policy modeled on pain reassessment practice; the 2026 accreditation ID was not verified (docs/regulations.md §3.1 E13). -/
 def painReassessment : ElementSpec where
+  observation? := some true
   id := "painReassessment"
   label := "Pain reassessment (0–10)"
   kind := .coded "pain-0-10"
@@ -278,6 +289,7 @@ def tobaccoUse : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Fall-risk screening question for adults. -/
 def fallRiskScreen : ElementSpec where
+  observation? := some true
   id := "fallRiskScreen"
   label := "Fall in the past year?"
   kind := .coded "yes-no"
@@ -292,6 +304,7 @@ a care gap.
 
 Our realism choice; no legal mandate verified in docs/regulations.md §6. -/
 def depressionScreen : ElementSpec where
+  observation? := some true
   id := "depressionScreen"
   label := "Depression screen (PHQ-2 score)"
   kind := .coded "phq2-score"
@@ -407,6 +420,7 @@ def ros : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Physical exam. -/
 def exam : ElementSpec where
+  observation? := some true
   id := "exam"
   label := "Physical exam"
   kind := .text
@@ -418,6 +432,7 @@ def exam : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Assessment and plan. -/
 def assessmentPlan : ElementSpec where
+  observation? := some true
   id := "assessmentPlan"
   label := "Assessment and plan"
   kind := .text
@@ -893,6 +908,7 @@ def dispositionChoice : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 The patient's condition at disposition (stable, guarded, critical). -/
 def dispositionCondition : ElementSpec where
+  observation? := some true
   id := "dispositionCondition"
   label := "Condition at disposition"
   kind := .coded "condition-at-disposition"
@@ -964,6 +980,7 @@ def adminSite : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 The nurse's shift assessment (systems review). -/
 def nursingAssessment : ElementSpec where
+  observation? := some true
   id := "nursingAssessment"
   label := "Nursing assessment"
   kind := .text
@@ -997,6 +1014,7 @@ def handoffBackground : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Handoff: the assessment (SBAR "A"). -/
 def handoffAssessment : ElementSpec where
+  observation? := some true
   id := "handoffAssessment"
   label := "Assessment"
   kind := .text
@@ -1192,6 +1210,7 @@ def opAnesthesia : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Operative note: findings. -/
 def opFindings : ElementSpec where
+  observation? := some true
   id := "opFindings"
   label := "Findings"
   kind := .text
@@ -1203,6 +1222,7 @@ def opFindings : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Operative note: estimated blood loss, in mL. -/
 def opEbl : ElementSpec where
+  observation? := some true
   id := "opEbl"
   label := "Estimated blood loss (mL)"
   kind := .quantity .mL
@@ -1258,6 +1278,7 @@ def opComplications : ElementSpec where
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 Operative note: the patient's condition leaving the OR. -/
 def opCondition : ElementSpec where
+  observation? := some true
   id := "opCondition"
   label := "Condition"
   kind := .coded "condition-at-disposition"
@@ -2207,9 +2228,9 @@ def coreCatalogCommits : List CommitId := ["denyRefill"]
 /-- Hand-written rules and workflow exceptions, plus the full catalog on request. -/
 def specForProfile (profile : RuleProfile) : Spec where
   version := "v1"
-  elements := if profile == .full then
+  elements := EntryTimes.withCompanions (if profile == .full then
     (elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements ++ Rules.Features.elements).map Rules.Features.strengthenElement
-    else elements
+    else elements)
   infos := ((if profile == .full then
     infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos ++ Rules.Features.infos
     else infos) ++ ClinicalTables.infos).map ClinicalTables.withSchema

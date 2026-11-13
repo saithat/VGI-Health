@@ -1,3 +1,4 @@
+import Ehr.Core.EntryTimes
 import Ehr.Core.Navigation
 import Ehr.Render.DateIndex
 import Ehr.Core.Workspace
@@ -324,7 +325,8 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
   let (_, _, baseUnit) := fieldKind kind
   let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
-  let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
+  let inputKind := if (cx.sp.element? e).any (·.observationOf?.isSome) then "observation-time"
+    else if e == "doseUnit" && kind == .coded "dose-unit" then
     "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
     else if kind == .text && (it.comp.tag.endsWith ".narrative" || it.comp.tag.endsWith ".multiline" || uiNarrativeElement e) then "textarea"
 
@@ -335,6 +337,12 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let value := if (kind == .medicationDose || metricWeight) &&
     it.value?.any (fun v => match v with | .qty _ u => u != want | _ => true)
     then none else it.value?.map valueText
+  let value := if (cx.sp.element? e).any (·.observationOf?.isSome) then
+    (value.filter (· != "")).orElse fun _ => do
+      let source ← (cx.sp.element? e).bind (·.observationOf?)
+      let captured ← capturedAt? cx.s source it.slot
+      toString <$> captured.enteredAt?
+    else value
   .field it.comp.id (uiTitledLabel cx it (uiMedicationFieldLabel cx it e) ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
     (if unit == .none then none else some (unitName unit))
     it.provenance? it.pendingConfirm it.humanOnly
@@ -656,8 +664,20 @@ def uiFooterNode (cx : Ctx) (node : UiNode) : Bool :=
 def uiPlaceFooter (cx : Ctx) (nodes : List UiNode) : List UiNode :=
   nodes.filter (fun node => !uiFooterNode cx node) ++ nodes.filter (uiFooterNode cx)
 
+/-- New specification for owner review: informational label on signing screens. -/
+def uiLateEntries (cx : Ctx) : List UiNode :=
+  if cx.v.items.any (fun it => it.shown && match it.comp.kind with
+      | .button (.commit _) => true | _ => false) then
+    ((EntryTimes.records cx.sp cx.facts cx.s).filter (·.lateEntry)).map fun t =>
+      .info "" "Late entry" "entryTimes" "status"
+        [[("Entry", ((cx.sp.element? t.element).map (·.label)).getD t.element),
+          ("Observed", toString t.observedAt),
+          ("Signed", toString t.signedAt),
+          ("Local policy (minutes)", toString cx.sp.design.lateEntryMinutes)]]
+  else []
+
 def uiWorkspace (cx : Ctx) : List UiNode :=
-  uiProgress cx ++ uiPlaceFooter cx (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
+  uiProgress cx ++ uiLateEntries cx ++ uiPlaceFooter cx (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
 
 /-- Public source descriptions are separate from exact machine provenance. -/
 def uiProvenanceSourceLabel (source : String) : String :=

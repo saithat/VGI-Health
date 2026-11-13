@@ -71,7 +71,7 @@ def dispatch (request : Json) : Except String Json := do
         next.1.receipts.length == i.state.receipts.length + 1 then
       Json.mkObj [("accept", Json.mkObj [("state", toJson next.1)])]
     else Json.mkObj [("reject", Json.mkObj [("reason", .str "review event must add exactly one native receipt")])]
-  | "commit-check" => applyJson Commit.Request Commit.Decision Commit.check input
+  | "commit-check" => applyJson Commit.Request Json Cli.Commit.output input
   | "init" => applyJson InitInput State runInit input
   | "view" => applyJson ViewInput ScreenView runView input
   | "render-ui" => applyJson Render.RenderInput Render.UiScreen Render.runRenderUi input

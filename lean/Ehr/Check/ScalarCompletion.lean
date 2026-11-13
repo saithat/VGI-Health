@@ -86,7 +86,7 @@ theorem completable (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) 
   change valueSatisfies f u k v = true at valid
   have accepted : valueAccepted f u k v = true := by
     cases k <;> cases v <;> simp_all [valueSatisfies, valueAccepted]
-  let x : Captured := { element := "assessment", slot := 0, value := v, byHuman := true, confirmed := true, provenance? := none }
+  let x : Captured := { element := "assessment", slot := 0, value := v, byHuman := true, confirmed := true, provenance? := none, enteredAt? := epochNow f s₀ }
   let s₁ := { s₀ with captured := setCaptured s₀.captured x }
   have entered : step (spec k r m a t) (program r) f u .human s₀ (.enter field.id v) = (s₁, .ok) :=
     human_enter _ _ _ _ _ field "assessment" (.fixed 0) .none (element k r) v modal

@@ -15,16 +15,16 @@ run.
 ```mermaid
 flowchart TB
   subgraph guar_g["Guarantees"]
-    proofs["Clinical guarantees<br/>553 theorems, 219 headline"]:::guar
+    proofs["Clinical guarantees<br/>555 theorems, 219 headline"]:::guar
     check["Program checker<br/>379 theorems, 72 headline"]:::guar
-    render["Screen renderer<br/>190 theorems, 12 headline"]:::guar
+    render["Screen renderer<br/>192 theorems, 12 headline"]:::guar
     layout["UI library &amp; geometry<br/>189 theorems, 36 headline"]:::guar
-    commit["Commit reducers<br/>22 theorems, 8 headline"]:::guar
+    commit["Commit reducers<br/>23 theorems, 8 headline"]:::guar
     protocol["Commit service protocol<br/>53 theorems, 30 headline"]:::guar
     multi["Multi-actor models<br/>26 theorems, 0 headline"]:::guar
   end
   subgraph spec_g["Specification"]
-    core["Rulebook &amp; interpreter<br/>1 theorems, 0 headline"]:::spec
+    core["Rulebook &amp; interpreter<br/>11 theorems, 0 headline"]:::spec
     props["Safety properties<br/>23 theorems, 0 headline"]:::spec
     specs["Hospital rules &amp; formulary<br/>5 theorems, 0 headline"]:::spec
   end

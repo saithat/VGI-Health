@@ -1437,11 +1437,17 @@
       "tier": null,
       "windowMin": null
     },
-    "existingInSpec": false,
-    "needsCoreFeature": "Entry provenance with immutable date",
+    "existingInSpec": true,
+    "needsCoreFeature": null,
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1."
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1.",
+    "encodedIn": [
+      "Captured.enteredAt?",
+      "EntryTimes.records",
+      "Commit.accepted_observed_le_signed"
+    ],
+    "implementationScope": "Trusted UTC epoch-minute entry stamps in interpreter captures and persisted command/FHIR provenance. Historical clockless captures remain unstamped; SQL/FHIR refinement is tested, not proved. See docs/design/chart-timing.md."
   },
   {
     "id": "cms-482.24-c1-timed",
@@ -1481,11 +1487,17 @@
       "tier": null,
       "windowMin": null
     },
-    "existingInSpec": false,
-    "needsCoreFeature": "Entry provenance with immutable time",
+    "existingInSpec": true,
+    "needsCoreFeature": null,
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1."
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Applies to hospital patient records, including hospital outpatient departments, not automatically independent physician-office records. A sign button alone does not establish all provenance properties. Earlier research E2/H1.",
+    "encodedIn": [
+      "Captured.enteredAt?",
+      "EntryTimes.records",
+      "Commit.accepted_observed_le_signed"
+    ],
+    "implementationScope": "Trusted UTC epoch-minute entry stamps in interpreter captures and persisted command/FHIR provenance. Historical clockless captures remain unstamped; SQL/FHIR refinement is tested, not proved. See docs/design/chart-timing.md."
   },
   {
     "id": "cms-482.24-c1-responsible-authentication",

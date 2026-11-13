@@ -24,8 +24,8 @@ private theorem setCaptured_keeps_confirmed (s : State) (new : Captured)
 
 /-- Request clicks preserve every previously confirmed capture exactly. -/
 theorem requestPriorAuth_preserves_confirmed (sp : Spec) (u : User) (actor : Actor) (s : State)
-    (x : Captured) (hx : x ∈ s.captured) (hc : x.confirmed = true) :
-    x ∈ (requestPriorAuth sp u actor s).1.captured := by
+    (x : Captured) (hx : x ∈ s.captured) (hc : x.confirmed = true) (time : Option Int := none) :
+    x ∈ (requestPriorAuth sp u actor s time).1.captured := by
   unfold requestPriorAuth
   repeat' (first | exact hx | split | dsimp only)
   all_goals
@@ -33,8 +33,8 @@ theorem requestPriorAuth_preserves_confirmed (sp : Spec) (u : User) (actor : Act
 
 /-- A request convenience action cannot introduce a never-policy or
 human-only value; such captures must use ordinary human field entry. -/
-theorem requestPriorAuth_no_human_capture (sp : Spec) (u : User) (actor : Actor) (s : State) :
-    ∀ x ∈ (requestPriorAuth sp u actor s).1.captured, ∀ el,
+theorem requestPriorAuth_no_human_capture (sp : Spec) (u : User) (actor : Actor) (s : State) (time : Option Int := none) :
+    ∀ x ∈ (requestPriorAuth sp u actor s time).1.captured, ∀ el,
       sp.element? x.element = some el → HumanMustEnter el → x ∈ s.captured := by
   unfold requestPriorAuth
   repeat' (first | exact fun _ hx _ _ _ => hx | split | dsimp only)

@@ -210,7 +210,11 @@ test('real Postgres: HTTP, durable outcomes, atomic failure, notifications and s
           const base = { spec: e.guard.input.spec, program: e.guard.input.program, user: e.guard.input.user, facts: projected.facts };
           let reconstructed = await b.lean.call('init', base);
           assert.equal(e.session.revision, e.session.events.length);
-          for (const event of e.session.events) reconstructed = obj((await b.lean.call('step', { ...base, state: reconstructed, event })).state);
+          for (const stored of e.session.events) {
+            const { entryEpochMinute, ...event } = stored;
+            const facts = Number.isSafeInteger(entryEpochMinute) ? { ...obj(base.facts), epochMinute: entryEpochMinute } : base.facts;
+            reconstructed = obj((await b.lean.call('step', { ...base, facts, state: reconstructed, event })).state);
+          }
           assert.deepEqual(reconstructed, e.guard.input.state);
           assert.deepEqual(await b.lean.call('commit-check', e.guard.input), e.guard.decision);
           assert.ok(e.guard.decision.accept);

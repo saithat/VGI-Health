@@ -213,7 +213,7 @@ theorem inboxTrap_step (sp : Spec) (f : Facts) (u : User)
               · exact ⟨hscr, hunit, hdrug, hprov⟩
               · have hlf : el.linkedFrom? = none := by rw [hel] at hact; exact Option.some.inj hact
                 exact ⟨hscr, setCaptured_preserves_trap hunit hdrug hprov
-                  (by dsimp only; decide) (by dsimp only; decide) (by simp [hlf])⟩
+                  (by dsimp only; decide) (by dsimp only; decide) (by simp only [show ".observedAt".toList.isSuffixOf "resultAction".toList = false from by decide]; simp [hlf])⟩
         · simp only [hk]; split
           · exact ⟨hscr, hunit, hdrug, hprov⟩
           · rename_i el hel; split
@@ -222,7 +222,7 @@ theorem inboxTrap_step (sp : Spec) (f : Facts) (u : User)
               · exact ⟨hscr, hunit, hdrug, hprov⟩
               · have hlf : el.linkedFrom? = none := by rw [hel] at hmsg; exact Option.some.inj hmsg
                 exact ⟨hscr, setCaptured_preserves_trap hunit hdrug hprov
-                  (by dsimp only; decide) (by dsimp only; decide) (by simp [hlf])⟩
+                  (by dsimp only; decide) (by dsimp only; decide) (by simp only [show ".observedAt".toList.isSuffixOf "patientMessage".toList = false from by decide]; simp [hlf])⟩
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
     | confirm cid =>
       simp only [stepEvent, confirmCore]; split

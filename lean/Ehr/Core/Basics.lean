@@ -122,7 +122,7 @@ def State.tabOf (s : State) (c : CompId) : Nat :=
 `identity`, `scan`, or `cosign`. Such elements are never prefilled and never
 entered by a macro. -/
 def needsHuman (el : ElementSpec) : Bool :=
-  el.humanOnly ||
+  el.humanOnly || el.observationOf?.isSome ||
     match el.kind with
     | .identity | .scan _ | .cosign => true
     | _ => false
@@ -473,6 +473,21 @@ def validationCapture (s : State) (slot : Nat) (e : ElementId) : Option Value :=
   | [x] => if x.confirmed then some x.value else none
   | _ => none
 
+/-- New specification for owner review: a time override requires a confirmed
+source capture and cannot precede encounter start or follow its entry time. -/
+def observationTimeValid (facts : Facts) (s : State) (el : ElementSpec) (slot : Nat) (v : Value) : Bool :=
+  match el.observationOf? with
+  | none => true
+  | some source =>
+    if v == .text "" then true else
+    match v, s.captured.filter (fun c => c.element == source && c.slot == slot) with
+    | .text raw, [c] =>
+      match raw.toInt?, c.enteredAt? with
+      | some observed, some entered => c.confirmed && observed ≤ entered &&
+          facts.encounterStart?.all (· ≤ observed)
+      | _, _ => false
+    | _, _ => false
+
 /-- Validation also re-runs at commit, so changed dependencies invalidate outputs. -/
 def validationHolds (facts : Facts) (s : State) (slot : Nat) (v : Value) : Validation → Bool
   | .nonempty => (lexicalValue v).any (fun t => !t.trimAscii.toString.isEmpty)
@@ -513,6 +528,9 @@ def validationHolds (facts : Facts) (s : State) (slot : Nat) (v : Value) : Valid
     | some (.qty w .kg), .qty dose u =>
       u == unit && 0 < w && 0 < factor && 0 < cap && dose == min cap (w * factor / 10)
     | _, _ => false
+  | .observationTime source => observationTimeValid facts s {
+      id := "", label := "", kind := .text, enteredBy := [], prefill := .never,
+      friction := .compliance, fhirTarget := "", observationOf? := some source } slot v
   | .and l r => validationHolds facts s slot v l && validationHolds facts s slot v r
 
 /-- The drug on this slot, including an unconfirmed preset awaiting review. -/

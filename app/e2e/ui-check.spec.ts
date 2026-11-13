@@ -474,8 +474,23 @@ for (const file of fixtures)
     for (const [index, info] of infos.entries()) {
       expect(panels[index], `Missing rendered info ${index}`).toBeDefined();
       for (const row of info.rows)
-        for (const [, value] of row)
-          if (value) expect(panels[index]).toContain(normalize(value));
+        for (const [key, value] of row) {
+          if (!value) continue;
+          if (
+            info.infoId === "entryTimes" &&
+            ["Observed", "Signed"].includes(key)
+          ) {
+            // UTC epoch minutes and the machine-readable time element must name
+            // exactly the same instant; visible text uses the viewer's timezone.
+            const iso = new Date(Number(value) * 60000).toISOString();
+            await expect(
+              page
+                .locator("[data-info-id]")
+                .nth(index)
+                .locator(`time[datetime="${iso}"]`),
+            ).toHaveCount(1);
+          } else expect(panels[index]).toContain(normalize(value));
+        }
       const visible = visiblePanels[index] ?? "";
       for (const group of vitalGroups(
         displayRows(info.rows, true, info.display === "list"),
@@ -509,7 +524,13 @@ for (const file of fixtures)
                         )?.[1] ?? "",
                         value,
                       )
-                    : formatDisplayValue(value);
+                    : info.infoId === "entryTimes" &&
+                        ["Observed", "Signed"].includes(key)
+                      ? await page.evaluate(
+                          (minute) => new Date(minute * 60000).toLocaleString(),
+                          Number(value),
+                        )
+                      : formatDisplayValue(value);
             expect(
               visible.includes(normalize(expected)) ||
                 (/^(Arrival|Time|Start)$/i.test(key) &&

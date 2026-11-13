@@ -13,7 +13,7 @@ theorem core_denial_task_commits (ch : TaskChoices) (deny : ch.refill? = some "d
 #guard taskCommits specV1 .W7 { refill? := some "deny" } == ["denyRefill"]
 #guard ((specForProfile .core).entries.filter (·.commit == "denyRefill")) ==
   [Specs.Rules.Federal.entrie121, Specs.Rules.Federal.entrie122]
-#guard (specForProfile .core).elements == elements
+#guard (specForProfile .core).elements == EntryTimes.withCompanions elements
 #guard (specForProfile .core).commits.drop commits.length == [Specs.Rules.Federal.denyRefill]
 
 #print axioms core_denial_task_commits

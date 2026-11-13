@@ -427,18 +427,116 @@ it.each([
   ["insulin lispro", 4, "units", "[iU]"],
   ["albuterol", 180, "mcg", "ug"],
   ["albuterol", 2.5, "mg", "mg"],
-] as const)("writes %s dose %s %s without unit conversion", (drug, dose, unit, code) => {
-  const medication = resources({ captured: order.map(c =>
-    c.element === "drug" ? captured("drug", drug) :
-    c.element === "dose" ? captured("dose", { qty: { tenths: dose * 10, unit } }) :
-    c.element === "doseUnit" ? captured("doseUnit", unit) : c),
-  }).find(r => r.resourceType === "MedicationRequest");
-  expect(medication).toMatchObject({ dosageInstruction: [{ doseAndRate: [{
-    doseQuantity: { value: dose, unit, code, system: "http://unitsofmeasure.org" },
-  }] }] });
-});
+] as const)(
+  "writes %s dose %s %s without unit conversion",
+  (drug, dose, unit, code) => {
+    const medication = resources({
+      captured: order.map((c) =>
+        c.element === "drug"
+          ? captured("drug", drug)
+          : c.element === "dose"
+            ? captured("dose", { qty: { tenths: dose * 10, unit } })
+            : c.element === "doseUnit"
+              ? captured("doseUnit", unit)
+              : c,
+      ),
+    }).find((r) => r.resourceType === "MedicationRequest");
+    expect(medication).toMatchObject({
+      dosageInstruction: [
+        {
+          doseAndRate: [
+            {
+              doseQuantity: {
+                value: dose,
+                unit,
+                code,
+                system: "http://unitsofmeasure.org",
+              },
+            },
+          ],
+        },
+      ],
+    });
+  },
+);
 it("refuses a dose whose separate selector disagrees", () => {
-  expect(() => resources({ captured: order.map(c =>
-    c.element === "doseUnit" ? captured("doseUnit", "units") : c),
-  })).toThrow("must agree");
+  expect(() =>
+    resources({
+      captured: order.map((c) =>
+        c.element === "doseUnit" ? captured("doseUnit", "units") : c,
+      ),
+    }),
+  ).toThrow("must agree");
+});
+
+describe("native entry timing projection", () => {
+  const time = (element: string, observedAt = 0, lateEntry = true) => ({
+    element,
+    slot: 0,
+    enteredAt: 100,
+    observedAt,
+    signedAt: 1500,
+    lateEntry,
+  });
+  it("keeps effective, issued and entry provenance separate and persists the late marker", () => {
+    const bundle = mapCommit({
+      ...base,
+      commitId: "signNote",
+      captured: [captured("hpi", "Clinical note"), captured("weight", 70)],
+      entryTimes: [time("weight")],
+    });
+    const resources = (bundle.entry ?? []).flatMap((e) =>
+      e.resource ? [e.resource] : [],
+    );
+    const observation = resources.find((r) => r.resourceType === "Observation");
+    expect(observation?.resourceType).toBe("Observation");
+    if (!observation || observation.resourceType !== "Observation")
+      throw new Error("Observation expected");
+    expect(observation.effectiveDateTime).toBe("1970-01-01T00:00:00.000Z");
+    expect(observation.issued).toBe("1970-01-02T01:00:00.000Z");
+    expect(
+      observation.extension?.some((e) => e.url.endsWith("/late-entry")),
+    ).toBe(true);
+    const provenance = resources.find((r) => r.resourceType === "Provenance");
+    expect(JSON.stringify(provenance)).toContain("1970-01-01T01:40:00.000Z");
+  });
+  it("splits blood pressure components taken at different times", () => {
+    const bundle = mapCommit({
+      ...base,
+      commitId: "signNote",
+      captured: [
+        captured("hpi", "Clinical note"),
+        captured("bpSystolic", 120),
+        captured("bpDiastolic", 80),
+      ],
+      entryTimes: [time("bpSystolic", 50), time("bpDiastolic", 60)],
+    });
+    expect(
+      (bundle.entry ?? []).filter(
+        (e) => e.resource?.resourceType === "Observation",
+      ),
+    ).toHaveLength(2);
+  });
+  it("rejects future observation and entry times", () => {
+    expect(() =>
+      mapCommit({
+        ...base,
+        commitId: "signNote",
+        captured: [captured("hpi", "Clinical note"), captured("weight", 70)],
+        entryTimes: [time("weight", 1501)],
+      }),
+    ).toThrow("trusted bounds");
+  });
+  it("does not invent timing metadata for historical captures", () => {
+    const bundle = mapCommit({
+      ...base,
+      commitId: "signNote",
+      captured: [captured("hpi", "Clinical note"), captured("weight", 70)],
+    });
+    expect(
+      (bundle.entry ?? []).some(
+        (e) => e.resource?.resourceType === "Provenance",
+      ),
+    ).toBe(false);
+  });
 });
