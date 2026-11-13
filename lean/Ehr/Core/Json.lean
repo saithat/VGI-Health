@@ -20,7 +20,8 @@ deriving instance Lean.ToJson, Lean.FromJson for
   InteractionSeverity, InteractionEvidence,
   OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, EncounterRoleRule, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec
 
-/-- Preserve the legacy spec JSON when `unsignedDraftMinutes` uses the default 1440-minute local policy.
+/-- Preserve legacy spec JSON with default policies; retain both explicitly configured
+late-entry and unsigned-draft policies.
 New specification for owner review. -/
 instance : Lean.ToJson DesignRules where
   toJson d := Lean.Json.mkObj <| [
@@ -29,22 +30,27 @@ instance : Lean.ToJson DesignRules where
     ("stabilityBudget", Lean.toJson d.stabilityBudget),
     ("landmarks", Lean.toJson d.landmarks),
     ("catalog", Lean.toJson d.catalog)] ++
+    (match d.lateEntryMinutes? with | none => [] | some n => [("lateEntryMinutes", Lean.toJson n)]) ++
     (if d.unsignedDraftMinutes == 1440 then [] else [("unsignedDraftMinutes", Lean.toJson d.unsignedDraftMinutes)])
 
-/-- Default `unsignedDraftMinutes` to 1440 (24 hours, local policy) when omitted in existing spec JSON.
+/-- Decode both policies independently. Omitted late-entry and unsigned-draft
+policies retain their 1440-minute local defaults; malformed supplied values fail.
 New specification for owner review. -/
 instance : Lean.FromJson DesignRules where
   fromJson? j := do
     let unsignedDraftMinutes ← match j.getObjVal? "unsignedDraftMinutes" with
       | .error _ => pure 1440
       | .ok v => Lean.fromJson? v
+    let lateEntryMinutes ← match j.getObjVal? "lateEntryMinutes" with
+      | .error _ => pure none
+      | .ok v => some <$> Lean.fromJson? v
     return {
       maxDepth := ← j.getObjValAs? Nat "maxDepth"
       minTextSize := ← j.getObjValAs? Nat "minTextSize"
       stabilityBudget := ← j.getObjValAs? Nat "stabilityBudget"
       landmarks := ← j.getObjValAs? (List InfoId) "landmarks"
       catalog := ← j.getObjValAs? (List String) "catalog"
-      unsignedDraftMinutes := unsignedDraftMinutes }
+      unsignedDraftMinutes := unsignedDraftMinutes, lateEntryMinutes? := lateEntryMinutes }
 
 deriving instance Lean.ToJson, Lean.FromJson for Spec
 

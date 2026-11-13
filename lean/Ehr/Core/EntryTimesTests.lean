@@ -30,4 +30,13 @@ def observed := step timedSpec timedProgram timedFacts user .human entered (.ent
 #guard ((Lean.toJson ({ element := "x", slot := 0, value := .text "x", byHuman := true, confirmed := true } : Captured)).getObjVal? "enteredAt").toOption == none
 #guard (Lean.fromJson? (Lean.Json.mkObj [("element", .str "x"), ("slot", Lean.toJson (0 : Nat)),
   ("value", Lean.toJson (Value.text "x")), ("byHuman", .bool true), ("confirmed", .bool true)]) : Except String Captured).toOption.bind (·.enteredAt?) == none
+-- New specification for owner review: both independently configured local
+-- policies survive the shared JSON boundary, including a combined configuration.
+def configuredDesign : DesignRules := { timedSpec.design with lateEntryMinutes? := some 2, unsignedDraftMinutes := 17 }
+#guard roundTrips configuredDesign
+#guard ((Lean.fromJson? (Lean.toJson configuredDesign) : Except String DesignRules).toOption.map (·.lateEntryMinutes)) == some 2
+#guard ((Lean.fromJson? (Lean.toJson configuredDesign) : Except String DesignRules).toOption.map (·.unsignedDraftMinutes)) == some 17
+#guard ((Lean.toJson timedSpec.design).getObjVal? "lateEntryMinutes").isOk == false
+#guard (Lean.fromJson? ((Lean.toJson configuredDesign).setObjVal! "lateEntryMinutes" (.str "invalid")) : Except String DesignRules).isOk == false
+#guard (Lean.fromJson? ((Lean.toJson configuredDesign).setObjVal! "unsignedDraftMinutes" (.str "invalid")) : Except String DesignRules).isOk == false
 end Ehr.EntryTimes.Tests

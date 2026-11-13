@@ -87,6 +87,8 @@ dosing copies retain entry timing without a separate observation override.
 
 `DesignRules.lateEntryMinutes` reads the optional wire field `lateEntryMinutes`,
 with a default of 1440. This is **local policy**, not a regulatory interval.
+The shared `DesignRules` JSON codec independently retains nondefault late-entry
+and unsigned-draft settings; absent settings preserve the legacy release JSON.
 The same native `EntryTimes.records` drives the signing preview and accepted
 command's `entryTimes`; a timestamp after signing refuses the commit, while a
 late label alone never does. The app formats the informational observed/signed
