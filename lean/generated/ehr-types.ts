@@ -795,6 +795,11 @@ export interface DesignRules {
    * New specification for owner review: local policy, absent means 1440 minutes.
    */
   lateEntryMinutes?: number;
+  /**
+   * New specification for owner review: local policy deadline in minutes (default 1440, 24 hours)
+   * for saved unsigned drafts whose commit has no temporal deadline.
+   */
+  unsignedDraftMinutes?: number;
 }
 
 /**
@@ -2830,6 +2835,17 @@ export interface SurgicalCaseRow {
 }
 
 /**
+ * New specification for owner review: source point before binding to its
+ * current chart snapshot. An administrative source actor identifies the record,
+ * not a human admission/discharge performer.
+ */
+export interface Point {
+  event: EventId;
+  actor: string;
+  time: number;
+}
+
+/**
  * Input of `facts`: a FHIR bundle and the context.
  */
 export interface FactsInput {
@@ -2841,5 +2857,10 @@ export interface FactsInput {
   worldContext?: unknown;
   directoryOnly?: boolean;
   extraPatients?: PatientChoice[];
+  /**
+   * Server-computed activities added after the dated lists, such as the
+   * signed-in clinician's deficiency list. They carry rows, never captures.
+   */
+  extraActivities?: PatientActivity[];
 }
 

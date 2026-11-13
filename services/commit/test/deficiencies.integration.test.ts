@@ -142,3 +142,53 @@ test('deficiency list, transfer reconciliation and discharge provenance through 
     await a.close();
   }
 });
+
+/** New specification for owner review: actual FHIR periods drive live temporal
+ * deficiencies without a draft, typed attestation or UI interaction. */
+test('live temporal deficiencies use trusted discharge evidence and the service clock', { skip: !url }, async () => {
+  if (!url) throw new Error('DATABASE_URL required');
+  const f = ordersFixture(`temporal-deficiencies-${randomUUID()}`);
+  const temporal = { id: 'record-completion-deadline',
+    subject: { event: 'record.completed', artifactKey: 'completeMedicalRecord' },
+    anchor: { event: 'discharge', artifactKey: 'completeMedicalRecord' },
+    minOffset: 0, maxOffset: 1440, deadline: 1440, metric: 'minutes' };
+  const release = required(f.config.releases.P1);
+  release.spec = { ...obj(release.spec), entries: [], commits: [{ id: 'completeMedicalRecord', label: 'Complete record',
+    roles: ['physician'], temporal: [temporal] }] };
+  let clock = Date.parse('2026-11-02T10:00:00Z');
+  const a = await host(url, f.config, 0, () => clock);
+  try {
+    await migrate(a.db);
+    const imported = required(f.patients[0]);
+    const encounter = required(imported.bundle.entry[1]).resource;
+    Object.assign(encounter, { status: 'finished', period: { start: '2026-11-01T08:00:00Z', end: '2026-11-02T09:00:00Z' } });
+    await a.store.importPatient(imported);
+    const completed = required(f.patients[1]);
+    Object.assign(required(completed.bundle.entry[1]).resource, { status: 'finished',
+      period: { start: '2026-11-01T08:00:00Z', end: '2026-11-02T09:00:00Z' } });
+    const certificate = { resourceType: 'Composition', id: 'record-completion', meta: { versionId: '1' }, status: 'final',
+      subject: { reference: `Patient/${completed.patient}` }, encounter: { reference: `Encounter/enc-${completed.patient}` },
+      type: { coding: [{ system: 'urn:vgi:document-type', code: 'medical-record-completion' }] },
+      attester: [{ mode: ['legal'], time: '2026-11-02T11:00:00Z', party: { reference: 'Practitioner/doctor' } }] };
+    obj(completed.bundle).entry = [...completed.bundle.entry, { resource: certificate }];
+    await a.store.importPatient(completed);
+    let list = await api(a.base, f.actor, '/deficiencies');
+    assert.equal(list.status, 200, JSON.stringify(list));
+    let rows = objs(list.body.deficiencies);
+    assert.equal(rows.length, 2, JSON.stringify(list.body));
+    assert.ok(rows.every(row => row.status === 'pending'), 'a future actual signature supplies no evidence');
+    assert.equal(required(rows[0]).deadline, Date.parse('2026-11-03T09:00:00Z') / 60_000);
+    clock += 1440 * 60_000;
+    list = await api(a.base, f.actor, '/deficiencies');
+    rows = objs(list.body.deficiencies);
+    assert.equal(rows.length, 1, 'the signed, current-version completion certificate satisfies the second chart');
+    assert.equal(required(rows[0]).patient, imported.patient);
+    assert.equal(required(rows[0]).status, 'delinquent');
+    // An unsigned or generic note does not complete the entire record.
+    assert.equal(required(rows[0]).commit, 'completeMedicalRecord');
+  } finally {
+    for (const table of ['commit_deficiency_lists', 'commit_discarded_drafts', 'commit_draft_checkpoints', 'commit_requests', 'commit_sessions', 'commit_events', 'commit_streams'])
+      await a.db.query(`DELETE FROM ${table} WHERE tenant=$1`, [f.config.tenant]);
+    await a.close();
+  }
+});

@@ -416,7 +416,7 @@ export class Store {
       const row = (await this.db.query('SELECT snapshot FROM commit_streams WHERE tenant=$1 AND key=$2', [t, key])).rows[0];
       if (!row) continue;
       const snapshot = obj(row.snapshot);
-      const projected = await this.lean.call('facts', { bundle: snapshot.bundle, context: currentContext(obj(snapshot.context ?? {})) });
+      const projected = await this.lean.call('facts', { bundle: snapshot.bundle, context: currentContext(obj(snapshot.context ?? {}), this.now()) });
       const facts = obj(projected.facts);
       // The service clock is the trusted time source for live charts.
       if (typeof facts.epochMinute !== 'number') facts.epochMinute = epochMinute;
@@ -433,7 +433,7 @@ export class Store {
         discards: discards.filter(d => d.patient === patient).map(d => ({ checkpoint: str(d.checkpoint_id), encounter: str(d.encounter_id), captured: d.captured })) });
     }
     const names = obj(obj(obj(await this.lean.call('facts', { bundle: await this.directory(actor), directoryOnly: true,
-      context: currentContext({ receipts: [], record: [] }) })).facts).patientDirectory).patients;
+      context: currentContext({ receipts: [], record: [] }, this.now()) })).facts).patientDirectory).patients;
     const computed = await this.lean.call('deficiencies', { spec: release.spec, user: actor.user, records, names: names ?? [] });
     const id = randomUUID();
     await this.db.query(`INSERT INTO commit_deficiency_lists(tenant,id,actor,auth_session,activity,deficiencies,created_at)

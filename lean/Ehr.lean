@@ -70,6 +70,7 @@ import Ehr.Specs.V1
 import Ehr.Canonical.Program
 import Ehr.Render
 import Ehr.Render.FhirAcuteTests
+import Ehr.Render.FhirTemporalTests
 import Ehr.Sim.DiscoveryTests
 import Ehr.Sim.BoundedTests
 import Ehr.Sim.PolicyTests

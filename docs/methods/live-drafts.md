@@ -25,8 +25,8 @@ catalogs are unchanged.
 
 The live host keeps Lean's navigation state. Isolation relies on
 `Ehr.Runtime.bind_hydrates` and `Hydrated.eq`: a fresh chart is initialized and
-only the selected patient's draft is added. `hydrating_refuses` prevents a
-commit or acknowledgment on the loading call.
+only the selected patient's draft is added. `hydrating_refuses` and `hydrating_reconcile` prevent a
+commit, acknowledgment or order-reconciliation decision on the loading call.
 
 ## ADT stamps and reconciliation
 
@@ -93,65 +93,15 @@ session and are not recovered across reload or sign-out.
 
 ## Validation
 
-Tests use unique tenants in the existing local Postgres stack and remove only
-their own rows. The browser harness substitutes authentication and synchronous
-interpreter transport. It uses the production live host and painter, current
-native Lean, real HTTP, Postgres, replay, screen comparison and projection. It
-does not test a rebuilt WASM artifact or Keycloak login.
+The [combined timing, draft and reconciliation verification](../design/chart-timing.md#verification)
+records the current native build, theorem axiom checks, generated types, packaged
+WASM, unit/integration tests, conformance and sequential browser audit pair. It
+uses an isolated Postgres instance, including the ADT integration suite.
 
-```sh
-export TMPDIR=/home/saithat/Projects/run-tmp
-export EHR_BIN="$PWD/lean/.lake/build/bin/ehr"
-export DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit
-export COMMIT_FIXTURE="$TMPDIR/commit-service-fixture.json"
-export pnpm_config_verify_deps_before_run=false
-(cd lean && LEAN_NUM_THREADS=4 systemd-run --user --scope -q -p MemoryMax=12G -p MemorySwapMax=0 lake build)
-LEAN_NUM_THREADS=4 systemd-run --user --scope -q -p MemoryMax=12G -p MemorySwapMax=0 bash scripts/audit-verification.sh
-(cd app && node_modules/.bin/tsc --noEmit)
-(cd services/commit && node_modules/.bin/tsc --noEmit)
-(cd app && node_modules/.bin/vite build)
-(cd app && node_modules/.bin/vitest run tests/live-drafts.test.ts tests/live-projection.test.ts tests/mar-session.test.ts tests/screen-fingerprint.test.tsx tests/patientDirectory.test.ts)
-(cd services/commit && node --experimental-strip-types --test --test-concurrency=1 test/unit.test.ts test/drafts.integration.test.ts test/workflows.integration.test.ts test/screen-fingerprint.integration.test.ts)
-(cd app && APP_TEST_PREVIEW=0 APP_TEST_PORT=4189 node_modules/.bin/playwright test --grep 'live drafts A/B/A' --workers=1)
-EHR_CONFORMANCE_TRANSPORT=serve node conformance/index.mjs --canonical --jobs 4 --out "$TMPDIR/live-drafts-review-conformance.json"
-node --test conformance/workspace.test.mjs
-```
-
-The unchanged Lean build passes all 611 jobs. The targeted Vitest suite passes
-14 tests. Service unit, draft, workflow and fingerprint suites pass 33 tests.
-New integration regressions use an injected clock to advance six minutes and a
-scoped source-stream version change. Both failed before the fix with
-`session_expired` and `version_conflict` when opening B. They now pass through
-B's accepted sign. Additional tests keep expired command refusal, reject stale
-current-patient renewal, preserve the painted interval after signing, recover
-duplicate checkpoints, and reject another login or changed release.
-
-The app regression verifies a zero-request empty departure, then advances the
-service clock by six minutes and changes A before signing B and reopening A.
-The browser regression exercises the same delayed B sign through the production
-host and painter; desktop and narrow both pass (2 tests). Canonical conformance
-is unchanged at 1,584 passed, zero failed (15 targets, 201 scenarios). The
-workspace-driver tests pass 4 tests. Typechecks, targeted ESLint and the
-production app build pass. Canonical expectations and selection wording are unchanged.
-
-The existing service regression and lint commands were:
-
-```sh
-(cd services/commit && COMMIT_FIXTURE="$TMPDIR/commit-service-fixture.json" node --experimental-strip-types --test --test-concurrency=1 test/workflows.integration.test.ts test/screen-fingerprint.integration.test.ts)
-(cd app && node_modules/.bin/eslint src/core/liveSession.ts src/data/commitService.ts tests/live-drafts.test.ts tests/live-drafts-support.ts e2e/live-drafts.spec.ts e2e/live-drafts.harness.tsx --max-warnings 0)
-(cd services/commit && node_modules/.bin/eslint src/store.ts src/types.ts src/auth.ts src/http.ts test/helpers.ts test/drafts-fixture.ts test/drafts.integration.test.ts test/drafts-host.ts test/native-interp.ts --max-warnings 0)
-```
-
-Both full audit commands were attempted once, sequentially; each stopped before
-browser work because the gitignored `fixtures/synthea/index.json` is absent:
-
-```sh
-node scripts/audit-alert-policy.mjs "$TMPDIR/live-drafts-review-audit-templates"
-node scripts/audit-alert-policy.mjs "$TMPDIR/live-drafts-review-audit-personas" --personas
-```
-
-No Lean definitions, generated types, conformance expectations or protected
-specifications change in this fix. No dependency installation, WASM rebuild,
-proof-map regeneration or recording recertification is part of this change. The core host and service-client source
-changes intentionally change the certified app hash. Existing recordings need
-recertification against the rebuilt app and WASM.
+The live browser harness substitutes authentication and synchronous interpreter
+transport. It exercises the production live host and painter, current native
+Lean, real HTTP, Postgres, replay, screen comparison and projection. It does not
+exercise Keycloak login. Native/WASM agreement and packaged assets have separate
+checks in the combined verification. Draft tests cover delayed signing, A/B/A
+navigation after another chart changes, immutable retries/checkpoints, stale
+current-patient renewal, login/release isolation and painted-screen retention.

@@ -3,6 +3,7 @@ import Ehr.Render.Json
 import Ehr.Formulary
 import Ehr.Core.Basics
 import Ehr.Render.Ui
+import Ehr.Render.Dated
 
 /-!
 Read FHIR bundles into patient facts and clinical display rows.
@@ -2640,15 +2641,163 @@ def chartPayloads (ctx : FactsContext) (rs : List Json) (p : Json) (f : Facts) (
     artifact := "FHIR chart preview:" ++ info, version,
     rows := rows.zipIdx.map fun (fields, slot) => { id := info ++ "." ++ toString slot, slot, fields } }
 
+/-! New specification for owner review: record-derived temporal evidence.
+No interaction state or UI event enters this projection. Unsupported events stay absent. -/
+namespace Temporal
+
+/-- New specification for owner review: require a single current version of a
+resource identity; missing versions and bundles containing history fail closed. -/
+def current (rs : List Json) (r : Json) : Bool :=
+  str r "id" != "" && str (field r "meta") "versionId" != "" &&
+  ((rs.filter fun x => resourceType x == resourceType r && str x "id" == str r "id").length == 1)
+
+/-- New specification for owner review: only a unique, patient-bound selected
+encounter may establish the temporal episode. Historical clinic visits are not
+implicitly selected when two encounters share the latest start. -/
+def encounter? (ctx : FactsContext) (rs : List Json) (p : Json) : Option Json := do
+  let e ← selectedChartEncounter ctx rs p
+  if !current rs e || !patientReferenceMatches (field e "subject") p ||
+      !["in-progress", "onleave", "finished"].contains (str e "status") then none else
+  if ctx.encounterId?.isNone && (ctx.record.lookup "selectedEncounterId").isNone &&
+      ((ofType "Encounter" (acutePatientResources rs p)).filter fun other =>
+        str (field other "period") "start" == str (field e "period") "start").length != 1 then none
+  else some e
+
+/-- New specification for owner review: UTC minutes from a strict offset-bearing
+FHIR instant; partial dates, malformed dates and local times supply no evidence. -/
+def minute? (raw : String) : Option Int := (Dated.parse raw).map (fun t => t.1 / 60)
+
+/-- New specification for owner review: source point before binding to its
+current chart snapshot. An administrative source actor identifies the record,
+not a human admission/discharge performer. -/
+structure Point where
+  event : EventId
+  actor : String
+  time : Int
+
+/-- New specification for owner review: actual inpatient admission/discharge
+and encounter start. Planned encounters and unfinished discharges are excluded. -/
+def encounterPoints (e : Json) (key : String) : List Point :=
+  let point := fun event raw => (minute? raw).toList.map fun time =>
+    { event, actor := "fhir-record:Encounter/" ++ str e "id", time : Point }
+  let inpatient := ["IMP", "inpatient"].contains (str (field e "class") "code")
+  if key == "completeMedicalRecord" then
+    if inpatient && str e "status" == "finished" then point "discharge" (str (field e "period") "end") else []
+  else if key == "verifyPreoperativeRecord" || key == "recordNursingTransition" then
+    if inpatient then point "admission" (str (field e "period") "start") else []
+  else if key == "verifyEncounterWeight" then point "encounter.start" (str (field e "period") "start")
+  else []
+
+/-- New specification for owner review: explicit document types, never narrative
+keyword inference. The completion certificate concerns the entire encounter
+record; an ordinary final note or discharge summary is insufficient. -/
+def documentRules : List (String × String × List EventId) :=
+  [("completeMedicalRecord", "medical-record-completion", ["record.completed", "record.authenticated"]),
+   ("verifyPreoperativeRecord", "history-physical", ["hp.completed"]),
+   ("signPostAnesthesiaNote", "postanesthesia-evaluation", ["postanesthesia.documented"]),
+   ("chartAssessment", "nursing-assessment", ["nursing.assessmentDocumented"])]
+
+/-- New specification for owner review: one current, final Composition of the
+explicit type, for this patient and encounter, with one dated professional/legal
+attester. A replacement or an ambiguous set supplies no evidence. Attestation
+is document completion/authentication time, never the time care was performed. -/
+def documentPoint? (rs : List Json) (p e : Json) (code : String) : Option (String × Int) := do
+  let docs := (ofType "Composition" rs).filter fun d =>
+    patientReferenceMatches (field d "subject") p && acuteInEncounter d e &&
+    (codings (field d "type")).any (fun c =>
+      str c "system" == "urn:vgi:document-type" && str c "code" == code)
+  let [d] := docs | none
+  if !current rs d || !["final", "amended"].contains (str d "status") ||
+      rs.any (fun other => (arr other "relatesTo").any fun rel =>
+        str rel "code" == "replaces" && acuteRefersTo (field rel "targetReference") d) then none else do
+  let [a] := (arr d "attester").filter fun a =>
+    (arr a "mode").any (fun mode => mode == Json.str "professional" || mode == Json.str "legal") | none
+  let actor := str (field a "party") "reference"
+  if !actor.startsWith "Practitioner/" || actor == "Practitioner/" then none else do
+  let time ← minute? (str a "time")
+  pure (actor, time)
+
+/-- New specification for owner review: signed document points for a single
+rule artifact; no filing, dictation or clinical performance time is guessed. -/
+def documentPoints (rs : List Json) (p e : Json) (key : String) : List Point :=
+  documentRules.flatMap fun (k, code, events) =>
+    if k != key then [] else
+    (documentPoint? rs p e code).toList.flatMap fun (actor, time) =>
+      events.map fun event => { event, actor, time }
+
+/-- New specification for owner review: exact encounter observations with a
+single recorded performer. Weight uses measurement time; a nursing assessment
+uses its final publication time. Multiple candidates require an explicit future
+selector rather than choosing whichever resource happens to appear last. -/
+def observationPoints (rs : List Json) (p e : Json) (key : String) : List Point :=
+  let candidates := (ofType "Observation" rs).filter fun r =>
+    patientReferenceMatches (field r "subject") p && acuteInEncounter r e &&
+    (if key == "verifyEncounterWeight" then
+      (codings (field r "code")).any (fun c => str c "system" == "http://loinc.org" && str c "code" == bodyWeightCode) else
+      key == "chartAssessment" && (codings (field r "code")).any (fun c =>
+        str c "system" == "https://vgi-health.example/fhir/CodeSystem/observation" &&
+        str c "code" == "nursing-assessment"))
+  (do
+    let [r] := candidates | none
+    if !current rs r || !["final", "amended", "corrected"].contains (str r "status") then none else do
+    let [performer] := arr r "performer" | none
+    let actor := str performer "reference"
+    if !actor.startsWith "Practitioner/" || actor == "Practitioner/" then none else do
+    let time ← minute? (str r (if key == "verifyEncounterWeight" then "effectiveDateTime" else "issued"))
+    let event := if key == "verifyEncounterWeight" then "weight.measured" else "nursing.assessmentDocumented"
+    pure ({ event := event, actor := actor, time := time } : Point)).toList
+
+/-- New specification for owner review: the supported temporal artifact keys. -/
+def keys : List String :=
+  ["completeMedicalRecord", "verifyPreoperativeRecord", "recordNursingTransition",
+   "verifyEncounterWeight", "signPostAnesthesiaNote", "chartAssessment"]
+
+/-- New specification for owner review: bind all points of a rule to the same
+patient/encounter snapshot, including resource types, identities and versions.
+Digest collision resistance remains the existing FHIR adapter trust boundary. -/
+def binding (rs : List Json) (p e : Json) (key : String) : ArtifactBinding :=
+  { key, artifact := "FHIR temporal:" ++ patientIdOf p ++ ":Encounter/" ++ str e "id" ++ ":" ++ key
+    version := versionDigest ((rs.map fun r => resourceType r ++ "/" ++ versionKey r).mergeSort (fun a b => decide (a ≤ b))) }
+
+/-- New specification for owner review: every point is an actual, current-chart
+record event, bound to its snapshot and exact episode, with its recorded actor. -/
+def evidence (p e : Json) (b : ArtifactBinding) (points : List Point) : List EventEvidence :=
+  points.map fun point =>
+    { event := point.event, patient := patientIdOf p, episode := str e "id", actor := point.actor
+      artifact := b.artifact, version := b.version, time := point.time, planned := false }
+
+/-- New specification for owner review: paired bindings and evidence; a missing
+or ambiguous encounter yields neither. eventTime still refuses future actual
+points, absent trusted clocks, duplicates and stale versions. -/
+def projection (ctx : FactsContext) (rs : List Json) (p : Json) : List (ArtifactBinding × List EventEvidence) :=
+  (encounter? ctx rs p).toList.flatMap fun e => keys.map fun key =>
+    let b := binding rs p e key
+    (b, evidence p e b (encounterPoints e key ++ documentPoints rs p e key ++ observationPoints rs p e key))
+
+/-- New specification for owner review: every projected point has the exact
+patient, encounter and artifact version, and never claims a planned event. -/
+theorem evidence_bound (p e : Json) (b : ArtifactBinding) (points : List Point)
+    (ev : EventEvidence) (h : ev ∈ evidence p e b points) :
+    ev.patient = patientIdOf p ∧ ev.episode = str e "id" ∧
+    ev.artifact = b.artifact ∧ ev.version = b.version ∧ ev.planned = false := by
+  obtain ⟨point, _, rfl⟩ := List.mem_map.mp h
+  exact ⟨rfl, rfl, rfl, rfl, rfl⟩
+
+#print axioms evidence_bound
+end Temporal
+
 /-- Full patient facts with optional version-bound, read-only chart previews. -/
 def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let f := baseFactsOf ctx rs p
   let previews := chartPayloads ctx rs p f (displayOf ctx rs p)
+  let temporal := Temporal.projection ctx rs p
   { f with
     epochMinute? := chartMinute ctx.today (ctx.now % 1440)
+    episodeId? := (Temporal.encounter? ctx rs p).map (str · "id")
+    eventEvidence? := some (temporal.flatMap (·.2))
     encounterStart? := (selectedChartEncounter ctx rs p).bind (fun e => chartMinute (str (field e "period") "start"))
     infoPayloads? := some ((f.infoPayloads?.getD []) ++ previews),
-    artifactBindings? := some ((f.artifactBindings?.getD []) ++ surgicalBindings previews) }
+    artifactBindings? := some ((f.artifactBindings?.getD []) ++ surgicalBindings previews ++ temporal.map (·.1)) }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/

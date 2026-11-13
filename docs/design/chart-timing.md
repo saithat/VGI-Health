@@ -126,6 +126,12 @@ All new timing statements are marked **New specification for owner review**:
 | `EntryTimes.prefill_enteredAt`, `prefill_field_new_enteredAt`, `enter_new_enteredAt`, `new_entry_has_enteredAt`, `prior_auth_new_enteredAt` | Newly created prefills and entered values use the trusted clock; with an absolute clock, new entries have an entry timestamp. |
 | `EntryTimes.observation_time_reset` | A human can reset an optional override despite missing historical facts. |
 | `Render.uiLateEntries_exact`, `uiLateEntries_readOnly` | Signing labels appear exactly for above-policy gaps and add no interactive component identity. |
+| `Check.accepted_reconcileIds`, `reconcile_comp_reserved`, `accepted_reconcile_no_shadow` | Every accepted program excludes the entire runtime reconciliation namespace; no runtime line control can shadow a program component. |
+| `Runtime.hydrating_refuses`, `hydrating_reconcile` | A chart-loading call refuses commits, acknowledgments and reconciliation controls before the clinician sees the loaded chart. |
+| `Deficiencies.overdue_listed`, `missing_listed`, `draft_listed`, `discard_listed`, `listed_unsigned` | Completeness for started/overdue obligations, drafts and discarded orders; every listed row belongs to the clinician's unsigned role-performed work. |
+| `Deficiencies.transfer_restores_tagged`, `pending_blocks_orders`, `transfer_needs_decision`, `reentry_keeps_tag`, `discharge_restores_no_orders`, `discharge_keeps_provenance` | Transfer tags survive re-entry and block signing until a decision; discharge removes saved order lines while retaining their provenance. |
+| `Ehr.reconcileCore_ok`, `reconcileCore_macro`, `reconcileCore_captured`, `reconcileCore_frame` | Only an authorized human can decide for an awaiting line; decisions preserve clinical values and all unrelated state. |
+| `Render.Fhir.Temporal.evidence_bound` | Projected event identity is bound to its patient, exact encounter, artifact/version and actual-event status. |
 
 Existing guarantee statements stay proved. Auxiliary capture-construction
 statements include the new metadata, and prior-authorization frame lemmas are
@@ -173,10 +179,85 @@ dated. The catalog's dated/timed entries describe this implemented scope.
   `listed_unsigned` (soundness: every listed item belongs to the signed-in
   clinician, to a commit the role performs, and that commit is not signed in
   its chart).
-- Limit: the live FHIR projection does not yet derive the event evidence
-  (admission, discharge, completion events) that temporal requirements read,
-  so in the live stack the list currently shows drafts and discarded orders;
-  temporal rows appear when facts carry evidence, as in the Lean tests.
+- The live FHIR projection now derives the supported temporal evidence below.
+  The active release still determines which obligations exist. Packaged V1–V3
+  use the core rule profile, which has no `TemporalReq` entries; this change
+  does not silently enable the full catalog or alter protected specifications.
+  The live integration regression uses an explicit temporal test release.
+
+### Trusted temporal record mappings
+
+**New specification for owner review:** `Render.Fhir.Temporal` receives only the
+FHIR record and trusted context, never captures, UI events or typed attestations.
+It requires an exact patient-bound selected encounter with a unique resource
+identity and nonempty `meta.versionId`. Without an explicit selector, tied latest
+encounters are ambiguous. The episode is that Encounter's ID. Every source time
+uses the strict offset-bearing FHIR parser (`Dated.parse`), converted to UTC epoch
+minutes; date-only, local and invalid dates supply nothing. `eventTime` additionally
+rejects future actual events, duplicate event evidence, missing clocks, different
+patients/episodes and obsolete artifact versions.
+
+| Encoded event(s) | Record source and artifact key |
+|---|---|
+| `admission` | Selected inpatient Encounter (`IMP`/`inpatient`), in-progress/onleave/finished, `period.start`; keys `verifyPreoperativeRecord`, `recordNursingTransition`. An outpatient visit is not called an admission. |
+| `discharge` | That inpatient Encounter only when `status = finished`, `period.end`; key `completeMedicalRecord`. A planned end or ADT UI action is insufficient. |
+| `encounter.start` | Actual selected Encounter `period.start`; key `verifyEncounterWeight`. |
+| `record.completed`, `record.authenticated` | One current, final/amended Composition explicitly typed `medical-record-completion` in `urn:vgi:document-type`, with one professional/legal attester, a nonempty Practitioner reference and an offset-bearing `attester.time`; key `completeMedicalRecord`. The signed certificate explicitly concerns the whole encounter record. A discharge summary or arbitrary signed note is insufficient. |
+| `hp.completed` | Same signed Composition contract, type `history-physical`; key `verifyPreoperativeRecord`. Time is document completion at attestation, with no inferred earlier examination or filing time. |
+| `postanesthesia.documented` | Same contract, type `postanesthesia-evaluation`; key `signPostAnesthesiaNote`. |
+| `nursing.assessmentDocumented` | Same contract, type `nursing-assessment`; or a single final/amended/corrected Observation coded `nursing-assessment` in `https://vgi-health.example/fhir/CodeSystem/observation`, with one Practitioner performer and `issued`; key `chartAssessment`. |
+| `weight.measured` | One final/amended/corrected encounter-bound Observation with LOINC `29463-7`, one Practitioner performer and explicit `effectiveDateTime`; key `verifyEncounterWeight`. Multiple measurements require a future explicit selector; none is chosen implicitly. |
+
+Compositions must match the patient and encounter exactly, be uniquely current,
+and not be replaced by another supplied resource. Missing signatures, versions,
+actors or times supply no evidence. The local document types above are explicit
+adapter contracts, not inferred meanings of generic FHIR documents. Existing
+DocumentReferences have no unambiguous signature instant and are not relabeled.
+Encounter evidence identifies its source actor as `fhir-record:Encounter/<id>`;
+this denotes the authoritative administrative record, not an invented clinician.
+Document and observation actors are the recorded Practitioner references.
+
+Each supported artifact key gets one binding to a patient/encounter snapshot.
+Its digest covers sorted resource types, IDs and versions, so admission and
+completion can share the same rule binding while retaining their distinct event
+times. Evidence copies that binding's artifact/version and is always actual
+(`Temporal.evidence_bound`). Digest collision resistance and the accuracy of
+imported FHIR data remain trust boundaries. Clinical appropriateness is unchanged.
+The deficiency endpoint uses the injected service clock for both projection and
+deadline evaluation; a regression advances that clock from pending to delinquent.
+
+The following encoded events remain **unsourced**. The supplied record does not
+uniquely establish their exact clinical meaning, occurrence/filing/signature time,
+actor or selected procedure/order/shift. No event is inferred from a click, a
+checkbox, a generic note date, a planned procedure, or narrative keyword matching:
+
+```text
+abortion, access.providedOrDenied, access.requested, advanceDirective.learned,
+advanceDirective.recorded, airway.assessed, allergies.confirmed, anesthesia.induction,
+bloodLoss.assessed, capacity.learned, capacity.recorded, care.start,
+cures.practitionerReviewed, delivery, emergencyPrescription.delivered,
+emergencyPrescription.oralAuthorization, essentialImaging.displayed, hp.filed,
+hp.updateFiled, identity.twoPersonIdentifiers, identity.verified, incision,
+instruments.countConfirmed, intervalHp.performed, intervalHp.recorded,
+medication.administered, medication.scheduled, needles.countConfirmed,
+nursing.processInitiated, nursing.transferAssessment, operativeReport.writtenOrDictated,
+oximeter.functionConfirmed, pain.intervention, pain.responseDocumented,
+patient.leavesOR, preanesthesia.completed, preinduction.review, prescription.issued,
+procedure.start, prophylaxis.administered, restraint.attendingConsult,
+restraint.evaluationDocumented, restraint.faceToFace, restraint.newOrder,
+restraint.responsibleAssessment, restraint.rnConsult, restraint.start, rights.informed,
+screening.recorded, shift.start, side.verified, site.marked, site.verified,
+specimen.labelsReadAloud, sponges.countConfirmed, standingOrder.initiated,
+standingOrder.signed, sterility.confirmed, sterilization.consent,
+sterilization.procedure, summary.available, summary.requested, surgery.end,
+surgery.start, surgicalConsent.filed, team.introduced, telehealth.consented,
+telehealth.informed, telehealth.start, timeout.identityAgreement,
+timeout.procedureAgreement, timeout.repeatedForPerformer, timeout.siteAgreement,
+transfer.received, transmissionFailure.ended, transmissionFailure.reasonRecorded,
+vaccine.administered, verbalOrder.countersigned, verbalOrder.given,
+verbalOrder.recorded, vis.provided
+```
+
 
 ## 4. Order reconciliation at transfer and discharge (*new specification*, hospital policy)
 
@@ -256,61 +337,16 @@ must be rebuilt, and `runs/core-10day` needs one re-certification.
 
 ## Verification
 
-The default Lean build passes **623 jobs**. The new and edited theorem axiom
-prints contain only the permitted axioms; the verification audit passes all
-**84 audited theorems**. Generated types/release content and the proof map were
-refreshed. App and service typechecks, the production app build and targeted
-ESLint pass. The targeted app suite passes **104 tests**; service unit and
-integration suites pass **41 tests**, including immutable retry timestamps,
-clock-forgery rejection, bounds, restoration, renewal and independent replay.
+The integrated native build passes **629 jobs**, including the production FHIR
+projection regressions. Edited and new theorem axiom prints use only `propext`,
+`Classical.choice` and `Quot.sound`. `lake exe gents` regenerates 204 types and
+44 samples, restoring the deficiency fields lost in the merge. A scratch
+`lake exe export-content` export matches all 21 release JSON files byte-for-byte;
+no release rewrite is needed. The two focused live service regressions pass,
+including transfer/discharge behavior and pending-to-delinquent temporal work
+without UI-generated evidence. The latter checks the injected clock, future
+signature refusal and a current signed completion certificate.
 
-Commands were run with `CI=true`, `TMPDIR=/home/saithat/Projects/run-tmp`,
-`LEAN_NUM_THREADS=4`, and `pnpm_config_verify_deps_before_run=false`:
-
-```sh
-(cd lean && lake build)
-(cd lean && lake exe gents)
-(cd lean && lake exe export-content "$TMPDIR/timing-content")
-# Only releases/**/*.json from that scratch export were copied into the worktree.
-bash scripts/audit-verification.sh
-(cd lean && lake build Ehr.Layout.Range Ehr.Layout.Structural Ehr.Layout.Shell Ehr.Layout.FamilyJson Ehr.Sem.ExoticApi Solution)
-scripts/proof-map/build.sh --readme
-pnpm --filter app typecheck
-pnpm --filter @vgi/commit typecheck
-pnpm --filter app build
-pnpm --filter app exec eslint src/core/liveSession.ts src/data/commitMapper.ts src/data/commitService.ts src/data/fhir-r4.ts src/ehr/ui/nodes.tsx tests/commitMapper.test.ts tests/ui-painter.test.tsx tests/live-drafts.test.ts e2e/ui-check.spec.ts --max-warnings 0
-pnpm --filter @vgi/commit exec eslint src/store.ts src/projection.ts src/projection-codecs.ts test/entry-times.integration.test.ts test/integration.test.ts --max-warnings 0
-```
-
-The database tests used a separate 256 MB Postgres instance on port 55438,
-with unique synthetic tenants; no shared clinical database was modified:
-
-```sh
-COMMIT_PG_PORT=55438 docker compose -p vgi-timing-tests -f services/commit/compose.yml up -d --wait postgres
-export EHR_BIN="$PWD/lean/.lake/build/bin/ehr"
-export DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55438/vgi_commit
-export COMMIT_FIXTURE="$TMPDIR/timing-commit-fixture.json"
-(cd lean && LEAN_PATH=.lake/build/lib/lean /home/saithat/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean --run ../services/commit/test/Fixture.lean) > "$COMMIT_FIXTURE"
-pnpm --filter app exec vitest run tests/commitMapper.test.ts tests/ui-painter.test.tsx tests/live-drafts.test.ts tests/live-projection.test.ts tests/mar-session.test.ts tests/screen-fingerprint.test.tsx tests/promoted-schema.test.ts --maxWorkers=4
-(cd services/commit && node --experimental-strip-types --test --test-concurrency=1 test/unit.test.ts test/entry-times.integration.test.ts test/drafts.integration.test.ts test/workflows.integration.test.ts test/screen-fingerprint.integration.test.ts test/integration.test.ts)
-```
-
-Two focused browser audits ran sequentially with four workers. Native synthetic
-exports exercise the earlier-time control, a three-minute gap and the exact
-two-minute boundary under an explicit two-minute test policy. This does not
-change the default 1440-minute local policy. The timing audit passes **29 tests**
-(5 project-scoped skips), **2 states / 18 measurements / zero findings**. The
-alert-policy subset passes **53 tests** (13 project-scoped skips), **11 states /
-99 measurements / zero findings**. The gate checks both readable local dates
-and exact UTC instants in machine-readable `time` elements.
-
-```sh
-node --experimental-strip-types scripts/export-entry-time-screens.mjs "$TMPDIR/timing-screens"
-EHR_SCREEN_WORKERS=4 EHR_PHYSICAL_POLICY=1 EHR_ENFORCE_PHYSICAL=1 EHR_PHYSICAL_REPORT="$TMPDIR/timing-screen-physical.json" EHR_SCREEN_RESULT="$TMPDIR/timing-screen-result.json" node app/scripts/screen-check.mjs --ui "$TMPDIR/timing-screens/late.json" "$TMPDIR/timing-screens/boundary.json"
-EHR_SCREEN_WORKERS=4 node scripts/audit-alert-policy.mjs "$TMPDIR/timing-audit-urgency" --urgency-only
-COMMIT_PG_PORT=55438 docker compose -p vgi-timing-tests -f services/commit/compose.yml down -v
-```
-
-The full template/persona audit pair, full conformance, packaged WASM rebuild and
-recording re-certification remain for the combined changes after merge. These
-checks use current native Lean; they do not certify the older packaged WASM.
+The combined packaged-WASM, proof-map and sequential verification results will
+be recorded here after the final run. Recording re-certification is intentionally
+left for the integrated branch; no data under `runs/` is re-certified here.
