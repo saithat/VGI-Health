@@ -168,7 +168,11 @@ dated. The catalog's dated/timed entries describe this implemented scope.
   `temporalStatus` the interpreter uses, so the list introduces no new rule
   semantics. The service's `GET /deficiencies` gathers each chart's current
   facts, the commits signed in its encounter, the drafts and their ADT stamps,
-  and asks native Lean for the list. The service clock is the trusted time
+  and asks native Lean for the list. A database-owned save sequence (migration
+  `010-checkpoint-order.sql`) selects the latest draft set even when server
+  timestamps tie or move backward; UUID order never chooses between saves.
+  Historical rows retain the previous timestamp/UUID order during migration,
+  because their original tie order cannot be recovered. The service clock is the trusted time
   source when the facts carry none. The list is stored (migration
   `009-deficiencies-reconciliation.sql`) and a chart session binds it by ID, so
   native replay paints exactly the work list the browser showed.

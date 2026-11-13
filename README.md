@@ -201,7 +201,7 @@ patients' records ([drafts and signing](docs/methods/live-drafts.md)). Observati
 fields offer “Time taken”; entry, observation and signing times stay separate.
 “Late entry” is informational, using a configurable 24-hour local policy default
 ([timing](docs/design/chart-timing.md)). A
-"Deficiencies" work list shows each clinician's unsigned drafts and overdue
+"Deficiencies" work list shows each clinician's latest unsigned drafts and overdue
 record obligations when enabled by the release, using patient-, encounter- and
 version-bound record evidence ([mappings and limits](docs/design/chart-timing.md#trusted-temporal-record-mappings)). Unsigned orders reopened after a transfer cannot be signed
 until the clinician keeps, changes or discontinues each line; after a discharge

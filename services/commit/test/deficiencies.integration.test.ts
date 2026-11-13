@@ -83,6 +83,11 @@ test('deficiency list, transfer reconciliation and discharge provenance through 
     s = await select(s, 'def-B');
     s = await event(s, drug('acetaminophen'));
     const k2 = await checkpoint(s);
+    // A frozen server clock gives both saves the same timestamp. The latest
+    // directory must follow save order, independently of their random UUIDs.
+    const saved = (await a.db.query('SELECT id,created_at FROM commit_draft_checkpoints WHERE tenant=$1 AND id=ANY($2::uuid[])', [t, [k1, k2]])).rows;
+    assert.equal(saved.length, 2);
+    assert.equal(new Date(saved[0].created_at).getTime(), new Date(saved[1].created_at).getTime());
     const carried = (await a.db.query('SELECT draft_adt FROM commit_draft_checkpoints WHERE tenant=$1 AND id=$2', [t, k2])).rows[0].draft_adt;
     assert.deepEqual(Object.keys(carried).sort(), ['def-A', 'def-B']);
 

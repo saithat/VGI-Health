@@ -402,7 +402,7 @@ export class Store {
     const scope = this.draftScope(actor);
     const t = this.config.tenant;
     const latest = (await this.db.query(`SELECT id,workspace_state,draft_adt,created_at FROM commit_draft_checkpoints
-      WHERE tenant=$1 AND actor=$2 AND auth_session=$3 ORDER BY created_at DESC, id DESC LIMIT 1`, [t, actor.user.id, scope])).rows[0];
+      WHERE tenant=$1 AND actor=$2 AND auth_session=$3 ORDER BY checkpoint_order DESC LIMIT 1`, [t, actor.user.id, scope])).rows[0];
     const drafts = latest ? objs(obj(latest.workspace_state).patientDrafts ?? []) : [];
     const stamps = latest ? maybeObj(latest.draft_adt) ?? {} : {};
     const discards = (await this.db.query(`SELECT checkpoint_id,patient,encounter_id,captured FROM commit_discarded_drafts
