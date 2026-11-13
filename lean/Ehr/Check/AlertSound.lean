@@ -50,7 +50,12 @@ private theorem stepCore_popup_captured (sp p f u actor s e a k)
       split
       · intro _; rfl
       · exact clickCore_popup_captured _ _ _ _ _ _ _ _ _ hn
-    | enter cid v => intro hp; simp only [stepEvent] at hp; rw [enterCore_popup, hn] at hp; contradiction
+    | enter cid v =>
+      intro hp
+      simp only [stepEvent] at hp
+      split at hp
+      · rw [reconcileCore_popup, hn] at hp; contradiction
+      · rw [enterCore_popup, hn] at hp; contradiction
     | confirm cid => intro hp; simp only [stepEvent] at hp; rw [confirmCore_popup, hn] at hp; contradiction
     | selectTab cid idx => intro hp; simp only [stepEvent] at hp; rw [selectTabCore_popup, hn] at hp; contradiction
     | ack a => intro _; simp only [stepEvent]; unfold ackCore; repeat' (first | rfl | split | dsimp only)
@@ -211,4 +216,6 @@ theorem accepted_noRepeatInterruptions (sp prev can p) (h : check sp prev can p 
 #print axioms interruptsOnce
 #print axioms accepted_noFalseAlarms
 #print axioms accepted_noRepeatInterruptions
+#print axioms stepCore_popup_captured
+
 end Ehr.Check

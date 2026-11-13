@@ -172,7 +172,9 @@ theorem stepCore_critical (sp prog facts user actor s e c d) :
     | none => rfl
     | some comp => exact clickCore_critical sp prog facts user actor s comp c d
   next cid idx => exact selectTab_critical sp prog facts s cid idx c d
-  next cid v => exact enterCore_critical sp prog facts user actor s cid v c d
+  next cid v =>
+    cases hs : shownComp? sp prog facts s cid <;> simp only [hs]
+    all_goals repeat' first | rfl | exact reconcileCore_critical .. | exact enterCore_critical sp prog facts user actor s cid v c d | (split <;> try simp_all)
   next cid => exact confirmCore_critical sp prog facts user actor s cid c d
   next a =>
     cases actor <;> simp only [ackCore, withCritical_popup]

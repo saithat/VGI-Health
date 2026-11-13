@@ -47,6 +47,20 @@ theorem hydrating_ack (a : AlertId) (he : i.event = .ack a) :
     runStep i = { state := inputState i, result := Workspace.loading } :=
   hydrating_refuses i henabled hy (by rw [he]; rfl) (by rw [he]; rfl)
 
+/-- New specification for owner review: loading refuses every reconciliation
+control, including a valid decision for a restored tagged line. -/
+theorem hydrating_reconcile (n : Nat) (v : Value) (he : i.event = .enter (reconcileComp n) v) :
+    runStep i = { state := inputState i, result := Workspace.loading } := by
+  have hn : reconcileComp n ≠ "workspace.search" := by
+    intro h
+    have k := congrArg (fun id : String => "reconcile.line|".toList.isPrefixOf id.toList) h
+    simp [reconcileComp, String.toList_append] at k
+  apply hydrating_refuses i henabled hy
+  · rw [he]
+    cases v <;> simp [workspaceEvent, hn]
+  · rw [he]
+    simp [loadingEvent, reconcileReservedId, reconcileComp, String.toList_append]
+
 /-- New specification for owner review: on the hydrating call, every other
 event that is not workspace navigation is one human interpreter step on the
 hydrated chart, as before. -/
@@ -166,6 +180,7 @@ theorem commit_input (i : StepInput) (c : CommitId) (hafter : c ∈ (runStep i).
       contradiction
 
 #print axioms chart_commits
+#print axioms hydrating_reconcile
 #print axioms hydrating_refuses
 #print axioms hydrating_ack
 #print axioms hydrating_applies

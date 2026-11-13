@@ -75,6 +75,7 @@ chart that call loads. -/
 def loadingEvent (p : Program) (s : State) : Event → Bool
   | .click id => Workspace.commitClick p s id
   | .ack _ => true
+  | .enter cid _ => reconcileReservedId cid
   | _ => false
 
 /-- New specification for owner review: **the states of one bound patient
@@ -137,10 +138,8 @@ theorem workspace_core (sp p f u s e) (hb : Workspace.bound f s = true)
       simpa only [workspaceEvent, Option.isSome_eq_false_iff, Option.isNone_iff_eq_none] using hn
     simp only [ha, hb, Bool.not_true, Bool.false_and, Bool.false_eq_true, ↓reduceIte]
   | enter comp v =>
-    split <;> first
-      | (rename_i heq; cases heq; done)
-      | (rename_i heq; cases heq; simp [workspaceEvent] at hn)
-      | simp only [hb, ↓reduceIte]
+    cases v <;> by_cases hs : comp = "workspace.search" <;>
+      simp_all [workspaceEvent, loadingEvent] <;> rfl
   | search q => simp only [hnone, hb, Bool.false_eq_true, ↓reduceIte]
   | _ => simp only [hb, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
 
@@ -171,10 +170,8 @@ theorem workspace_first (sp p f u s e) (hy : Workspace.hydrates sp p f u s = tru
     simp only [ha, hb, loadingEvent, Bool.not_true, Bool.true_and, Bool.false_eq_true, ↓reduceIte]
     rfl
   | enter comp v =>
-    split <;> first
-      | (rename_i heq; cases heq; done)
-      | (rename_i heq; cases heq; simp [workspaceEvent] at hn)
-      | simp only [hb, loadingEvent, Bool.false_eq_true, ↓reduceIte]
+    cases v <;> by_cases hs : comp = "workspace.search" <;>
+      simp_all [workspaceEvent, loadingEvent] <;> rfl
   | search q => simp only [hnone, hb, loadingEvent, Bool.false_eq_true, ↓reduceIte]
   | ack a => simp only [hb, loadingEvent, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
   | _ => simp only [hb, loadingEvent, Bool.not_true, Bool.false_eq_true, ↓reduceIte]
@@ -307,4 +304,5 @@ theorem episode_runView {s : State} (h : InEpisode E s) :
 #print axioms unbound_not_inEpisode
 #print axioms unselected_not_inEpisode
 #print axioms episode_runView
+
 end Ehr.Runtime

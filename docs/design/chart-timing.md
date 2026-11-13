@@ -232,11 +232,18 @@ dated. The catalog's dated/timed entries describe this implemented scope.
   interpreter's step invariants (macro safety, human-only entries, writes,
   screens, drafts and critical-result framing) were extended to the new
   decision path without changing their statements.
-- Limits: the decision runs on the loading call that hydrates a chart like any
-  other entry; the reconcile control namespace (`reconcile.line|`) is not yet
-  reserved by the layout checker, as `critical.` is; a linked dependent
-  capture on another line can still be discarded when its source changes. The
-  list is fetched when the workspace opens and is refreshed on reload.
+- The loading call refuses reconciliation decisions before the clinician has
+  seen the restored chart (`Runtime.hydrating_reconcile`). The checker reserves
+  the entire `reconcile.line|` component-ID prefix on every screen
+  (`Check.accepted_reconcileIds`, `accepted_reconcile_no_shadow`). These are
+  **New specification for owner review**.
+- Reconciliation dispatch is in `stepEvent`, beside ordinary `enterCore` value
+  entry. This preserves the timing theorem statements: a decision changes
+  provenance while retaining the original value and entry timestamp; replacing
+  a value creates a newly stamped capture and retains any reconciliation tag.
+- Limits: a linked dependent capture on another line can still be discarded
+  when its source changes. The list is fetched when the workspace opens and is
+  refreshed on reload.
 
 ## Effect on recordings
 

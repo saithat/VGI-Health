@@ -308,7 +308,9 @@ def backId (prog : Program) (cid : CompId) : Bool :=
     | none => rfl
     | some c => exact clickCore_history sp prog facts user actor s c h (shown_not_back (hb cid rfl) hc)
   next cid idx => exact selectTab_history sp prog facts s cid idx h
-  next cid v => exact enterCore_history sp prog facts user actor s cid v h
+  next cid v =>
+    cases hs : shownComp? sp prog facts s cid <;> simp only [hs]
+    all_goals repeat' first | rfl | exact reconcileCore_history .. | exact enterCore_history sp prog facts user actor s cid v h | (split <;> try simp_all)
   next cid => exact confirmCore_history sp prog facts user actor s cid h
   next a =>
     cases actor <;> simp only [ackCore, withHistory_popup]

@@ -355,6 +355,13 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
       explain := fun _ => compFinding "criticalIds" prog false fun scr c =>
         if CriticalRuntime.reservedId c.id then
           some s!"component {c.id} on screen {scr.id} uses the critical. action namespace reserved for critical results"
+        else none },
+    -- New specification for owner review: runtime reconciliation controls cannot
+    -- be shadowed by any program component, even on an unreachable screen.
+    { property := "reconcileIds", passes := (allComps prog).all (fun sc => !reconcileReservedId sc.2.id)
+      explain := fun _ => compFinding "reconcileIds" prog false fun scr c =>
+        if reconcileReservedId c.id then
+          some s!"component {c.id} on screen {scr.id} uses the reconcile.line| namespace reserved for order reconciliation"
         else none }
   ]
 

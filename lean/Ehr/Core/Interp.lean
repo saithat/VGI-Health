@@ -261,6 +261,11 @@ def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
 
 /-! ## Transfer reconciliation -/
 
+/-- New specification for owner review: the runtime owns every component ID
+with the reconciliation prefix, including future or malformed controls. -/
+def reconcileReservedId (cid : CompId) : Bool :=
+  "reconcile.line|".toList.isPrefixOf cid.toList
+
 /-- New specification for owner review: the control that records the per-line
 transfer reconciliation decision for order line `slot`. -/
 def reconcileComp (slot : Nat) : CompId := "reconcile.line|" ++ toString slot
@@ -501,13 +506,11 @@ def rejectReason (el : ElementSpec) (v : Value) : String :=
 /-- Enter a value into a shown field. Refused if the role may not enter the
 element; if a macro tries a human-only or `never`-prefill element; or if the
 value is not accepted. A human's value is confirmed; a macro's value waits for
-a human confirm. New specification for owner review: an entry on a control that
-is not a shown component is handled by `reconcileCore`, which ignores it unless
-it is the reconciliation control of an order line awaiting a decision. -/
+a human confirm. -/
 def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor : Actor)
     (s : State) (cid : CompId) (v : Value) : State × StepResult :=
   match shownComp? sp prog facts s cid with
-  | none => reconcileCore sp user actor s cid v
+  | none => (s, .ignored)
   | some c =>
     match c.kind with
     | .field e slot _ =>
@@ -607,7 +610,12 @@ def stepEvent (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
     | none => (s, .ignored)
     | some c => clickCore sp prog facts user actor s c
   | .selectTab cid idx => selectTabCore sp prog facts s cid idx
-  | .enter cid v => enterCore sp prog facts user actor s cid v
+  | .enter cid v =>
+    -- New specification for owner review: decisions edit provenance, not values;
+    -- dispatch separately so ordinary value-creation timing guarantees still hold.
+    match shownComp? sp prog facts s cid with
+    | none => reconcileCore sp user actor s cid v
+    | some _ => enterCore sp prog facts user actor s cid v
   | .confirm cid => confirmCore sp prog facts user actor s cid
   | .ack a => ackCore actor s a
   | .scroll scr => if scr == s.screen then (s, .ok) else (s, .ignored)
@@ -716,5 +724,7 @@ def init (sp : Spec) (prog : Program) (facts : Facts) (_user : User) : State :=
     { screen := prog.start, history := [], captured := [], receipts := facts.receipts
       acked := [], commits := [], expanded := startExpanded prog, tabSel := []
       popup? := none, currentSlot := 0, clock := 0 }
+
+#print axioms reconcileCore_ok
 
 end Ehr

@@ -76,6 +76,39 @@ theorem accepted_critical_no_shadow (sp prev can p) (ha : check sp prev can p = 
   rw [hid, hr] at hn
   contradiction
 
+/-- New specification for owner review: accepted programs contain no component
+in the runtime's reconciliation namespace, regardless of screen or visibility. -/
+theorem accepted_reconcileIds (sp prev can p) (h : check sp prev can p = .ok) :
+    ∀ sc ∈ allComps p, reconcileReservedId sc.2.id = false := by
+  have hall := (check_ok_iff sp prev can p).mp h
+  have hr : (allComps p).all (fun sc => !reconcileReservedId sc.2.id) = true :=
+    hall { property := "reconcileIds"
+           passes := (allComps p).all (fun sc => !reconcileReservedId sc.2.id)
+           explain := fun _ => compFinding "reconcileIds" p false fun scr c =>
+             if reconcileReservedId c.id then
+               some s!"component {c.id} on screen {scr.id} uses the reconcile.line| namespace reserved for order reconciliation"
+             else none } (by simp [rules])
+  intro sc hc
+  have hn := List.all_eq_true.mp hr sc hc
+  cases hv : reconcileReservedId sc.2.id <;> simp_all
+
+/-- New specification for owner review: every reconciliation control is reserved. -/
+theorem reconcile_comp_reserved (n : Nat) : reconcileReservedId (reconcileComp n) = true := by
+  simp [reconcileReservedId, reconcileComp, String.toList_append]
+
+/-- New specification for owner review: runtime reconciliation can never name
+any program component of an accepted layout, on any screen. -/
+theorem accepted_reconcile_no_shadow (sp prev can p) (ha : check sp prev can p = .ok)
+    (n : Nat) : ∀ sc ∈ allComps p, sc.2.id ≠ reconcileComp n := by
+  intro sc hc hid
+  have hn := accepted_reconcileIds sp prev can p ha sc hc
+  rw [hid, reconcile_comp_reserved] at hn
+  contradiction
+
+#print axioms accepted_reconcileIds
+#print axioms reconcile_comp_reserved
+#print axioms accepted_reconcile_no_shadow
+
 #print axioms accepted_criticalIds
 #print axioms reserved_append
 #print axioms critical_handle_reserved

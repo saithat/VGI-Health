@@ -85,6 +85,12 @@ def dropped : State := (stepH pending (.enter (reconcileComp 0) (.code "disconti
 #guard reason (stepH dropped (.click "signButton")).2 == "entry required: drug"
 #guard (stepH dropped (.click "signButton")).1.commits == []
 
+-- New specification for owner review: reconciliation retains historical entry
+-- time while ordinary replacement receives the new trusted clock.
+def timedPending : State := { pending with captured := pending.captured.map fun c => { c with enteredAt? := some 900 } }
+#guard ((step spec program { facts with epochMinute? := some 1000 } user .human timedPending
+  (.enter (reconcileComp 0) (.code "keep"))).1.captured).all (·.enteredAt? == some 900)
+
 -- Re-entering a tagged value keeps the tag (the field is on the order screen).
 def reentered : State := run { pending with screen := "order" } [.enter "doseField" (.qty 2500 .mg)]
 

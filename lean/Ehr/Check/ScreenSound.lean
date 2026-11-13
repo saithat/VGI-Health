@@ -96,9 +96,7 @@ theorem enterCore_names (sp p f u actor s cid v) (h : ScreenNames p s) :
     ScreenNames p (enterCore sp p f u actor s cid v).1 := by
   unfold enterCore
   split
-  · unfold ScreenNames at h ⊢
-    rw [reconcileCore_screen, (reconcileCore_frame sp u actor s cid v).2.2.2.2.2.1]
-    exact h
+  · exact h
   repeat' (first | exact h | split | (dsimp only; exact h) | dsimp only)
 
 /-- Confirming a field preserves valid screen and back-stack names. -/
@@ -131,7 +129,13 @@ theorem stepCore_names (sp p f u actor s e) (h : ScreenNames p s) :
       split
       · exact h
       · exact clickCore_names _ _ _ _ _ _ _ h
-    | enter cid v => exact enterCore_names _ _ _ _ _ _ _ _ h
+    | enter cid v =>
+      simp only [stepEvent]
+      split
+      · unfold ScreenNames at h ⊢
+        rw [reconcileCore_screen, (reconcileCore_frame sp u actor s cid v).2.2.2.2.2.1]
+        exact h
+      · exact enterCore_names _ _ _ _ _ _ _ _ h
     | confirm cid => exact confirmCore_names _ _ _ _ _ _ _ h
     | ack a => exact ackCore_names _ _ _ _ h
     | selectTab cid idx => exact selectTabCore_names _ _ _ _ _ _ h
@@ -181,5 +185,8 @@ theorem reachable_screenNames (ep : Episode)
 #print axioms reachable_screenNames
 #print axioms requestPriorAuth_names
 #print axioms clickCore_names
+
+#print axioms enterCore_names
+#print axioms stepCore_names
 
 end Ehr.Check

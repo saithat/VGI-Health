@@ -55,7 +55,11 @@ private theorem stepCore_commit_witness (sp p f u actor s e c)
         have hfind := List.find?_some hf
         simp only [Bool.and_eq_true, beq_iff_eq] at hfind
         exact ⟨hk.1, cid, rfl, comp, List.mem_of_find?_eq_some hf, hfind.1, hk.2⟩
-    | enter cid v => simp only [stepEvent] at ha; rw [enterCore_commits] at ha; contradiction
+    | enter cid v =>
+      simp only [stepEvent] at ha
+      split at ha
+      · rw [reconcileCore_commits] at ha; contradiction
+      · rw [enterCore_commits] at ha; contradiction
     | confirm cid => simp only [stepEvent] at ha; rw [confirmCore_commits] at ha; contradiction
     | ack a => simp only [stepEvent] at ha; rw [ackCore_commits] at ha; contradiction
     | selectTab cid idx => simp only [stepEvent] at ha; rw [(selectTabCore_safe ..).commits] at ha; contradiction
@@ -182,4 +186,6 @@ theorem accepted_humanOnlyKept (sp prev can p) (h : check sp prev can p = .ok) :
 #print axioms onlyHumanCommitsAndAcks_at
 #print axioms onlyHumanCommitsAndAcks
 #print axioms accepted_humanOnlyKept
+#print axioms stepCore_commit_witness
+
 end Ehr.Check

@@ -101,7 +101,7 @@ theorem enter_new_enteredAt (sp : Spec) (prog : Program) (facts : Facts) (user :
     simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hc
     rcases hc with ⟨hc, _⟩ | rfl
     · exact Or.inl hc
-    · exact Or.inr rfl
+    · exact Or.inr (by simp [storedCapture])
 
 /-- New specification for owner review: even a hostile prefill on a time companion
 cannot change captured observations. -/

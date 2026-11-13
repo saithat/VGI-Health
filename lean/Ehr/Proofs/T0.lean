@@ -112,7 +112,11 @@ theorem stepCore_guarded (sp : Spec) (prog : Program) (facts : Facts) (user : Us
       · exact CommitsGuarded.of_eq rfl
       · apply clickCore_guarded
     | selectTab cid idx => exact CommitsGuarded.of_eq (selectTabCore_safe ..).commits
-    | enter cid v => exact CommitsGuarded.of_eq (enterCore_commits ..)
+    | enter cid v =>
+      simp only [stepEvent]
+      split
+      · exact CommitsGuarded.of_eq (reconcileCore_commits ..)
+      · exact CommitsGuarded.of_eq (enterCore_commits ..)
     | confirm cid => exact CommitsGuarded.of_eq (confirmCore_commits ..)
     | ack a => exact CommitsGuarded.of_eq (ackCore_commits ..)
     | scroll scr =>
@@ -448,5 +452,7 @@ theorem T0_extra_contract (sp : Spec) (prog : Program) (facts : Facts) (user : U
 #print axioms T0_extra_contract
 
 #print axioms requestPriorAuth_commits
+
+#print axioms stepCore_guarded
 
 end Ehr.Proofs

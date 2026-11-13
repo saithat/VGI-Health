@@ -46,7 +46,7 @@ theorem enterCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user 
     MacroSafe sp s (enterCore sp prog facts user .«macro» s cid v).1 := by
   unfold enterCore
   split
-  · rw [reconcileCore_macro]; exact MacroSafe.refl _ _
+  · exact MacroSafe.refl _ _
   · split
     · rename_i e slot _ _
       split
@@ -93,7 +93,11 @@ theorem stepCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user :
       · exact MacroSafe.refl _ _
       · exact clickCore_macro_safe ..
     | selectTab cid idx => exact selectTabCore_safe ..
-    | enter cid v => exact enterCore_macro_safe ..
+    | enter cid v =>
+      simp only [stepEvent]
+      split
+      · rw [reconcileCore_macro]; exact MacroSafe.refl _ _
+      · exact enterCore_macro_safe ..
     | confirm cid => exact MacroSafe.refl _ _
     | ack a => exact MacroSafe.refl _ _
     | scroll scr =>
@@ -167,5 +171,8 @@ theorem T3_prefill_never_human_only (sp : Spec) (prog : Program) (facts : Facts)
   (prefillScreen_frame sp prog facts s).2.2.2.2.2
 
 #print axioms requestPriorAuth_macro_safe
+
+#print axioms enterCore_macro_safe
+#print axioms stepCore_macro_safe
 
 end Ehr.Proofs

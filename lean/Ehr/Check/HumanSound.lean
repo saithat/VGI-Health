@@ -90,7 +90,7 @@ private theorem enterCore_macro_noHuman (sp p f u s cid v) :
     NoNewHuman sp s (enterCore sp p f u .«macro» s cid v).1 := by
   unfold enterCore
   split
-  · rw [reconcileCore_macro]; exact .refl _ _
+  · exact .refl _ _
   · split
     · split
       · exact .refl _ _
@@ -118,11 +118,7 @@ private theorem enterCore_human_quality (sp p f u s cid v) (hi : HumanCaptured s
     HumanCaptured sp (enterCore sp p f u .human s cid v).1 := by
   unfold enterCore
   split
-  · intro x hx el hel hh
-    obtain ⟨y, hy, he, -, -, hb, hc⟩ := reconcileCore_captured sp u .human s cid v x hx
-    rw [he] at hel
-    obtain ⟨h1, h2⟩ := hi y hy el hel hh
-    exact ⟨hb.trans h1, hc.trans h2⟩
+  · exact hi
   repeat' (first | contradiction | exact hi | split | dsimp only)
   all_goals
     intro x hx el hel hh
@@ -157,7 +153,10 @@ private theorem stepCore_noHuman (sp p f u actor s e) (hi : HumanCaptured sp s)
     | enter cid v =>
       cases actor
       · exact False.elim (hne rfl cid v rfl)
-      · exact enterCore_macro_noHuman _ _ _ _ _ _ _
+      · simp only [stepEvent]
+        split
+        · rw [reconcileCore_macro]; exact .refl _ _
+        · exact enterCore_macro_noHuman _ _ _ _ _ _ _
     | confirm cid => exact confirmCore_noHuman _ _ _ _ _ _ _ hi
     | ack a => simp only [stepEvent]; unfold ackCore; repeat' (first | exact NoNewHuman.refl _ _ | split | dsimp only)
     | selectTab cid idx => simp only [stepEvent]; unfold selectTabCore; repeat' (first | exact NoNewHuman.refl _ _ | split | dsimp only)
@@ -221,7 +220,14 @@ theorem step_humanCaptured (sp p f u actor s e) (hi : HumanCaptured sp s) :
     unfold stepCore
     split
     · exact hi
-    · exact enterCore_human_quality _ _ _ _ _ _ _ hi
+    · simp only [stepEvent]
+      split
+      · intro x hx el hel hh
+        obtain ⟨y, hy, he, -, -, hb, hc⟩ := reconcileCore_captured sp u .human s cid v x hx
+        rw [he] at hel
+        obtain ⟨h1, h2⟩ := hi y hy el hel hh
+        exact ⟨hb.trans h1, hc.trans h2⟩
+      · exact enterCore_human_quality _ _ _ _ _ _ _ hi
   · exact (step_noNewHuman _ _ _ _ _ _ _ hi hn).preserves hi
 
 /-- All reachable human-required captures are confirmed human entries. -/
@@ -252,5 +258,8 @@ theorem humanStepsByHuman (ep : Episode) : HumanStepsByHuman ep := by
 #print axioms humanStepsByHuman
 #print axioms clickCore_noHuman
 #print axioms enterCore_human_quality
+
+#print axioms enterCore_macro_noHuman
+#print axioms stepCore_noHuman
 
 end Ehr.Check

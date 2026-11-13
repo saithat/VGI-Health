@@ -99,9 +99,7 @@ private theorem enterCore_slots (sp p f u actor s cid v slots)
     DrugSlotsWithin slots (enterCore sp p f u actor s cid v).1 := by
   unfold enterCore
   split
-  · intro x hx he
-    obtain ⟨y, hy, hel, hsl, -⟩ := reconcileCore_captured sp u actor s cid v x hx
-    rw [hsl]; exact h y hy (hel ▸ he)
+  · exact h
   · rename_i comp shown
     have member : comp ∈ p.compsOf s.screen := List.mem_of_find?_eq_some shown
     split
@@ -193,7 +191,13 @@ private theorem stepCore_slots (sp p f u actor s e slots) (bound : FixedDrugSlot
       split
       · exact h
       · exact clickCore_slots _ _ _ _ _ _ _ _ bound h
-    | enter cid v => exact enterCore_slots _ _ _ _ _ _ _ _ _ bound h
+    | enter cid v =>
+      simp only [stepEvent]
+      split
+      · intro x hx he
+        obtain ⟨y, hy, hel, hsl, -⟩ := reconcileCore_captured sp u actor s cid v x hx
+        rw [hsl]; exact h y hy (hel ▸ he)
+      · exact enterCore_slots _ _ _ _ _ _ _ _ _ bound h
     | confirm cid => exact confirmCore_slots _ _ _ _ _ _ _ _ h
     | ack a => simp only [stepEvent]; unfold ackCore; repeat' (first | exact h | split | dsimp only)
     | selectTab cid idx => simp only [stepEvent]; unfold selectTabCore; repeat' (first | exact h | split | dsimp only)
@@ -244,5 +248,7 @@ theorem reachable_drugSlots (ep : Episode) (slots : List Nat) (bound : FixedDrug
 #print axioms enterCore_slots
 #print axioms request_slots
 #print axioms clickCore_slots
+
+#print axioms stepCore_slots
 
 end Ehr.Check

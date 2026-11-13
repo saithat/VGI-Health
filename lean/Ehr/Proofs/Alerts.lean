@@ -178,7 +178,11 @@ theorem stepCore_popup (sp : Spec) (prog : Program) (facts : Facts) (user : User
       · exact PopupFrom.same rfl
       · apply clickCore_popup
     | selectTab cid idx => exact PopupFrom.same (selectTabCore_popup ..)
-    | enter cid v => exact PopupFrom.same (enterCore_popup ..)
+    | enter cid v =>
+      simp only [stepEvent]
+      split
+      · exact PopupFrom.same (reconcileCore_popup ..)
+      · exact PopupFrom.same (enterCore_popup ..)
     | confirm cid => exact PopupFrom.same (confirmCore_popup ..)
     | ack a =>
       rcases ackCore_popup actor s a with h | h
@@ -217,7 +221,11 @@ theorem stepCore_macro_popup (sp : Spec) (prog : Program) (facts : Facts) (user 
         · rfl
         · rfl
     | selectTab cid idx => exact selectTabCore_popup ..
-    | enter cid v => exact enterCore_popup ..
+    | enter cid v =>
+      simp only [stepEvent]
+      split
+      · exact reconcileCore_popup ..
+      · exact enterCore_popup ..
     | confirm cid => exact confirmCore_popup ..
     | ack a => rfl
     | scroll scr =>
@@ -379,5 +387,8 @@ theorem tiny_passive_popup_state_rejected : ¬ PopupNotPassive spec { s0 with po
 end Examples
 
 #print axioms requestPriorAuth_popup
+
+#print axioms stepCore_popup
+#print axioms stepCore_macro_popup
 
 end Ehr.Proofs

@@ -270,6 +270,10 @@ def step (sp : Spec) (p : Program) (f : Facts) (u : User) (s : State) (e : Event
   | .ack _ =>
     if !bound f s then (s, .blocked "Select a patient before clinical entry") else
     if first then (s, loading) else Ehr.step sp p f u .human s e
+  -- New specification for owner review: no decision before the loaded chart is seen.
+  | .enter cid _ =>
+    if !bound f s then (s, .blocked "Select a patient before clinical entry") else
+    if first && reconcileReservedId cid then (s, loading) else Ehr.step sp p f u .human s e
   | _ => if bound f s then Ehr.step sp p f u .human s e else (s, .blocked "Select a patient before clinical entry")
 
 end Ehr.Workspace

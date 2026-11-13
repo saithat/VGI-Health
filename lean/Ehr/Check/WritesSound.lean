@@ -99,10 +99,7 @@ private theorem enterCore_writes (sp p f u actor s cid v) (h : WritesState sp f 
     WritesState sp f u (enterCore sp p f u actor s cid v).1 := by
   unfold enterCore
   split
-  · refine ⟨?_, by rw [reconcileCore_commits]; exact h.2.1, by rw [reconcileCore_receipts]; exact h.2.2⟩
-    intro x hx
-    obtain ⟨y, hy, he, -⟩ := reconcileCore_captured sp u actor s cid v x hx
-    rw [he]; exact h.1 y hy
+  · exact h
   · split
     · rename_i e slot pf hk
       split
@@ -223,7 +220,14 @@ private theorem stepCore_writes (sp p f u actor s e) (h : WritesState sp f u s)
       split
       · exact h
       · exact clickCore_writes _ _ _ _ _ _ _ h hd hu
-    | enter cid v => exact enterCore_writes _ _ _ _ _ _ _ _ h
+    | enter cid v =>
+      simp only [stepEvent]
+      split
+      · refine ⟨?_, by rw [reconcileCore_commits]; exact h.2.1, by rw [reconcileCore_receipts]; exact h.2.2⟩
+        intro x hx
+        obtain ⟨y, hy, he, -⟩ := reconcileCore_captured sp u actor s cid v x hx
+        rw [he]; exact h.1 y hy
+      · exact enterCore_writes _ _ _ _ _ _ _ _ h
     | confirm cid => exact confirmCore_writes _ _ _ _ _ _ _ h
     | ack a => simp only [stepEvent]; unfold ackCore; repeat' (first | exact h | split | dsimp only)
     | selectTab cid idx => simp only [stepEvent]; unfold selectTabCore; repeat' (first | exact h | split | dsimp only)
@@ -292,5 +296,8 @@ theorem accepted_writesOnly (sp prev can p) (h : check sp prev can p = .ok) :
 #print axioms accepted_writesOnly
 #print axioms requestPriorAuth_writes
 #print axioms clickCore_writes
+
+#print axioms enterCore_writes
+#print axioms stepCore_writes
 
 end Ehr.Check

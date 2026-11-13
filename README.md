@@ -192,8 +192,8 @@ facts. Leaving a chart keeps that patient's unsigned entries and alert
 acknowledgments as a draft for the signed-in session and reopening the chart
 restores them; signed work is not restored. Across such navigation, properties
 2, 5 and 11 are proved with each patient's work read from the open chart or
-the draft (`selection_global`). The call that loads a chart refuses commits
-and acknowledgments, and no patient data is shown before a patient is selected
+the draft (`selection_global`). The call that loads a chart refuses commits,
+acknowledgments and order-reconciliation decisions, and no patient data is shown before a patient is selected
 (`unselected_view`). Properties 1 and 9 keep their global counterexamples on
 the landing view; the global form of the other four is not stated. The live
 app keeps unsigned drafts across charts after long visits and changes to other
@@ -207,7 +207,8 @@ until the clinician keeps, changes or discontinues each line; after a discharge
 they are not restored and are listed as discarded. Critical-result action text is a
 draft outside `captured`, cleared on a successful resolve; the handler is
 refused while an alert popup is open, and the checker reserves all `critical.`
-component IDs so the handler cannot shadow a program control
+component IDs; order reconciliation similarly reserves `reconcile.line|`, so runtime
+controls cannot shadow a program control
 (`Ehr.Check.accepted_critical_no_shadow`). Authorization is by
 responsible/covering user ID, which is stricter than a role check.
 

@@ -56,6 +56,13 @@ def withCriticalId (id : CompId) : Program :=
   | _ => false
 #guard check spec none goodProgram (withCriticalId "criticality.action:k1") == .ok
 
+-- New specification for owner review: the complete reconciliation prefix is reserved.
+#guard ["reconcile.line|0", "reconcile.line|", "reconcile.line|future"].all fun id =>
+  match check spec none goodProgram (withCriticalId id) with
+  | .violation property _ _ _ => property == "reconcileIds"
+  | _ => false
+#guard check spec none goodProgram (withCriticalId "reconcile.lines|0") == .ok
+
 /-- A current-slot composer can add lines without stranding unfinished ones. -/
 def withAddLine : Program :=
   { goodProgram with screens := [roomingScreen, orderScreen, goodSignScreen].map pinTinyAlerts }
