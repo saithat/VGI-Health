@@ -251,10 +251,10 @@ def deficiencies (sp : Spec) (u : User) (records : List ChartInput) : List Defic
 
 /-! ## Work-list rendering -/
 
-/-- Two digits. -/
+/-- New specification for owner review: two digits. -/
 def pad2 (n : Nat) : String := if n < 10 then "0" ++ toString n else toString n
 
-/-- An epoch minute as UTC date and time (proleptic Gregorian calendar).
+/-- New specification for owner review: an epoch minute as UTC date and time (proleptic Gregorian calendar).
 Times before 1970 are shown as minutes. -/
 def utcText (m : Int) : String :=
   if m < 0 then toString m ++ " min" else
@@ -424,7 +424,8 @@ theorem listed_unsigned (sp : Spec) (u : User) (records : List ChartInput)
 
 /-! ## Section 4: reconciliation at transfer and discharge -/
 
-/-- The stored draft of `pid` after reconciling the store is the reconciled draft. -/
+/-- New specification for owner review: the stored draft of `pid` after
+reconciling the store is the reconciled draft. -/
 theorem draft_reconcileStore (sp : Spec) (s : State) (pid : String) (m : Movement) :
     Workspace.draft (reconcileStore sp s pid m) pid = reconcileDraft sp (Workspace.draft s pid) m := by
   unfold Workspace.draft reconcileStore

@@ -30,7 +30,7 @@ def patientLandingUi (p : Program) (f : Facts) (u : User) (s : State) : UiScreen
          [.info "" "Reports" "chartReports" "summary" [[("Department snapshot", "Schedule, census and case lists are available in Activities.")]]]
         else []) }
 
-/-- A value as plain text. -/
+/-- New specification for owner review: a value as plain text. -/
 def reconcileValueText : Value → String
   | .code c | .text c | .user c => c
   | .qty t _ => toString (t / 10) ++ "." ++ toString (t % 10)

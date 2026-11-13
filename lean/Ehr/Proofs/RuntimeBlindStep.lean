@@ -124,7 +124,8 @@ theorem clickCore_critical (sp prog facts user actor s comp c d) :
   | «macro» mid => simp only [clickCore, hk]; cases actor <;> rfl
   | _ => simp only [clickCore, hk]; rfl
 
-/-- A reconciliation decision carries the critical fields through. -/
+/-- New specification for owner review: a reconciliation decision carries the
+critical fields through. -/
 theorem reconcileCore_critical (sp user actor s cid v c d) :
     reconcileCore sp user actor (withCritical s c d) cid v =
       liftCritical (reconcileCore sp user actor s cid v) c d := by

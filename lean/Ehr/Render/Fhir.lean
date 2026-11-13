@@ -2793,7 +2793,8 @@ structure FactsInput where
   extraActivities? : Option (List PatientActivity) := none
   deriving Lean.ToJson, Lean.FromJson
 
-/-- The directory with the supplied extra activities appended. -/
+/-- New specification for owner review: the directory with the supplied extra
+activities appended. -/
 def withExtraActivities (d : PatientDirectory) (extra : Option (List PatientActivity)) : PatientDirectory :=
   { d with activities := d.activities ++ extra.getD [] }
 

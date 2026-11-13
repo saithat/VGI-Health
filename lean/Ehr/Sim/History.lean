@@ -264,6 +264,7 @@ def backId (prog : Program) (cid : CompId) : Bool :=
   | «macro» mid => simp only [clickCore, hk]; cases actor <;> rfl
   | _ => simp only [clickCore, hk]; rfl
 
+ /-- New specification for owner review: a reconciliation decision ignores the Back history. -/
  theorem reconcileCore_history (sp user actor s cid v h) :
     forgetOutput (reconcileCore sp user actor (withHistory s h) cid v) =
       forgetOutput (reconcileCore sp user actor s cid v) := by

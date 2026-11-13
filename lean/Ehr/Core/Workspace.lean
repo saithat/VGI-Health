@@ -32,7 +32,8 @@ def patient? (f : Facts) (id : String) : Option PatientChoice :=
   | _ => none
 
 /-- Clinical entry points are existing program screens, never data-supplied routes.
-The deficiency list opens charts where the role's own landing list does. -/
+New specification for owner review: the deficiency list opens charts where the
+role's own landing list does. -/
 def target (p : Program) (info : String) : Option ScreenId :=
   let info := if info == "deficiencies" then
     (match p.presetOwner with

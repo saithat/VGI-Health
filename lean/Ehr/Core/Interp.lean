@@ -325,8 +325,8 @@ def reconcileCore (sp : Spec) (user : User) (actor : Actor) (s : State) (cid : C
   unfold reconcileCore
   split <;> rfl
 
-/-- A reconciliation step keeps every field except the captures and the
-current order line. -/
+/-- New specification for owner review: a reconciliation step keeps every
+field except the captures and the current order line. -/
 theorem reconcileCore_frame (sp : Spec) (user : User) (actor : Actor) (s : State)
     (cid : CompId) (v : Value) :
     let t := (reconcileCore sp user actor s cid v).1
@@ -348,6 +348,7 @@ theorem reconcileCore_frame (sp : Spec) (user : User) (actor : Actor) (s : State
         | some d => cases d <;> exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
     · exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
 
+/-! New specification for owner review: frame lemmas of `reconcileCore`. -/
 @[simp] theorem reconcileCore_commits (sp user actor s cid v) :
     (reconcileCore sp user actor s cid v).1.commits = s.commits := (reconcileCore_frame sp user actor s cid v).1
 @[simp] theorem reconcileCore_receipts (sp user actor s cid v) :
@@ -367,7 +368,8 @@ theorem reconcileCore_frame (sp : Spec) (user : User) (actor : Actor) (s : State
     (reconcileCore sp user actor s cid v).1.patientDrafts? = s.patientDrafts? :=
   (reconcileCore_frame sp user actor s cid v).2.2.2.2.2.2.2.1
 
-/-- Without a line awaiting a decision, a reconciliation control does nothing. -/
+/-- New specification for owner review: without a line awaiting a decision, a
+reconciliation control does nothing. -/
 theorem reconcileCore_idle (sp : Spec) (user : User) (actor : Actor) (s : State)
     (cid : CompId) (v : Value) (h : ∀ x ∈ s.captured, x.provenance? ≠ some reconcileTag) :
     reconcileCore sp user actor s cid v = (s, .ignored) := by
@@ -383,7 +385,8 @@ theorem reconcileCore_idle (sp : Spec) (user : User) (actor : Actor) (s : State)
   rw [hn]
   rfl
 
-/-- Every capture after a reconciliation step is a capture of the input with
+/-- New specification for owner review: every capture after a reconciliation
+step is a capture of the input with
 only its provenance possibly changed: same element, line, value, author and
 confirmation. -/
 theorem reconcileCore_captured (sp : Spec) (user : User) (actor : Actor) (s : State)
@@ -498,7 +501,9 @@ def rejectReason (el : ElementSpec) (v : Value) : String :=
 /-- Enter a value into a shown field. Refused if the role may not enter the
 element; if a macro tries a human-only or `never`-prefill element; or if the
 value is not accepted. A human's value is confirmed; a macro's value waits for
-a human confirm. -/
+a human confirm. New specification for owner review: an entry on a control that
+is not a shown component is handled by `reconcileCore`, which ignores it unless
+it is the reconciliation control of an order line awaiting a decision. -/
 def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor : Actor)
     (s : State) (cid : CompId) (v : Value) : State × StepResult :=
   match shownComp? sp prog facts s cid with
