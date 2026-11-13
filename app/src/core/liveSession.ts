@@ -187,7 +187,10 @@ async function loadDeficiencyList(): Promise<
 > {
   try {
     return z
-      .object({ id: z.string(), activity: z.object({ info: z.string() }).passthrough() })
+      .object({
+        id: z.string(),
+        activity: z.object({ info: z.string() }).passthrough(),
+      })
       .parse(await marRequest("/deficiencies"));
   } catch {
     return undefined;
