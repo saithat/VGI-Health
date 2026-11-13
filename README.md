@@ -1,4 +1,4 @@
-_README last reviewed against commit `fbd08ff6` (2026-11-11)._
+_README last reviewed against commit `893c6ff4` (2026-11-12)._
 
 # VGI Health
 
@@ -90,9 +90,8 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-The retained recording is certified against an earlier build and must be
-re-certified before it is replayed against the current one; its layouts, rule
-inputs and outcome scenarios are frozen.
+The retained recording was re-certified against the current build on
+2026-11-11; its layouts, rule inputs and outcome scenarios are frozen.
 
 | Evidence | Result and caveat |
 |---|---|
@@ -314,7 +313,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Topic | Reference |
 |---|---|
 | Architecture and trust boundaries | [Architecture](docs/architecture.md), [assurance](docs/assurance.md), [generated proof map](docs/proof-map.md) |
-| Setup, tests and CI | [Live validation](docs/methods/live-validation.md), [reproduction](docs/reproduction.md), [CI workflow](.github/workflows/ci.yml) |
+| Setup, tests and CI | [Demo script](docs/demo.md), [live validation](docs/methods/live-validation.md), [reproduction](docs/reproduction.md), [CI workflow](.github/workflows/ci.yml) |
 | Clinical scope and rules | [Workflow inventory](docs/methods/ehr-scope.md), [regulations](docs/regulations.md), [rule catalog](docs/rules/catalog.md) |
 | Simulation and calibration | [Bounded clinician](docs/methods/simulation.md), [workload/interruptions](docs/methods/workload-and-interruptions.md), [simulation clocks](docs/methods/wave3-simulation.md), [workflow phases](docs/methods/workflow-phases.md), [public-evidence calibration plan](docs/design/workflow-calibration.md) |
 | Clinical scenario policies | [Medication outcomes](docs/methods/medication-outcomes.md), [information needs](docs/methods/information-needs.md), [ADT](docs/methods/adt.md) |
