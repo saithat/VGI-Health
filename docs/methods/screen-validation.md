@@ -53,17 +53,18 @@ measurements preserve its layout choices and identify their source lineage.
 ## Current certified build and measurements
 
 The current certified app SHA-256 is
-`060f612647ba7fff33dc4de76a655dbb638d26524dd3506ae843e074d96bde90`
-(checker `26af075f…`, WASM `8a0888fd…`). The 2026-11-11 re-certification, after
-the runtime and Property 6 changes, re-certifies all 33 retained revision
-bindings and refreshes 200 measurements across 50 source shifts in its local
-`runs/core-10day` copy; task completion is unchanged in all 403 measurement
-files. It follows the procedure of the
-[2026-11-10 integration](../audits/w3b-merge-20261110.md). Native and WASM strict replay verifies
-1,284 tasks and 72,636 events with zero mismatches, plus three preserved
-same-task controls. All fresh geometry binds this app hash; model calls are zero.
-The frozen programs, rule inputs, decisions and model responses remain
-byte-identical. The original shared recording remains historical at app hash
+`be573a351df139200aff4dbf0b48d24a2805c09294b4b28f00b69c3e587aafd9`
+(checker `dcc80a8f…`, WASM `e1403682…`). The 2026-11-13 re-certification, after
+the [chart timing and reconciliation](../design/chart-timing.md) changes,
+re-certifies all 33 retained revision bindings and refreshes 200 measurements
+across 50 source shifts in its local `runs/core-10day` copy; task completion is
+unchanged in all 1,548 run files that record it. It follows the procedure of the
+[2026-11-10 integration](../audits/w3b-merge-20261110.md). Native and WASM strict
+replay verifies 1,284 tasks and 72,636 events with zero mismatches, plus three
+preserved same-task controls. All fresh geometry binds this app hash; model calls
+are zero. The frozen programs, rule inputs, decisions and model responses remain
+byte-identical. The 2026-11-11 re-certification (app `060f6126…`) is superseded.
+The original shared recording remains historical at app hash
 `030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`.
 
 The generated Lean contract module participates in the app source hash, so the

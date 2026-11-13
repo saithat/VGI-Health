@@ -90,9 +90,8 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-The retained recording was re-certified on 2026-11-11; its layouts, rule inputs
-and outcome scenarios are frozen. Chart timing and reconciliation alter the
-certified app hash; that recording has not been re-certified for these changes.
+The retained recording was re-certified against the current build on
+2026-11-13; its layouts, rule inputs and outcome scenarios are frozen.
 
 | Evidence | Result and caveat |
 |---|---|
