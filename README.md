@@ -200,7 +200,11 @@ app keeps unsigned drafts across charts after long visits and changes to other
 patients' records ([drafts and signing](docs/methods/live-drafts.md)). Observation
 fields offer “Time taken”; entry, observation and signing times stay separate.
 “Late entry” is informational, using a 24-hour local policy default
-([timing](docs/design/chart-timing.md)). Critical-result action text is a
+([timing](docs/design/chart-timing.md)). A
+"Deficiencies" work list shows each clinician's unsigned drafts and overdue
+record obligations. Unsigned orders reopened after a transfer cannot be signed
+until the clinician keeps, changes or discontinues each line; after a discharge
+they are not restored and are listed as discarded. Critical-result action text is a
 draft outside `captured`, cleared on a successful resolve; the handler is
 refused while an alert popup is open, and the checker reserves all `critical.`
 component IDs so the handler cannot shadow a program control

@@ -29,6 +29,8 @@ import Ehr.Core.Alerts
 import Ehr.Core.Guard
 import Ehr.Core.Interp
 import Ehr.Core.View
+import Ehr.Core.Deficiencies
+import Ehr.Core.DeficienciesTests
 import Ehr.Api
 import Ehr.Examples.Tiny
 import Ehr.Examples.TinyTests

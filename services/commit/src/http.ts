@@ -81,6 +81,7 @@ export function server(store: Store, notifications: Notifications) {
         return json(res, 200, { spec: release.spec, program: release.program });
       }
       if (req.method === 'GET' && url.pathname === '/directory') return json(res, 200, await store.directory(actor));
+      if (req.method === 'GET' && url.pathname === '/deficiencies') return json(res, 200, await store.deficiencies(actor));
       if (req.method === 'GET' && url.pathname === '/me') return json(res, 200, { user: actor.user, persona: actor.persona, name: actor.name, adtRoles: actor.adtRoles, units: actor.units });
       if (req.method === 'GET' && url.pathname === '/adt/board') return json(res, 200, await adt.read(actor));
       if (req.method === 'POST' && url.pathname === '/adt/commands') {

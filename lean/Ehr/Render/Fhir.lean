@@ -2790,13 +2790,21 @@ structure FactsInput where
   worldContext? : Option Json := none
   directoryOnly? : Option Bool := none
   extraPatients? : Option (List PatientChoice) := none
+  /-- Server-computed activities added after the dated lists, such as the
+  signed-in clinician's deficiency list. They carry rows, never captures. -/
+  extraActivities? : Option (List PatientActivity) := none
   deriving Lean.ToJson, Lean.FromJson
+
+/-- New specification for owner review: the directory with the supplied extra
+activities appended. -/
+def withExtraActivities (d : PatientDirectory) (extra : Option (List PatientActivity)) : PatientDirectory :=
+  { d with activities := d.activities ++ extra.getD [] }
 
 /-- `facts` on a parsed input. -/
 def runFacts (i : FactsInput) : Except String FactsOutput :=
   if i.directoryOnly? == some true then .ok {
-    facts := { (default : Facts) with patientDirectory? := some (patientDirectory i.context
-      (bundleResources (i.worldContext?.getD i.bundle)) (i.extraPatients?.getD [])) }, display := Display.empty }
+    facts := { (default : Facts) with patientDirectory? := some (withExtraActivities (patientDirectory i.context
+      (bundleResources (i.worldContext?.getD i.bundle)) (i.extraPatients?.getD [])) i.extraActivities?) }, display := Display.empty }
   else match i.worldContext? with
   | none => (parseBundle i.context i.bundle).map fun (f, d) => { facts := f, display := d }
   | some graph => do
@@ -2822,7 +2830,7 @@ def runFacts (i : FactsInput) : Except String FactsOutput :=
     let queues := worldQueuePayloads ctx all p
     let oldPayloads := (f.infoPayloads?.getD []).filter fun q => !queues.any (fun x => x.info == q.info)
     let enriched := { f with
-      patientDirectory? := some (patientDirectory ctx all (i.extraPatients?.getD []))
+      patientDirectory? := some (withExtraActivities (patientDirectory ctx all (i.extraPatients?.getD [])) i.extraActivities?)
       infoPayloads? := some (queues ++ oldPayloads)
       artifactBindings? := some (surgicalBindings queues ++ (f.artifactBindings?.getD []).filter (fun b => !queues.any (fun q => q.artifactKey == b.key))) }
     pure { facts := enriched, display := d }

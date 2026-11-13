@@ -68,7 +68,7 @@ theorem stepCore_drafts (sp prog facts user actor s e) :
       · rfl
       · exact clickCore_drafts ..
     case selectTab cid idx => unfold selectTabCore; repeat' (first | rfl | split | dsimp only)
-    case enter cid v => unfold enterCore; repeat' (first | rfl | split | dsimp only)
+    case enter cid v => unfold enterCore; repeat' (first | rfl | exact reconcileCore_patientDrafts .. | split | dsimp only)
     case confirm cid => unfold confirmCore; repeat' (first | rfl | split | dsimp only)
     case ack a => unfold ackCore; repeat' (first | rfl | split | dsimp only)
     all_goals split <;> rfl

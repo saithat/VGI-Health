@@ -18,8 +18,35 @@ deriving instance Lean.ToJson, Lean.FromJson for
   ObligationStatus, ObligationView, ClockAnchor, ClockStamp, MonthCutoff, ClockRenewal,
   Multi.Critical.Result, Multi.Critical.Resolution, Multi.Critical.Ticket,
   InteractionSeverity, InteractionEvidence,
-  OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, EncounterRoleRule, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec,
-  DesignRules, Spec
+  OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, EncounterRoleRule, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec
+
+/-- Preserve the legacy spec JSON when `unsignedDraftMinutes` uses the default 1440-minute local policy.
+New specification for owner review. -/
+instance : Lean.ToJson DesignRules where
+  toJson d := Lean.Json.mkObj <| [
+    ("maxDepth", Lean.toJson d.maxDepth),
+    ("minTextSize", Lean.toJson d.minTextSize),
+    ("stabilityBudget", Lean.toJson d.stabilityBudget),
+    ("landmarks", Lean.toJson d.landmarks),
+    ("catalog", Lean.toJson d.catalog)] ++
+    (if d.unsignedDraftMinutes == 1440 then [] else [("unsignedDraftMinutes", Lean.toJson d.unsignedDraftMinutes)])
+
+/-- Default `unsignedDraftMinutes` to 1440 (24 hours, local policy) when omitted in existing spec JSON.
+New specification for owner review. -/
+instance : Lean.FromJson DesignRules where
+  fromJson? j := do
+    let unsignedDraftMinutes ← match j.getObjVal? "unsignedDraftMinutes" with
+      | .error _ => pure 1440
+      | .ok v => Lean.fromJson? v
+    return {
+      maxDepth := ← j.getObjValAs? Nat "maxDepth"
+      minTextSize := ← j.getObjValAs? Nat "minTextSize"
+      stabilityBudget := ← j.getObjValAs? Nat "stabilityBudget"
+      landmarks := ← j.getObjValAs? (List InfoId) "landmarks"
+      catalog := ← j.getObjValAs? (List String) "catalog"
+      unsignedDraftMinutes := unsignedDraftMinutes }
+
+deriving instance Lean.ToJson, Lean.FromJson for Spec
 
 deriving instance Lean.ToJson, Lean.FromJson for
   Slot, Prefill, Action, Visibility, Size, Kind, Component, ComponentDef, Screen, MacroStep,

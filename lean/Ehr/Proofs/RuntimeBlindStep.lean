@@ -124,13 +124,24 @@ theorem clickCore_critical (sp prog facts user actor s comp c d) :
   | «macro» mid => simp only [clickCore, hk]; cases actor <;> rfl
   | _ => simp only [clickCore, hk]; rfl
 
+/-- New specification for owner review: a reconciliation decision carries the
+critical fields through. -/
+theorem reconcileCore_critical (sp user actor s cid v c d) :
+    reconcileCore sp user actor (withCritical s c d) cid v =
+      liftCritical (reconcileCore sp user actor s cid v) c d := by
+  have hs : reconcileSlots (withCritical s c d) = reconcileSlots s := rfl
+  unfold reconcileCore
+  rw [hs]
+  cases actor <;> simp only [withCritical_captured]
+  all_goals repeat' first | rfl | (split <;> try simp_all [liftCritical, withCritical])
+
 /-- A field entry carries the critical fields through. -/
 theorem enterCore_critical (sp prog facts user actor s cid v c d) :
     enterCore sp prog facts user actor (withCritical s c d) cid v =
       liftCritical (enterCore sp prog facts user actor s cid v) c d := by
   simp only [enterCore, shownComp_critical]
   cases actor <;> simp only [resolveSlot_critical, withCritical_captured, elementValueValid_critical]
-  all_goals repeat' first | rfl | (split <;> try simp_all)
+  all_goals repeat' first | rfl | exact reconcileCore_critical .. | (split <;> try simp_all)
 
 /-- A confirmation carries the critical fields through. -/
 theorem confirmCore_critical (sp prog facts user actor s cid c d) :

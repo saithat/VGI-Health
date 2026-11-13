@@ -46,7 +46,7 @@ theorem enterCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user 
     MacroSafe sp s (enterCore sp prog facts user .«macro» s cid v).1 := by
   unfold enterCore
   split
-  · exact MacroSafe.refl _ _
+  · rw [reconcileCore_macro]; exact MacroSafe.refl _ _
   · split
     · rename_i e slot _ _
       split

@@ -95,6 +95,10 @@ theorem clickCore_names (sp p f u actor s c) (h : ScreenNames p s) :
 theorem enterCore_names (sp p f u actor s cid v) (h : ScreenNames p s) :
     ScreenNames p (enterCore sp p f u actor s cid v).1 := by
   unfold enterCore
+  split
+  · unfold ScreenNames at h ⊢
+    rw [reconcileCore_screen, (reconcileCore_frame sp u actor s cid v).2.2.2.2.2.1]
+    exact h
   repeat' (first | exact h | split | (dsimp only; exact h) | dsimp only)
 
 /-- Confirming a field preserves valid screen and back-stack names. -/

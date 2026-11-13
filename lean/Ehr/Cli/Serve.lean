@@ -3,6 +3,7 @@ import Ehr.Api
 import Ehr.Render.Api
 import Ehr.Commit.Mar
 import Ehr.Commit.Adt
+import Ehr.Core.Deficiencies
 
 /-! Native-only JSON-lines transport. One response per line; malformed requests
 are isolated. This module changes neither the guard nor the shared transition. -/
@@ -15,6 +16,36 @@ structure SharedInput where
   state : Multi.State
   action : Multi.Action
   deriving FromJson
+
+/-- The signed-in clinician's charts, as the host read them. -/
+structure DeficienciesInput where
+  spec : Spec
+  user : User
+  records : List Deficiencies.ChartInput
+  /-- Directory identities, for patient names in the work list. -/
+  names : List PatientChoice := []
+  deriving FromJson
+
+structure DeficienciesOutput where
+  deficiencies : List Deficiencies.Deficiency
+  activity : PatientActivity
+  deriving ToJson
+
+/-- A checkpoint's directory state, the ADT stamp saved with one patient's draft
+and that patient's current stamp. -/
+structure ReconcileStoreInput where
+  spec : Spec
+  state : State
+  patient : String
+  saved? : Option Deficiencies.AdtStamp := none
+  current? : Option Deficiencies.AdtStamp := none
+  deriving FromJson
+
+structure ReconcileStoreOutput where
+  state : State
+  movement : Deficiencies.Movement
+  discarded : List Captured
+  deriving ToJson
 
 private def applyJson (α β : Type) [FromJson α] [ToJson β]
     (f : α → β) (input : Json) : Except String Json := do
@@ -81,6 +112,17 @@ def dispatch (request : Json) : Except String Json := do
     let screen := Render.runRenderUi i
     pure (Json.mkObj [("screen", toJson screen), ("canonical", .str screen.canonical)])
   | "step" => applyJson StepInput StepOutput runStep input
+  | "deficiencies" =>
+    let i : DeficienciesInput ← fromJson? input
+    let rows := Deficiencies.deficiencies i.spec i.user i.records
+    pure (toJson ({ deficiencies := rows, activity := Deficiencies.activity i.names rows : DeficienciesOutput }))
+  | "reconcile-store" =>
+    let i : ReconcileStoreInput ← fromJson? input
+    let m := Deficiencies.movement i.saved? i.current?
+    let out : ReconcileStoreOutput := {
+      state := Deficiencies.reconcileStore i.spec i.state i.patient m, movement := m,
+      discarded := Deficiencies.discarded i.spec (Workspace.draft i.state i.patient) m }
+    pure (toJson out)
   | "facts" =>
     let i ← fromJson? input
     pure (toJson (← Render.Fhir.runFacts i))

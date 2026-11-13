@@ -180,6 +180,23 @@ export function projectLive(
 /** Stage events through real Lean; publish a commit only after the atomic write
  * succeeds. A rejected transaction leaves the pre-click state and all inputs.
  */
+/** The clinician's stored deficiency list, or none when the service does not
+ * provide one; the workspace works without it. */
+async function loadDeficiencyList(): Promise<
+  { id: string; activity: unknown } | undefined
+> {
+  try {
+    return z
+      .object({
+        id: z.string(),
+        activity: z.object({ info: z.string() }).passthrough(),
+      })
+      .parse(await marRequest("/deficiencies"));
+  } catch {
+    return undefined;
+  }
+}
+
 export async function createLiveSession(
   interp: Interp,
   spec: unknown,
@@ -223,6 +240,11 @@ export async function createLiveSession(
     z.object({ patientSelection: z.boolean().optional() }).parse(program)
       .patientSelection === true;
   const directoryBundle = initialContext?.worldContext ?? bundle;
+  // The service computes the signed-in clinician's deficiency list natively and
+  // stores it; sessions bind it by ID so replay paints the same work list.
+  const deficiencyList = selectionEnabled
+    ? await loadDeficiencyList()
+    : undefined;
   const directoryProjection = (): FactsOutput =>
     JSON.parse(
       interp.facts(
@@ -233,6 +255,9 @@ export async function createLiveSession(
             ...factsContext(user, new Date().toISOString()),
             today: workspaceDate,
           },
+          ...(deficiencyList
+            ? { extraActivities: [deficiencyList.activity] }
+            : {}),
         }),
       ),
     );
@@ -336,6 +361,7 @@ export async function createLiveSession(
       ...(context.bed?.id ? { bed: context.bed.id } : {}),
       ...(checkpointId ? { checkpointId } : {}),
       ...(workspaceActivity ? { workspaceActivity } : {}),
+      ...(deficiencyList ? { deficiencyList: deficiencyList.id } : {}),
     });
     if (
       JSON.stringify([opened.spec, opened.program]) !==

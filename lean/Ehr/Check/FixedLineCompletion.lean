@@ -175,7 +175,7 @@ theorem completable_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode) (a :
             reviewVisibility, o, receiptHideSafe, spec, Scalar.spec, Scalar.review,
             List.all_eq_true]
     rw [guardBase, entries, reviews]
-    simp [spec, Scalar.spec, Spec.commit?, extraGuard, signingHasOrder, validationsOk, elementValueValid, drug, Scalar.element,
+    simp [spec, Scalar.spec, Spec.commit?, extraGuard, signingHasOrder, isOrderCommit, validationsOk, elementValueValid, drug, Scalar.element,
       nonDose, defaultsOk, displaysOk, actionLabelOk, entry, drugElement, waiverEligible]
     change (List.contains [r] u.role && true) = true
     simp [role]

@@ -79,6 +79,17 @@ function clinicalEvent(event: Obj): Obj {
   return Object.fromEntries(Object.entries(event).filter(([key]) => key !== 'entryEpochMinute'));
 }
 
+/** The patient's native ADT position, if the patient is on the bed board. */
+export function adtStamp(snapshot: Obj): Obj | undefined {
+  const adt = maybeObj(snapshot.adt);
+  return adt ? { revision: num(adt.revision ?? 0), encounter: num(adt.encounter ?? 0), admitted: adt.admitted === true } : undefined;
+}
+
+/** Server-computed directory activities bound to a session, if any. */
+function extraActivities(context: Obj) {
+  return Array.isArray(context.extraActivities) ? { extraActivities: context.extraActivities } : {};
+}
+
 export function currentContext(context: Obj, time = Date.now()) {
   const now = new Date(time);
   return { ...context, today: now.toISOString().slice(0, 10), now: now.getUTCHours() * 60 + now.getUTCMinutes() };
@@ -285,7 +296,7 @@ export class Store {
     this.authorize(actor, r.rows[0].patient);
     return r.rows[0].outcome;
   }
-  async openSession(actor: Actor, input: { patient: string; release: string; workflow: string; expectedVersion?: number; encounter?: string; task?: string; bed?: string; checkpointId?: string; workspaceActivity?: string }) {
+  async openSession(actor: Actor, input: { patient: string; release: string; workflow: string; expectedVersion?: number; encounter?: string; task?: string; bed?: string; checkpointId?: string; workspaceActivity?: string; deficiencyList?: string }) {
     this.authorize(actor, input.patient);
     const release = this.release(input.release);
     const w = release.workflows[input.workflow];
@@ -297,15 +308,40 @@ export class Store {
       // A checkpoint was derived at departure. Its source patient/version
       // and short-lived command session are deliberately not consulted here.
       let workspaceState: Obj | undefined;
+      let draftAdt: Obj = {};
       if (input.checkpointId) {
-        const checkpoint = await c.query('SELECT workspace_state,release_hash FROM commit_draft_checkpoints WHERE tenant=$1 AND id=$2 AND actor=$3 AND auth_session=$4',
+        const checkpoint = await c.query('SELECT workspace_state,release_hash,draft_adt FROM commit_draft_checkpoints WHERE tenant=$1 AND id=$2 AND actor=$3 AND auth_session=$4',
           [this.config.tenant, input.checkpointId, actor.user.id, this.draftScope(actor)]);
         if (!checkpoint.rowCount) throw new Fault(404, 'checkpoint_not_found');
         if (!w.project || !release.program.patientSelection || checkpoint.rows[0].release_hash !== digest(release))
           throw new Fault(409, 'checkpoint_release_mismatch');
         workspaceState = obj(checkpoint.rows[0].workspace_state);
+        draftAdt = maybeObj(checkpoint.rows[0].draft_adt) ?? {};
+      }
+      let extra: Obj[] | undefined;
+      if (input.deficiencyList) {
+        const list = await c.query('SELECT activity FROM commit_deficiency_lists WHERE tenant=$1 AND id=$2 AND actor=$3 AND auth_session=$4',
+          [this.config.tenant, input.deficiencyList, actor.user.id, this.draftScope(actor)]);
+        if (!list.rowCount) throw new Fault(404, 'deficiency_list_not_found');
+        if (!w.project || !release.program.patientSelection) throw new Fault(422, 'workspace_required');
+        extra = [obj(list.rows[0].activity)];
       }
       const p = await this.stream(c, `patient:${input.patient}`, true);
+      // The stamp the clinician sees in this chart; a later departure records it
+      // with the saved draft. The native ADT reducer owns this state.
+      const stamp = adtStamp(obj(p.snapshot));
+      if (workspaceState && input.checkpointId) {
+        // Native Lean reconciles only this patient's stored draft for the ADT
+        // movement since it was saved; hydration then restores it unchanged.
+        const saved = maybeObj(draftAdt[input.patient]);
+        const reconciled = await this.lean.call('reconcile-store', { spec: release.spec, state: workspaceState, patient: input.patient,
+          ...(saved ? { saved } : {}), ...(stamp ? { current: stamp } : {}) });
+        workspaceState = obj(reconciled.state);
+        const discarded = objs(reconciled.discarded ?? []);
+        if (discarded.length) await c.query(`INSERT INTO commit_discarded_drafts(tenant,actor,checkpoint_id,patient,encounter_id,captured)
+          VALUES($1,$2,$3,$4,$5,$6) ON CONFLICT (tenant,checkpoint_id,patient) DO NOTHING`,
+        [this.config.tenant, actor.user.id, input.checkpointId, input.patient, typeof saved?.encounterId === 'string' ? saved.encounterId : '', JSON.stringify(discarded)]);
+      }
       this.requireMarBinding(obj(p.snapshot), w);
       const snapshot = obj(p.snapshot);
       let context: Obj = await this.workflowContext(obj(snapshot.context), w, obj(snapshot.bundle));
@@ -323,12 +359,14 @@ export class Store {
           directoryDate: p.snapshot.context.today, bed: bed?.id, encounterId: encounter.id, taskId: task?.id,
           record: [['viewerPersona', clinicalPersona(actor)], ['selectedEncounterId', encounter.id]] };
       }
-      if (w.project && release.program.patientSelection) context = { ...context, draftScope: this.draftScope(actor) };
+      if (w.project && release.program.patientSelection) context = { ...context, draftScope: this.draftScope(actor),
+        ...(stamp ? { adtStamp: stamp } : {}), ...(input.checkpointId ? { checkpointId: input.checkpointId } : {}),
+        ...(extra ? { extraActivities: extra } : {}) };
       const directory = w.project ? await this.directory(actor) : undefined;
       const selection = w.project && release.program.patientSelection;
       const facts = await this.lean.call('facts', selection
-        ? { bundle: directory, directoryOnly: true, context: { ...context, today: context.directoryDate ?? context.today } }
-        : { bundle: p.snapshot.bundle, context, ...(directory ? { worldContext: directory } : {}) });
+        ? { bundle: directory, directoryOnly: true, context: { ...context, today: context.directoryDate ?? context.today }, ...extraActivities(context) }
+        : { bundle: p.snapshot.bundle, context, ...(directory ? { worldContext: directory, ...extraActivities(context) } : {}) });
       let state = workspaceState ?? await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
       if (input.workspaceActivity) {
         if (!selection) throw new Fault(422, 'workspace_required');
@@ -350,6 +388,57 @@ export class Store {
         projection: facts, spec: release.spec, program: release.program, user: actor.user,
         ...(resource ? { shared: { key, version: resource.version, state: resource.snapshot } } : {}) };
     });
+  }
+  /** The signed-in clinician's deficiency list, computed by native Lean from
+   * each chart's current facts, the commits signed in its encounter, this
+   * login's latest saved drafts with their ADT stamps, and order lines a
+   * discharge kept out of a chart. The list is stored so that a later session
+   * paints exactly the activity the browser was shown. */
+  async deficiencies(actor: Actor) {
+    if (!['rn', 'physician', 'np', 'surgeon'].includes(actor.user.role)) throw new Fault(403, 'role_forbidden');
+    const persona = clinicalPersona(actor);
+    const release = this.config.releases[persona];
+    if (!release) throw new Fault(404, 'release_not_found');
+    const scope = this.draftScope(actor);
+    const t = this.config.tenant;
+    const latest = (await this.db.query(`SELECT id,workspace_state,draft_adt,created_at FROM commit_draft_checkpoints
+      WHERE tenant=$1 AND actor=$2 AND auth_session=$3 ORDER BY created_at DESC, id DESC LIMIT 1`, [t, actor.user.id, scope])).rows[0];
+    const drafts = latest ? objs(obj(latest.workspace_state).patientDrafts ?? []) : [];
+    const stamps = latest ? maybeObj(latest.draft_adt) ?? {} : {};
+    const discards = (await this.db.query(`SELECT checkpoint_id,patient,encounter_id,captured FROM commit_discarded_drafts
+      WHERE tenant=$1 AND actor=$2 ORDER BY created_at, checkpoint_id`, [t, actor.user.id])).rows;
+    const keys = (await this.db.query(`SELECT key FROM commit_streams WHERE tenant=$1 AND kind='patient' AND substring(key from 9)=ANY($2) ORDER BY key COLLATE "C"`,
+      [t, actor.patients])).rows.map(r => str(r.key));
+    const epochMinute = Math.floor(this.now() / 60_000);
+    const records: Obj[] = [];
+    for (const key of keys) {
+      const patient = key.slice('patient:'.length);
+      const row = (await this.db.query('SELECT snapshot FROM commit_streams WHERE tenant=$1 AND key=$2', [t, key])).rows[0];
+      if (!row) continue;
+      const snapshot = obj(row.snapshot);
+      const projected = await this.lean.call('facts', { bundle: snapshot.bundle, context: currentContext(obj(snapshot.context ?? {})) });
+      const facts = obj(projected.facts);
+      // The service clock is the trusted time source for live charts.
+      if (typeof facts.epochMinute !== 'number') facts.epochMinute = epochMinute;
+      const encounter = typeof facts.episodeId === 'string' ? facts.episodeId
+        : typeof maybeObj(snapshot.context)?.encounterId === 'string' ? str(obj(snapshot.context).encounterId) : '';
+      const commits = (await this.db.query(`SELECT DISTINCT event->'guard'->'input'->>'commit' AS commit FROM commit_events
+        WHERE tenant=$1 AND stream=$2 AND event->>'kind'='command' AND COALESCE(event->'session'->'context'->>'encounterId','')=$3
+        AND event->'guard'->'input'->>'commit' IS NOT NULL`, [t, key, encounter])).rows.map(r => str(r.commit));
+      const stamp = adtStamp(snapshot);
+      records.push({ patient, encounter, facts, commits, ...(stamp ? { adt: stamp } : {}),
+        drafts: drafts.filter((d: Obj) => d.patient === patient).map((draft: Obj) => ({
+          checkpoint: str(latest.id), draft, savedAt: Math.floor(new Date(latest.created_at).getTime() / 60_000),
+          ...(maybeObj(stamps[patient]) ? { adt: stamps[patient] } : {}) })),
+        discards: discards.filter(d => d.patient === patient).map(d => ({ checkpoint: str(d.checkpoint_id), encounter: str(d.encounter_id), captured: d.captured })) });
+    }
+    const names = obj(obj(obj(await this.lean.call('facts', { bundle: await this.directory(actor), directoryOnly: true,
+      context: currentContext({ receipts: [], record: [] }) })).facts).patientDirectory).patients;
+    const computed = await this.lean.call('deficiencies', { spec: release.spec, user: actor.user, records, names: names ?? [] });
+    const id = randomUUID();
+    await this.db.query(`INSERT INTO commit_deficiency_lists(tenant,id,actor,auth_session,activity,deficiencies,created_at)
+      VALUES($1,$2,$3,$4,$5,$6,$7)`, [t, id, actor.user.id, scope, computed.activity, JSON.stringify(computed.deficiencies), new Date(this.now())]);
+    return { id, deficiencies: computed.deficiencies, activity: computed.activity };
   }
   private draftScope(actor: Actor) {
     // OIDC sid is stable across access-token refresh and changes on a new
@@ -373,9 +462,21 @@ export class Store {
       const state = obj((await this.lean.call('step', { ...replay.base, state: replay.state, event: input.event })).state);
       if (!state.patientContext || maybeObj(state.patientContext)?.patient || maybeObj(state.patientContext)?.bound)
         throw new Fault(422, 'checkpoint_requires_directory');
-      const inserted = await c.query(`INSERT INTO commit_draft_checkpoints(tenant,actor,auth_session,source_session,source_revision,leave_hash,id,release_hash,workspace_state)
-        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (tenant,actor,auth_session,source_session,source_revision,leave_hash) DO NOTHING RETURNING id`,
-      [...binding, randomUUID(), digest(release), state]);
+      // Each stored draft keeps the ADT stamp of the chart it was saved from:
+      // this chart's stamp at session open, earlier drafts' stamps unchanged.
+      const context = obj(s.context);
+      const previous = typeof context.checkpointId === 'string'
+        ? maybeObj((await c.query('SELECT draft_adt FROM commit_draft_checkpoints WHERE tenant=$1 AND id=$2 AND actor=$3',
+          [this.config.tenant, context.checkpointId, actor.user.id])).rows[0]?.draft_adt) ?? {}
+        : {};
+      const drafted = new Set(objs(state.patientDrafts ?? []).map((d: Obj) => str(d.patient)));
+      const draftAdt: Obj = Object.fromEntries(Object.entries(previous).filter(([patient]) => drafted.has(patient) && patient !== s.patient));
+      if (drafted.has(s.patient) && maybeObj(context.adtStamp))
+        draftAdt[s.patient] = { ...obj(context.adtStamp), ...(typeof context.encounterId === 'string' ? { encounterId: context.encounterId } : {}) };
+      // The service clock dates the draft; the deficiency deadline counts from it.
+      const inserted = await c.query(`INSERT INTO commit_draft_checkpoints(tenant,actor,auth_session,source_session,source_revision,leave_hash,id,release_hash,workspace_state,draft_adt,created_at)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (tenant,actor,auth_session,source_session,source_revision,leave_hash) DO NOTHING RETURNING id`,
+      [...binding, randomUUID(), digest(release), state, draftAdt, new Date(this.now())]);
       if (inserted.rowCount) return { checkpointId: inserted.rows[0].id };
       return { checkpointId: (await c.query('SELECT id FROM commit_draft_checkpoints WHERE tenant=$1 AND actor=$2 AND auth_session=$3 AND source_session=$4 AND source_revision=$5 AND leave_hash=$6', binding)).rows[0].id };
     });
@@ -427,10 +528,10 @@ export class Store {
     const directory = project ? await this.directory(actor) : undefined;
     const projection = await this.lean.call('facts', { bundle: chart, context: s.context,
       ...(directory ? { worldContext: { ...directory, entry: directory.entry.filter((e: Obj) =>
-        !obj(s.context).taskId || obj(e.resource).resourceType !== 'Task' || maybeObj(obj(e.resource).for)?.reference !== `Patient/${patient.patient}` || obj(e.resource).id === obj(s.context).taskId) } } : {}) });
+        !obj(s.context).taskId || obj(e.resource).resourceType !== 'Task' || maybeObj(obj(e.resource).for)?.reference !== `Patient/${patient.patient}` || obj(e.resource).id === obj(s.context).taskId) }, ...extraActivities(obj(s.context)) } : {}) });
     let base = { spec: release.spec, program: release.program, user: actor.user, facts: projection.facts, display: projection.display };
     const selection = project && obj(release.program).patientSelection;
-    const workspace = selection ? await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...obj(s.context), today: obj(s.context).directoryDate ?? obj(s.context).today } }) : undefined;
+    const workspace = selection ? await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...obj(s.context), today: obj(s.context).directoryDate ?? obj(s.context).today }, ...extraActivities(obj(s.context)) }) : undefined;
     if (workspace) base = { ...base, ...workspace };
     let state = maybeObj(obj(s.context).workspaceState) ?? await this.lean.call('init', base);
     const frames: { step: number; phase: 'ready' | 'loading'; hash: string }[] = [];
@@ -665,7 +766,7 @@ export class Store {
       const refreshed = projecting ? await this.stream(c, `patient:${s.patient}`) : undefined;
       const screenProjection = projecting ? await this.lean.call('facts', {
         bundle: this.sourceBundle(required(refreshed).snapshot.bundle, s.context), context: s.context,
-        ...(workflow.project ? { worldContext: await this.directory(actor, c) } : {}),
+        ...(workflow.project ? { worldContext: await this.directory(actor, c), ...extraActivities(obj(s.context)) } : {}),
       }) : undefined;
       if (screenProjection) screenProjection.facts = { ...obj(screenProjection.facts), epochMinute: Math.floor(signedAt / 60000) };
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");

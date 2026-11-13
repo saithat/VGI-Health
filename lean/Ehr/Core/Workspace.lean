@@ -31,8 +31,14 @@ def patient? (f : Facts) (id : String) : Option PatientChoice :=
   | [p] => if id == "" then none else some p
   | _ => none
 
-/-- Clinical entry points are existing program screens, never data-supplied routes. -/
+/-- Clinical entry points are existing program screens, never data-supplied routes.
+New specification for owner review: the deficiency list opens charts where the
+role's own landing list does. -/
 def target (p : Program) (info : String) : Option ScreenId :=
+  let info := if info == "deficiencies" then
+    (match p.presetOwner with
+     | "P2" => "edTrackBoard" | "P3" => "shiftWorklist" | "P5" => "orSchedule" | _ => "scheduleTasks")
+    else info
   let candidates := match info with
     | "edTrackBoard" => ["w3Triage"]
     | "shiftWorklist" | "unitCensus" => ["w4Mar"]
@@ -98,7 +104,7 @@ def openControls (p : Program) (f : Facts) (s : State) : List Control :=
 /-- Activities and Patient Lookup are semantic navigation actions. -/
 def navigation (p : Program) (f : Facts) (s : State) : List Control :=
   let controls : List Control := (activities p f).map (fun a =>
-    { id := "workspace.activity|" ++ a.info, label := a.title ++ (if a.info.startsWith "inbox" then " (" ++ toString a.rows.length ++ ")" else ""), action := .showList a.info }) ++
+    { id := "workspace.activity|" ++ a.info, label := a.title ++ (if a.info.startsWith "inbox" || a.info == "deficiencies" then " (" ++ toString a.rows.length ++ ")" else ""), action := .showList a.info }) ++
   [{ id := "workspace.lookup", label := "Patient Lookup", action := .showList "lookup" },
    { id := "workspace.return", label := "Return to " ++ (((activities p f).find? (·.info == primary p)).map (·.title)).getD "patient list"
      action := .showList (primary p) }]

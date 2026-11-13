@@ -581,6 +581,9 @@ structure DesignRules where
   catalog : List String
   /-- New specification for owner review: local policy, absent means 1440 minutes. -/
   lateEntryMinutes? : Option Nat := none
+  /-- New specification for owner review: local policy deadline in minutes (default 1440, 24 hours)
+  for saved unsigned drafts whose commit has no temporal deadline. -/
+  unsignedDraftMinutes : Nat := 1440
   deriving DecidableEq, Repr, Inhabited
 
 /-- New specification for owner review: local late-entry policy default. -/

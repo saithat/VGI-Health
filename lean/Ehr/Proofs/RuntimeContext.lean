@@ -67,7 +67,7 @@ theorem stepCore_context (sp prog facts user actor s e) :
       · rfl
       · exact clickCore_context ..
     case selectTab cid idx => unfold selectTabCore; repeat' (first | rfl | split | dsimp only)
-    case enter cid v => unfold enterCore; repeat' (first | rfl | split | dsimp only)
+    case enter cid v => unfold enterCore; repeat' (first | rfl | exact reconcileCore_patientContext .. | split | dsimp only)
     case confirm cid => unfold confirmCore; repeat' (first | rfl | split | dsimp only)
     case ack a => unfold ackCore; repeat' (first | rfl | split | dsimp only)
     all_goals split <;> rfl

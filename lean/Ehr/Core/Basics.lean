@@ -893,12 +893,41 @@ def infoPinned (sp : Spec) (facts : Facts) (s : State) (i : InfoId) : Bool :=
       | .commit c => displayActive facts s (some c) r
       | _ => false)
 
-/-- Signing an order needs a medication line or a complete, confirmed service line. -/
+/-- New specification for owner review: whether `c` is an order-entry commit in `sp`:
+`signOrders` or any commit with a per-order-line drug entry. This is exactly the
+`signing` test of `signingHasOrder`. -/
+def isOrderCommit (sp : Spec) (c : CommitId) : Bool :=
+  c == "signOrders" ||
+    sp.entries.any (fun rq => rq.commit == c && rq.perOrderLine && rq.element == drugElement)
+
+/-- New specification for owner review: whether element `e` belongs to an order
+line of an unsigned order draft, read from the spec: a per-order-line entry of an
+order-entry commit, or one of the line identities that `signingHasOrder` already
+reads (`drug`, `orderKind`, `orderCode`). Whole-order entries such as weight or
+patient-ID re-entry are not line elements. -/
+def isOrderLineElement (sp : Spec) (e : ElementId) : Bool :=
+  e == drugElement || e == "orderKind" || e == "orderCode" ||
+    sp.entries.any fun rq => isOrderCommit sp rq.commit && rq.perOrderLine && rq.element == e
+
+/-- New specification for owner review: the provenance of an unsigned order-line
+capture restored after the patient's transfer, before the clinician decides what
+to do with its line. -/
+def reconcileTag : String := "needsReconciliation"
+
+/-- New specification for owner review: some capture still awaits a per-line
+transfer reconciliation decision. -/
+def reconcilePending (s : State) : Bool :=
+  s.captured.any fun x => x.provenance? == some reconcileTag
+
+/-- Signing an order needs a medication line or a complete, confirmed service line.
+New specification for owner review: an order-entry commit also needs every
+transferred order line reconciled (no capture still tagged `reconcileTag`). -/
 def signingHasOrder (sp : Spec) (s : State) (c : CommitId) : Bool :=
   let signing := c == "signOrders" || sp.entries.any (fun rq => rq.commit == c && rq.perOrderLine && rq.element == drugElement)
-  !signing || !(orderLines s).isEmpty || s.captured.any (fun x =>
+  (!signing || !(orderLines s).isEmpty || s.captured.any (fun x =>
     serviceOrderAt s x.slot && ["orderKind", "orderCode"].all (fun e =>
-      s.captured.any (fun y => y.slot == x.slot && y.element == e && y.confirmed)))
+      s.captured.any (fun y => y.slot == x.slot && y.element == e && y.confirmed)))) &&
+  (!isOrderCommit sp c || !reconcilePending s)
 
 /-- Additional commit contracts. Kept separate from entries/review receipts. -/
 def extraGuard (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=

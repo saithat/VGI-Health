@@ -226,6 +226,7 @@ export async function openMar(input: {
   bed?: string;
   checkpointId?: string;
   workspaceActivity?: string;
+  deficiencyList?: string;
 }): Promise<MarOpened> {
   return JSON.parse(JSON.stringify(await marRequest("/sessions", input)));
 }

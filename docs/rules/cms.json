@@ -1845,7 +1845,7 @@
     "needsCoreFeature": "Post-discharge completion obligation and 30-day clock",
     "confidence": "high",
     "verified": true,
-    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. "
+    "notes": "Verified 2026-10-31 against official eCFR XML, title 42 as of 2026-10-29: https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-42.xml?part=482. Mapping is partial: a visit diagnosis, surgical complication field or signed generic note cannot establish completeness of the entire hospital record. Cross-record view: open obligations under this rule are listed on the responsible clinician's deficiency list (Ehr.Deficiencies, docs/design/chart-timing.md section 3) once the chart's facts carry the anchor event; the live FHIR projection does not yet supply that event evidence."
   },
   {
     "id": "cms-482.24-c4iA-history-physical-timing",

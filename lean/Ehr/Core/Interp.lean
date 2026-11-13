@@ -38,7 +38,12 @@ def linkedDependents (l : List Captured) (source : ElementId) : List ElementId :
 /-- Store a value and discard its superseded linked copies. A changed source
 marks future copies as pending human confirmation. -/
 def storedCapture (l : List Captured) (x : Captured) : Captured :=
-  { x with provenance? := if (!(linkedDependents l x.element).isEmpty && l.any (fun y =>
+  { x with provenance? :=
+    -- New specification for owner review: re-entering a value on a line that
+    -- awaits transfer reconciliation keeps it awaiting the explicit decision.
+    if l.any (fun y => y.element == x.element && y.slot == x.slot && y.provenance? == some reconcileTag)
+    then some reconcileTag else
+    if (!(linkedDependents l x.element).isEmpty && l.any (fun y =>
       y.element == x.element && y.slot == x.slot && y.value != x.value)) ||
       l.any (fun y => y.element == x.element && y.slot == x.slot && y.provenance? == some "linked-source-changed")
     then some "linked-source-changed" else x.provenance? }
@@ -254,6 +259,234 @@ def clickCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
     | .«macro» => (s, .blocked "macros cannot run macros")
   | _ => (s, .ignored)
 
+/-! ## Transfer reconciliation -/
+
+/-- New specification for owner review: the control that records the per-line
+transfer reconciliation decision for order line `slot`. -/
+def reconcileComp (slot : Nat) : CompId := "reconcile.line|" ++ toString slot
+
+/-- New specification for owner review: order lines that still await a transfer
+reconciliation decision, in capture order. -/
+def reconcileSlots (s : State) : List Nat :=
+  (s.captured.filterMap fun x => if x.provenance? == some reconcileTag then some x.slot else none).eraseDups
+
+/-- New specification for owner review: a capture of line `n` that awaits the decision. -/
+def reconcileTagged (n : Nat) (x : Captured) : Bool :=
+  x.slot == n && x.provenance? == some reconcileTag
+
+/-- New specification for owner review: a per-line transfer reconciliation decision. -/
+inductive ReconcileDecision
+  | keep | change | discontinue
+  deriving DecidableEq, Repr, Inhabited
+
+/-- New specification for owner review: the decision an entered value names,
+as the codes `keep`, `change` and `discontinue`. -/
+def ReconcileDecision.ofValue? : Value → Option ReconcileDecision
+  | .code "keep" => some .keep
+  | .code "change" => some .change
+  | .code "discontinue" => some .discontinue
+  | _ => none
+
+/-- New specification for owner review: the explicit per-line decision for an
+unsigned order line restored after the patient's transfer. Only a human can make
+it, and only for a line that awaits it and whose restored elements the signed-in
+role may enter. `keep` keeps the line; `change` keeps it and selects it for
+editing; `discontinue` removes the line's order captures. The decision never
+adds a capture, a commit, a receipt or an acknowledgment. Any other control is
+not a reconciliation and is ignored, as before. -/
+def reconcileCore (sp : Spec) (user : User) (actor : Actor) (s : State) (cid : CompId)
+    (v : Value) : State × StepResult :=
+  match (reconcileSlots s).find? (fun n => cid == reconcileComp n) with
+  | none => (s, .ignored)
+  | some n =>
+    match actor with
+    | .«macro» => (s, .blocked "human only: order reconciliation")
+    | .human =>
+      if !s.captured.all (fun x => !reconcileTagged n x ||
+          (sp.element? x.element).any (·.enteredBy.contains user.role)) then
+        (s, .blocked s!"role: {user.role.name} may not reconcile this order line")
+      else
+        match ReconcileDecision.ofValue? v with
+        | none => (s, .blocked "order reconciliation: choose keep, change or discontinue")
+        | some .keep =>
+          ({ s with captured := s.captured.map fun x =>
+              if reconcileTagged n x then { x with provenance? := some "reconciled:keep" } else x }, .ok)
+        | some .change =>
+          let kept := s.captured.map fun x =>
+            if reconcileTagged n x then { x with provenance? := some "reconciled:change" } else x
+          ({ s with captured := kept, currentSlot := n }, .ok)
+        | some .discontinue =>
+          ({ s with captured := s.captured.filter fun x =>
+              !(reconcileTagged n x || (x.slot == n && isOrderLineElement sp x.element)) }, .ok)
+
+/-- New specification for owner review: a macro's reconciliation attempt changes nothing. -/
+@[simp] theorem reconcileCore_macro (sp : Spec) (user : User) (s : State) (cid : CompId) (v : Value) :
+    (reconcileCore sp user .«macro» s cid v).1 = s := by
+  unfold reconcileCore
+  split <;> rfl
+
+/-- New specification for owner review: a reconciliation step keeps every
+field except the captures and the current order line. -/
+theorem reconcileCore_frame (sp : Spec) (user : User) (actor : Actor) (s : State)
+    (cid : CompId) (v : Value) :
+    let t := (reconcileCore sp user actor s cid v).1
+    t.commits = s.commits ∧ t.receipts = s.receipts ∧ t.acked = s.acked ∧
+      t.popup? = s.popup? ∧ t.screen = s.screen ∧ t.history = s.history ∧
+      t.patientContext? = s.patientContext? ∧ t.patientDrafts? = s.patientDrafts? ∧
+      t.criticalResults? = s.criticalResults? ∧ t.criticalDrafts? = s.criticalDrafts? ∧
+      t.expanded = s.expanded ∧ t.tabSel = s.tabSel ∧ t.searchQueries? = s.searchQueries? ∧
+      t.clock = s.clock := by
+  unfold reconcileCore
+  split
+  · exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
+  · cases actor
+    · dsimp only
+      split
+      · exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
+      · cases ReconcileDecision.ofValue? v with
+        | none => exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
+        | some d => cases d <;> exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
+    · exact ⟨rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl, rfl⟩
+
+/-! New specification for owner review: frame lemmas of `reconcileCore`. -/
+@[simp] theorem reconcileCore_commits (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.commits = s.commits := (reconcileCore_frame sp user actor s cid v).1
+@[simp] theorem reconcileCore_receipts (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.receipts = s.receipts := (reconcileCore_frame sp user actor s cid v).2.1
+@[simp] theorem reconcileCore_acked (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.acked = s.acked := (reconcileCore_frame sp user actor s cid v).2.2.1
+@[simp] theorem reconcileCore_popup (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.popup? = s.popup? := (reconcileCore_frame sp user actor s cid v).2.2.2.1
+@[simp] theorem reconcileCore_screen (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.screen = s.screen := (reconcileCore_frame sp user actor s cid v).2.2.2.2.1
+@[simp] theorem reconcileCore_history_eq (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.history = s.history := (reconcileCore_frame sp user actor s cid v).2.2.2.2.2.1
+@[simp] theorem reconcileCore_patientContext (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.patientContext? = s.patientContext? :=
+  (reconcileCore_frame sp user actor s cid v).2.2.2.2.2.2.1
+@[simp] theorem reconcileCore_patientDrafts (sp user actor s cid v) :
+    (reconcileCore sp user actor s cid v).1.patientDrafts? = s.patientDrafts? :=
+  (reconcileCore_frame sp user actor s cid v).2.2.2.2.2.2.2.1
+
+/-- New specification for owner review: without a line awaiting a decision, a
+reconciliation control does nothing. -/
+theorem reconcileCore_idle (sp : Spec) (user : User) (actor : Actor) (s : State)
+    (cid : CompId) (v : Value) (h : ∀ x ∈ s.captured, x.provenance? ≠ some reconcileTag) :
+    reconcileCore sp user actor s cid v = (s, .ignored) := by
+  have hf : (s.captured.filterMap fun x =>
+      if x.provenance? == some reconcileTag then some x.slot else none) = [] := by
+    rw [List.filterMap_eq_nil_iff]
+    intro x hx
+    simp [h x hx]
+  have hn : reconcileSlots s = [] := by
+    simp only [reconcileSlots, hf]
+    rfl
+  unfold reconcileCore
+  rw [hn]
+  rfl
+
+/-- New specification for owner review: every capture after a reconciliation
+step is a capture of the input with
+only its provenance possibly changed: same element, line, value, author and
+confirmation. -/
+theorem reconcileCore_captured (sp : Spec) (user : User) (actor : Actor) (s : State)
+    (cid : CompId) (v : Value) :
+    ∀ x ∈ (reconcileCore sp user actor s cid v).1.captured, ∃ y ∈ s.captured,
+      x.element = y.element ∧ x.slot = y.slot ∧ x.value = y.value ∧
+      x.byHuman = y.byHuman ∧ x.confirmed = y.confirmed := by
+  have mapped : ∀ (n : Nat) (lbl : String) x,
+      x ∈ s.captured.map (fun x => if reconcileTagged n x then { x with provenance? := some lbl } else x) →
+      ∃ y ∈ s.captured, x.element = y.element ∧ x.slot = y.slot ∧ x.value = y.value ∧
+        x.byHuman = y.byHuman ∧ x.confirmed = y.confirmed := by
+    intro n lbl x hx
+    obtain ⟨y, hy, rfl⟩ := List.mem_map.mp hx
+    refine ⟨y, hy, ?_⟩
+    split <;> exact ⟨rfl, rfl, rfl, rfl, rfl⟩
+  have same : ∀ x ∈ s.captured, ∃ y ∈ s.captured, x.element = y.element ∧ x.slot = y.slot ∧
+      x.value = y.value ∧ x.byHuman = y.byHuman ∧ x.confirmed = y.confirmed :=
+    fun x hx => ⟨x, hx, rfl, rfl, rfl, rfl, rfl⟩
+  unfold reconcileCore
+  split
+  · exact same
+  · rename_i n _
+    cases actor
+    · dsimp only
+      split
+      · exact same
+      · cases ReconcileDecision.ofValue? v with
+        | none => exact same
+        | some d =>
+          cases d
+          · exact mapped n _
+          · exact mapped n _
+          · intro x hx
+            exact ⟨x, (List.mem_filter.mp hx).1, rfl, rfl, rfl, rfl, rfl⟩
+    · exact same
+
+/-- New specification for owner review: an accepted decision is for one line
+`n` awaiting reconciliation, named by its control. Afterwards no capture of that
+line awaits a decision, every capture of another line is kept, and no commit,
+receipt, acknowledgment or popup changes. -/
+theorem reconcileCore_ok (sp : Spec) (user : User) (actor : Actor) (s t : State)
+    (cid : CompId) (v : Value) (h : reconcileCore sp user actor s cid v = (t, .ok)) :
+    ∃ n, n ∈ reconcileSlots s ∧ cid = reconcileComp n ∧ actor = .human ∧
+      (∀ x ∈ t.captured, reconcileTagged n x = false) ∧
+      (∀ x ∈ s.captured, x.slot ≠ n → x ∈ t.captured) ∧
+      t.commits = s.commits ∧ t.receipts = s.receipts ∧ t.acked = s.acked ∧ t.popup? = s.popup? := by
+  unfold reconcileCore at h
+  split at h
+  · simp at h
+  · rename_i n hn
+    have hmem := List.mem_of_find?_eq_some hn
+    have hcid : cid = reconcileComp n := by simpa using List.find?_some hn
+    cases actor
+    · dsimp only at h
+      split at h
+      · simp at h
+      · have tagged_kept : ∀ (lbl : String), lbl ≠ reconcileTag →
+            (∀ x ∈ s.captured.map (fun x => if reconcileTagged n x then { x with provenance? := some lbl } else x),
+              reconcileTagged n x = false) ∧
+            (∀ x ∈ s.captured, x.slot ≠ n →
+              x ∈ s.captured.map (fun x => if reconcileTagged n x then { x with provenance? := some lbl } else x)) := by
+          intro lbl hl
+          refine ⟨?_, ?_⟩
+          · intro x hx
+            obtain ⟨y, -, rfl⟩ := List.mem_map.mp hx
+            by_cases hy : reconcileTagged n y = true
+            · simp only [hy, ↓reduceIte]
+              simp only [reconcileTagged, Bool.and_eq_false_iff]
+              right
+              simpa using hl
+            · simp [hy]
+          · intro x hx hs
+            have hnt : reconcileTagged n x = false := by simp [reconcileTagged, hs]
+            exact List.mem_map.mpr ⟨x, hx, by simp [hnt]⟩
+        cases hd : ReconcileDecision.ofValue? v with
+        | none => rw [hd] at h; simp at h
+        | some d =>
+          cases d
+          · rw [hd] at h
+            simp only [Prod.mk.injEq] at h
+            obtain ⟨rfl, -⟩ := h
+            have k := tagged_kept "reconciled:keep" (by simp [reconcileTag])
+            exact ⟨n, hmem, hcid, rfl, k.1, k.2, rfl, rfl, rfl, rfl⟩
+          · rw [hd] at h
+            simp only [Prod.mk.injEq] at h
+            obtain ⟨rfl, -⟩ := h
+            have k := tagged_kept "reconciled:change" (by simp [reconcileTag])
+            exact ⟨n, hmem, hcid, rfl, k.1, k.2, rfl, rfl, rfl, rfl⟩
+          · rw [hd] at h
+            simp only [Prod.mk.injEq] at h
+            obtain ⟨rfl, -⟩ := h
+            refine ⟨n, hmem, hcid, rfl, ?_, ?_, rfl, rfl, rfl, rfl⟩
+            · intro x hx
+              have := (List.mem_filter.mp hx).2
+              simp only [Bool.not_eq_true', Bool.or_eq_false_iff] at this
+              exact this.1
+            · intro x hx hs
+              exact List.mem_filter.mpr ⟨hx, by simp [reconcileTagged, hs]⟩
+    · simp at h
+
 /-! ## Entering and confirming values -/
 
 /-- Why an entered value is refused, in words. -/
@@ -268,11 +501,13 @@ def rejectReason (el : ElementSpec) (v : Value) : String :=
 /-- Enter a value into a shown field. Refused if the role may not enter the
 element; if a macro tries a human-only or `never`-prefill element; or if the
 value is not accepted. A human's value is confirmed; a macro's value waits for
-a human confirm. -/
+a human confirm. New specification for owner review: an entry on a control that
+is not a shown component is handled by `reconcileCore`, which ignores it unless
+it is the reconciliation control of an order line awaiting a decision. -/
 def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor : Actor)
     (s : State) (cid : CompId) (v : Value) : State × StepResult :=
   match shownComp? sp prog facts s cid with
-  | none => (s, .ignored)
+  | none => reconcileCore sp user actor s cid v
   | some c =>
     match c.kind with
     | .field e slot _ =>
