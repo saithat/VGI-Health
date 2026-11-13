@@ -3,6 +3,7 @@ import Ehr.Api
 import Ehr.Render.Api
 import Ehr.Commit.Mar
 import Ehr.Commit.Adt
+import Ehr.Core.Deficiencies
 
 /-! Native-only JSON-lines transport. One response per line; malformed requests
 are isolated. This module changes neither the guard nor the shared transition. -/
@@ -14,6 +15,39 @@ deriving instance ToJson, FromJson for Multi.Action
 structure SharedInput where
   state : Multi.State
   action : Multi.Action
+  deriving FromJson
+
+structure DeficienciesInput where
+  spec : Spec
+  user : User
+  records : List Deficiencies.ChartDeficiencyInput
+  deriving FromJson
+
+structure DeficienciesOutput where
+  deficiencies : List Deficiencies.Deficiency
+  activity : PatientActivity
+  deriving ToJson
+
+structure RestoreCheckpointInput where
+  spec : Spec
+  user : User
+  fresh : State
+  checkpoint : Deficiencies.DraftCheckpoint
+  adt? : Option Commit.Adt.Patient := none
+  deriving FromJson
+
+structure RestoreCheckpointOutput where
+  state : State
+  transferred : Bool
+  discharged : Bool
+  discardedOrders : List Captured
+  deriving ToJson
+
+structure ReconcileOrderLineInput where
+  spec : Spec
+  state : State
+  slot : Nat
+  decision : Deficiencies.ReconcileDecision
   deriving FromJson
 
 private def applyJson (α β : Type) [FromJson α] [ToJson β]
@@ -80,7 +114,31 @@ def dispatch (request : Json) : Except String Json := do
     let i : Render.RenderInput ← fromJson? input
     let screen := Render.runRenderUi i
     pure (Json.mkObj [("screen", toJson screen), ("canonical", .str screen.canonical)])
-  | "step" => applyJson StepInput StepOutput runStep input
+  | "step" =>
+    let i : StepInput ← fromJson? input
+    match Deficiencies.reconcileControl? i.event with
+    | some (slot, dec) =>
+      let r := Deficiencies.reconcileOrderLine i.spec .human i.state slot dec
+      pure (toJson ({ state := r.1, result := r.2 : StepOutput }))
+    | none =>
+      pure (toJson (runStep i))
+  | "deficiencies" =>
+    let i : DeficienciesInput ← fromJson? input
+    let rows := Deficiencies.clinicianDeficiencies i.spec i.user i.records
+    pure (toJson ({ deficiencies := rows, activity := Deficiencies.deficiencyActivity rows : DeficienciesOutput }))
+  | "restore-checkpoint" =>
+    let i : RestoreCheckpointInput ← fromJson? input
+    let adt := i.adt?.getD (Deficiencies.defaultAdtPatient i.checkpoint.patient)
+    pure (toJson ({
+      state := Deficiencies.restoreCheckpoint i.spec i.user i.fresh i.checkpoint adt
+      transferred := Deficiencies.transferred i.checkpoint adt
+      discharged := Deficiencies.discharged i.checkpoint adt
+      discardedOrders := Deficiencies.discardedOrderCaptures i.spec i.user i.checkpoint adt
+    : RestoreCheckpointOutput }))
+  | "reconcile-order-line" =>
+    let i : ReconcileOrderLineInput ← fromJson? input
+    let r := Deficiencies.reconcileOrderLine i.spec .human i.state i.slot i.decision
+    pure (toJson ({ state := r.1, result := r.2 : StepOutput }))
   | "facts" =>
     let i ← fromJson? input
     pure (toJson (← Render.Fhir.runFacts i))

@@ -781,6 +781,11 @@ export interface DesignRules {
    * Allowed component kind tags.
    */
   catalog: string[];
+  /**
+   * New specification for owner review: local policy deadline in minutes (default 1440, 24 hours)
+   * for saved unsigned drafts whose commit has no temporal deadline.
+   */
+  unsignedDraftMinutes?: number;
 }
 
 /**

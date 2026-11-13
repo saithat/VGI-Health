@@ -12,7 +12,7 @@ def patientLandingUi (p : Program) (f : Facts) (u : User) (s : State) : UiScreen
   let pending := c.patient?.isSome
   let title := if pending then "Loading patient chart" else if c.activity == "lookup" then "Patient Lookup" else (Workspace.activity p f s).title
   let info := if c.activity == "lookup" || c.query != "" then "patientLookup" else (Workspace.activity p f s).info
-  let kind : UiPresentationKind := if info == "edTrackBoard" then .trackBoard else if info == "shiftWorklist" || info == "unitCensus" then .worklist else if info.startsWith "inbox" then .messages else if info == "orSchedule" then .orSchedule else .schedule
+  let kind : UiPresentationKind := if info == "edTrackBoard" then .trackBoard else if info == "shiftWorklist" || info == "unitCensus" || info == "deficiencies" then .worklist else if info.startsWith "inbox" then .messages else if info == "orSchedule" then .orSchedule else .schedule
   { screen? := some ("workspace:" ++ c.activity ++ (if pending then ":loading" else "")),
     banner := [], viewer? := some (uiViewer u.role), nav := [workspaceNav p f s],
     title, side := [], modal := none,

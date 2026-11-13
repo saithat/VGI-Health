@@ -106,7 +106,7 @@ theorem completable (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) 
     simp only [spec, element, entry, review] at info
     simp [guardBase, commitRoleOk, roleOk, encounterRolesOk, CommitSpec.encounterRoleAllowed, spec, Spec.commit?, role,
       entriesOk, entryMet, entry, Spec.element?, element, good,
-      reviewsOk, reviewMet, review, info, extraGuard, signingHasOrder, validationsOk, elementValueValid, nonDose,
+      reviewsOk, reviewMet, review, info, extraGuard, signingHasOrder, isOrderCommit, validationsOk, elementValueValid, nonDose,
       defaultsOk, displaysOk, actionLabelOk, whenHolds]
   have consistent : ∀ z, popupCandidates (spec k r m a t) (program r) f z "recordReview" = [] →
       alertsAcked (spec k r m a t) f z "recordReview" = true := by

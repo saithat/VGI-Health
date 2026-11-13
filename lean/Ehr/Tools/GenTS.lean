@@ -119,8 +119,9 @@ def emitDecl (env : Environment) (known : NameSet) (fieldsMode : Nat := 0) : Dec
       let fty := ci.type.bindingBody!
       let fname := f.toString
       let doc := jsDoc "  " (← findDocString? env proj)
-      if n == ``Ehr.Program && fname == "componentDefs" then
-        -- Program uses custom JSON: empty definitions may be omitted.
+      if (n == ``Ehr.Program && fname == "componentDefs") ||
+          (n == ``Ehr.DesignRules && fname == "unsignedDraftMinutes") then
+        -- Custom JSON: default values may be omitted.
         out := out ++ s!"{doc}  {fname}?: {← IO.ofExcept (tsType known fty)};\n"
       else if fname.endsWith "?" then
         let jname := (fname.dropEnd 1).toString

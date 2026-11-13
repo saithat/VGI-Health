@@ -98,7 +98,7 @@ def openControls (p : Program) (f : Facts) (s : State) : List Control :=
 /-- Activities and Patient Lookup are semantic navigation actions. -/
 def navigation (p : Program) (f : Facts) (s : State) : List Control :=
   let controls : List Control := (activities p f).map (fun a =>
-    { id := "workspace.activity|" ++ a.info, label := a.title ++ (if a.info.startsWith "inbox" then " (" ++ toString a.rows.length ++ ")" else ""), action := .showList a.info }) ++
+    { id := "workspace.activity|" ++ a.info, label := a.title ++ (if a.info.startsWith "inbox" || a.info == "deficiencies" then " (" ++ toString a.rows.length ++ ")" else ""), action := .showList a.info }) ++
   [{ id := "workspace.lookup", label := "Patient Lookup", action := .showList "lookup" },
    { id := "workspace.return", label := "Return to " ++ (((activities p f).find? (·.info == primary p)).map (·.title)).getD "patient list"
      action := .showList (primary p) }]
