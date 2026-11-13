@@ -28,6 +28,18 @@ The live host keeps Lean's navigation state. Isolation relies on
 only the selected patient's draft is added. `hydrating_refuses` prevents a
 commit or acknowledgment on the loading call.
 
+## ADT stamps and reconciliation
+
+Each checkpoint also records, per stored draft, the patient's ADT stamp from
+the chart it was saved from (`draft_adt`, migration
+`009-deficiencies-reconciliation.sql`). When a chart is opened from a
+checkpoint, native Lean reconciles that patient's draft for the ADT movement
+since then before the session starts: after a transfer, order lines are tagged
+and must be kept, changed or discontinued before signing; after a discharge,
+they are not restored and are kept in `commit_discarded_drafts`. The immutable
+checkpoint is unchanged. See [chart timing](../design/chart-timing.md) for the
+rules and proofs; the same draft data feeds the deficiency work list.
+
 ## Commit replay
 
 The service previously reconstructed one patient's journal from `init` and

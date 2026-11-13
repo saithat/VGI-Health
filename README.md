@@ -196,7 +196,12 @@ and acknowledgments, and no patient data is shown before a patient is selected
 (`unselected_view`). Properties 1 and 9 keep their global counterexamples on
 the landing view; the global form of the other four is not stated. The live
 app keeps unsigned drafts across charts after long visits and changes to other
-patients' records ([drafts and signing](docs/methods/live-drafts.md)). Critical-result action text is a
+patients' records ([drafts and signing](docs/methods/live-drafts.md)). A
+"Deficiencies" work list shows each clinician's unsigned drafts and overdue
+record obligations. Unsigned orders reopened after a transfer cannot be signed
+until the clinician keeps, changes or discontinues each line; after a discharge
+they are not restored and are listed as discarded
+([deficiencies and reconciliation](docs/design/chart-timing.md#3-signing-deficiencies-new-specification-for-the-cross-record-view)). Critical-result action text is a
 draft outside `captured`, cleared on a successful resolve; the handler is
 refused while an alert popup is open, and the checker reserves all `critical.`
 component IDs so the handler cannot shadow a program control

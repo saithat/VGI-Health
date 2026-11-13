@@ -1153,7 +1153,7 @@
     "needsCoreFeature": "Cross-record deficiency tracking with discharge-relative deadlines",
     "confidence": "medium",
     "verified": true,
-    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The regulation requires timely completion; an alert is a proposed implementation and has no legally prescribed alert tier."
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. The regulation requires timely completion; an alert is a proposed implementation and has no legally prescribed alert tier. Cross-record view: open obligations under this rule are listed on the responsible clinician's deficiency list (Ehr.Deficiencies, docs/design/chart-timing.md section 3) once the chart's facts carry the anchor event; the live FHIR projection does not yet supply that event evidence."
   },
   {
     "id": "ca-title22-70751-authenticate-two-weeks",
@@ -1191,7 +1191,7 @@
     "needsCoreFeature": "Record-wide practitioner authentication and discharge-relative deadline",
     "confidence": "medium",
     "verified": true,
-    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 has role-controlled signing commits, but no record-wide two-week completeness/authentication check. The excerpt must be read with the rest of subsection (g)."
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. v1 has role-controlled signing commits, but no record-wide two-week completeness/authentication check. The excerpt must be read with the rest of subsection (g). Cross-record view: open obligations under this rule are listed on the responsible clinician's deficiency list (Ehr.Deficiencies, docs/design/chart-timing.md section 3) once the chart's facts carry the anchor event; the live FHIR projection does not yet supply that event evidence."
   },
   {
     "id": "ca-title22-70751-exclusive-key",
