@@ -91,8 +91,8 @@ boundaries, directory map and detailed sequence.
 
 These are synthetic, local experiments, not observed clinician performance.
 The retained recording was re-certified on 2026-11-11; its layouts, rule inputs
-and outcome scenarios are frozen. The entry-time controls change the certified
-app hash; that recording has not been re-certified for these changes.
+and outcome scenarios are frozen. Chart timing and reconciliation alter the
+certified app hash; that recording has not been re-certified for these changes.
 
 | Evidence | Result and caveat |
 |---|---|

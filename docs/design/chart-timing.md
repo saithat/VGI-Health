@@ -343,16 +343,93 @@ must be rebuilt, and `runs/core-10day` needs one re-certification.
 
 ## Verification
 
-The integrated native build passes **629 jobs**, including the production FHIR
-projection regressions. Edited and new theorem axiom prints use only `propext`,
-`Classical.choice` and `Quot.sound`. `lake exe gents` regenerates 204 types and
-44 samples, restoring the deficiency fields lost in the merge. A scratch
-`lake exe export-content` export matches all 21 release JSON files byte-for-byte;
-no release rewrite is needed. The two focused live service regressions pass,
-including transfer/discharge behavior and pending-to-delinquent temporal work
-without UI-generated evidence. The latter checks the injected clock, future
-signature refusal and a current signed completion certificate.
+The combined native build passes **629 jobs**. The verification audit passes
+**84 theorems** with no unexpected axioms. New and edited theorem axiom prints
+contain only `propext`, `Classical.choice` and `Quot.sound`; a source comparison
+finds all **320 existing theorem signatures** in touched Lean files unchanged
+and none removed. No protected specification, property or Comparator file changed.
+The proof map was regenerated from **10,325 declarations / 387 headlines**.
 
-The combined packaged-WASM, proof-map and sequential verification results will
-be recorded here after the final run. Recording re-certification is intentionally
-left for the integrated branch; no data under `runs/` is re-certified here.
+`lake exe gents` regenerates **204 types and 44 samples**, restoring the
+unsigned-draft policy and extra-activity fields lost in the generated-type merge.
+A scratch content export matches all **21 exported release JSON files** byte-for-byte,
+including after the policy-codec correction; no release rewrite is needed.
+Packaged WASM was rebuilt with the pinned Lean 4.35 / Emscripten 6.0.13 toolchain
+and four build workers, installed into the app, and its manifest refreshed.
+`wasm/test/chart-timing.mjs` passes **14 native/packaged-WASM canonical-byte
+comparisons**: current/absent/unsigned/duplicate/wrong-encounter temporal sources,
+custom late-entry thresholds and exact equality, reconciliation timestamp
+retention, re-entry tag stickiness and hydration refusal. The asset-manifest
+check passes against the final Lean source.
+
+| Check | Result |
+|---|---|
+| Agent Vitest | 236 passed; 76 skipped by existing prerequisites |
+| App typecheck, full lint, production build | Passed |
+| App Vitest | 327 passed; 31 skipped by existing prerequisites; includes live A/B/A host, HTTP/Postgres and native replay |
+| Service typecheck, full lint, unit tests | Passed; 10 unit tests |
+| Complete service integration suite | 67 passed, zero skipped, including `adt.integration.test.ts`, clinical ADT, protocol, timing, deficiencies and migration/backfill |
+| CI canonical conformance (`EHR_CONFORMANCE_TRANSPORT=serve`) | 15 targets / 201 scenarios; 1,584 passed, zero failed, 1,431 not applicable |
+| Full template browser audit | Passed: 1,826 states / 16,434 physical measurements / zero findings |
+| Full persona browser audit | Passed: 1,296 states / 11,664 physical measurements / zero findings |
+
+The full service suite exposed two integration defects, both corrected: the
+custom policy codec dropped `lateEntryMinutes`, and equal checkpoint timestamps
+let UUID order select an older draft set. Regressions cover both policies at
+once, malformed policy values, migration backfill, a backward clock and equal-time
+live draft saves. Successful Lean/app/agent checks were retained after the
+service-only save-order fix; service checks were rerun against that fix.
+
+Commands use disk-backed scratch, four regular Lean/build/browser workers (the
+serial proof-audit script uses its own six-thread setting), and a dedicated
+256 MB Postgres on port **55438**, Compose project **vgi-timing-integrated-tests**.
+Tests use synthetic tenants; the migration regression uses its own temporary
+schema. No shared clinical database is modified. The full browser pair passed once, templates then personas, under the shared
+browser lock: 29 template batches and 14 persona batches, reusing identical
+source/bundle-bound trees where the checker permits it. Both semantic controls
+and physical-policy result statuses are `pass`. The isolated Postgres container,
+network and volume were removed afterwards.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=4 JOBS=4
+export pnpm_config_verify_deps_before_run=false EHR_SCREEN_WORKERS=4
+(cd lean && lake build)
+(cd lean && lake exe gents)
+(cd lean && lake exe export-content "$TMPDIR/timing-codec-content")
+# All 21 scratch releases/**/*.json files were compared byte-for-byte.
+(cd lean && lake build $(cat ../scripts/proof-map/extra-modules.txt))
+bash wasm/setup.sh
+make wasm
+scripts/proof-map/build.sh --readme
+node scripts/wasm-assets.mjs
+COMMIT_PG_PORT=55438 docker compose -p vgi-timing-integrated-tests -f services/commit/compose.yml up -d --wait postgres
+export EHR_BIN="$PWD/lean/.lake/build/bin/ehr"
+export DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55438/vgi_commit
+export COMMIT_FIXTURE="$TMPDIR/timing-integrated-fixture.json"
+(cd lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$COMMIT_FIXTURE"
+node wasm/test/chart-timing.mjs
+(cd lean && lake build)
+bash scripts/audit-verification.sh
+pnpm --filter agent test --maxWorkers=4
+pnpm --filter app typecheck
+pnpm --filter app lint
+pnpm --filter app test --maxWorkers=4
+pnpm --filter app build
+pnpm --filter @vgi/commit typecheck
+pnpm --filter @vgi/commit lint
+pnpm --filter @vgi/commit test
+pnpm --filter @vgi/commit test:integration
+EHR_CONFORMANCE_TRANSPORT=serve node conformance/index.mjs --canonical --jobs 4 --out "$TMPDIR/timing-conformance-canonical.json"
+node scripts/audit-alert-policy.mjs "$TMPDIR/timing-integrated-audit-templates"
+node scripts/audit-alert-policy.mjs "$TMPDIR/timing-integrated-audit-personas" --personas
+COMMIT_PG_PORT=55438 docker compose -p vgi-timing-integrated-tests -f services/commit/compose.yml down -v
+```
+
+Additional archived-revision conformance was attempted with
+`EHR_CONFORMANCE_TRANSPORT=serve node conformance/index.mjs --run core-10day --jobs 4 --out "$TMPDIR/timing-conformance.json"`.
+It stopped before scenarios because `runs/core-10day/manifest.json` is absent
+from this worktree. Canonical conformance above is the CI command and does not
+require that archive. Recording re-certification and pushing are intentionally
+excluded; the certified app hash changes and recordings need re-certification
+after integration. No data under `runs/`, `fixtures/`, `programs/` or
+`verdicts.json` is staged or re-certified.
