@@ -1,4 +1,4 @@
-_README last reviewed against commit `c2f1b086` (2026-11-13)._
+_README last reviewed against commit `475a9229` (2026-11-13)._
 
 # VGI Health
 
@@ -90,7 +90,7 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-The retained recording was certified before the R1/R3/R5/R7 rule changes;
+The retained recording was certified before the latest anti-gaming rule changes;
 its layouts, rule inputs and outcome scenarios are frozen. All 33 revisions pass
 [combined offline checks](docs/design/metric-gaming.md#retained-recording-against-the-combined-rules);
 their certificates have not been rebound to the rebuilt runtime.
