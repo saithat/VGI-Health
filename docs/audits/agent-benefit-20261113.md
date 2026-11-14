@@ -18,8 +18,9 @@ observed clinician performance.
 3. **Those failures come from a feature the agent declined, not from a safety
    rule.** On night 3 the agent reasonably declined an optional release feature
    (service orders with prior authorization) because P1 had never ordered imaging.
-   Imaging and therapy orders first appeared on day 7. No check noticed the
-   missing capability, and the agent's objective does not reward fixing it.
+   Imaging and therapy orders first appeared on day 7. No check in this
+   recording noticed the missing capability; a release check added afterwards
+   would have refused it.
 4. **Most of the gain arrives on night 1, then progress stalls.** 18 of 45
    persona-nights shipped. Later proposals often had no measurable effect, and the
    validation sample (4–15 tasks) is too small to confirm small gains.
@@ -64,12 +65,17 @@ not fully reachable. It still shows that the layouts are far from saturated.
   feature absent." No task needed the feature until day 7.
 - The simulated clinician enters everything else, then stops with "no reachable
   unmet goal."
-- **Why nothing caught it:**
+- **Why nothing caught it in this recording:**
   - The completion property is checked per commit. Signing orders stays
     completable without service-order lines, so the checker passes.
   - Validation replays an older day, which had no such tasks.
   - The release score counts clicks and scrolls, so an abandoned task makes a
     layout look cheaper.
+  - The recording predates the declared-workload release check (2026-11-09). That
+    check refuses a release layout that drops fields any task in the clinician's
+    declared schedule needs, and `agent/test/workload-capabilities.test.ts`
+    confirms it refuses P1's actual layout for these 7 tasks. A fresh recording
+    would not repeat this failure.
 - On nights 7–9, P1's training evidence showed "completed 90/92". The agent
   proposed scroll and shortcut changes instead, and all three were rejected.
 
@@ -102,11 +108,12 @@ P1's and 23% of P5's saving.
 
 ## Recommendations
 
-1. **Never ship a capability loss** (*new specification*). A fork must keep a
-   reachable entry for every element the current release lets its role enter, not
-   only those its required commits need. Every fork lacks the service-order fields
-   after release v2, so this would have forced all five clinicians to keep the
-   feature, and P1 would not have lost those tasks.
+1. **Extend the capability check beyond the declared workload** (*new
+   specification*). The existing check protects fields the declared schedule
+   needs. A stricter rule would keep a reachable entry for every element the
+   current release lets the role enter, so a clinician whose work changes later
+   still has the feature. This matters only if schedules can change after a
+   release night.
 2. **Count incomplete tasks as costly.** Score an incomplete task at its vendor
    cost plus a penalty instead of its partial clicks, and show failed tasks to the
    agent first.
