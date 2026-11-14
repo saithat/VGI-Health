@@ -14,7 +14,12 @@ Production has no tools. Frozen A/B/C prompts retain the historical representati
 
 Code ranks the top eight screen-effort, repeated screen-navigation and A→B→A
 backtrack hotspots, with stable tie breaking. Ranking uses clicks + scrolls +
-scroll pixels / 900; no elapsed-time model enters the prompt. `InformationEffort`
+scroll pixels / 900. A separate compact `workflowFloorGaps` evidence table reports
+train-only clicks, scrolls and modeled time against each workflow's recorded
+floor, ordered by action gap then time gap. It separates navigation, scrolling,
+alert acknowledgments and entry steps; it does not change hotspot ranking or the
+release objective. [Definitions and reproduction](agent-benefit-reporting.md).
+`InformationEffort`
 in `agent/src/hotspots.ts` accepts one numeric lookup-detour/memory-carry aggregate
 per completed train task. The adapter is not yet connected to the opt-in
 information-needs simulator output; absent evidence adds no inferred detours

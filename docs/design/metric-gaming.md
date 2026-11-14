@@ -29,6 +29,10 @@ A nightly change ships when all of these hold:
 The release score still uses **clicks and scrolls made by a clinician who already
 knows the layout perfectly**. R1 constrains typing and modeled time on validation;
 other unmodeled costs remain outside the gate.
+Reporting also shows completion, modeled time and action/time floor-gap capture.
+Nightly evidence ranks train-only workflow gaps and their structural costs;
+[reporting methods](../methods/agent-benefit-reporting.md) defines the cohorts and
+reproduces the retained audit. These are reporting changes, not a new score.
 
 ## Existing guards
 

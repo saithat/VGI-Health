@@ -1,6 +1,7 @@
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import type { RunData } from "./data";
 import { versionsFor, workloadAt } from "./workload";
+import { BenefitSummary } from "./BenefitSummary";
 
 const one = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
 const signed = new Intl.NumberFormat("en-US", {
@@ -10,8 +11,7 @@ const signed = new Intl.NumberFormat("en-US", {
 /** Round for reading; the chart data table keeps exact values. */
 export const round = (value: number) => one.format(value);
 /** Signed delta with a true minus sign; negative means less work. */
-export const delta = (value: number) =>
-  signed.format(value).replace("-", "−");
+export const delta = (value: number) => signed.format(value).replace("-", "−");
 export const deltaTone = (value: number) =>
   value < 0 ? "better" : value > 0 ? "worse" : "flat";
 
@@ -75,7 +75,10 @@ function effortTile(run: RunData, persona: string) {
       to: b,
       detail: `rev ${first} → rev ${last} · fixed benchmark`,
     };
-  const [wa, wb] = [workloadAt(run, persona, first), workloadAt(run, persona, last)];
+  const [wa, wb] = [
+    workloadAt(run, persona, first),
+    workloadAt(run, persona, last),
+  ];
   if (wa.total && wb.total)
     return {
       label: "Typical clicks per workflow",
@@ -108,82 +111,87 @@ export function EvolutionSummary({
   );
   const failures = conformance?.reduce((n, t) => n + t.failed, 0) ?? 0;
   return (
-    <div className="evolution-summary" aria-label="Summary">
-      {effort ? (
+    <>
+      <div className="evolution-summary" aria-label="Summary">
+        {effort ? (
+          <Tile
+            label={effort.label}
+            value={
+              <>
+                {round(effort.from)} → {round(effort.to)}{" "}
+                <em className={deltaTone(effort.to - effort.from)}>
+                  {effort.from
+                    ? `${delta(((effort.to - effort.from) / effort.from) * 100)}%`
+                    : ""}
+                </em>
+              </>
+            }
+            detail={effort.detail}
+          />
+        ) : blind?.measured.test ? (
+          <Tile
+            label="Latest blind test"
+            value={
+              <span className={deltaTone(-blind.measured.test.saving.clicks)}>
+                {delta(-blind.measured.test.saving.clicks)} clicks
+              </span>
+            }
+            detail={`Night ${blind.night} · vs certified canonical · ${blind.measured.test.after.completed}/${blind.measured.test.after.tasks} tasks`}
+          />
+        ) : (
+          <Tile label="Effort" value="—" detail="Not measured in this run" />
+        )}
         <Tile
-          label={effort.label}
-          value={
-            <>
-              {round(effort.from)} → {round(effort.to)}{" "}
-              <em className={deltaTone(effort.to - effort.from)}>
-                {effort.from
-                  ? `${delta(((effort.to - effort.from) / effort.from) * 100)}%`
-                  : ""}
-              </em>
-            </>
-          }
-          detail={effort.detail}
+          label="Changes shipped"
+          value={shipped.length}
+          detail={`of ${nights.length} night${nights.length === 1 ? "" : "s"} · all certified before use`}
         />
-      ) : blind?.measured.test ? (
         <Tile
-          label="Latest blind test"
-          value={
-            <span className={deltaTone(-blind.measured.test.saving.clicks)}>
-              {delta(-blind.measured.test.saving.clicks)} clicks
-            </span>
+          label="Rejected by checker"
+          value={rejected}
+          detail={
+            rejected
+              ? "Unsafe proposals blocked · listed below"
+              : "No unsafe proposals"
           }
-          detail={`Night ${blind.night} · vs certified canonical · ${blind.measured.test.after.completed}/${blind.measured.test.after.tasks} tasks`}
         />
-      ) : (
-        <Tile label="Effort" value="—" detail="Not measured in this run" />
-      )}
-      <Tile
-        label="Changes shipped"
-        value={shipped.length}
-        detail={`of ${nights.length} night${nights.length === 1 ? "" : "s"} · all certified before use`}
-      />
-      <Tile
-        label="Rejected by checker"
-        value={rejected}
-        detail={
-          rejected
-            ? "Unsafe proposals blocked · listed below"
-            : "No unsafe proposals"
-        }
-      />
-      <Tile
-        label="Vendor releases"
-        value={
-          releases.length
-            ? releases
-                .map((r) => releaseLabel(r.release?.id ?? "", run.manifest.runId))
-                .join(", ")
-            : "None"
-        }
-        detail={
-          releases.length
-            ? releases.every((r) => r.certificate)
-              ? "Merged into this fork and re-certified"
-              : "Some releases not re-certified"
-            : "No releases during this run"
-        }
-      />
-      <Tile
-        label="Rule conformance"
-        value={
-          !conformance?.length
-            ? "—"
-            : failures
-              ? `${failures} failure${failures === 1 ? "" : "s"}`
-              : "All pass"
-        }
-        tone={failures ? "attention" : ""}
-        detail={
-          conformance?.length
-            ? `${conformance.length} deployed revision${conformance.length === 1 ? "" : "s"} checked · advisory`
-            : "Not recorded for this run"
-        }
-      />
-    </div>
+        <Tile
+          label="Vendor releases"
+          value={
+            releases.length
+              ? releases
+                  .map((r) =>
+                    releaseLabel(r.release?.id ?? "", run.manifest.runId),
+                  )
+                  .join(", ")
+              : "None"
+          }
+          detail={
+            releases.length
+              ? releases.every((r) => r.certificate)
+                ? "Merged into this fork and re-certified"
+                : "Some releases not re-certified"
+              : "No releases during this run"
+          }
+        />
+        <Tile
+          label="Rule conformance"
+          value={
+            !conformance?.length
+              ? "—"
+              : failures
+                ? `${failures} failure${failures === 1 ? "" : "s"}`
+                : "All pass"
+          }
+          tone={failures ? "attention" : ""}
+          detail={
+            conformance?.length
+              ? `${conformance.length} deployed revision${conformance.length === 1 ? "" : "s"} checked · advisory`
+              : "Not recorded for this run"
+          }
+        />
+      </div>
+      <BenefitSummary run={run} persona={persona} />
+    </>
   );
 }

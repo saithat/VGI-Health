@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { ReplayLlm } from '../src/backends/replay.js';
 import { runDays, type RunSummary } from '../src/run.js';
-import { decisionRecordSchema, type DecisionRecord } from '../src/schema.js';
+import { decisionRecordSchema, type DecisionRecord } from '../../app/src/dashboard/agent-evidence.js';
 import { RunStore } from '../src/store.js';
 import { LEAK_MARKER, fakeWorld, markingEhr, readLlmRecords, tmp } from './helpers.js';
 import { ScriptedLlm } from './scripted.js';
@@ -44,6 +44,7 @@ withData("runs/core-10day/decisions").describe("archive-backed agent prompts", (
       expect(r.backend).toMatchObject({ name: 'replay', model: 'scripted-test', replayOf: { backend: 'scripted' } });
       expect(r.ehr.mode).toBe('fake');
       expect(r.evidence.trainDays).toEqual([1]);
+      expect(r.evidence.workflowFloorGaps).toBeDefined();
       expect(r.hypothesis.length).toBeGreaterThan(0);
       expect(r.candidates.length).toBeGreaterThanOrEqual(3);
       for (const e of r.candidates) expect(['pass', 'fail', 'invalid-patch']).toContain(e.check.status);
@@ -164,14 +165,17 @@ withData("runs/core-10day/decisions").describe("archive-backed agent prompts", (
   });
 
 
-  it('sends only physical-interaction metrics and binds the documented geometry objective',()=>{
+  it('reports modeled effort alongside physical metrics and binds the geometry objective',()=>{
    const records=readLlmRecords(recorded.dir);
    expect(records.length).toBeGreaterThan(0);
    for(const call of records){
     const prompt=call.system+call.prompt;
-    // R1's static policy names the time constraint; measured timing still
-    // stays out of the discovery evidence and objective.
-    expect(prompt).not.toMatch(/"(?:klmDeciSec|avgKlmSec|klmSec|timeSinksByScreen)"\s*:/);
+    expect(prompt).not.toMatch(/"(?:wallTimeMinutes|timeSinksByScreen)"\s*:/);
+    if(call.purpose==='propose') {
+      expect(prompt).toContain('"klmDeciSec":');
+      expect(prompt).toContain('workflowFloorGaps');
+      expect(prompt).toContain('The objective remains clicks+scrolls');
+    }
     expect(prompt).toContain('R1 policy change: keystrokes and modeled time');
     expect(prompt).toContain('1440');
     expect(prompt).toContain('mouseTravelPx');

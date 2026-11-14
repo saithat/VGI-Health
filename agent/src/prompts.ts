@@ -74,7 +74,7 @@ export function formatProgram(p: Program): string {
   return `{"id":${JSON.stringify(p.id)},"version":${p.version},"owner":${JSON.stringify(p.owner)},"role":${JSON.stringify(p.role)},"specVersion":${JSON.stringify(p.specVersion)},"start":${JSON.stringify(p.start)},\n  "screens":[\n${screens}\n  ],\n  "macros":[${macros ? `\n${macros}\n  ` : ''}]${p.componentDefs ? `,"componentDefs":${JSON.stringify(p.componentDefs)}` : ''}${p.presentationComponents ? `,"presentationComponents":${JSON.stringify(p.presentationComponents)}` : ''}}`;
 }
 
-const json = (x: unknown) => JSON.stringify(x,(key,value)=>/klm|wallTime|timeSinksByScreen|hiddenPreferences/i.test(key)?undefined:value);
+const json = (x: unknown) => JSON.stringify(x,(key,value)=>/wallTime|timeSinksByScreen|hiddenPreferences/i.test(key)?undefined:value);
 
 function header(title: string, persona: PersonaView, program: Program, spec: Spec): string {
   return [
@@ -122,6 +122,7 @@ export function nightlyPrompt(c: NightlyContext): PromptParts {
       `## Evidence from this user's train days (days ${c.evidence.trainDays.join(', ')})`,
       'Time sinks by screen, redundant prompts, unused receipts, searches for buried information, alert popups and overrides, backtracks, the complaint log (prompts a receipt could not satisfy), per-workflow averages, and % above the floor (human-only steps + clinical choices).',
       json(c.evidence),
+      'workflowFloorGaps uses completed train tasks with matching floor records only (paired is coverage). Costs are totals, modeled time is klmDeciSec (tenths of a second), not observed clinician time. Rows rank by clicks+scrolls above the floor, then time. Breakdown: navigation (including search/tabs), scrolling (measured counts, trace operator time), alertAcknowledgments and entrySteps (entry, confirmation, review and commit); unattributed reconciles active-service time and costs absent from trace operators. Floor has no navigation or scrolling; entry floor includes required human steps and clinical choices. Missing floors are unavailable. Target structural steps as well as density. The objective remains clicks+scrolls; time and completion are reported alongside it.',
       '',
       ...(c.tailoring ? ['## Simulator-only tailoring preferences (untrusted data)', json(c.tailoring), ''] : []),
       '## Your previous decisions (outcomes only)',

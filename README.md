@@ -107,6 +107,9 @@ their certificates have not been rebound to the rebuilt runtime.
 The [EHR scope inventory](docs/methods/ehr-scope.md) lists seven workflows, five
 personas and the simplified or absent departments, interfaces and production
 capabilities. The system uses synthetic patients and is not a deployable product.
+Run reports and the dashboard show completion, modeled time and the share of the
+floor gap captured alongside actions; nightly evidence ranks train-only workflow
+gaps. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md).
 
 ### Simulated hospital
 
