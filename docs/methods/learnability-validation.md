@@ -77,7 +77,7 @@ bootstrap has no prior training or validation and retains its certification path
 
 `RunOptions.incompletePenalty` and `run-days --incomplete-penalty` set a positive,
 finite fraction, default **0.5**. An incomplete task costs **150% of its matched
-canonical task's cost**, in each compared arm independently. Integer costs round
+canonical task's cost**, in each compared arm independently. Charged costs round
 up per task and metric. This applies to clicks, scrolls, typing, modeled time and
 the other recorded effort measures; unavailable pixels remain unavailable.
 Completed tasks retain their actual costs even if the opposite arm failed.
@@ -112,10 +112,17 @@ This is a set of independent counterfactuals, not an alternate history propagate
 from the first refusal. It does not reconstruct the structural train effect floor.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
-node --import ./agent/node_modules/tsx/dist/loader.mjs agent/src/replay-r2-gate.ts \
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4 EHR_SCREEN_WORKERS=2
+node --max-old-space-size=4096 --import ./agent/node_modules/tsx/dist/loader.mjs agent/src/replay-r2-gate.ts \
   runs/core-10day "$TMPDIR/r2-retained-replay-world2"
 ```
+
+The CLI starts one fresh process per shipped decision and reuses existing dated
+train and decision checkpoints. A final `--summary` argument rebuilds only the
+report; `night-06/P2` selects one shipped decision. New native calls have a 7 GiB
+address-space cap and a two-minute timeout, with infrastructure retries disabled
+by default for this offline replay. Resource failures are unavailable evidence,
+never passes. Node's heap cap alone does not constrain the native solver.
 
 Replay results and their limits are recorded below after the retained matrix
 finishes. Historical certificates and recorded outcome files are unchanged.
@@ -129,3 +136,39 @@ ordering, live nightly refusal, mandatory release fallback and resume binding.
 Existing cadence, release-mode, safety and frozen-prompt regressions also run.
 The full browser audit pair is deferred until integration as requested; no
 browser-facing or Lean code changes require a new certified app build here.
+
+With disk-backed `TMPDIR` as above, these commands passed (run test/lint commands
+from `agent/`; the typecheck command runs from the repository root):
+
+```sh
+node agent/node_modules/typescript/bin/tsc --noEmit -p agent/tsconfig.json
+node node_modules/eslint/bin/eslint.js . --max-warnings 0
+node node_modules/vitest/vitest.mjs run test/r2-gate.test.ts test/cadence.test.ts test/modes.test.ts test/safety.test.ts test/bounded-tailoring.test.ts test/structure.test.ts --maxWorkers=2
+node node_modules/vitest/vitest.mjs run test/quality-golden.test.ts test/quality.test.ts test/night.test.ts test/review-safety.test.ts --maxWorkers=2
+node node_modules/vitest/vitest.mjs run test/replay-r2-gate.test.ts test/replay-interaction-gate.test.ts --maxWorkers=2
+```
+
+The three test invocations pass 55, 50 and 6 tests respectively; there is no
+`test/safety.test.ts` file, so the first invocation selects five existing files.
+The direct installed binaries avoid pnpm's attempted dependency-store refresh,
+which failed here with `unable to open database file`; no dependency install or
+lockfile change was needed. A two-day, one-persona synthetic smoke under
+`runs/smoke-r2-20261114` deployed night 1 through R2 (3/3 validation tasks complete,
+bounded accepted, penalty 0.5). It uses the fake checker/geometry and scripted
+model, certifies nothing and makes no model calls; the targeted bounded-tailoring
+tests separately exercise the native bounded clinician.
+
+The smoke command, from the repository root, was:
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp NODE_ENV=test node --max-old-space-size=4096 --import ./agent/node_modules/tsx/dist/loader.mjs --input-type=module <<'JS'
+import { runDays } from './agent/src/run.ts';
+import { fakeWorld, markingEhr } from './agent/test/helpers.ts';
+import { ScriptedLlm } from './agent/test/scripted.ts';
+import { RunStore } from './agent/src/store.ts';
+const summary=await runDays({days:2,worldDir:await fakeWorld(2),runsRoot:'runs',runId:'smoke-r2-20261114',personas:['P1'],releaseDays:{v2:99,v3:99},ehr:markingEhr(),llm:new ScriptedLlm(),structurePolicy:false});
+const r=await new RunStore(summary.dir).readDecision(1,'P1');
+console.log(JSON.stringify({dir:summary.dir,outcome:r.outcome,bounded:r.validation.replay?.bounded?.accepted,tasks:r.validation.replay?.after.tasks,days:r.validation.replay?.days,scoring:r.validation.replay?.scoring}));
+if(!r.deployed||!r.validation.replay?.bounded?.accepted)throw Error('Smoke did not deploy through R2');
+JS
+```

@@ -160,7 +160,7 @@ live model calls. [Model backends](docs/methods/model-backends.md) documents rea
 and replay configuration, context requirements and frozen-night comparisons.
 The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
 lazy review evidence and safe local renames.
-Validation pools past odd-day holdouts and gates bounded learning costs; incomplete tasks cost canonical effort plus 50% ([policy and retained replay](docs/methods/learnability-validation.md)). Movement budgets charge copies surviving deletion of their original ([movement tests](docs/methods/interaction-validation.md)).
+Validation pools past odd-day holdouts and gates bounded learning costs; incomplete tasks cost canonical effort plus 50% ([policy and checkpointed replay](docs/methods/learnability-validation.md)). Movement budgets charge copies surviving deletion of their original ([movement tests](docs/methods/interaction-validation.md)).
 Discarded-order notices expire after the 30-day discharge deadline, retaining provenance ([timing policy](docs/design/chart-timing.md)).
 
 `scripts/build-ehrheavy.py [--target MODULE]` builds the full-profile `EhrHeavy`
