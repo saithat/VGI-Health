@@ -20,7 +20,7 @@ import { breakPrompt, migratePrompt, surfacePrompt, type PersonaView } from './p
 import { specDiff, type Release } from './releases.js';
 import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from '../../app/src/dashboard/agent-evidence.js';
 import {
-  InfrastructureError, MAX_REPAIRS, completionOk, interactionAcceptable, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved,
+  InfrastructureError, MAX_REPAIRS, learnabilityOk, completionOk, interactionAcceptable, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved,
   noteRejections, predictionVerdict, recordDeploy, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,
 } from './night.js';
 import { errorMessage, hash32, writeJson } from './util.js';
@@ -96,7 +96,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
     rec.validation.reason = reason;
     const baseline = personalize(next.canonical, persona.params, persona.userId);
     const replay = await input.holdout.validate(baseline, re.program, next.specVersion);
-    if (!completionOk(replay)) return runMigration(deps, input);
+    if (!completionOk(replay) || !learnabilityOk(replay)) return runMigration(deps, input);
     rec.validation = { replay, improved: false, stabilityOk: true, accepted: true, reason };
     rec.measured.validation = replay;
     const ok = await deployInto(deps, rec, persona.id, re.program, re.gate);
@@ -132,7 +132,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   }
 
   const gate = re.gate;
-  const estimator = new TrainEstimator(deps, input, next.specVersion);
+  const estimator = new TrainEstimator(deps, input, next.specVersion, next.canonical);
   for (const c of proposal.candidates) rec.candidates.push(await evaluateCandidate(deps, input.current, c, gate, estimator));
   const best = rec.candidates.find((e) => e.check.status === 'pass');
   if (!best) {
@@ -157,7 +157,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;
   // Vendor surfacing preserves completion and the full-cost interaction tolerances.
-  const tolerable = replay ? interactionAcceptable(replay) : false;
+  const tolerable = replay ? interactionAcceptable(replay) && learnabilityOk(replay) : false;
   rec.validation.improved = replay ? improved(replay) : null;
   rec.validation.stabilityOk = true;
   if (!tolerable) {
@@ -198,9 +198,9 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
     let failure: unknown;
     try {
       const replay = await input.holdout.validate(canon, program, next.specVersion);
-      rec.validation = { replay, improved: replay ? improved(replay) : null, stabilityOk: true, accepted: completionOk(replay), reason: 'Release canonical comparison; full completion required on every deploy.' };
+      rec.validation = { replay, improved: replay ? improved(replay) : null, stabilityOk: true, accepted: completionOk(replay) && learnabilityOk(replay), reason: 'Release canonical comparison; full completion required on every deploy.' };
       rec.measured.validation = replay;
-      if (!completionOk(replay)) throw new Error('release validation incomplete');
+      if (!completionOk(replay) || !learnabilityOk(replay)) throw new Error('release expert completion or bounded learnability validation refused');
       if (!await deployInto(deps, rec, persona.id, program, gate)) throw new Error('release check/screen/deploy gate refused');
       rec.outcome = rec.flags.some((f) => f.startsWith('llm-error')) ? 'llm-error' : outcome;
       return finishRecord(deps, rec, calls, program);

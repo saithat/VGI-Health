@@ -1,3 +1,4 @@
+import { carriedTrainMemory } from './train-memory.js';
 import { ToolNightAgent, nightToolSession } from './agent-loop.js';
 import { RlmNightAgent } from './rlm/loop.js';
 import { DEFAULT_RLM_BUDGET, type RlmBudget } from './rlm/stats.js';
@@ -35,7 +36,7 @@ import { trainingQueryBundle, writeQueryDirectory } from './quality-queries.js';
 import { loadMeasuredSavings, recomputedSavings } from './quality-ledger.js';
 import { measuredLedger, physicalKeys } from './quality-context.js';
 import { OFFLINE_LABEL, offlineRecordSchema, repetitionCount, writeQualityReport, type OfflineRecord, type QualityArm, type TokenCounts } from './quality-report.js';
-import { calibrationDay, calibrationPartition, isMeasurementDay } from './protocol.js';
+import { validationSchedules, calibrationPartition, isMeasurementDay } from './protocol.js';
 import { recordingEhr } from './recording-ehr.js';
 import { loadRelease, releaseForPersona } from './releases.js';
 import { retryEhr } from './retry-boundaries.js';
@@ -117,7 +118,8 @@ export async function frozenNight(runDir:string,record:DecisionRecord,records:re
   return {night:record.night,persona,current,programs,train,
     release,
     history:records.filter(r=>r.persona===record.persona&&r.night<record.night).map(historyItem),
-    holdout:makeHoldout(deps,persona,await world.schedule(calibrationDay(record.night),record.persona))};
+    holdout:makeHoldout(deps,persona,await validationSchedules(record.night,d=>world.schedule(d,record.persona)),
+      await carriedTrainMemory(deps.ehr,params,train,programs,world.dir,world.manifest.seed))};
 }
 
 export async function frozenLocality(input:Pick<NightInput,'train'|'programs'>,geometryDir:string) {

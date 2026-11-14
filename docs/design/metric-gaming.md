@@ -2,10 +2,10 @@
 
 [Overview](../../README.md) · [Core model](core-model.md) · [Discovery and cadence](../methods/discovery-and-cadence.md)
 
-Status: **R1, R3, R4, R5, R6 and R7 implemented** ([R3](#r3-copy-budget-implemented),
+Status: **all seven rules R1–R7 implemented** ([R3](#r3-copy-budget-implemented),
 [R5](#r5-screen-action-density-g10-implemented)); the R7 regression exposed and fixed a
-dangling-copy gap (new specification). R2 remains approved for
-implementation; see the [retained-decision replay](../methods/interaction-validation.md).
+dangling-copy gap (new specification). R4 and R6 are new specifications. See the
+[retained-decision replay](../methods/interaction-validation.md).
 Rules marked *new specification* are new definitions and stay flagged in Lean.
 
 ## What the agent is rewarded for
@@ -13,22 +13,25 @@ Rules marked *new specification* are new definitions and stay flagged in Lean.
 A nightly change ships when all of these hold:
 
 1. **Release score**: the change saves at least 5 clicks plus scrolls per train day
-   in a replay of the *expert* simulated clinician, after subtracting the
+   in a replay of the *expert* simulated clinician (incomplete tasks cost their
+   matched canonical effort plus a configurable 50% penalty), after subtracting the
    usage-weighted movement proxy (one click-equivalent per observed daily use of
    each displaced control) (`agent/src/structure-policy.ts`, `agent/src/night.ts`).
-2. **Validation gate** on a held-out past day: every task still completes, clicks
+2. **Validation gate** on the pooled holdouts from all past odd calibration days: every task still completes, clicks
    and scrolls do not regress, scroll pixels and mouse travel stay within 2%
    plus 1px rounding slack, and at least one of the four improves
    (`interactionAcceptable`, `improved`). **R1 policy change:** keystrokes and
    modeled time (`klmDeciSec`) each stay within 2%, without the pixel slack.
-   Popups, overrides, searches and backtracks are not separately gated.
+   **R2 policy change:** a separate bounded replay from carried train-only memory
+   must also complete fully; clicks/scrolls cannot increase and typing/time have
+   the same 2% bounds. Popups, overrides, searches and backtracks are not separately gated.
 3. **Formal checks**: properties 1–9 (`lean/Ehr/Props/Properties.lean`), D1–D6
    (`core-model.md`), the geometry rules G1–G10 (`docs/methods/ui-library.md`),
    `StabilityBudget`, the R3 copy budget, `AlertBudget` and the identity movement budget.
 
 The release score still uses **clicks and scrolls made by a clinician who already
-knows the layout perfectly**. R1 constrains typing and modeled time on validation;
-other unmodeled costs remain outside the gate.
+knows the layout perfectly**. R1 constrains typing and modeled time on validation; R2 independently constrains
+bounded discovery/relearning costs. Other unmodeled costs remain outside the gate.
 Reporting also shows completion, modeled time and action/time floor-gap capture.
 Nightly evidence ranks train-only workflow gaps and their structural costs;
 [reporting methods](../methods/agent-benefit-reporting.md) defines the cohorts and
@@ -57,7 +60,7 @@ reproduces the retained audit. These are reporting changes, not a new score.
 | V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: R5 (G10) bounds Lean-computed geometry. The deployed React painter has no Lean geometry, so R1 and R2 remain the guard there. |
 | V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | R4 closes removal beyond the context bound; the information-needs simulator is not connected to the score. |
 | V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
-| V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The bounded (learning) clinician exists but only feeds the opt-in switch-cost model. | Open |
+| V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The expert has no discovery cost. | Closed by R2 on sampled past holdouts; the user model remains uncalibrated. |
 | V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | R6 bounds navigation labels and restricts them to titles or declared aliases. |
 | V7 | **Two-night move.** Copy a control on night N, then delete the original on night N+1. | Previously a survivor still marked `copyOf` was ignored by `movedTags`. | R7 fixed: the movement proxy charges deletion; `StabilityBudget` counts the surviving tag's displacement with or without `copyOf`. Night N is also charged by R3 (an added copy counts against `stabilityBudget`). |
 | V8 | **Default to the usual answer.** Set field defaults to the most common train value. | Saves keystrokes only, so the score does not move. It does create default-acceptance risk. | Low impact; `defaultConfirm` already requires a human confirm. |
@@ -78,11 +81,23 @@ additional shipped-release refusals**. Details and the persona/night matrix are
 in [interaction validation](../methods/interaction-validation.md); recorded bytes
 are not rewritten.
 
-**R2. Learnability gate** (gate change). Also replay validation with the bounded
-clinician, starting from the actor's carried train memory. Completion must not
-drop, and clicks, scrolls and time must not regress beyond tolerance. A new
-layout must stay usable for someone still learning it. Closes V5 and makes R6
-meaningful. *Policy change: flagged.* Costs one more replay per candidate.
+**R2. Learnability gate** (implemented; gate change, no Lean change). Validation
+also replays both layouts with the bounded clinician, each starting from a clone
+of the actor's carried train-only memory. Full completion is required; bounded clicks,
+scrolls, keystrokes and `klmDeciSec` each have a 2% tolerance (the learner's replay
+is noisier than the expert's, whose clicks and scrolls keep 0%).
+There is no bounded strict-improvement requirement or pixel gate. Each past odd
+day's held-out partition is replayed separately, with matched seeds and the same
+starting memory; rehearsal outputs never practice the actor. Decision files retain
+both aggregates, dated sample sizes, the memory hash, penalty and refusal reasons.
+Nightly, cadence, optional surfacing and mandatory migration/fallback paths apply
+R2, including the final deploy guard. Closes V5 on these simulated workloads and
+makes R6 meaningful. *Policy change: flagged.* The model is uncalibrated; no human
+learnability claim follows. [Policy, sizes and retained replay](../methods/learnability-validation.md).
+The retained replay finds 2 R2 refusals among 28 shipped decisions (P1 and P3,
+night 1; P1's learner cost doubles) and 1 expert-gate refusal (P2, night 4);
+9 pass validation, 14 have incomplete expert pixel evidence and 2 exceed solver
+limits. These are independent counterfactuals; the recording remains unchanged.
 
 **R3. Copy budget** (*new specification*, Lean `Props`). For every tag: at most one
 copy per screen, and at most `spec.design.copyBudget` copies per program. Copies
@@ -364,6 +379,8 @@ bindings and checks each with the current native checker against its frozen
 spec, canonical program and previous program (R3 and R7). It also runs the
 fixed-shell `program-check` density gate (R5/G10), then replays R1 over the
 45 recorded decisions using their original validation metrics and release paths.
+This historical combined replay does not apply R2 or the enlarged holdouts; the
+separate [R2 replay](../methods/learnability-validation.md#retained-recording-replay) does.
 The five initial revisions plus 28 subsequent deployments account for the
 33 bindings; R1 applies to decisions, rather than the five initial layouts.
 

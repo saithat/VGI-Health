@@ -175,6 +175,12 @@ export function summarizeTrain(persona: string, current: Program, days: readonly
 
   const latest = days[days.length - 1];
   return {
+    failedTasks: days.flatMap(d => d.result.tasks.filter(t=>!t.completed).map(t=>({
+      day:d.schedule.day, task:t.task, workflow:d.schedule.tasks.find(x=>x.id===t.task)?.workflow ?? '?',
+      unmetGoals:[`Complete scheduled workflow ${d.schedule.tasks.find(x=>x.id===t.task)?.workflow ?? '?'} with its clinical choices`,
+        ...new Set([...d.result.complaints.filter(c=>c.includes(t.task)),
+          ...d.result.trace.filter(e=>e.task===t.task).flatMap(e=>typeof e.result==='object'?[e.result.blocked.reason]:[])])],
+    }))),
     persona,
     trainDays: days.map((d) => d.result.day),
     programVersion: current.version,

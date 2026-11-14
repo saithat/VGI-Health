@@ -92,7 +92,7 @@ boundaries, directory map and detailed sequence.
 These are synthetic, local experiments, not observed clinician performance.
 The retained recording was certified before the latest anti-gaming rule changes;
 its layouts, rule inputs and outcome scenarios are frozen. All 33 revisions pass
-[combined offline checks](docs/design/metric-gaming.md#retained-recording-against-the-combined-rules);
+[combined static checks](docs/design/metric-gaming.md#retained-recording-against-the-combined-rules);
 their certificates have not been rebound to the rebuilt runtime.
 
 | Evidence | Result and caveat |
@@ -102,6 +102,7 @@ their certificates have not been rebound to the rebuilt runtime.
 | Simulator smoke test | Day 2: 158/158 tasks complete; mean queue 12.58 min versus 1.73 in the earlier cohort. On identical new tasks, length costs add 267.69 active min and 56 scrolls. Scenario assumptions, fixed layouts, different cohorts. Full template/persona browser audits: zero findings. [Verification and scope](docs/audits/wave3-sim-20261109.md). |
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
 | Agent vs vendor layouts (retained recording) | On tasks both completed, agents save 1.9–10.7% of clicks plus scrolls and capture 2–8% of the modeled-time gap to the theoretical floor. P1's agent layout fails 7 tasks needing a release feature it declined. [Analysis](docs/audits/agent-benefit-20261113.md). |
+| Learnability gate replay | 5 of 28 retained shipped decisions have measured R2 refusals; 9 pass validation, 12 lack full pixel evidence and 2 exceed replay limits. Independent counterfactuals, not a new recording. [Policy and matrix](docs/methods/learnability-validation.md#retained-recording-replay). |
 | Layout optimization pilot | One frozen P1 context accepts B and refuses D after D adds three validation clicks; both selected designs have structural distance 0.004717 and zero native rejection rate. This does not establish improvement or broader exploration. [Discovery policy and pilot](docs/methods/discovery-and-cadence.md). |
 
 The [EHR scope inventory](docs/methods/ehr-scope.md) lists seven workflows, five
@@ -163,7 +164,7 @@ live model calls. [Model backends](docs/methods/model-backends.md) documents rea
 and replay configuration, context requirements and frozen-night comparisons.
 The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
 lazy review evidence and safe local renames.
-Validation now caps typing and modeled time at +2%; no retained shipped change is newly refused. Movement budgets charge copies surviving deletion of their original ([gate replay and movement tests](docs/methods/interaction-validation.md)).
+Validation pools past odd-day holdouts and gates bounded learning costs; incomplete tasks cost canonical effort plus 50% ([policy and checkpointed replay](docs/methods/learnability-validation.md)). Movement budgets charge copies surviving deletion of their original ([movement tests](docs/methods/interaction-validation.md)).
 Discarded-order notices expire after the 30-day discharge deadline, retaining provenance ([timing policy](docs/design/chart-timing.md)).
 
 `scripts/build-ehrheavy.py [--target MODULE]` builds the full-profile `EhrHeavy`
@@ -303,10 +304,10 @@ retains supersession links and a reproducible citation/recency verifier
   knows the layout: it plans the shortest path through the whole current
   program by breadth-first search over real interpreter steps
   (`lean/Ehr/Sim/Interaction.lean`), so a rearranged layout costs it nothing.
-  An opt-in bounded-knowledge clinician (`lean/Ehr/Sim/Bounded.lean`,
+  A bounded-knowledge clinician (`lean/Ehr/Sim/Bounded.lean`,
   `Discovery.lean`) remembers where controls were, misses after a move,
   searches by label and falls back to charged help; it measures discovery and
-  relearning cost, and the BFS run is retained as an independent expert comparison. Its search,
+  relearning cost and now also gates every release replay, while the BFS run is retained as an independent expert comparison. Its search,
   memory, timing, help and preference parameters are simulation assumptions,
   not estimates from clinician observations. Completion parity with the expert
   is a regression requirement on the sampled and full persona workdays, not a

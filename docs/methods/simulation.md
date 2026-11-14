@@ -101,7 +101,11 @@ persona JSON stays unchanged. The agent adapter accepts optional `policy` and
 loads the prior committed day's memory, including on resume. Canonical baselines
 and vendor-only controls retain independent actor memories. Train estimates
 compare both programs from the same training-day memory snapshot and discard
-counterfactual updates; validation without an explicit snapshot is a cold run.
+counterfactual updates. Release validation now always includes a separate bounded
+replay from carried odd-day train-only memory, even when shifts use the expert.
+All past odd-day holdouts participate; incomplete tasks cost canonical effort
+plus a configurable penalty. [R2 policy and evidence](learnability-validation.md)
+defines the split, tolerances and independent rehearsal snapshots.
 
 For reproducible small comparisons, run
 `python3 scripts/user-model-compare.py

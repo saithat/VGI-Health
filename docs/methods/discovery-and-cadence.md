@@ -33,17 +33,22 @@ the independent identity movement budget. Every alternative is checked and
 measured independently; missing portfolio coverage is recorded. The loop selects
 the greatest measured daily click+scroll saving minus the usage-weighted movement
 proxy, with a configurable minimum net effect (default 5 interactions/day), then
-rechecks the complete program and applies that floor to validation as well. All
+rechecks the complete program and applies that daily floor to validation as well. All
 existing completion, stability, pixel, screen and deploy gates still apply.
 R1 also caps validation keystrokes and modeled time (`klmDeciSec`) at 2% above
 baseline, without pixel rounding slack; neither replaces the release score.
-Full task completion was already required. [Retained-decision replay](interaction-validation.md)
+R2 additionally requires full bounded completion and no click/scroll regression,
+with typing/time capped at +2%, from carried train-only memory. All past odd-day
+holdouts contribute; effect-floor comparisons use exact savings per calibration
+day. Incomplete task costs are canonical effort plus a configurable 50% penalty.
+[Learnability validation](learnability-validation.md) documents the split, evidence
+and retained counterfactuals. Full expert completion remains required. [Retained-decision replay](interaction-validation.md)
 reports every shipped persona/night and distinguishes mandatory vendor updates.
 The floor is provisional: the frozen B data has 179 positive train candidates
 (minimum 1/day, lower quartile 23/day, median 40/day); 20 fall below 5 before
 relearning cost. This is a selection policy, not a fitted clinical threshold.
 
-`run-days --minimum-effect 5 --novelty-weight 0.25 --hotspots 8` configures
+`run-days --minimum-effect 5 --novelty-weight 0.25 --hotspots 8 --incomplete-penalty 0.5` configures
 this policy; `RunOptions.structurePolicy` supplies the same values. Manifests bind
 these values and imported archive hashes; resume rejects changes. Explicit
 `--historical-nightly` (`structurePolicy: false`) is restricted to scripted/replay
@@ -169,7 +174,7 @@ then practices each layout for three matched blocks and measures a fourth warm
 reference. Dates, cases and paired seeds stay fixed. The signed first-k cost
 minus warm cost is reported separately for each layout, then differenced
 (after minus before). Archive observations retain seconds, click-plus-scroll
-actions, k, practice count and the unchanged BFS expert comparison. The release
+actions, k, practice count and the independent BFS expert comparison. The release
 score subtracts only the nonnegative incremental actions divided by k; signed
 results remain in evidence. Incomplete bounded/expert replays leave the bundle
 ineligible, with `switchCostError` in its archive observation; a session with
@@ -185,8 +190,8 @@ use that projection; the original guarded trace is retained. Unmappable slots
 and ordinary missing targets remain unavailable. This prevents deliberate
 failed points from making every pixel validation ineligible.
 Missing carried memory or a backend without bounded output uses the explicitly
-labeled movement-proxy fallback. Opted-in runs carry an independent train-only
-memory across odd calibration partitions; blind/validation cases never practice
+labeled movement-proxy fallback. All runs now carry a separate bounded train-only memory for R2; opted-in runs
+also use train-only memory for switch costs across odd calibration partitions; blind/validation cases never practice
 that actor. Rehearsal memory is discarded. This is an uncalibrated simulation
 estimate, not measured clinician learning or a guarantee of convergence.
 
@@ -202,7 +207,7 @@ and cannot mutate certified program bytes or the loop’s train context. Selecti
 existing past-calibration validation, simulated user response, whole-version
 screen check and atomic certified deployment. Mandatory vendor recertification
 and migration retain their existing schedule and bypass discretionary cadence
-and review; an old-spec layout cannot remain active after a rulebook update.
+and review, while still passing R2 and expert completion; an old-spec layout cannot remain active after a rulebook update.
 A read-only simulator review is available in the
 [UI version browser](tailoring-sessions.md);
 there is no live clinician review control.

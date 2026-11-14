@@ -27,7 +27,11 @@ export function createFakeEhr(): EhrClient {
     mode: 'fake',
     binary: null,
     check: async (i) => fakeCheck(i),
-    simulate: async (i) => fakeSimulate(i),
+    simulate: async (i) => {
+      const result=fakeSimulate(i);
+      return i.policy==='bounded'||i.persona.policy==='bounded' ? {...result,policy:'bounded',
+        memory:structuredClone(i.memory??{actor:i.program.owner,entries:[]}),expert:result} : result;
+    },
     minClicks: async (i) => fakeMinClicks(i),
     deploy: async (i) => fakeDeploy(i),
     runBatch: async (cases) => cases.map((_, i) => ({ case: i, fake: true })),

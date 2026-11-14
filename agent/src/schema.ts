@@ -191,6 +191,7 @@ export const pctAboveFloorSchema = z.object({
 
 /** Statistics over TRAIN days only (days <= the current night). */
 export const trainSummarySchema = z.object({
+  failedTasks: z.array(z.object({ day: nat, task: str, workflow: str, unmetGoals: z.array(str) })).optional(),
   persona: str,
   trainDays: z.array(nat),
   programVersion: nat,
@@ -250,7 +251,15 @@ export const certAttemptSchema = z.object({
   check: checkResultSchema,
 });
 
-export const replayDaySchema = z.object({
+const replayCostsSchema = z.object({before:metricsSchema,after:metricsSchema,saving:signedMetricsSchema});
+export const replayDaySchema = replayCostsSchema.extend({
+  days: z.array(nat).optional(),
+  taskCounts: z.array(z.object({day:nat,tasks:nat})).optional(),
+  scoring: z.object({policy:str,incompletePenalty:z.number().positive()}).optional(),
+  bounded: replayCostsSchema.extend({
+    policy:z.literal('bounded'), memorySha256:str, memorySource:z.literal('train-only'),
+    accepted:z.boolean(), reasons:z.array(str),
+  }).optional(),
   day: nat,
   load: str,
   before: metricsSchema,

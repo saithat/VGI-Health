@@ -123,7 +123,9 @@ describe('bounded tailoring seams',()=>{
     const estimate=await boundedSwitchCost(ehr,persona,'',7)(current,next,context);
     expect(estimate.model).toBe('bounded-matched-relearning-v1');
     expect(estimate.relearning?.incremental.actions).toBeGreaterThan(0);
-    const fallback=await boundedSwitchCost(createFakeEhr(),persona,'',7)(current,next,context);
+    const missing=createFakeEhr(),simulateMissing=missing.simulate;
+    missing.simulate=async i=>{const d=await simulateMissing(i);delete d.policy;delete d.memory;delete d.expert;return d;};
+    const fallback=await boundedSwitchCost(missing,persona,'',7)(current,next,context);
     expect(fallback.model).toBe('usage-weighted-movement-v1');expect(fallback.assumption).toContain('fallback');
     const original=ehr.simulate;ehr.simulate=async i=>{const d=await original(i);return {...d,tasks:d.tasks.map(t=>({...t,completed:false}))};};
     await expect(boundedSwitchCost(ehr,persona,'',7)(current,next,context)).rejects.toBeInstanceOf(IncompleteBoundedReplay);

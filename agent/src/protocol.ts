@@ -13,8 +13,18 @@ export function calibrationPartition(schedule: DaySchedule, side: 'train' | 'val
   return { ...schedule, tasks: schedule.tasks.filter((t) => side === 'validation' ? held.has(t.id) : !held.has(t.id)) };
 }
 export const measurementProtocol = {
-  name: 'past-calibration-blind-even-days-v1', calibrationDays: [1, 3, 5, 7, 9], measurementDays: [2, 4, 6, 8, 10],
-  validation: 'Every third task of the most recent past odd calibration day; never shown to the designer or included in headline metrics. Independent validation seed namespace.',
+  name: 'past-calibration-blind-even-days-v2', calibrationDays: [1, 3, 5, 7, 9], measurementDays: [2, 4, 6, 8, 10],
+  validation: 'All held-out tasks (indices 0, 3, 6, …) from every past odd calibration day; never shown to the designer or included in headline metrics. Independent validation seed namespace.',
   training: 'Remaining tasks of past odd calibration days only. Even-day traces/schedules never enter selection prompts.',
   tests: 'Next even measurement day, only when the accepted version is actually measured there. Night 9 is measured on day 10, not an absent day 11. Superseded/unmeasured versions are reported explicitly.',
 };
+
+/** Load only already observed odd days; the complementary train partitions stay disjoint. */
+export async function validationSchedules(night:number, load:(day:number)=>Promise<DaySchedule|null>):Promise<DaySchedule[]> {
+  const days:DaySchedule[]=[];
+  for(let day=1;day<=night;day+=2) {
+    const schedule=await load(day); if(!schedule)throw Error(`Missing calibration schedule ${day}`);
+    days.push(schedule);
+  }
+  return days;
+}

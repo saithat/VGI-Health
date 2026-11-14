@@ -105,12 +105,8 @@ it('production evaluates the portfolio, selects net effort deterministically and
   }};
   const deps:LoopDeps={runId:'portfolio',store:new RunStore(dir),ehr,screens:{mode:'fake',async check(){throw Error('offline');}},agent:new LlmAgent(new RecordingLlm(backend,dir)),seedPolicy:'none',seedState:{injected:0,rejected:new Set()},worldDir:dir,worldSeed:1};
   const train=[{schedule,result}];
-  const holdout={day:1,async validate(before:typeof program,after:typeof program) {
-    const s=calibrationPartition(fakeSchedule(1,'P1',7),'validation');
-    const args={specVersion:'v1',persona:persona.params,schedule:s,worldDir:dir,seed:1001};
-    const {replayDay}=await import('../src/night.js');
-    return replayDay(1,'normal',await ehr.simulate({...args,program:before}),await ehr.simulate({...args,program:after}));
-  }};
+  const {makeHoldout}=await import('../src/night.js');
+  const holdout=makeHoldout(deps,persona,fakeSchedule(1,'P1',7),{actor:program.owner,entries:[]});
   const night=await runNight(deps,{...input,night:1,train,holdout},{offline:true,structure:{minimumEffect:1,noveltyWeight:1000,topK:8}});
   expect(night.record.exploration?.checker.proposed).toBe(3);
   expect(night.record.exploration?.checker.checkerRejected).toBe(1);

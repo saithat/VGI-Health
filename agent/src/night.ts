@@ -1,3 +1,4 @@
+import { scoredPair, releaseScoringSchema, RELEASE_SCORING_POLICY } from './release-scoring.js';
 import { onlineQuality, assertTrain } from './online-context.js';
 import { rankHotspots, type InformationEffort } from './hotspots.js';
 import { structurePrompt } from './structure-prompt.js';
@@ -45,7 +46,7 @@ import { choosePrompt, nightlyPrompt, repairPrompt, type HistoryItem, type Perso
 import type { Release } from './releases.js';
 import {
   violationOf, jsonPatchSchema, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
-  type JsonPatchOp, type LlmCallRef, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
+  type UserMemory, type JsonPatchOp, type LlmCallRef, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
 } from '../../app/src/dashboard/agent-evidence.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
@@ -59,7 +60,7 @@ export const MAX_REPAIRS = 3;
 /** Opaque access to the past validation partition. Returns aggregates only; never feeds a prompt. */
 export interface Holdout {
   readonly day: number | null;
-  validate(before: Program, after: Program, specVersion: string): Promise<ReplayDay | null>;
+  validate(before: Program, after: Program, specVersion: string, canonical?: Program): Promise<ReplayDay | null>;
 }
 
 export interface LoopDeps {
@@ -73,6 +74,7 @@ export interface LoopDeps {
   seedState: SeedState;
   worldDir: string;
   worldSeed: number;
+  incompletePenalty?: number;
 }
 
 export interface NightInput {
@@ -136,7 +138,8 @@ export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly 
 /** Simulate train schedules on the current program and a candidate; saving per train day. */
 export class TrainEstimator {
   private readonly baseline = new Map<number, DayResult>();
-  constructor(private readonly deps: LoopDeps, private readonly input: NightInput, private readonly specVersion: string) {}
+  private readonly vendor = new Map<number, DayResult>();
+  constructor(private readonly deps: LoopDeps, private readonly input: NightInput, private readonly specVersion: string, private readonly canonical: Program = input.release.canonical) {}
 
   private days(): readonly TrainDay[] {
     return trainEstimateWindow(this.input.train);
@@ -166,7 +169,12 @@ export class TrainEstimator {
         b = await this.run(this.input.current, d);
         this.baseline.set(d.schedule.day, b);
       }
-      const pair = pairedMetrics(b, await this.run(candidate, d));
+      let vendor=this.vendor.get(d.schedule.day);
+      if(!vendor) {
+        vendor=await this.run({...this.canonical,owner:this.input.current.owner,id:this.input.current.id},d);
+        this.vendor.set(d.schedule.day,vendor);
+      }
+      const pair = scoredPair(b, await this.run(candidate, d), vendor, this.deps.incompletePenalty);
       before = addMetrics(before, pair.before);
       after = addMetrics(after, pair.after);
     }
@@ -198,28 +206,79 @@ export function replayDay(day: number, load: string, before: DayResult, after: D
   return { day, load, before: b, after: a, saving: saving(b, a), pctAboveFloor: { before: pctAboveFloor(before), after: pctAboveFloor(after) } };
 }
 
-/** Holdout backed by the world's schedule for past calibration tasks. */
-export function makeHoldout(deps: LoopDeps, persona: PersonaView, schedule: DaySchedule | null): Holdout {
-  const past = schedule ? calibrationPartition(schedule, 'validation') : null;
+/** R2 policy change: independent expert and bounded validation, all past holdouts.
+ * Each arm starts each dated schedule from the same cloned train-only snapshot.
+ * No validation output is carried into the actor or a later replay. */
+export function makeHoldout(deps: LoopDeps, persona: PersonaView, schedules: DaySchedule | readonly DaySchedule[] | null,
+  memory?: UserMemory): Holdout {
+  const past=(schedules ? (Array.isArray(schedules)?schedules:[schedules]) : [])
+    .map(s=>calibrationPartition(s,'validation')).filter(s=>s.tasks.length>0);
+  if(past.some(s=>s.day%2===0 || s.persona!==persona.id) || new Set(past.map(s=>s.day)).size!==past.length)
+    throw Error('Validation requires unique odd calibration days for this clinician');
+  const snapshot=structuredClone(memory);
+  const penalty=releaseScoringSchema.parse({incompletePenalty:deps.incompletePenalty}).incompletePenalty;
   return {
-    day: past?.day ?? null,
-    async validate(before, after, specVersion) {
-      if (!past || !past.tasks.length) return null;
-      for (const program of [before, after]) {
+    day: past.at(-1)?.day ?? null,
+    async validate(before, after, specVersion, canonical=before) {
+      const latest=past.at(-1);
+      if (!latest) return null;
+      for (const program of [before, after, canonical]) {
         const verdict = await deps.ehr.check({ specVersion, program, prev: program, canonical: program });
         if (verdict !== 'ok') throw new Error(`Refusing uncertified validation replay: ${JSON.stringify(verdict)}`);
       }
-      const args = { specVersion, persona: persona.params, schedule: past, worldDir: deps.worldDir, seed: validationSeed(deps.worldSeed, past.day) };
-      const b = await deps.ehr.simulate({ ...args, program: before });
-      const a = await deps.ehr.simulate({ ...args, program: after });
-      const expected = [...past.tasks.map((t)=>t.id)].sort();
-      for (const result of [b,a]) if (JSON.stringify(result.tasks.map((t)=>t.task).sort()) !== JSON.stringify(expected)) throw new Error('Validation simulator omitted or substituted scheduled tasks');
-      return replayDay(past.day, past.load, b, a);
+      if(snapshot && snapshot.actor!==before.owner)throw Error('Foreign clinician train memory');
+      const initial=snapshot ?? {actor:before.owner,entries:[]};
+      const totals={expert:{before:sumMetrics([]),after:sumMetrics([])},bounded:{before:sumMetrics([]),after:sumMetrics([])}};
+      for (const schedule of past) {
+        for(const policy of ['expert','bounded'] as const) {
+          const run=async(program:Program)=>{
+            const result=await deps.ehr.simulate({specVersion,persona:persona.params,schedule,worldDir:deps.worldDir,
+              seed:validationSeed(deps.worldSeed,schedule.day),program,policy,
+              ...(policy==='bounded'?{memory:structuredClone(initial)}:{})});
+            const expected=schedule.tasks.map(t=>t.id).sort();
+            if(result.day!==schedule.day || result.persona!==persona.id || result.programVersion!==program.version ||
+              JSON.stringify(result.tasks.map(t=>t.task).sort())!==JSON.stringify(expected))
+              throw Error('Validation simulator omitted or substituted scheduled tasks or identity');
+            if(policy==='bounded' && (result.policy!=='bounded'||!result.memory||result.memory.actor!==before.owner))
+              throw Error('Missing bounded validation evidence');
+            return result;
+          };
+          const b=await run(before),a=await run(after),vendor=await run(canonical);
+          const pair=scoredPair(b,a,vendor,penalty);
+          totals[policy].before=addMetrics(totals[policy].before,pair.before);
+          totals[policy].after=addMetrics(totals[policy].after,pair.after);
+        }
+      }
+      const bounded={...totals.bounded,saving:saving(totals.bounded.before,totals.bounded.after,past.length)};
+      const reasons=boundedRefusals(bounded);
+      return {day:latest.day,load:'pooled past calibration holdouts',days:past.map(s=>s.day),
+        taskCounts:past.map(s=>({day:s.day,tasks:s.tasks.length})),...totals.expert,
+        saving:saving(totals.expert.before,totals.expert.after,past.length),
+        pctAboveFloor:{before:null,after:null},scoring:{policy:RELEASE_SCORING_POLICY,incompletePenalty:penalty},
+        bounded:{...bounded,policy:'bounded',memorySha256:sha256(stableStringify(initial)),memorySource:'train-only',accepted:reasons.length===0,reasons}};
     },
   };
 }
 
-export function completionOk(r: ReplayDay | null): boolean {
+export const BOUNDED_KEYS=['clicks','scrolls','keystrokes','klmDeciSec'] as const;
+/** The bounded learner's replay is noisier than the expert's: allow 2% on every
+ * bounded effort measure, so single-action jitter does not refuse a release. */
+export const BOUNDED_TOLERANCE={clicks:2,scrolls:2,keystrokes:2,klmDeciSec:2} as const;
+export function boundedRefusals(r:Pick<ReplayDay,'before'|'after'>):string[] {
+  const reasons:string[]=[];
+  if(!completionOk(r))reasons.push('full bounded task completion required');
+  for(const key of BOUNDED_KEYS) {
+    const b=r.before[key],a=r.after[key];
+    if(!Number.isFinite(b)||!Number.isFinite(a)||a>b*(1+BOUNDED_TOLERANCE[key]/100))
+      reasons.push(`${key}: ${b} → ${a} exceeds ${BOUNDED_TOLERANCE[key]}%`);
+  }
+  return reasons;
+}
+export function learnabilityOk(replay:ReplayDay|null):boolean {
+  return !!replay?.bounded && boundedRefusals(replay.bounded).length===0;
+}
+
+export function completionOk(r: Pick<ReplayDay,'before'|'after'> | null): boolean {
   return r !== null && r.after.tasks > 0 && r.after.tasks === r.before.tasks && r.after.completed === r.after.tasks && r.after.completed >= r.before.completed;
 }
 
@@ -234,6 +293,10 @@ export function interactionAcceptable(r:ReplayDay):boolean{
   const before=r.before[key],after=r.after[key];if(typeof before!=='number'||typeof after!=='number'||!Number.isFinite(before)||!Number.isFinite(after))return false;
   return after<=before*(1+INTERACTION_TOLERANCE[key]/100)+((key==='mouseTravelPx'||key==='scrollPx')?1:0);
  });
+}
+/** Exact daily effect for pooled validation; display savings are rounded. */
+export function validationGross(r:ReplayDay):number {
+  return (r.before.clicks+r.before.scrolls-r.after.clicks-r.after.scrolls)/(r.days?.length??1);
 }
 export function improved(r: ReplayDay): boolean {
  return interactionAcceptable(r)&&(['clicks','scrolls','scrollPx','mouseTravelPx'] as const).some(key=>{
@@ -320,7 +383,7 @@ export type DeployOutcome =
 export async function deployVersion(deps: LoopDeps, persona: string, program: Program, gate: Gate): Promise<DeployOutcome> {
   let stage='validation',screenCheck:ScreenCheckResult|null=null;
   try {
-  if (gate.night !== undefined && !completionOk(gate.validation ?? null)) throw new Error('Full validation completion required before deploy');
+  if (gate.night !== undefined && (!completionOk(gate.validation ?? null) || !learnabilityOk(gate.validation ?? null))) throw new Error('Full expert completion and R2 bounded validation required before deploy');
   stage='build';
   const build = deps.ehr.mode === 'real' ? await retryInfrastructure('deploy:build',()=>installedBuild(undefined, deps.ehr.binary ?? undefined),true) : undefined;
   stage='screen-check';
@@ -578,7 +641,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
 
   // 7. Validate: replay past calibration tasks (same patients, events, choices) on the old and new versions.
   const moved = componentsMoved(current, finalProgram);
-  const replay = await input.holdout.validate(current, finalProgram, specVersion);
+  const replay = await input.holdout.validate(current, finalProgram, specVersion, {...release.canonical,owner:current.owner,id:current.id});
   const stabilityOk = moved <= release.spec.design.stabilityBudget;
   rec.validation.replay = replay;
   rec.measured.validation = replay;
@@ -587,12 +650,16 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   const pv = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;
+  if (!learnabilityOk(replay)) {
+    rec.validation.reason = `R2 bounded validation refused: ${replay?.bounded?.reasons.join('; ') ?? 'missing bounded evidence'}`;
+    rec.outcome='validation-rejected';return finish(null);
+  }
   if (!replay) {
     rec.validation.reason = 'no validation day available';
     rec.outcome = 'validation-rejected';
     return finish(null);
   }
-  if(structure && (replay.saving.clicks+replay.saving.scrolls-selectedCost<structure.minimumEffect || replay.saving.clicks+replay.saving.scrolls-selectedCost<=0)) {
+  if(structure && (validationGross(replay)-selectedCost<structure.minimumEffect || validationGross(replay)-selectedCost<=0)) {
     rec.validation.reason='Validation net effect below shipping floor';rec.outcome='validation-rejected';return finish(null);
   }
   if (!rec.validation.improved || !stabilityOk) {
@@ -900,15 +967,16 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   rec.certification.attempts.push({ attempt: 0, candidateIds: chosen.candidateIds, source: 'merged', patch, check });
   rec.certification.result = check.status === 'pass' ? 'certified' : 'rejected';
   if (check.status !== 'pass') { rec.outcome = 'certification-failed'; return finish(null); }
-  const replay = await input.holdout.validate(current, program, release.specVersion);
+  const replay = await input.holdout.validate(current, program, release.specVersion, {...release.canonical,owner:current.owner,id:current.id});
   rec.validation = { replay, stabilityOk: chosen.evidence.moved <= release.spec.design.stabilityBudget,
     improved: replay ? improved(replay) : null, accepted: false, reason: 'Release validation did not improve' };
   rec.measured.validation = replay;
   const prediction = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = prediction.held; rec.measured.predictionNote = prediction.note;
-  if(structure&&(!replay || replay.saving.clicks+replay.saving.scrolls-chosen.evidence.switchCost.cost<structure.minimumEffect || replay.saving.clicks+replay.saving.scrolls-chosen.evidence.switchCost.cost<=0)) {
+  if(structure&&(!replay || validationGross(replay)-chosen.evidence.switchCost.cost<structure.minimumEffect || validationGross(replay)-chosen.evidence.switchCost.cost<=0)) {
     rec.outcome='validation-rejected';rec.validation.reason='Validation net effect below shipping floor';return finish(null);
   }
+  if(!learnabilityOk(replay)){rec.outcome='validation-rejected';rec.validation.reason=`R2 bounded validation refused: ${replay?.bounded?.reasons.join('; ') ?? 'missing bounded evidence'}`;return finish(null);}
   if (!rec.validation.stabilityOk || !rec.validation.improved) { rec.outcome = 'validation-rejected'; return finish(null); }
   rec.validation.accepted = true; rec.validation.reason = 'Reviewed bundle passed past-calibration replay';
   rec.userResponse = options.tailoringSessions ? {response:'accepted',probability:0,reason:'Simulated clinician already chose this bundle in the off-shift session'} : userResponse(deps, night, persona.id, chosen.evidence.moved);

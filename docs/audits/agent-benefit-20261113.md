@@ -118,10 +118,14 @@ P1's and 23% of P5's saving.
    release night.
 2. **Count incomplete tasks as costly.** Score an incomplete task at its vendor
    cost plus a penalty instead of its partial clicks, and show failed tasks to the
-   agent first.
+   agent first. **Implemented:** canonical task cost +50% by default, configurable
+   in the live release estimator and validation; failed train tasks lead the evidence.
+   [Scoring policy](../methods/learnability-validation.md#incomplete-task-cost).
 3. **Validate on more tasks.** Use every validation-eligible task from all past
    calibration days, not every third task of one day, so small real gains can be
-   confirmed and null changes stop consuming nights.
+   confirmed and null changes stop consuming nights. **Implemented:** all past odd-day
+   held-out partitions are pooled, separately from proposal training; R2 adds
+   bounded replay from train-only memory. [Sizes and split](../methods/learnability-validation.md#train-and-validation-split).
 4. **Measure in time as well.** R1 (approved) makes time a constraint. Reporting
    results in modeled time, not only clicks plus scrolls, avoids counting density
    alone as progress.
@@ -130,7 +134,7 @@ P1's and 23% of P5's saving.
 6. **Point the agent at the structural gap.** Give it the per-workflow gap to the
    floor, so proposals target navigation and step count, not only density.
 
-A fresh recording is needed to measure any of these. The retained recording is
+A fresh recording is needed to measure the effect of the implemented changes. The retained recording is
 frozen.
 
 ## Reproduction
