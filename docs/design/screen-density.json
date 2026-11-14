@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "maxTargetsPerViewport": 57,
+  "viewport": [
+    1440,
+    900
+  ],
+  "fixedTargets": "Reserve fixed and sticky active targets in every scroll window",
+  "scope": "Deployed React painter; independent of the Lean text-card shell limit"
+}

@@ -272,8 +272,10 @@ const interruptive = [
   ['interactionRefill', 'approveRefill', { facts: facts({ medToGive: 'metformin', currentMedClasses: ['iodinatedContrast'] }) }],
   ['doseRangeOrder', 'signOrders', { drug: 'amoxicillin', dose: 999990 }],
   ['highAlertAdmin', 'administerMed', {}],
+  ['highAlertOrderNotice', 'signOrders', { drug: 'oxycodone', freq: 'q6h' }],
 ];
-for (const [id, cm, variant] of interruptive) add(`alert.${id}`, `A1/A3 interruptive ${id}`, 'Trigger fires, blocks other clicks, requires human acknowledgement, never repeats same key; legitimate path completes', t => supports(t, cm), f => {
+for (const [id, cm, variant] of interruptive) add(`alert.${id}`, `A1/A3 interruptive ${id}`, 'Trigger fires, blocks other clicks, requires human acknowledgement, never repeats same key; legitimate path completes', t => supports(t, cm) &&
+  !(id === 'highAlertOrderNotice' && t.frozenSpec && t.spec.alerts.find(a => a.id === id)?.tier !== 'interruptive'), f => {
   const ctx = context(cm, variant), d = f.driver(ctx);
   prepare(d, ctx, cm === 'administerMed' && ctx.facts.medToGive !== 'morphine' ? ['painScore', 'highAlertCosign'] : []);
   d.clickCommit(cm);
@@ -546,7 +548,8 @@ for (const [id, cm, variant] of [
   ['activeRxPopup', 'approveRefill', { facts: facts({ medToGive: 'metformin', currentMedClasses: ['biguanide'] }) }],
   ['refillCareGapPopup', 'approveRefill', { facts: facts({ careGaps: ['screening-due'] }) }],
   ['minorInteractionPopup', 'administerMed', { facts: facts({ medToGive: 'amoxicillin', interactions: [{key:'heldout-minor', severity:'minor'}] }) }],
-]) add(`alert.removable.${id}`, `Core optional/removable alert ${id}`, 'May be removed or inline; if configured to interrupt, fires only for its trigger and legitimate completion remains possible', t => supports(t, cm), f => {
+]) add(`alert.removable.${id}`, `Core optional/removable alert ${id}`, 'May be removed or inline; if configured to interrupt, fires only for its trigger and legitimate completion remains possible', t => supports(t, cm) &&
+  (id !== 'highAlertOrderNotice' || t.spec.alerts.find(a => a.id === id)?.tier === 'removable'), f => {
   // V1's frozen predecessor uses .interaction; CriticalResults.followThrough
   // uses .minorInteraction, which explicitly suppresses firing under severe
   // evidence. Choose the trigger for the bound spec, never rewrite its rule.

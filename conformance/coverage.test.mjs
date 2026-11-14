@@ -61,3 +61,19 @@ test('optional service applicability distinguishes absent surfaces from a missin
     !['orderCode','priorAuthRequest'].includes(c.kind?.field?.element) && c.kind?.button?.action !== 'requestPriorAuth');
   assert.equal(scenario.applies(target),false);
 });
+
+
+test('high-alert conformance retains frozen optional policy and requires current interruption', () => {
+  const target = {persona:'P1',program:read('releases/v1/personas/P1.json'),spec:read('releases/v1/spec.json')};
+  const required = scenarioCatalog.find(s => s.id === 'alert.highAlertOrderNotice');
+  const legacy = scenarioCatalog.find(s => s.id === 'alert.removable.highAlertOrderNotice');
+  assert.equal(required.applies(target),true);
+  assert.equal(legacy.applies(target),false);
+  const oldSpec = structuredClone(target.spec);
+  oldSpec.alerts.find(a => a.id === 'highAlertOrderNotice').tier = 'removable';
+  const frozen = {...target,spec:oldSpec,frozenSpec:true};
+  assert.equal(required.applies(frozen),false);
+  assert.equal(legacy.applies(frozen),true);
+  target.spec.alerts = target.spec.alerts.filter(a => a.id !== 'highAlertOrderNotice');
+  assert.equal(required.applies(target),true,'A missing current alert must fail its runtime case');
+});

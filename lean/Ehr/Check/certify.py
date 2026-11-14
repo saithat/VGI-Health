@@ -65,6 +65,8 @@ def main():
     expected[dependency_bad] = "completable"
     for path, prop in json.loads((ROOT / "lean/Ehr/Check/conformance-bad-programs.json").read_text()):
         expected[path] = prop
+    # New specification: high-alert notices survive clinician personalization.
+    expected["lean/Ehr/Check/bad/42-removed-high-alert.json"] = "highAlertNotices"
     design_expected = {
         "lean/Ehr/Check/bad/50-context-removed.json": "contextRetained",
         "lean/Ehr/Check/bad/51-misleading-navigation.json": "navigation",

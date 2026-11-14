@@ -76,4 +76,14 @@ theorem accepted_structural (sp : Spec) (prev : Option Program) (can p : Program
 #print axioms firstFinding_none_iff
 #print axioms T7_rejection
 #print axioms accepted_structural
+/-- New specification: acceptance retains the inline high-alert notices on
+all relevant commit screens, in addition to the runtime acknowledgment guard. -/
+theorem accepted_highAlertNotices (sp prev can p) (h : check sp prev can p = .ok) :
+    highAlertNoticesRetained sp p = true := by
+  have hall := (check_ok_iff sp prev can p).mp h
+  simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hretained, _⟩
+  exact hretained
+
+#print axioms accepted_highAlertNotices
 end Ehr.Check

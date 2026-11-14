@@ -2103,11 +2103,16 @@ def healthMaintenancePopupAlert : AlertSpec :=
   { id := "healthMaintenancePopup", label := "Health maintenance reminder",
     cond := .careGap, tier := .removable, commit := signNote.id }
 
-/-- Removable: a "high-alert medication ordered, review policy" notice when
-signing orders. The nurse's double check is the real safeguard. -/
+/-- New specification: high-alert ordering notices cannot be removed per clinician.
+Hospital policy (not law): retain a human acknowledgment at ordering as well as
+administration. ISMP High-Alert List (2024) supports layered safeguards including
+CDS/alerts; ISMP Targeted Best Practices (2026–2027), BP 19, covers the medication
+use process. Neither source mandates this exact interruptive notice.
+https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf
+https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf -/
 def highAlertOrderNoticeAlert : AlertSpec :=
   { id := "highAlertOrderNotice", label := "High-alert medication ordered: review policy",
-    cond := .highAlertMed, tier := .removable, commit := signOrders.id }
+    cond := .highAlertMed, tier := .interruptive, commit := signOrders.id }
 
 /-- Removable: "patient already has an active prescription for this drug" when
 refilling. A refill always matches an active prescription. -/
@@ -2131,11 +2136,11 @@ def alerts : List AlertSpec := [
   -- interruptive
   drugAllergyOrderAlert, drugAllergyAdminAlert,
   interactionOrderAlert, interactionRefillAlert,
-  doseRangeOrderAlert, weightInLbAlert, highAlertAdminAlert,
+  doseRangeOrderAlert, weightInLbAlert, highAlertAdminAlert, highAlertOrderNoticeAlert,
   -- passive
   careGapsInlineAlert, duplicateTherapyInlineAlert, immunizationsDueInlineAlert,
   -- removable
-  healthMaintenancePopupAlert, highAlertOrderNoticeAlert, activeRxPopupAlert,
+  healthMaintenancePopupAlert, activeRxPopupAlert,
   refillCareGapPopupAlert, minorInteractionPopupAlert
 ]
 

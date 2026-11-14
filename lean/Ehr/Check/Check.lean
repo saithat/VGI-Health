@@ -411,7 +411,19 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
                 if (prog.screen? z).any (fun target => decide (Render.NavLabelHonest spec target
                     (Render.uiLabel c.label "Action"))) then none
                 else some s!"R6/D5: navigation link {c.id} to {z}, label '{c.label}', must equal the target title or a declared alias and have at most {spec.design.maxLabelWords} words"
-            else none }
+            else none },
+    -- New specification: retain high-alert notices independently of personalization.
+    { property := "highAlertNotices", passes := highAlertNoticesRetained spec prog
+      explain := fun _ => spec.alerts.findSome? fun al =>
+        if al.cond != .highAlertMed || al.tier == .removable then none else
+        prog.screens.findSome? fun scr =>
+          if scr.components.any (fun c => commitOf? c.kind == some al.commit) &&
+              !(scr.components.any fun c =>
+                (alertOf? c.kind).any (fun a => a.1 == al.id && !a.2) && fixedShown scr.components c) then
+            some { property := "highAlertNotices"
+                   screen? := some scr.id
+                   message := s!"High-alert notice {al.id} must remain inline on commit screen {scr.id}" }
+          else none }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

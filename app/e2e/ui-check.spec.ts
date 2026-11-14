@@ -1,3 +1,5 @@
+import { actionDensity } from './action-density';
+import densityPolicy from '../../docs/design/screen-density.json' with { type: 'json' };
 import { physicalBounds as measurePhysicalBounds, type PhysicalFinding } from "./physical-policy";
 import { waitForCaptureFonts, captureCss } from "./capture-environment";
 import { captureGeometry } from "./geometry-capture";
@@ -365,6 +367,21 @@ for (const file of fixtures)
     await page.waitForFunction(() => typeof window.renderUi === "function");
     await render(page, screen);
     if (!/-geometry\.json$/.test(file)) await urgentVisibility(page, screen);
+    async function checkDensity(phase: string) {
+      if (testInfo.project.name !== "desktop" || /-geometry\.json$/.test(file)) return;
+      await page.evaluate(() => {
+        window.scrollTo(0, 0);
+        for (const el of document.querySelectorAll("body *")) el.scrollTo(0, 0);
+      });
+      const density = await actionDensity(page);
+      await testInfo.attach("action-density", {
+        body: JSON.stringify({ file, screen: screen.screen ?? null, phase, ...density }),
+        contentType: "application/json",
+      });
+      expect(density.maximum, `R5 active targets (${phase}) in ${file}: ${JSON.stringify(density)}`)
+        .toBeLessThanOrEqual(density.limit);
+    }
+    await checkDensity("active");
     if (process.env.EHR_GEOMETRY_DIR && testInfo.project.name === "desktop") {
       const sha = createHash("sha256").update(readFileSync(file)).digest("hex");
       const geometry = await captureGeometry(
@@ -396,6 +413,7 @@ for (const file of fixtures)
       await visibility(page);
       // Background must also pass fidelity once the blocking alert is acknowledged.
       await render(page, { ...screen, modal: null });
+      await checkDensity("background-probe");
       if (process.env.EHR_GEOMETRY_DIR && testInfo.project.name === "desktop") {
         const sha = createHash("sha256")
           .update(readFileSync(file))
@@ -1547,4 +1565,29 @@ test("plain text fields expose complete long values at reflow and text resize", 
       expect(size.contentHeight).toBeLessThanOrEqual(size.height + 1);
     }
   }
+});
+
+
+test("action density rejects overcrowding in the React painter", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/screen-check.html");
+  await page.waitForFunction(() => typeof window.renderUi === "function");
+  await render(page, {
+    banner: [], nav: [], title: "Density probe", side: [], modal: null,
+    workspace: Array.from({ length: densityPolicy.maxTargetsPerViewport + 1 }, (_, i) => ({
+      button: { comp: `density-${i}`, label: "Action", role: "secondary", enabled: true,
+        blockedReason: null, hotkey: null },
+    })),
+  });
+  // Deliberately crowded CSS over the real painter must fail even though the
+  // semantic tree, target sizes and labels remain valid.
+  await page.locator("button").evaluateAll(buttons => {
+    buttons.forEach((button, i) => {
+      if (!(button instanceof HTMLElement)) throw Error("Expected HTML target");
+      button.style.cssText = `position:fixed;left:${(i % 40) * 30}px;top:${Math.floor(i / 40) * 30}px;width:28px;height:28px;min-width:0;padding:0`;
+    });
+  });
+  const measured = await actionDensity(page);
+  expect(measured.maximum).toBeGreaterThan(densityPolicy.maxTargetsPerViewport);
+  expect(measured.pass).toBe(false);
 });

@@ -124,6 +124,8 @@ export function screenContext(appDir, browser, env = process.env) {
     assertions: [
       "e2e/ui-check.spec.ts",
       "e2e/physical-policy.ts",
+      "e2e/action-density.ts",
+      "../docs/design/screen-density.json",
       "e2e/geometry-capture.ts",
       "playwright.config.ts",
       "src/ehr/ui/fidelity.ts",

@@ -201,7 +201,7 @@ def sign : Screen :=
       alertC s "alert.doseRange" "doseRangeOrder" "Dose out of range" (popup := false),
       alertC s "alert.weightLb" "weightInLb" "Weight entered in pounds" (popup := false),
       alertC s "alert.highAlert" "highAlertOrderNotice" "High-alert medication ordered"
-        (popup := true),
+        (popup := false),
       group s "weights" "Dosing weight" (collapsible := false),
       field s "weight" "weight" "Weight today (kg)" (parent := some "weights"),
       field s "dosingWeight" "dosingWeight" "Dosing weight (kg)" (parent := some "weights")] ++

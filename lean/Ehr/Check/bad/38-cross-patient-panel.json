@@ -3967,7 +3967,7 @@
      "tab": 0,
      "size": "normal",
      "label": "High-alert medication ordered",
-     "kind": {"alert": {"popup": true, "alert": "highAlertOrderNotice"}},
+     "kind": {"alert": {"popup": false, "alert": "highAlertOrderNotice"}},
      "id": "w1Sign.alert.highAlert"},
     {"visibility": "always",
      "tag": "w1Sign.signature.signOrders",

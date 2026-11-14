@@ -122,3 +122,15 @@ def approvedTier (id : AlertId) : Option Urgency :=
 #guard approvedAssignments.all (! ·.pendingOwnerReview)
 #guard (approvedAssignments.map (·.id)).Nodup
 end Ehr.Specs.AlertUrgency
+
+namespace Ehr.Specs.AlertUrgency
+set_option maxRecDepth 16384 in
+set_option maxHeartbeats 2000000 in
+/-- New specification: every declared high-alert-medication trigger, including
+inherited issuance notices, remains interruptive. Attention urgency is independent:
+the generic order notice retains its advisory attention tier. -/
+theorem highAlert_not_removable :
+    ∀ a ∈ declaredAlerts, a.cond = .highAlertMed → a.tier = .interruptive := by decide
+
+#print axioms highAlert_not_removable
+end Ehr.Specs.AlertUrgency

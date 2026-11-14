@@ -227,6 +227,7 @@ theorem canonical_keeps_plain_field (c : Component)
     · exact List.mem_append_right _ h
   apply List.mem_flatMap.mpr
   refine ⟨c, ?_, by simp⟩
+  apply List.mem_append_left
   apply List.mem_map.mpr
   refine ⟨c, List.mem_append_left _ kept, ?_⟩
   change (match c.kind with

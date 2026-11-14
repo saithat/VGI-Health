@@ -183,7 +183,7 @@ def sign : Screen :=
       alertC s "alert.doseRange" "doseRangeOrder" "Dose out of range" (popup := false),
       alertC s "alert.weightLb" "weightInLb" "Weight entered in pounds" (popup := false),
       alertC s "alert.highAlert" "highAlertOrderNotice" "High-alert medication ordered"
-        (popup := true),
+        (popup := false),
       field s "patientIdReentry" "patientIdReentry" "Re-enter patient ID (initials/sex/age)",
       commitBtn s "signOrders" "Sign orders",
       goto s "next" "w1Close" "Sign Visit",
