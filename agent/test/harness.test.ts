@@ -164,7 +164,7 @@ night render ${f.screen} >/dev/null; night query ledger >/dev/null; night check 
   // Through runNight, the re-verified submission goes through the same independent certification.
   const g = await fixture(); const through = agent(g, 'exit 99', g.dir, { replayFrom: rec }); g.deps.agent = through;
   const metrics = (scrolls: number) => ({ ...sumMetrics([]), tasks: 1, completed: 1, clicks: 10, scrolls, scrollPx: 10 * scrolls, mouseTravelPx: 100 });
-  g.input.holdout = { day: 1, validate: async () => ({ day: 1, load: 'busy', before: metrics(5), after: metrics(4), saving: { clicks: 0, keystrokes: 0, scrolls: 1, scrollPx: 10, mouseTravelPx: 0, klmDeciSec: 0 }, pctAboveFloor: { before: null, after: null } }) };
+  g.input.holdout = { day: 1, validate: async () => ({ day: 1, load: 'busy', before: metrics(5), after: metrics(4), saving: { clicks: 0, keystrokes: 0, scrolls: 1, scrollPx: 10, mouseTravelPx: 0, klmDeciSec: 0 }, pctAboveFloor: { before: null, after: null },bounded:{before:{...sumMetrics([]),tasks:1,completed:1},after:{...sumMetrics([]),tasks:1,completed:1},saving:{clicks:0,keystrokes:0,scrolls:0,scrollPx:0,mouseTravelPx:0,klmDeciSec:0},policy:'bounded' as const,memorySha256:'fixture',memorySource:'train-only' as const,accepted:true,reasons:[]} }) };
   try {
     const result = await runNight(g.deps, g.input, { offline: true });
     expect(result.record.certification.attempts.map(x => x.check.status)).toEqual(['pass']);

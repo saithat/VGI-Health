@@ -221,7 +221,7 @@ it('repairs a final-gate rejection in the same REPL session through ordinary cer
   const inner = f.deps.ehr.check.bind(f.deps.ehr);
   let n = 0;
   f.deps.ehr = { ...f.deps.ehr, check: async (i) => (++n === 2 ? { violation: { property: 'WithinBudgets', message: 'moves too much', counterexample: [], screens: [] } } : inner(i)) };
-  f.input.holdout = { day: 1, validate: vi.fn(async () => ({ day: 1, load: 'busy', before: { ...sumMetrics([]), tasks: 1, completed: 1, clicks: 10, scrolls: 5, scrollPx: 100, mouseTravelPx: 100 }, after: { ...sumMetrics([]), tasks: 1, completed: 1, clicks: 10, scrolls: 4, scrollPx: 90, mouseTravelPx: 100 }, saving: { clicks: 0, keystrokes: 0, scrolls: 1, scrollPx: 10, mouseTravelPx: 0, klmDeciSec: 0 }, pctAboveFloor: { before: null, after: null } })) };
+  f.input.holdout = { day: 1, validate: vi.fn(async () => ({ day: 1, load: 'busy', before: { ...sumMetrics([]), tasks: 1, completed: 1, clicks: 10, scrolls: 5, scrollPx: 100, mouseTravelPx: 100 }, after: { ...sumMetrics([]), tasks: 1, completed: 1, clicks: 10, scrolls: 4, scrollPx: 90, mouseTravelPx: 100 }, saving: { clicks: 0, keystrokes: 0, scrolls: 1, scrollPx: 10, mouseTravelPx: 0, klmDeciSec: 0 }, pctAboveFloor: { before: null, after: null },bounded:{before:{...sumMetrics([]),tasks:1,completed:1},after:{...sumMetrics([]),tasks:1,completed:1},saving:{clicks:0,keystrokes:0,scrolls:0,scrollPx:0,mouseTravelPx:0,klmDeciSec:0},policy:'bounded' as const,memorySha256:'fixture',memorySource:'train-only' as const,accepted:true,reasons:[]} }))};
   try {
     const result = await runNight(f.deps, f.input, { offline: true });
     expect(result.record.certification.attempts.map(x => [x.source, x.check.status])).toEqual([['merged', 'fail'], ['repair', 'pass']]);
