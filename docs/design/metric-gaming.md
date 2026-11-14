@@ -88,6 +88,9 @@ Nightly, cadence, optional surfacing and mandatory migration/fallback paths appl
 R2, including the final deploy guard. Closes V5 on these simulated workloads and
 makes R6 meaningful. *Policy change: flagged.* The model is uncalibrated; no human
 learnability claim follows. [Policy, sizes and retained replay](../methods/learnability-validation.md).
+The retained replay finds 5 measured R2 refusals among 28 shipped decisions;
+9 pass validation, 12 have incomplete expert pixel evidence and 2 exceed solver
+limits. These are independent counterfactuals; the recording remains unchanged.
 
 **R3. Copy budget** (*new specification*, Lean `Props`). For every tag: at most one
 copy per screen, and at most `spec.design.copyBudget` copies per program. Copies

@@ -102,6 +102,7 @@ their certificates have not been rebound to the rebuilt runtime.
 | Simulator smoke test | Day 2: 158/158 tasks complete; mean queue 12.58 min versus 1.73 in the earlier cohort. On identical new tasks, length costs add 267.69 active min and 56 scrolls. Scenario assumptions, fixed layouts, different cohorts. Full template/persona browser audits: zero findings. [Verification and scope](docs/audits/wave3-sim-20261109.md). |
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
 | Agent vs vendor layouts (retained recording) | On tasks both completed, agents save 1.9–10.7% of clicks plus scrolls and capture 2–8% of the modeled-time gap to the theoretical floor. P1's agent layout fails 7 tasks needing a release feature it declined. [Analysis](docs/audits/agent-benefit-20261113.md). |
+| Learnability gate replay | 5 of 28 retained shipped decisions have measured R2 refusals; 9 pass validation, 12 lack full pixel evidence and 2 exceed replay limits. Independent counterfactuals, not a new recording. [Policy and matrix](docs/methods/learnability-validation.md#retained-recording-replay). |
 | Layout optimization pilot | One frozen P1 context accepts B and refuses D after D adds three validation clicks; both selected designs have structural distance 0.004717 and zero native rejection rate. This does not establish improvement or broader exploration. [Discovery policy and pilot](docs/methods/discovery-and-cadence.md). |
 
 The [EHR scope inventory](docs/methods/ehr-scope.md) lists seven workflows, five
@@ -300,7 +301,7 @@ retains supersession links and a reproducible citation/recency verifier
   knows the layout: it plans the shortest path through the whole current
   program by breadth-first search over real interpreter steps
   (`lean/Ehr/Sim/Interaction.lean`), so a rearranged layout costs it nothing.
-  An opt-in bounded-knowledge clinician (`lean/Ehr/Sim/Bounded.lean`,
+  A bounded-knowledge clinician (`lean/Ehr/Sim/Bounded.lean`,
   `Discovery.lean`) remembers where controls were, misses after a move,
   searches by label and falls back to charged help; it measures discovery and
   relearning cost and now also gates every release replay, while the BFS run is retained as an independent expert comparison. Its search,

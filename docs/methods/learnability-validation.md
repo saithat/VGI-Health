@@ -124,8 +124,62 @@ address-space cap and a two-minute timeout, with infrastructure retries disabled
 by default for this offline replay. Resource failures are unavailable evidence,
 never passes. Node's heap cap alone does not constrain the native solver.
 
-Replay results and their limits are recorded below after the retained matrix
-finishes. Historical certificates and recorded outcome files are unchanged.
+All 45 decisions are inventoried, including **28 shipped releases** and 17
+nonshipping decisions. Of the shipped releases, **5 have measured R2 refusals**,
+9 pass the reconstructed validation gates, 12 pass R2 but lack sufficient frozen
+expert pixel evidence for a full verdict, and 2 are unavailable under the solver
+limits. Missing evidence is never counted as a pass. Historical certificates and
+recorded outcome files are unchanged.
+
+| Night | P1 | P2 | P3 | P4 | P5 |
+|---|---|---|---|---|---|
+| 1 | Refuse | Partial | Refuse | Refuse | Partial |
+| 2 | Partial | Partial | — | Refuse | — |
+| 3 | Pass | Pass | Pass | Pass | Pass |
+| 4 | Partial | Refuse | — | — | — |
+| 5 | — | Partial | — | Partial | — |
+| 6 | Pass | Unavailable | Pass | Pass | Pass |
+| 7 | — | — | — | Partial | — |
+| 8 | — | — | — | Partial | Partial |
+| 9 | — | Unavailable | Partial | Partial | — |
+
+“Pass” covers the applicable expert and bounded validation gates, not a complete
+new release decision: the structural train effect floor is not reconstructed.
+“Partial” means R2 passes but frozen expert pixel metrics are unavailable; it is
+inconclusive, not approval. “—” means no shipped release. These remain independent
+comparisons against recorded layouts and memory histories, even after an earlier
+release would have been refused.
+
+The measured bounded regressions are:
+
+| Shipped decision | Bounded cost before → after | R2 refusal |
+|---|---|---|
+| Night 1, P1 | Clicks 430 → 825; scrolls 557 → 1,348; keystrokes 1,700 → 2,511; `klmDeciSec` 33,263 → 73,665 | All four effort bounds |
+| Night 1, P3 | Clicks 186 → 195 | Clicks |
+| Night 1, P4 | Clicks 286 → 289 | Clicks |
+| Night 2, P4 | Clicks 289 → 291 | Clicks |
+| Night 4, P2 | Scrolls 3,870 → 3,871 | Scrolls; expert scrolls also rise 2,010 → 2,013 |
+
+All five are discretionary nightly releases. The five night-3 vendor updates
+pass; four night-6 migrations pass. P2's night-6 canonical bounded comparison
+times out at two minutes. P2's night-9 replay cannot reconstruct the required
+day-7 train memory within the same limit, so no gate verdict is asserted.
+This is simulated-model evidence, not evidence of human difficulty. In particular,
+the one-scroll refusal follows the declared zero-scroll-regression rule.
+
+The complete output is `$TMPDIR/r2-retained-replay-world2/report.json`, with
+per-decision aggregates, dated sizes, memory hashes and refusal reasons.
+Its decision-tree SHA-256 is
+`df2a8fd2f478ccf4fcaf969ea39583d20086764f29f7351eedbdc017e5b7c5ce`;
+native SHA-256 is
+`d1d4b75732fc4f5f74a3c5b19bf7e391bc8c1d90970fed31ac0bdf8ae551849e`.
+The report also fingerprints the world, programs and certification inputs.
+The two resumed sequential batches report maximum process RSS of 4,446,980 and
+4,632,996 KiB (about 4.24 and 4.42 GiB) via `/usr/bin/time -v`; no browser is started.
+The first batch stopped on the day-7 P2 train timeout; the checkpointed
+continuation completed the matrix and recorded that decision as unavailable.
+A final summary-only invocation succeeds with all 28 checkpoints and recomputes
+no simulations. The 9-night sample sizes match the table above.
 
 ## Targeted verification
 
