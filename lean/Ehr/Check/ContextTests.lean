@@ -1,0 +1,84 @@
+import Ehr.Check.ContextSound
+import Ehr.Canonical.Personas
+import Ehr.Core.Json
+import Ehr.Examples.Tiny
+
+/-! R4/R6 new specifications: boundary and anti-bypass regressions. -/
+namespace Ehr.Check.ContextTests
+open Ehr Ehr.Check Ehr.Props
+
+def sp : Spec := { Examples.Tiny.spec with
+  workflowContexts? := some [("W1", ["currentMeds"])] }
+def commit : Component := { id := "sign", kind := .button (.commit "signOrders"), label := "Sign" }
+def meds : Component := { id := "meds", kind := .panel "currentMeds" }
+def link : Component := { id := "next", kind := .button (.goto "context"), label := "Context" }
+def source : Screen := { id := "commit", title := "Commit", workflow := "W1", components := [commit, link] }
+def destination : Screen := { id := "context", title := "Context", workflow := "chart", components := [meds] }
+def remote : Program := { Examples.Tiny.program with start := "commit", screens := [source, destination], macros := [] }
+def limit (n : Nat) : Spec := { sp with design := { sp.design with maxDepth := n } }
+def replaceDestination (cs : List Component) : Program := { remote with screens := [source, { destination with components := cs }] }
+
+#guard contextRetained (limit 1) remote
+#guard !contextRetained (limit 0) remote
+#guard contextRetained (limit 0) { remote with screens := [{ source with components := [commit, meds] }] }
+#guard !contextRetained sp (replaceDestination [])
+#guard !contextRetained sp { remote with screens := [{ source with workflow := "chart" }, destination] }
+#guard !contextRetained sp (replaceDestination [{ meds with size := .tiny }])
+#guard !contextRetained sp (replaceDestination [{ meds with visibility := .unlessReceipt "currentMeds" }])
+#guard contextRetained sp (replaceDestination [
+  { id := "closed", kind := .group true false }, { meds with parent? := some "closed" }])
+#guard contextRetained sp (replaceDestination [
+  { id := "tabs", kind := .tabs }, { meds with parent? := some "tabs", tab := 2 }])
+#guard !contextRetained sp (replaceDestination [
+  { id := "parent", kind := .button .back }, { meds with parent? := some "parent" }])
+#guard !contextRetained sp (replaceDestination [
+  { id := "closed", kind := .group true false, visibility := .unlessReceipt "currentMeds" },
+  { meds with parent? := some "closed" }])
+#guard !contextRetained sp { remote with screens := [
+  { source with components := [commit, { link with size := .tiny }] }, destination] }
+#guard !contextRetained sp { remote with screens := [
+  { source with components := [commit, { link with visibility := .encounter "outpatient" }] }, destination] }
+-- An off-start commit screen must independently retain context; the home route
+-- to the provider cannot excuse a stranded commit screen.
+#guard !contextRetained sp { remote with screens := remote.screens ++
+  [{ id := "stranded", title := "Stranded", workflow := "W1", components := [commit] }] }
+#guard !contextRetained { sp with infos := [] } remote
+-- Duplicate workflow keys cannot hide a later requirement.
+#guard !contextRetained { sp with workflowContexts? := some [("W1", []), ("W1", ["missing"])] } remote
+-- Legacy frozen releases apply the exact sourced policy, not an empty set.
+#guard Specs.DesignPolicies.contexts { sp with version := "v1", workflowContexts? := none } == Specs.DesignPolicies.workflowContexts
+#guard Specs.DesignPolicies.aliases { sp with version := "v1", navigationAliases? := none } == Specs.DesignPolicies.navigationAliases
+
+open Ehr.Render
+#guard labelWords "Exam / Assessment & Plan" == 3
+#guard labelWords " one\ttwo\nthree four " == 4
+#guard decide (NavLabelHonest sp destination "Context")
+#guard !decide (NavLabelHonest sp destination "Orders")
+def aliasSpec : Spec := { sp with navigationAliases? := some [("Context", ["Clinical context", "one two three four five"])] }
+#guard decide (NavLabelHonest aliasSpec destination "Clinical context")
+#guard !decide (NavLabelHonest aliasSpec { destination with title := "Other" } "Clinical context")
+#guard !decide (NavLabelHonest aliasSpec destination "one two three four five")
+#guard !decide (NavLabelHonest sp { destination with title := "one two three four five" } "one two three four five")
+#guard decide (NavLabelHonest { aliasSpec with design := { sp.design with maxLabelWords := 5 } }
+  destination "one two three four five")
+#guard navLink source { link with tag := "workflow.nav.next" }
+#guard !navLink source link
+#guard navLink { source with components := [{ id := "nav", kind := .group false true, tag := "workflow" }] }
+  { link with parent? := some "nav" }
+#guard !decide (NavigationLabelsHonest sp { remote with screens := [
+  { source with components := [{ link with tag := "nav", label := "Orders" }] }, destination] })
+#guard decide (NavigationLabelsHonest sp { remote with screens := [
+  { source with components := [{ link with tag := "nav" }] }, destination] })
+-- A title/overview mismatch cannot hide behind a different screen ID.
+#guard !decide (NavigationLabelsHonest sp { remote with screens := [
+  { source with id := "w1Hpi", title := "Orders", components := [] }] })
+#guard ((Lean.fromJson? (Lean.toJson { sp.design with maxLabelWords := 2 }) : Except String DesignRules).toOption.map (·.maxLabelWords)) == some 2
+#guard (Lean.toJson sp.design).getObjVal? "maxLabelWords" |>.toOption |>.isNone
+#guard (Lean.fromJson? ((Lean.toJson sp.design).setObjVal! "maxLabelWords" (.str "invalid")) : Except String DesignRules).isOk == false
+
+-- Each release declares all seven workflow sets, using real info IDs.
+#guard Specs.DesignPolicies.workflowContexts.length == 7
+#guard Specs.DesignPolicies.workflowContexts.all fun (_, infos) =>
+  infos.all fun i => (Specs.V1.specV1.info? i).isSome
+
+end Ehr.Check.ContextTests

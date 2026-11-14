@@ -1,4 +1,17 @@
-{"version": "v2",
+{"workflowContexts":
+ [["W1", ["allergyList", "problemList", "vitals", "currentMeds", "priorNotes"]],
+  ["W2",
+   ["allergyList", "problemList", "vitals", "currentMeds", "resultDetail"]],
+  ["W3",
+   ["allergyList", "problemList", "vitals", "currentMeds", "triageSummary"]],
+  ["W4",
+   ["allergyList", "problemList", "vitals", "currentMeds", "marSchedule"]],
+  ["W5", ["allergyList", "problemList", "vitals", "currentMeds", "priorNotes"]],
+  ["W6",
+   ["allergyList", "problemList", "vitals", "currentMeds", "intraopRecord"]],
+  ["W7",
+   ["allergyList", "problemList", "vitals", "currentMeds", "refillRequest"]]],
+ "version": "v2",
  "reviews":
  [{"when": "always",
    "mode":
@@ -97,6 +110,19 @@
    "mode": "shownOnCommit",
    "info": "vitals",
    "commit": "disposition"}],
+ "navigationAliases":
+ [["Chart Summary", ["Summary"]],
+  ["Medication Review", ["Medications"]],
+  ["Consults", ["Consult list"]],
+  ["ED order sets", ["Order sets"]],
+  ["Inbox: Results", ["Results", "Result Review"]],
+  ["Inbox: Rx Requests", ["Rx Requests", "Refill Review"]],
+  ["OR Schedule", ["Case list"]],
+  ["Sign orders", ["Sign Orders"]],
+  ["Rooming", ["Visit workflow", "Pediatric workflow", "Clinic Schedule"]],
+  ["Triage summary", ["ED workflow"]],
+  ["Preprocedure", ["Surgical workflow"]],
+  ["Surgical consult", ["Consult note"]]],
  "infos":
  [{"version": "", "label": "Patient banner", "id": "patientBanner"},
   {"version": "allergyVersion", "label": "Allergies", "id": "allergyList"},

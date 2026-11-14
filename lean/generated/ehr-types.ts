@@ -811,6 +811,10 @@ export interface DesignRules {
    * the largest count measured in the current release programs).
    */
   maxTargetsPerViewport?: number;
+  /**
+   * New specification (R6): maximum words in a navigation link (default 4).
+   */
+  maxLabelWords?: number;
 }
 
 /**
@@ -826,6 +830,16 @@ export interface Spec {
   alerts: AlertSpec[];
   design: DesignRules;
   displays?: DisplayReq[];
+  /**
+   * New specification (R4): workflow tags and their retained context info sets.
+   * Omitted v1–v3 policies use the sourced hospital declaration.
+   */
+  workflowContexts?: [string, InfoId[]][];
+  /**
+   * New specification (R6): target screen titles and their permitted nav aliases.
+   * Omitted v1–v3 policies use the declared vendor vocabulary.
+   */
+  navigationAliases?: [string, string[]][];
 }
 
 /**

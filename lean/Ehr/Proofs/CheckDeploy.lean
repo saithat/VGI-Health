@@ -53,6 +53,7 @@ theorem T4_published_certificate (spec : Spec) (prev : Option Program) (canonica
 /-! ## The hypotheses can be met: a concrete deploy that publishes -/
 
 open Ehr.Examples.Tiny Ehr.Props.Examples in
+set_option maxRecDepth 16384 in
 /-- The corrected tiny program passes the checker, so deploy publishes it. -/
 theorem tiny_accepted_deploy_publishes : (deployPlan spec none goodProgram goodProgram "t").2.any (·.target == .current) = true := by
   decide
@@ -69,3 +70,5 @@ theorem tiny_rejected_deploy_does_not_publish : (deployPlan spec none goodProgra
 #print axioms T4_published_certificate
 
 end Ehr.Proofs
+
+#print axioms Ehr.Proofs.tiny_accepted_deploy_publishes

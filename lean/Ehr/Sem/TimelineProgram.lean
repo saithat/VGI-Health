@@ -19,7 +19,8 @@ def timelineProgram : Program :=
           sc.components.map (fun c => { c with parent? := some "eventAxis" }) }
       else sc }
 
-/-- The unchanged checker admits this layout extension against the good baseline. -/
+set_option maxRecDepth 16384 in
+/-- The checker admits this layout extension against the good baseline. -/
 theorem timelineProgram_checked :
     Check.check Ehr.Examples.Tiny.spec none Props.Examples.goodProgram timelineProgram = .ok := by decide
 

@@ -591,6 +591,8 @@ structure DesignRules where
   targets in the first 1440×900 viewport and in each scroll viewport (default 15,
   the largest count measured in the current release programs). -/
   maxTargetsPerViewport : Nat := 15
+  /-- New specification (R6): maximum words in a navigation link (default 4). -/
+  maxLabelWords : Nat := 4
   deriving DecidableEq, Repr, Inhabited
 
 /-- New specification for owner review: local late-entry policy default. -/
@@ -607,6 +609,12 @@ structure Spec where
   alerts : List AlertSpec
   design : DesignRules
   displays? : Option (List DisplayReq) := none
+  /-- New specification (R4): workflow tags and their retained context info sets.
+  Omitted v1–v3 policies use the sourced hospital declaration. -/
+  workflowContexts? : Option (List (String × List InfoId)) := none
+  /-- New specification (R6): target screen titles and their permitted nav aliases.
+  Omitted v1–v3 policies use the declared vendor vocabulary. -/
+  navigationAliases? : Option (List (String × List String)) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## UI programs

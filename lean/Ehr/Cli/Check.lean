@@ -82,6 +82,30 @@ def checkMain (args : List String) : IO UInt32 := do
     IO.eprintln s!"error: {e}"
     return 2
 
+/-- Read-only R4/R6 audit, including vendor references that are not deployable
+single-role programs. Reports both rules even if the ordinary checker would
+first refuse a different property. This never issues a certificate. -/
+def designAuditMain (args : List String) : IO UInt32 := do
+  try
+    let some sp := flag args "spec" | throw (IO.userError "missing --spec")
+    let some pp := flag args "program" | throw (IO.userError "missing --program")
+    let spec ← readJson Spec sp
+    let prog ← readJson Program pp
+    let context := contextRetained spec prog
+    let labels := decide (Render.NavigationLabelsHonest spec prog)
+    let findings := ((rules spec none prog prog).filter fun r =>
+      (r.property == "contextRetained" || r.property == "navigation") && !r.passes).map fun r =>
+        let f := (r.explain ()).getD { property := r.property, message := "rule failed" }
+        Lean.Json.mkObj [("property", Lean.toJson f.property), ("message", Lean.toJson f.message),
+          ("screen", Lean.toJson f.screen?)]
+    IO.println (Lean.Json.mkObj [
+      ("contextRetained", Lean.toJson context), ("navigationLabelsHonest", Lean.toJson labels),
+      ("findings", Lean.toJson findings), ("certifying", Lean.toJson false)]).pretty
+    return if context && labels then 0 else 1
+  catch e =>
+    IO.eprintln s!"error: {e}"
+    return 2
+
 /-- `ehr deploy …`. -/
 def deployMain (args : List String) : IO UInt32 := do
   try

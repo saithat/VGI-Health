@@ -3,4 +3,7 @@
  ["lean/Ehr/Check/bad/38-cross-patient-panel.json", "writesOnly"],
  ["lean/Ehr/Check/bad/39-empty-order-signing.json", "completable"],
  ["lean/Ehr/Check/bad/40-denial-without-reason.json", "completable"],
- ["lean/Ehr/Check/bad/41-copy-spray.json", "copyBudget"]]
+ ["lean/Ehr/Check/bad/41-copy-spray.json", "copyBudget"],
+ ["lean/Ehr/Check/bad/50-context-removed.json", "contextRetained"],
+ ["lean/Ehr/Check/bad/51-misleading-navigation.json", "navigation"],
+ ["lean/Ehr/Check/bad/52-stuffed-navigation.json", "navigation"]]

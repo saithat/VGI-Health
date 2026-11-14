@@ -36,11 +36,24 @@ def main (args : List String) : IO Unit := do
         [{ id := s.id ++ ".sprayToSign", kind := .button (.goto "w1Verify"), label := "Review and sign",
            tag := s.id ++ ".sprayToSign", copyOf? := some "w1Orders.toSign" }] }
     else s }
+  -- R4 and R6, new specifications. Retain every other release control.
+  let noContext := rewrite release fun c =>
+    if showsInfo "problemList" c.kind then none else some c
+  let wrongNav := release.updateScreen "w1Rooming" fun s =>
+    { s with components := s.components.map fun c =>
+      if c.id == "w1Rooming.nav.w1MedRec" then { c with label := "Orders" } else c }
+  let stuffedNav := release.updateScreen "w1Rooming" fun s =>
+    { s with components := s.components.map fun c =>
+      if c.id == "w1Rooming.nav.w1MedRec" then
+        { c with label := "Medication allergy problems results history" } else c }
   let cases := [("36-cures-without-review", "completable", cures),
     ("37-stale-dosing-weight", "capturesAllOnce", linked),
     ("38-cross-patient-panel", "writesOnly", foreign),
     ("39-empty-order-signing", "completable", empty),
     ("40-denial-without-reason", "completable", denial),
-    ("41-copy-spray", "copyBudget", spray)]
+    ("41-copy-spray", "copyBudget", spray),
+    ("50-context-removed", "contextRetained", noContext),
+    ("51-misleading-navigation", "navigation", wrongNav),
+    ("52-stuffed-navigation", "navigation", stuffedNav)]
   for (name, _, p) in cases do writeJson root s!"lean/Ehr/Check/bad/{name}.json" p
   writeJson root "lean/Ehr/Check/conformance-bad-programs.json" (cases.map fun (name, prop, _) => (s!"lean/Ehr/Check/bad/{name}.json", prop))

@@ -1,6 +1,7 @@
 import Lean
 import Solution
 import Ehr.Check.Sound
+import Ehr.Check.ContextSound
 import Ehr.Proofs.CheckDeploy
 import Ehr.Render.UiProofs
 import Ehr.Check.TinyRejections
@@ -245,3 +246,19 @@ end VerificationAudit
 #audit_axioms Ehr.Check.automated_lines_satisfies
 #spec_surface Ehr.Check.prefill_macro_human_completion
 #audit_axioms Ehr.Check.prefill_macro_human_completion
+
+-- New specifications R4/R6: audit the same acceptance guarantees as the checker.
+#spec_surface Ehr.Check.contextDestinations_sound
+#audit_axioms Ehr.Check.contextDestinations_sound
+#spec_surface Ehr.Check.contextShownAux_sound
+#audit_axioms Ehr.Check.contextShownAux_sound
+#spec_surface Ehr.Check.contextProvider_sound
+#audit_axioms Ehr.Check.contextProvider_sound
+#spec_surface Ehr.Check.contextRetained_sound
+#audit_axioms Ehr.Check.contextRetained_sound
+#spec_surface Ehr.Check.accepted_contextRetained
+#audit_axioms Ehr.Check.accepted_contextRetained
+#spec_surface Ehr.Check.accepted_navigationLabels
+#audit_axioms Ehr.Check.accepted_navigationLabels
+#spec_surface Ehr.Check.accepted_D5
+#audit_axioms Ehr.Check.accepted_D5

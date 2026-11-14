@@ -121,7 +121,7 @@ def emitDecl (env : Environment) (known : NameSet) (fieldsMode : Nat := 0) : Dec
       let doc := jsDoc "  " (← findDocString? env proj)
       if (n == ``Ehr.Program && fname == "componentDefs") ||
           (n == ``Ehr.DesignRules &&
-            ["unsignedDraftMinutes", "copyBudget", "maxTargetsPerViewport"].contains fname) then
+            ["unsignedDraftMinutes", "copyBudget", "maxTargetsPerViewport", "maxLabelWords"].contains fname) then
         -- Custom JSON: default values may be omitted.
         out := out ++ s!"{doc}  {fname}?: {← IO.ofExcept (tsType known fty)};\n"
       else if fname.endsWith "?" then

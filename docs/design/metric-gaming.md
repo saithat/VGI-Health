@@ -2,9 +2,9 @@
 
 [Overview](../../README.md) · [Core model](core-model.md) · [Discovery and cadence](../methods/discovery-and-cadence.md)
 
-Status: **R1, R3, R5 and R7 implemented** ([R3](#r3-copy-budget-implemented),
+Status: **R1, R3, R4, R5, R6 and R7 implemented** ([R3](#r3-copy-budget-implemented),
 [R5](#r5-screen-action-density-g10-implemented)); the R7 regression exposed and fixed a
-dangling-copy gap (new specification). R2, R4 and R6 remain approved for
+dangling-copy gap (new specification). R2 remains approved for
 implementation; see the [retained-decision replay](../methods/interaction-validation.md).
 Rules marked *new specification* are new definitions and stay flagged in Lean.
 
@@ -39,7 +39,8 @@ other unmodeled costs remain outside the gate.
 | P6 completable (option D) | Removing the controls a feasible workflow needs |
 | P8 `StabilityBudget`, movement proxy, identity budget | Large reshuffles; renaming tags to hide a move |
 | P9, D4, `AlertBudget` | Suppressing alerts or turning interruptive alerts passive |
-| D3, D5, D6 | Empty labels, fake primary buttons, orphan screens, nav groups with more than 12 entries |
+| D3, D5, D6 | Empty labels, fake primary buttons, orphan screens, nav groups with more than 12 entries; R6 also checks navigation label honesty and word count |
+| R4 `ContextRetained` | Removing declared workflow context or moving it beyond `maxDepth` from a commit screen |
 | G3, G4, G6 | Targets under 24 px, clipped or overlapping text, low contrast |
 | G9 | Commit button scrolled off screen |
 | Train/validation split | Using validation days to tune a change |
@@ -50,10 +51,10 @@ other unmodeled costs remain outside the gate.
 |---|---|---|---|
 | V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | Copies are exempt from `StabilityBudget` and from the movement proxy. The expert clinician pays nothing for clutter. | Closed by R3 in the checker. The movement proxy still ignores copies. |
 | V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: R5 (G10) bounds Lean-computed geometry. The deployed React painter has no Lean geometry, so R1 and R2 remain the guard there. |
-| V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | Open: the information-needs simulator exists but is not connected to the score. |
+| V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | R4 closes removal beyond the context bound; the information-needs simulator is not connected to the score. |
 | V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
 | V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The bounded (learning) clinician exists but only feeds the opt-in switch-cost model. | Open |
-| V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | Open but low impact today (the score uses the expert). It matters once V5 is closed. |
+| V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | R6 bounds navigation labels and restricts them to titles or declared aliases. |
 | V7 | **Two-night move.** Copy a control on night N, then delete the original on night N+1. | Previously a survivor still marked `copyOf` was ignored by `movedTags`. | R7 fixed: the movement proxy charges deletion; `StabilityBudget` counts the surviving tag's displacement with or without `copyOf`. Night N is also charged by R3 (an added copy counts against `stabilityBudget`). |
 | V8 | **Default to the usual answer.** Set field defaults to the most common train value. | Saves keystrokes only, so the score does not move. It does create default-acceptance risk. | Low impact; `defaultConfirm` already requires a human confirm. |
 
@@ -202,6 +203,137 @@ binds custom agent layouts and any lower limit. Because `checkProgramDensity` is
 static decision, a limit below 15 refuses every program, including ones whose
 screens are sparser. The deployed React painter has no Lean geometry, so R5 does
 not constrain it.
+
+## R4: context retained (implemented)
+
+*New specification.* `Spec.workflowContexts` declares workflow tags and info
+sets; V1–V3 inherit the sourced hospital declaration in
+`lean/Ehr/Specs/DesignPolicies.lean`:
+
+| Workflows | Required context info IDs |
+|---|---|
+| All W1–W7 | `allergyList`, `problemList`, `vitals`, `currentMeds` |
+| W1 primary care, W5 pediatrics | Also `priorNotes` |
+| W2 results | Also `resultDetail` |
+| W3 emergency | Also `triageSummary` |
+| W4 medication administration/flowsheets | Also `marSchedule` |
+| W6 surgery | Also `intraopRecord` |
+| W7 refills | Also `refillRequest` |
+
+The [2025 SAFER CPOE guide](https://www.healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf)
+(August 2024 text, practices 1.2 and 2.1–2.3) supports allergy and
+patient-specific decision context. The
+[2025 Clinician Communication guide](https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-1.-Clinical-Communication-Final.pdf)
+supports information exchange for results and care transitions. These motivate
+retaining clinical background; **the particular sets and depth limit above are
+local design policy**, not a clinical sufficiency finding or a legal mandate.
+
+`Props.ContextRetained` quantifies over every commit button, including hidden
+buttons and screens unreachable from home. Each context ID must resolve in the
+spec. It must be shown on that commit screen or on a destination reached from
+that screen within `spec.design.maxDepth` goto hops (8 in the releases), the
+same navigation-depth measure used by `RequiredWithinDepth`. Unlike the latter,
+the search starts at each commit screen, not the program start.
+
+The executable `Check.contextRetained` searches fixed-visible goto links and
+rechecks their paths. A destination provider and all its ancestors must be
+legible and unconditionally visible; opening groups and selecting tabs may
+reveal it. Group/tab reveal clicks are not included in this goto-depth measure.
+The theorem `contextRetained_sound` proves the destination can show the info
+for every patient's facts and every state by changing only group/tab layout
+state; `accepted_contextRetained` lifts this to accepted programs. This is
+structural access, with the same alert and patient-selection interaction limits
+as the existing depth property; it does not guarantee reading, fresh payloads,
+clinical completeness or human comprehension. Nonempty policies must declare
+every commit screen's workflow; renaming it to an undeclared tag refuses.
+Duplicate workflow declarations are unioned, so an empty earlier row cannot
+shadow required items.
+
+Bad program 50 removes every `problemList` provider from the P1 release and
+fails `contextRetained`. `ContextTests.lean` covers local/remote context, exact
+bounds, hidden/tiny/conditional controls, groups, tabs, missing info IDs,
+stranded commit screens, duplicate declarations and undeclared workflows.
+The existing completion-trap witness gains four read-only context panels; its
+clinical transitions and public theorem statements are preserved.
+
+## R6: honest navigation labels (implemented)
+
+*New specification, extending D5.* `Render.NavigationLabelsHonest` checks both
+overview/step labels and the goto links that can populate the interactive
+navigation bar (navigation/workflow groups or a `nav` tag segment), including
+currently hidden or disabled controls. Action buttons outside navigation keep
+their action labels. Every checked label must **exactly** equal its target
+screen title or an alias declared for that title in `Spec.navigationAliases`.
+Aliases live in spec data, so changing a program cannot authorize new terms.
+The short vendor vocabulary includes `Medications` for `Medication Review`,
+`Summary` for `Chart Summary`, and the existing activity entry labels; no release
+labels or layouts were rewritten.
+
+`spec.design.maxLabelWords` defaults to 4. Words are whitespace-separated tokens
+containing an alphanumeric character; standalone `/` and `&` are punctuation,
+so `Exam / Assessment & Plan` is three words. The limit applies to titles and
+aliases alike. An explicit nondefault limit round-trips through JSON; malformed
+values refuse decoding. `accepted_navigationLabels` proves the added rule and
+`accepted_D5` conjoins it with the existing `NavigationSane` guarantee. All new
+soundness theorems print only the three permitted axioms.
+
+Bad programs 51 and 52 substitute a misleading short label and a keyword-stuffed
+label. Both fail `navigation`; guards also isolate the word-limit failure for
+an otherwise declared alias and title, wrong-target aliases, whitespace and
+punctuation. Existing D5 group, uniqueness and coverage rules remain intact.
+
+### Release and retained revision audit
+
+Old frozen V1–V3 spec JSON omits these fields. The checker applies the **same
+sourced context sets and declared alias vocabulary** when they are absent;
+there is no empty-policy exemption for historical release specs. Newly exported
+release specs include both policies explicitly. Recorded specs, programs,
+certificates and decisions remain unchanged; passing offline checks does not
+rebind a historical certificate to the new native/WASM runtime.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=4
+python3 scripts/audit-context-navigation.py > "$TMPDIR/r4r6-matrix.json"
+python3 lean/Ehr/Check/certify.py --no-write
+```
+
+The read-only `ehr design-audit --spec S --program P` reports R4 and R6
+independently, even for mixed-role vendor references. The audit script checks
+all 18 release programs and all 33 retained revision bindings and reports every
+refusal before returning failure. Retained combined checks use the frozen
+canonical and previous program; output binds inputs and native binary by SHA-256.
+`certify.py --no-write` checks the full persona/bad-program matrix without
+replacing existing verdict or report files.
+
+| Native audit | Result |
+|---|---|
+| Release programs (canonical plus P1–P5, V1–V3) | 18/18 pass R4 and R6 independently. |
+| Retained revisions | 33/33 pass both rules and the combined checker with frozen canonical/previous inputs. |
+| Additional refusals | 0; no historical exemption, layout rewrite or certificate replacement. |
+
+The three mixed-role canonical references retain an **existing D5 refusal**:
+their Schedule overview has 16 entries (limit 12). `design-audit` includes that
+diagnostic in `findings` while reporting the new R4/R6 booleans independently.
+They are reference layouts, not certified single-role deployments; their old
+D5 failure is not waived. All 15 deployable release personas pass the ordinary
+checker.
+
+The required generated clinical TypeScript vocabulary is an input to the app
+fingerprint because it also exports runtime enum tables. Regenerating it changes
+that fingerprint input even though no app source or dependency files are edited.
+The built app hash is `8e4fe28345d68d8a9ddca9524461f2614f8ce885ab663f633aa5e7aa8c4e0d79`,
+which differs from all 33 retained current build bindings.
+Native/WASM certificate bindings remain historical; this work does not rebuild
+WASM or re-certify the recording.
+
+Verification: default Lean build **647 jobs**; **204 types / 44 samples**
+regenerated; proof map regenerated and freshness checked; verification audit
+**91 theorems**, only permitted axioms. `certify.py --no-write` accepts **15/15**
+personas and rejects **27/27** bad programs at the expected properties with valid
+navigation replays. App/agent typechecks, **23 targeted agent tests**, and the app
+build pass. Native canonical conformance: **15 targets × 201 scenarios**, 1,584
+passes, **0 failures**, 1,431 not applicable. The full browser audit was outside
+this implementation's scope.
 
 ## Retained recording against R3 and R5
 
