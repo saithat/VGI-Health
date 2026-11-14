@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import { resolve } from 'node:path';
-import { requests, template, adversarial } from './cases.mjs';
+import { requests, template, adversarial, px } from './cases.mjs';
 const binary = resolve('lean/.lake/build/bin/ui-layout');
 export function native(input) {
   const p=spawnSync(binary, [], {input:JSON.stringify(input)+'\n', encoding:'utf8', maxBuffer:32*1024*1024});
@@ -95,4 +95,14 @@ test('mixed fixed and weighted grid tracks are placed by Lean',()=>{
   assert.deepEqual([0,1,2].map(i=>out.boxes.find(d=>d.box.info.id===`mixed-${i}`).box.rect.w),[6400,17920,35840]);
   const bad=template();bad.tree.children[1].children.push({type:'Grid',id:'overflow-grid',width:12800,tracks:[128000,'1fr'],children:[{type:'Rect',id:'overflow-track',width:'fill',height:1536}]});
   assert.ok(native(bad).findings.some(f=>f.rule==='G5'));
+});
+test('G10 refuses a dense first viewport at the default limit with counts',()=>{
+  const r=template();
+  r.tree.children[1].children.unshift({type:'Stack',id:'dense',direction:'row',wrap:true,gap:px(8),children:Array.from({length:20},(_,i)=>({type:'Button',id:`dense-${i}`,width:px(32),height:px(32),fg:{r:255,g:255,b:255},bg:{r:29,g:78,b:216}}))});
+  const out=native(r);assert.equal(out.accepted,false);
+  const first=out.findings.find(f=>f.rule==='G10'&&f.metric==='first-viewport-targets');
+  assert.ok(first,JSON.stringify(out.findings));assert.equal(first.required,15);assert.ok(first.actual>15);
+  assert.ok(out.findings.some(f=>f.rule==='G10'&&f.metric==='scroll-window-targets'&&f.node==='review-scroll'));
+  assert.ok(out.findings.filter(f=>!f.warning&&f.rule!=='G10').length===0,JSON.stringify(out.findings));
+  r.maxTargetsPerViewport=40;assert.equal(native(r).accepted,true);
 });

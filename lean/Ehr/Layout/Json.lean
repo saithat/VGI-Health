@@ -112,10 +112,13 @@ structure Request where
   content : Content := []
   expected : List (List Nat) := []
   viewport : Size := ⟨92160,57600⟩
+  /-- G10 (R5) limit; new specification for owner review. The default matches
+  `DesignRules.maxTargetsPerViewport`. -/
+  maxTargetsPerViewport : Nat := 15
 
 instance : FromJson Request where
   fromJson? j := do
-    return { tree := ← j.getObjVal? "tree", components := ← field j "components" (Json.mkObj []),       content := ← field j "content" [], expected := ← field j "expected" [],       viewport := ← field j "viewport" ⟨92160,57600⟩ }
+    return { tree := ← j.getObjVal? "tree", components := ← field j "components" (Json.mkObj []),       content := ← field j "content" [], expected := ← field j "expected" [],       viewport := ← field j "viewport" ⟨92160,57600⟩, maxTargetsPerViewport := ← field j "maxTargetsPerViewport" 15 }
 
 /-- Runtime content failures are separate from universal slot-capacity checks;
 never clip an out-of-contract value while claiming successful painting. -/
@@ -160,10 +163,11 @@ def runRequest (r : Request) : Except String Json := do
   let n ← parseNode r.components (Json.mkObj []) 256 [] r.tree
   let ps := boxes r.viewport n
   let errors := contentErrors r.content ps
-  return Json.mkObj [("accepted",toJson (check r.expected r.viewport ps && errors.isEmpty)),
+  return Json.mkObj [("accepted",toJson (checkDensity r.maxTargetsPerViewport r.expected r.viewport ps && errors.isEmpty)),
     ("tree",paintTree r.content (layout ⟨{},r.viewport⟩ n)),
     ("viewport",toJson r.viewport), ("boxes",toJson (ps.map (bind r.content))),
     ("lineWidths",toJson (ps.map (lineWidths r.content))),
-    ("findings",toJson (findings r.expected r.viewport ps ++ errors ++ realizationWarnings (ps.map (bind r.content))))]
+    ("findings",toJson (findings r.expected r.viewport ps ++ densityFindings r.maxTargetsPerViewport r.viewport ps ++
+      errors ++ realizationWarnings (ps.map (bind r.content))))]
 #print axioms safety_contentErrors_empty
 end Ehr.Layout

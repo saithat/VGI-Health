@@ -362,7 +362,32 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
       explain := fun _ => compFinding "reconcileIds" prog false fun scr c =>
         if reconcileReservedId c.id then
           some s!"component {c.id} on screen {scr.id} uses the reconcile.line| namespace reserved for order reconciliation"
-        else none }
+        else none },
+    -- R3, new specification for owner review: copy budget per tag, per screen
+    -- and per program. Copies count against their original's tag.
+    { property := "copyBudget", passes := decide (CopyBudgetChecked spec prog)
+      explain := fun _ =>
+        match compFinding "copyBudget" prog false (fun scr c =>
+            (copyTag prog c).bind fun t =>
+              if screenCopies prog scr t ≤ 1 then none
+              else some s!"R3: screen {scr.id} has {screenCopies prog scr t} copies of {t} (at most 1 per screen)") with
+        | some f => some f
+        | none => compFinding "copyBudget" prog false (fun scr c =>
+            (copyTag prog c).bind fun t =>
+              if programCopies prog t ≤ spec.design.copyBudget then none
+              else some s!"R3: the program has {programCopies prog t} copies of {t} (copy budget {spec.design.copyBudget}); {c.id} on screen {scr.id} is one" ) },
+    -- R3, new specification for owner review: copies added since the previous
+    -- version count against the stability budget.
+    { property := "copyBudget", passes := decide (CopyStability spec prev prog)
+      explain := fun _ =>
+        match prev with
+        | some p =>
+          let moved := movedTags p prog
+          let added := addedCopies p prog
+          some { property := "copyBudget"
+                 message := s!"R3: {moved.length} components moved and {added.length} copies added since the previous version (stability budget {spec.design.stabilityBudget}); added copies: {", ".intercalate (added.map fun k => k.1 ++ "/" ++ k.2)}"
+                 screen? := added.head?.map (·.1) }
+        | none => none }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

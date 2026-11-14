@@ -155,7 +155,7 @@ jobs:
           c = json.loads((Path(os.environ['TMPDIR']) / 'conformance.json').read_text())['summary']
           assert (c['targets'], c['scenarios'], c['failed']) == (15, 201, 0), c
           r = json.loads(Path('lean/Ehr/Check/certification-report.json').read_text())
-          assert (r['personaAccepted'], r['personaCount'], r['badRejected'], r['badCount']) == (15, 15, 23, 23), r
+          assert (r['personaAccepted'], r['personaCount'], r['badRejected'], r['badCount']) == (15, 15, 24, 24), r
           PY
       - uses: actions/upload-artifact@v4
         if: always()

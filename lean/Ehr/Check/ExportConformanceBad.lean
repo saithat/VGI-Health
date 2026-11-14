@@ -25,10 +25,22 @@ def main (args : List String) : IO Unit := do
   let denial := rewrite base fun c => match c.kind with
     | .field "refillDenyReason" _ _ => none
     | _ => some c
+  -- R3 (new specification for owner review): three copies of one control on
+  -- three screens exceed the default copy budget of 2. The base is the certified
+  -- release persona, so no unrelated rule fails first under the release spec.
+  let releaseText ← IO.FS.readFile (root / "releases/v1/personas/P1.json")
+  let release ← IO.ofExcept (Lean.Json.parse releaseText >>= Lean.fromJson? (α := Program))
+  let spray := { release with screens := release.screens.map fun s =>
+    if ["w1Rooming", "w1MedRec", "w1Hpi"].contains s.id then
+      { s with components := s.components ++
+        [{ id := s.id ++ ".sprayToSign", kind := .button (.goto "w1Verify"), label := "Review and sign",
+           tag := s.id ++ ".sprayToSign", copyOf? := some "w1Orders.toSign" }] }
+    else s }
   let cases := [("36-cures-without-review", "completable", cures),
     ("37-stale-dosing-weight", "capturesAllOnce", linked),
     ("38-cross-patient-panel", "writesOnly", foreign),
     ("39-empty-order-signing", "completable", empty),
-    ("40-denial-without-reason", "completable", denial)]
+    ("40-denial-without-reason", "completable", denial),
+    ("41-copy-spray", "copyBudget", spray)]
   for (name, _, p) in cases do writeJson root s!"lean/Ehr/Check/bad/{name}.json" p
   writeJson root "lean/Ehr/Check/conformance-bad-programs.json" (cases.map fun (name, prop, _) => (s!"lean/Ehr/Check/bad/{name}.json", prop))

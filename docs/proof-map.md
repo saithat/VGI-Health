@@ -16,16 +16,16 @@ run.
 flowchart TB
   subgraph guar_g["Guarantees"]
     proofs["Clinical guarantees<br/>557 theorems, 220 headline"]:::guar
-    check["Program checker<br/>382 theorems, 72 headline"]:::guar
+    check["Program checker<br/>384 theorems, 72 headline"]:::guar
     render["Screen renderer<br/>193 theorems, 12 headline"]:::guar
-    layout["UI library &amp; geometry<br/>189 theorems, 36 headline"]:::guar
+    layout["UI library &amp; geometry<br/>207 theorems, 43 headline"]:::guar
     commit["Commit reducers<br/>23 theorems, 8 headline"]:::guar
     protocol["Commit service protocol<br/>53 theorems, 30 headline"]:::guar
     multi["Multi-actor models<br/>26 theorems, 0 headline"]:::guar
   end
   subgraph spec_g["Specification"]
     core["Rulebook &amp; interpreter<br/>38 theorems, 0 headline"]:::spec
-    props["Safety properties<br/>23 theorems, 0 headline"]:::spec
+    props["Safety properties<br/>26 theorems, 0 headline"]:::spec
     specs["Hospital rules &amp; formulary<br/>5 theorems, 0 headline"]:::spec
   end
   check ==> core
@@ -1474,171 +1474,214 @@ flowchart LR
 
 </details>
 
-<details><summary><b>UI library &amp; geometry</b>: 36 headline claims. Integer layout, layout rules G1–G9, structural certificates and the renderer-range theorem.</summary>
+<details><summary><b>UI library &amp; geometry</b>: 43 headline claims. Integer layout, layout rules G1–G10, structural certificates and the renderer-range theorem.</summary>
 
 ```mermaid
 flowchart LR
-  n0["Layout.Range.checkProgram_allStates"]:::head
-  n1["Layout.Range.checkProgram_sound"]:::head
-  n2["Layout.Range.layoutAccepted_program"]:::head
-  n3["Layout.Range.renderer_range"]:::head
-  n4["Layout.RenderCovered_finite_iff"]:::head
-  n5["Layout.Shell.shell_rules"]:::head
-  n6["Layout.Shell.targets"]:::head
-  n7["Layout.Structural.targets"]:::head
-  n8["Layout.advance_le_cell"]:::head
-  n9["Layout.channel_certificates"]:::head
-  n10["Layout.column_apart"]:::head
-  n11["Layout.finiteFamily_missingShape"]:::head
-  n12["Layout.geometry_independent"]:::head
-  n13["Layout.greedy_complete"]:::head
-  n14["Layout.greedy_width"]:::head
-  n15["Layout.layoutAccepted_allPatients"]:::head
-  n16["Layout.layoutAccepted_allPatients_finite"]:::head
-  n17["Layout.layoutAccepted_allViewports"]:::head
-  n18["Layout.layoutAccepted_bannerPixels"]:::head
-  n19["Layout.layoutAccepted_reviewAllPayloads"]:::head
-  n20["Layout.layoutAccepted_rules"]:::head
-  n21["Layout.layoutAccepted_safety"]:::head
-  n22["Layout.layoutAccepted_textComplete"]:::head
-  n23["Layout.layoutAccepted_textPixels"]:::head
-  n24["Layout.layout_satisfies"]:::head
-  n25["Layout.modal_blocks"]:::head
-  n26["Layout.paintText_supported"]:::head
-  n27["Layout.portAccepted_rules"]:::head
-  n28["Layout.realized_currentCommit_visible"]:::head
-  n29["Layout.reviewFamily_accepted"]:::head
-  n30["Layout.scroll_apart"]:::head
-  n31["Layout.scroll_complete"]:::head
-  n32["Layout.scroll_line_width"]:::head
-  n33["Layout.textAtoms_preserve"]:::head
-  n34["Layout.wrap_complete"]:::head
-  n35["Layout.wrap_line_width"]:::head
-  n36["Layout.Range.render_small"]:::lemma
-  n37["Layout.Range.smallModal_fits"]:::lemma
-  n38["Layout.Range.unchecked_sound"]:::lemma
-  n39["Layout.RenderFamily.sound"]:::lemma
-  n40["Layout.Shell.banner_rule"]:::lemma
-  n41["Layout.Shell.base_footer"]:::lemma
-  n42["Layout.Shell.base_no_modal"]:::lemma
-  n43["Layout.Shell.base_rules"]:::lemma
-  n44["Layout.Shell.base_target_inactive"]:::lemma
-  n45["Layout.Shell.bounds"]:::lemma
-  n46["Layout.Shell.commit_rule"]:::lemma
-  n47["Layout.Shell.complete"]:::lemma
-  n48["Layout.Shell.contrast"]:::lemma
-  n49["Layout.Shell.footer_inactive"]:::lemma
-  n50["Layout.Shell.horizontal"]:::lemma
-  n51["Layout.Shell.modal_rule"]:::lemma
-  n52["Layout.Shell.modals_separated"]:::lemma
-  n53["Layout.Shell.reading_order"]:::lemma
-  n54["Layout.Shell.shell_cases"]:::lemma
-  n55["Layout.Shell.target_implies"]:::lemma
-  n56["Layout.Shell.text_rule"]:::lemma
-  n57["Layout.Shell.zip_order"]:::lemma
-  n58["Layout.Structural.body_order"]:::lemma
-  n59["Layout.Structural.bounds"]:::lemma
-  n60["Layout.Structural.placement_cases"]:::lemma
-  n61["Layout.candidate_length_le"]:::lemma
-  n62["Layout.chunks_complete"]:::lemma
-  n63["Layout.chunks_short"]:::lemma
-  n64["Layout.codepointInk_supported"]:::lemma
-  n65["Layout.column_floor"]:::lemma
-  n66["Layout.constrain_satisfies"]:::lemma
-  n67["Layout.layoutAccepted_allScreens"]:::lemma
-  n68["Layout.layoutAccepted_geometry"]:::lemma
-  n69["Layout.review_shape_payload_independent"]:::lemma
-  n70["Layout.screenShape_flat_length"]:::lemma
-  n71["Layout.screenShape_sources"]:::lemma
-  n72["Layout.separated_pixels"]:::lemma
-  n73["Layout.shape_path_unique"]:::lemma
-  n74["Layout.shift_rect"]:::lemma
-  n75["Layout.textAdvance_bound"]:::lemma
-  n0 --> n3
-  n0 --> n38
-  n1 --> n3
-  n2 --> n1
-  n2 --> n15
-  n3 --> n36
-  n3 --> n37
-  n5 --> n40
-  n5 --> n46
-  n5 --> n47
-  n5 --> n48
-  n5 --> n50
-  n5 --> n51
+  n0["Layout.Density.checkProgramDensity_sound"]:::head
+  n1["Layout.Density.layoutAccepted_familyDensity"]:::head
+  n2["Layout.Density.render_density"]:::head
+  n3["Layout.Density.shell_density"]:::head
+  n4["Layout.G10_window"]:::head
+  n5["Layout.Range.checkProgram_allStates"]:::head
+  n6["Layout.Range.checkProgram_sound"]:::head
+  n7["Layout.Range.layoutAccepted_program"]:::head
+  n8["Layout.Range.renderer_range"]:::head
+  n9["Layout.RenderCovered_finite_iff"]:::head
+  n10["Layout.Shell.shell_rules"]:::head
+  n11["Layout.Shell.targets"]:::head
+  n12["Layout.Structural.targets"]:::head
+  n13["Layout.advance_le_cell"]:::head
+  n14["Layout.channel_certificates"]:::head
+  n15["Layout.column_apart"]:::head
+  n16["Layout.finiteFamily_missingShape"]:::head
+  n17["Layout.geometry_independent"]:::head
+  n18["Layout.greedy_complete"]:::head
+  n19["Layout.greedy_width"]:::head
+  n20["Layout.layoutAccepted_allPatients"]:::head
+  n21["Layout.layoutAccepted_allPatients_finite"]:::head
+  n22["Layout.layoutAccepted_allScreens"]:::head
+  n23["Layout.layoutAccepted_allViewports"]:::head
+  n24["Layout.layoutAccepted_bannerPixels"]:::head
+  n25["Layout.layoutAccepted_density"]:::head
+  n26["Layout.layoutAccepted_reviewAllPayloads"]:::head
+  n27["Layout.layoutAccepted_rules"]:::head
+  n28["Layout.layoutAccepted_safety"]:::head
+  n29["Layout.layoutAccepted_textComplete"]:::head
+  n30["Layout.layoutAccepted_textPixels"]:::head
+  n31["Layout.layout_satisfies"]:::head
+  n32["Layout.modal_blocks"]:::head
+  n33["Layout.paintText_supported"]:::head
+  n34["Layout.portAccepted_rules"]:::head
+  n35["Layout.realized_currentCommit_visible"]:::head
+  n36["Layout.reviewFamily_accepted"]:::head
+  n37["Layout.scroll_apart"]:::head
+  n38["Layout.scroll_complete"]:::head
+  n39["Layout.scroll_line_width"]:::head
+  n40["Layout.textAtoms_preserve"]:::head
+  n41["Layout.wrap_complete"]:::head
+  n42["Layout.wrap_line_width"]:::head
+  n43["Layout.Density.class_density"]:::lemma
+  n44["Layout.Density.count_split"]:::lemma
+  n45["Layout.Density.filter_nil_of"]:::lemma
+  n46["Layout.Density.inactive_ordinary"]:::lemma
+  n47["Layout.Density.modal_present"]:::lemma
+  n48["Layout.Density.rows_window"]:::lemma
+  n49["Layout.G10_mono"]:::lemma
+  n50["Layout.Range.checkProgram_accepts"]:::lemma
+  n51["Layout.Range.render_small"]:::lemma
+  n52["Layout.Range.smallModal_fits"]:::lemma
+  n53["Layout.Range.unchecked_sound"]:::lemma
+  n54["Layout.RenderFamily.sound"]:::lemma
+  n55["Layout.Shell.banner_rule"]:::lemma
+  n56["Layout.Shell.base_footer"]:::lemma
+  n57["Layout.Shell.base_no_modal"]:::lemma
+  n58["Layout.Shell.base_rules"]:::lemma
+  n59["Layout.Shell.base_target_inactive"]:::lemma
+  n60["Layout.Shell.bounds"]:::lemma
+  n61["Layout.Shell.commit_rule"]:::lemma
+  n62["Layout.Shell.complete"]:::lemma
+  n63["Layout.Shell.contrast"]:::lemma
+  n64["Layout.Shell.footer_inactive"]:::lemma
+  n65["Layout.Shell.horizontal"]:::lemma
+  n66["Layout.Shell.modal_rule"]:::lemma
+  n67["Layout.Shell.modals_separated"]:::lemma
+  n68["Layout.Shell.reading_order"]:::lemma
+  n69["Layout.Shell.shell_cases"]:::lemma
+  n70["Layout.Shell.target_implies"]:::lemma
+  n71["Layout.Shell.text_rule"]:::lemma
+  n72["Layout.Shell.zip_order"]:::lemma
+  n73["Layout.Structural.body_order"]:::lemma
+  n74["Layout.Structural.bounds"]:::lemma
+  n75["Layout.Structural.placement_cases"]:::lemma
+  n76["Layout.accepted_candidate"]:::lemma
+  n77["Layout.bindSemantic_box"]:::lemma
+  n78["Layout.bindSemantic_original"]:::lemma
+  n79["Layout.candidate_length_le"]:::lemma
+  n80["Layout.chunks_complete"]:::lemma
+  n81["Layout.chunks_short"]:::lemma
+  n82["Layout.codepointInk_supported"]:::lemma
+  n83["Layout.column_floor"]:::lemma
+  n84["Layout.constrain_satisfies"]:::lemma
+  n85["Layout.filter_length_mono"]:::lemma
+  n86["Layout.layoutAccepted_geometry"]:::lemma
+  n87["Layout.lowest_bottom"]:::lemma
+  n88["Layout.review_shape_payload_independent"]:::lemma
+  n89["Layout.screenShape_flat_length"]:::lemma
+  n90["Layout.screenShape_sources"]:::lemma
+  n91["Layout.select_covered"]:::lemma
+  n92["Layout.separated_pixels"]:::lemma
+  n93["Layout.shape_path_unique"]:::lemma
+  n94["Layout.shift_rect"]:::lemma
+  n95["Layout.textAdvance_bound"]:::lemma
+  n0 --> n2
+  n0 --> n49
+  n0 --> n50
+  n0 --> n5
+  n1 --> n77
+  n1 --> n22
+  n1 --> n91
+  n2 --> n43
+  n2 --> n8
+  n2 --> n77
+  n3 --> n44
+  n3 --> n45
+  n3 --> n46
+  n3 --> n47
+  n3 --> n48
+  n4 --> n85
+  n4 --> n87
+  n5 --> n8
   n5 --> n53
-  n5 --> n6
-  n5 --> n56
-  n6 --> n41
-  n6 --> n42
-  n6 --> n43
-  n6 --> n44
-  n6 --> n45
-  n6 --> n49
-  n6 --> n52
-  n6 --> n54
-  n6 --> n55
-  n6 --> n57
-  n7 --> n58
-  n7 --> n59
-  n7 --> n60
+  n6 --> n8
+  n7 --> n6
+  n7 --> n20
+  n8 --> n51
+  n8 --> n52
+  n10 --> n55
+  n10 --> n61
+  n10 --> n62
+  n10 --> n63
   n10 --> n65
-  n10 --> n74
-  n11 --> n61
+  n10 --> n66
+  n10 --> n68
+  n10 --> n11
+  n10 --> n71
+  n11 --> n56
+  n11 --> n57
+  n11 --> n58
+  n11 --> n59
+  n11 --> n60
+  n11 --> n64
+  n11 --> n67
+  n11 --> n69
   n11 --> n70
-  n15 --> n39
-  n16 --> n15
-  n17 --> n68
-  n18 --> n20
-  n18 --> n72
-  n19 --> n67
-  n19 --> n29
-  n19 --> n69
+  n11 --> n72
+  n12 --> n73
+  n12 --> n74
+  n12 --> n75
+  n15 --> n83
+  n15 --> n94
+  n16 --> n79
+  n16 --> n89
+  n20 --> n54
   n21 --> n20
-  n21 --> n26
-  n21 --> n31
-  n21 --> n32
-  n21 --> n33
-  n22 --> n20
-  n22 --> n34
-  n23 --> n20
-  n23 --> n72
-  n24 --> n66
-  n26 --> n64
-  n27 --> n20
-  n28 --> n71
-  n28 --> n73
-  n31 --> n13
-  n32 --> n8
-  n32 --> n14
-  n34 --> n62
-  n35 --> n63
-  n35 --> n75
-  n40 --> n41
-  n40 --> n43
-  n40 --> n54
-  n46 --> n54
-  n48 --> n43
-  n48 --> n54
-  n50 --> n43
-  n50 --> n45
-  n50 --> n54
-  n51 --> n54
-  n53 --> n43
-  n53 --> n57
-  n56 --> n41
-  n56 --> n42
-  n56 --> n43
-  n56 --> n49
-  n56 --> n52
-  n56 --> n54
-  n65 --> n74
-  n67 --> n20
-  n67 --> n21
-  n67 --> n71
-  n68 --> n20
-  n75 --> n8
+  n22 --> n76
+  n22 --> n77
+  n22 --> n78
+  n22 --> n27
+  n22 --> n28
+  n22 --> n90
+  n22 --> n91
+  n23 --> n86
+  n24 --> n27
+  n24 --> n92
+  n25 --> n27
+  n26 --> n22
+  n26 --> n36
+  n26 --> n88
+  n28 --> n27
+  n28 --> n33
+  n28 --> n38
+  n28 --> n39
+  n28 --> n40
+  n29 --> n27
+  n29 --> n41
+  n30 --> n27
+  n30 --> n92
+  n31 --> n84
+  n33 --> n82
+  n34 --> n27
+  n35 --> n90
+  n35 --> n93
+  n38 --> n18
+  n39 --> n13
+  n39 --> n19
+  n41 --> n80
+  n42 --> n81
+  n42 --> n95
+  n43 --> n3
+  n55 --> n56
+  n55 --> n58
+  n55 --> n69
+  n61 --> n69
+  n63 --> n58
+  n63 --> n69
+  n65 --> n58
+  n65 --> n60
+  n65 --> n69
+  n66 --> n69
+  n68 --> n58
+  n68 --> n72
+  n71 --> n56
+  n71 --> n57
+  n71 --> n58
+  n71 --> n64
+  n71 --> n67
+  n71 --> n69
+  n83 --> n94
+  n86 --> n27
+  n95 --> n13
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46

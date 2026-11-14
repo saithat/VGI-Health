@@ -800,6 +800,17 @@ export interface DesignRules {
    * for saved unsigned drafts whose commit has no temporal deadline.
    */
   unsignedDraftMinutes?: number;
+  /**
+   * New specification for owner review (R3): maximum copies of one tag per program
+   * (default 2). A screen may also hold at most one copy of each tag.
+   */
+  copyBudget?: number;
+  /**
+   * New specification for owner review (R5, geometry rule G10): maximum active
+   * targets in the first 1440×900 viewport and in each scroll viewport (default 15,
+   * the largest count measured in the current release programs).
+   */
+  maxTargetsPerViewport?: number;
 }
 
 /**
@@ -917,7 +928,8 @@ export interface Component {
    */
   tag: string;
   /**
-   * Marks a copy (copies don't count against the stability budget).
+   * Marks a copy. A copy is never a moved tag; R3 (`CopyBudget`, `CopyStability`)
+   * limits copies per tag and charges added copies to the stability budget.
    */
   copyOf?: CompId;
 }

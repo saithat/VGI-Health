@@ -1,10 +1,12 @@
 import Ehr.Layout.Range
+import Ehr.Layout.Density
 import Ehr.Render.Cli
 namespace Ehr.Layout
 open Lean Ehr Ehr.Render
 /-- Read-only targeted W1 audit. Each path is parsed as a Program; no snapshots
 or certificates are rewritten. Variants are native probes, not state coverage. -/
-def auditProgram (path specPath : String) (facts : Facts) (display : Display) (allScreens : Bool := false) : IO Json := do
+def auditProgram (path specPath : String) (facts : Facts) (display : Display) (allScreens : Bool := false)
+    (allVariants : Bool := false) : IO Json := do
   let p ← Render.Cli.readJson Program path
   let sp ← Render.Cli.readJson Spec specPath
   let user : User := { id := p.owner, role := p.role }
@@ -19,7 +21,7 @@ def auditProgram (path specPath : String) (facts : Facts) (display : Display) (a
     let initial := (goTo sp p facts (init sp p facts user) sc.id).1
     let groups := sc.components.filterMap fun c => match c.kind with
       | .group true _ => some c.id | _ => none
-    let variants := if sc.id == "w1Sign" then Render.Cli.variants sp p facts user sc else
+    let variants := if sc.id == "w1Sign" || allVariants then Render.Cli.variants sp p facts user sc else
       [("initial",initial),("expanded",{ initial with expanded := (groups ++ initial.expanded).eraseDups })]
     for (variant,state) in variants do
       let selected := { state with patientContext? := some {
@@ -29,9 +31,15 @@ def auditProgram (path specPath : String) (facts : Facts) (display : Display) (a
       if sample.isNone && sc.id == "w1Sign" then sample := some screen
       let shape := screenShape screen
       let classOk := Shell.accepts shape
+      -- G10 (R5) measurement at 1440×900 on the fixed shell; new specification for owner review.
+      let desk : Size := ⟨92160,57600⟩
+      let (firstTargets, windowCount) := densityCounts desk (Shell.classBoxes desk shape)
       classChecks := classChecks ++ [Json.mkObj [("screen",toJson sc.id),("variant",toJson variant),
         ("classAccepted",toJson classOk),("classDecline",toJson
-          (if classOk then "" else "fixed-shell-invariant-failed"))]]
+          (if classOk then "" else "fixed-shell-invariant-failed")),
+        ("targets",toJson (shape.filter (·.target)).length),
+        ("firstViewportTargets",toJson firstTargets),("maxWindowTargets",toJson windowCount),
+        ("g10Capacity",toJson Density.shellCapacity)]]
       if sc.id == "w1Sign" then
         if !shapes.contains (screenShape screen) then shapes := screenShape screen :: shapes
         for v in viewports do
@@ -46,7 +54,8 @@ def auditProgram (path specPath : String) (facts : Facts) (display : Display) (a
             ("findings",toJson (findings e v ps ++ errors)), ("sources",toJson e.length),
             ("hasCurrentCommit",toJson (ps.any (·.info.commit))),
             ("g9Exempt",toJson (v == ⟨92160,57600⟩ && !(ps.any (·.info.commit)))),
-            ("g9Passed",toJson (decide (G9 v ps)))]]
+            ("g9Passed",toJson (decide (G9 v ps))),
+            ("portDensity",toJson (densityCounts v ps))]]
   let family : Family := shapes.map fun shape => ⟨shape,fun v => compileShape v shape⟩
   return Json.mkObj [("path",toJson path),("sample",toJson sample),("checks",toJson checks),
     ("classChecks",toJson classChecks),("familyCases",toJson shapes.length),("familyAccepted",toJson (acceptFamily family)),
@@ -60,4 +69,5 @@ def main (args : List String) : IO Unit := do
   let (facts,display) ← IO.ofExcept (Ehr.Render.Fhir.parseBundle { today := "2026-10-31" } bundle)
   for (path,spec) in paths do
     if args.contains "--all-screens" then IO.eprintln s!"class audit: {path}"
-    IO.println ((← Ehr.Layout.auditProgram path spec facts display (args.contains "--all-screens")).compress)
+    IO.println ((← Ehr.Layout.auditProgram path spec facts display (args.contains "--all-screens")
+      (args.contains "--all-variants")).compress)

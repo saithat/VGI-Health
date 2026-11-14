@@ -345,6 +345,75 @@ def StabilityBudget (spec : Spec) (prev : Option Program) (prog : Program) : Pro
 instance (spec : Spec) (prev : Option Program) (prog : Program) : Decidable (StabilityBudget spec prev prog) := by
   unfold StabilityBudget; infer_instance
 
+/-- **R3, copy budget.** New specification for owner review. For every tag, at
+most one copy on any screen and at most `spec.design.copyBudget` copies in the
+program. Copies are counted against their original's tag (`copyTag`). -/
+def CopyBudget (spec : Spec) (prog : Program) : Prop :=
+  ∀ t : String, (∀ scr ∈ prog.screens, screenCopies prog scr t ≤ 1) ∧
+    programCopies prog t ≤ spec.design.copyBudget
+
+/-- The checker's executable form of `CopyBudget`: only tags that occur are
+inspected (`copyBudget_of_checked`). New specification for owner review. -/
+def CopyBudgetChecked (spec : Spec) (prog : Program) : Prop :=
+  (∀ scr ∈ prog.screens, ∀ c ∈ scr.components,
+    (copyTag prog c).all (fun t => decide (screenCopies prog scr t ≤ 1)) = true) ∧
+  ∀ sc ∈ allComps prog,
+    (copyTag prog sc.2).all (fun t => decide (programCopies prog t ≤ spec.design.copyBudget)) = true
+
+instance (spec : Spec) (prog : Program) : Decidable (CopyBudgetChecked spec prog) := by
+  unfold CopyBudgetChecked; infer_instance
+
+/-- **R3, copies against the stability budget.** New specification for owner
+review. Moved tags plus copies added since the previous version stay within
+`stabilityBudget`. -/
+def CopyStability (spec : Spec) (prev : Option Program) (prog : Program) : Prop :=
+  ∀ p, prev = some p →
+    (movedTags p prog).length + (addedCopies p prog).length ≤ spec.design.stabilityBudget
+
+instance (spec : Spec) (prev : Option Program) (prog : Program) : Decidable (CopyStability spec prev prog) := by
+  unfold CopyStability; infer_instance
+
+private theorem filter_length_zero {α : Type} (l : List α) (p : α → Bool)
+    (h : ∀ x ∈ l, p x = false) : (l.filter p).length = 0 := by
+  simp only [List.length_eq_zero_iff, List.filter_eq_nil_iff]
+  intro x hx
+  simp [h x hx]
+
+/-- The executable check implies the copy budget for every tag, including tags
+no component uses. -/
+theorem copyBudget_of_checked (spec : Spec) (prog : Program)
+    (h : CopyBudgetChecked spec prog) : CopyBudget spec prog := by
+  intro t
+  constructor
+  · intro scr hs
+    by_cases present : ∃ c ∈ scr.components, copyTag prog c = some t
+    · obtain ⟨c, hc, ht⟩ := present
+      have := h.1 scr hs c hc
+      simpa [ht] using this
+    · unfold screenCopies
+      have zero := filter_length_zero scr.components (fun c => copyTag prog c == some t) (by
+        intro c hc
+        have : copyTag prog c ≠ some t := fun e => present ⟨c, hc, e⟩
+        simpa using this)
+      omega
+  · by_cases present : ∃ sc ∈ allComps prog, copyTag prog sc.2 = some t
+    · obtain ⟨sc, hc, ht⟩ := present
+      have := h.2 sc hc
+      simpa [ht] using this
+    · unfold programCopies
+      have zero := filter_length_zero (allComps prog) (fun sc => copyTag prog sc.2 == some t) (by
+        intro sc hc
+        have : copyTag prog sc.2 ≠ some t := fun e => present ⟨sc, hc, e⟩
+        simpa using this)
+      omega
+
+/-- Counting added copies only strengthens the existing stability budget. -/
+theorem copyStability_stability (spec : Spec) (prev : Option Program) (prog : Program)
+    (h : CopyStability spec prev prog) : StabilityBudget spec prev prog := by
+  intro p hp
+  have := h p hp
+  omega
+
 /-- **Property 8, budgets.** -/
 def WithinBudgets (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
   AlertBudget canonical prog ∧ StabilityBudget spec prev prog

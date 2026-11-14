@@ -108,6 +108,7 @@ content environments for one fixed semantic template.
 | G7 | Expected semantic occurrence paths and painted IDs are unique; each expected path is painted exactly once and no invented source path is painted. The W1 adapter derives the inventory from the actual `UiScreen`; the lower-level proposal API takes the expected inventory as an input. |
 | G8 | Document order is top-to-bottom, then left-to-right at equal y. Within a shared scroller use content positions; between regions use outer viewports. Distinct z layers are separate reading regions. This does not establish an assistive technology's traversal order. |
 | G9 | At 1440×900, **if any current-task commit target is present**, exactly one is fixed and fully contained without page scrolling. A screen with no current-task commit is exempt. Other sizes impose no extra commit constraint. Family admission links commit flags to the actual semantic source, preventing omission to claim an exemption. |
+| G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero, and at every scroll offset of each scroll viewport. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G9 conjunction; see "Action density" below. |
 
 The pixel model overapproximates nested clipping with the outermost viewport;
 inner clips can only remove pixels. Scroll ancestor identities distinguish
@@ -323,6 +324,50 @@ inferred from layout admission. The six canonical and 52 accepted noncanonical
 programs in the retained inventory are all covered by the universal theorem;
 no additional class widening is needed for those programs.
 
+**Action density (G10).** *New specification for owner review (rule R5 in
+[metric gaming](../design/metric-gaming.md)).* `G10 limit v ps` counts active
+targets (modal-aware, as in G3). The first viewport takes targets with area inside
+the page and inside every enclosing scroll viewport at zero scroll. A scroll
+viewport is the innermost clip; its window at offset `o` is the content band
+`[y + o, bottom + o)`. The check inspects one candidate window per target,
+starting on its last row; `G10_window` proves this bounds every offset.
+`checkDensity` is `check` plus G10 (`layoutAccepted_density`). Findings use rule
+`G10` with metric `first-viewport-targets` or `scroll-window-targets` (node: the
+scroll viewport), the count, the limit and the excess.
+
+`Ehr.Layout.Density` proves that the fixed shell meets G10 at capacity
+`shellCapacity = 15` for arbitrary bodies, paths, target masks and at most two
+modals (`shell_density`). The body scroller is 756 px tall with 48 px rows on a
+56 px pitch, so any window meets at most 15 rows; the first viewport shows 14 rows
+plus the fixed commit. With a modal present only the modal targets are active.
+`render_density` extends this to every `runRenderUi` output.
+`checkProgramDensity sp program` decides `15 ≤ sp.design.maxTargetsPerViewport`, and
+
+```lean
+checkProgramDensity_sound (sp : Ehr.Spec) (program : Ehr.Program)
+    (accepted : checkProgramDensity sp program = true) :
+  ∀ (facts : Ehr.Facts) (display : Display) (user : Ehr.User) (state : Ehr.State),
+    ∀ v ∈ viewports, ∃ painted,
+      Range.uncheckedPaint (runRenderUi ⟨sp,program,facts,display,user,state⟩) v = some painted ∧
+      Realizes (runRenderUi ⟨sp,program,facts,display,user,state⟩) v painted ∧
+      G10 sp.design.maxTargetsPerViewport v (painted.map Drawn.box)
+```
+
+Custom families use `acceptFamilyDensity limit family` (`acceptFamily` plus G10 on
+every viewport case); `layoutAccepted_familyDensity` adds G10 to the
+`layoutAccepted_allScreens` conclusion. The JSONL operations take an optional
+`maxTargetsPerViewport` (default 15): `layout`, `port`, `family-check` and
+`family-paint` refuse on G10; `program-check` and `program-paint` use the spec's
+limit. `ui-port-audit` reports `firstViewportTargets` and `maxWindowTargets` per
+probed state, and `--all-variants` probes every screen with the group, tab and
+alert variants.
+
+The release programs reach 11 targets in the first viewport and 15 in a scroll
+window, so the default limit equals the shell's capacity and no fixed-shell program
+can fail it. Density on the fixed shell becomes scrolling. G10 constrains custom
+layouts and any lower limit. A limit below 15 refuses every program, since the
+program decision is static.
+
 The program inventory covers **6/6 canonical programs** and **52/52
 accepted noncanonical programs** (54 matching spec contexts). Across all 186
 paths, 113 distinct programs, 118 contexts and 3,472 declared screen occurrences,
@@ -355,7 +400,8 @@ premise. It is a semantic review/sign family with arbitrary banner fields,
 review-table rows and enabled/blocked reason; it is not a theorem that every
 state of the deployed EHR renderer has that exact shape.
 
-**Not proved / incomplete.** Close widget
+**Not proved / incomplete.** G10 is not part of `Realizes` or `Rules`; it is a
+separate conjunct of the density theorems. Close widget
 fidelity, bounded-list authoring, complete DOM/APG integration,
 Comparator coverage and deployment integration remain open. Browser glyph and
 accessibility rendering remain trusted. Nothing here replaces existing clinical
