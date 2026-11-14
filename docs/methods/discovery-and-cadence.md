@@ -30,6 +30,10 @@ the greatest measured daily click+scroll saving minus the usage-weighted movemen
 proxy, with a configurable minimum net effect (default 5 interactions/day), then
 rechecks the complete program and applies that floor to validation as well. All
 existing completion, stability, pixel, screen and deploy gates still apply.
+R1 also caps validation keystrokes and modeled time (`klmDeciSec`) at 2% above
+baseline, without pixel rounding slack; neither replaces the release score.
+Full task completion was already required. [Retained-decision replay](interaction-validation.md)
+reports every shipped persona/night and distinguishes mandatory vendor updates.
 The floor is provisional: the frozen B data has 179 positive train candidates
 (minimum 1/day, lower quartile 23/day, median 40/day); 20 fall below 5 before
 relearning cost. This is a selection policy, not a fitted clinical threshold.

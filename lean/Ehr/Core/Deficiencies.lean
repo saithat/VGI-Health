@@ -228,12 +228,25 @@ def draftRows (sp : Spec) (u : User) (r : ChartInput) (cs : CommitSpec) : List D
              deadline? := (draftDeadline sp r cs sd).1, status := (draftDeadline sp r cs sd).2 }
     else none
 
-/-- New specification for owner review: rows for order lines discarded at
-discharge, listed under each open order-entry commit of the role. -/
+/-- New specification: discarded-order notices expire only after the 30-day
+record-completion deadline (42 CFR 482.24(c)(4)(viii)). Use actual, current,
+patient/encounter-bound discharge evidence; unknown timing keeps the notice.
+The exact deadline is inclusive. Provenance is never removed. -/
+def discardWithinDeadline (r : ChartInput) (dd : DiscardedDraft) : Bool :=
+  if r.patient != r.facts.patientId || r.encounter != dd.encounter ||
+      r.facts.episodeId? != some dd.encounter then true else
+  match eventTime r.facts (chartState r)
+      { event := "discharge", artifactKey := "completeMedicalRecord" } false,
+      epochNow r.facts (chartState r) with
+  | some discharged, some now => now ≤ discharged + 30 * 24 * 60
+  | _, _ => true
+
+/-- New specification: rows for order lines discarded at discharge, listed
+under each open order-entry commit of the role until their completion deadline. -/
 def discardRows (sp : Spec) (u : User) (r : ChartInput) (cs : CommitSpec) : List Deficiency :=
   if isOrderCommit sp cs.id then
     r.discards.filterMap fun dd =>
-      if dd.captured.isEmpty then none else
+      if dd.captured.isEmpty || !discardWithinDeadline r dd then none else
       some { clinician := u.id, patient := r.patient, encounter := dd.encounter, commit := cs.id,
              item := .discarded dd.checkpoint,
              label := "Unsigned orders discarded at discharge (" ++ toString dd.captured.length ++ " entries)",
@@ -367,11 +380,14 @@ theorem draft_listed (sp : Spec) (u : User) (records : List ChartInput)
 
 /-- New specification for owner review: **completeness (discharge).** Order
 lines a discharge kept out of the author's chart are listed to that author as
-discarded at discharge, under every unsigned order-entry commit of the role. -/
+discarded at discharge, under every unsigned order-entry commit of the role.
+Specification change: listing is bounded by the 30-day discharge deadline;
+unknown timing retains the notice. -/
 theorem discard_listed (sp : Spec) (u : User) (records : List ChartInput)
     (r : ChartInput) (hr : r ∈ records) (cs : CommitSpec) (hcs : cs ∈ sp.commits)
     (hrole : u.role ∈ cs.roles) (hopen : cs.id ∉ r.commits) (horder : isOrderCommit sp cs.id = true)
-    (dd : DiscardedDraft) (hdd : dd ∈ r.discards) (hne : dd.captured ≠ []) :
+    (dd : DiscardedDraft) (hdd : dd ∈ r.discards) (hne : dd.captured ≠ [])
+    (hbound : discardWithinDeadline r dd = true) :
     ∃ d ∈ deficiencies sp u records, d.clinician = u.id ∧ d.patient = r.patient ∧
       d.item = .discarded dd.checkpoint ∧ d.status = .discardedAtDischarge := by
   refine ⟨{
@@ -384,7 +400,7 @@ theorem discard_listed (sp : Spec) (u : User) (records : List ChartInput)
   simp only [List.mem_append]
   right
   simp only [discardRows, horder, ↓reduceIte, List.mem_filterMap]
-  exact ⟨dd, hdd, by simp [hne]⟩
+  exact ⟨dd, hdd, by simp [hne, hbound]⟩
 
 /-- New specification for owner review: **soundness.** Every listed item
 belongs to a chart in the input, to the signed-in clinician, and to a commit of

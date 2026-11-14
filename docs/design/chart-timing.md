@@ -181,7 +181,7 @@ dated. The catalog's dated/timed entries describe this implemented scope.
   patient's chart where the role's landing list would.
 - Proved: `overdue_listed`, `missing_listed`, `draft_listed` and
   `discard_listed` (completeness: every overdue or started obligation, saved
-  draft and discarded order of the role's unsigned commits is listed) and
+  draft and unexpired discarded order of the role's unsigned commits is listed) and
   `listed_unsigned` (soundness: every listed item belongs to the signed-in
   clinician, to a commit the role performs, and that commit is not signed in
   its chart).
@@ -303,7 +303,19 @@ verbalOrder.recorded, vis.provided
 - **Discharge:** the encounter is closed, so restored drafts lose their
   order-line captures. They are kept in provenance (the source checkpoint and
   `commit_discarded_drafts`) and listed to their author as discarded at
-  discharge. The draft's other unsigned work is still restored and listed.
+  discharge through the 30-day record-completion deadline after discharge
+  (42 CFR §482.24(c)(4)(viii)); the notice drops off only after that exact
+  deadline. **Specification change:** `discardWithinDeadline` bounds the
+  notice, and `discard_listed` adds only that bound as a hypothesis. The
+  deadline uses actual, current, uniquely bound discharge evidence for the
+  discarded order's patient and encounter, plus the trusted epoch-minute
+  clock. Missing, stale, duplicate, planned or mismatched evidence retains the
+  notice. This is a notice-retention policy using the federal deadline, not
+  permission to leave a record incomplete or to delete order provenance.
+  The service reprojects each discarded order's original encounter, including
+  after readmission; a newer admission cannot reset the deadline. The draft's
+  other unsigned work is still restored and listed, and overdue record
+  obligations remain listed independently of discard-notice expiry.
 - Proved: `transfer_restores_tagged` (after a transfer every restorable order
   line of the saved draft is in the reopened chart, tagged),
   `pending_blocks_orders` and `transfer_needs_decision` (no event by any actor

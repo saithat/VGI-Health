@@ -130,4 +130,37 @@ def chart (now : Int) (commits : List CommitId := []) (saved current : Option Ad
   == [[("Patient", "Doe, Jane"), ("Item", "Unsigned draft: Sign orders"), ("Due", "1970-01-02 16:40 UTC"),
        ("Status", "Delinquent")]]
 
+/-! New specification: discard notices expire strictly after the 30-day bound.
+The source draft/provenance and other deficiency rows are unaffected. -/
+def notice : DiscardedDraft :=
+  { checkpoint := "c1", encounter := "e1", captured := discarded spec draft0 .discharge }
+def dischargedChart (now : Int) : ChartInput :=
+  { chart now with discards := [notice], facts := { facts with
+      patientId := "p1", episodeId? := some "e1", epochMinute? := some now,
+      artifactBindings? := some [{ key := "completeMedicalRecord", artifact := "enc-e1", version := 2 }],
+      eventEvidence? := some [
+        { event := "discharge", artifact := "enc-e1", version := 2,
+          patient := "p1", episode := "e1", actor := "record", time := 1000 }] } }
+
+#guard discardWithinDeadline (dischargedChart 44199) notice
+#guard discardWithinDeadline (dischargedChart 44200) notice
+#guard !discardWithinDeadline (dischargedChart 44201) notice
+#guard (deficiencies spec user [dischargedChart 44200]).map (·.status) == [.delinquent, .discardedAtDischarge]
+#guard (deficiencies spec user [dischargedChart 44201]).map (·.status) == [.delinquent]
+-- Missing, stale, duplicated, future, planned or mismatched evidence cannot expire a row.
+#guard discardWithinDeadline (chart 44201) notice
+#guard discardWithinDeadline { dischargedChart 44201 with facts := { (dischargedChart 44201).facts with epochMinute? := none } } notice
+#guard discardWithinDeadline { dischargedChart 44201 with facts := { (dischargedChart 44201).facts with artifactBindings? := none } } notice
+#guard discardWithinDeadline { dischargedChart 44201 with facts := { (dischargedChart 44201).facts with
+  eventEvidence? := (dischargedChart 44201).facts.eventEvidence?.map (fun es => es ++ es) } } notice
+#guard discardWithinDeadline { dischargedChart 44201 with facts := { (dischargedChart 44201).facts with
+  eventEvidence? := (dischargedChart 44201).facts.eventEvidence?.map (·.map fun e => { e with version := 1 }) } } notice
+#guard discardWithinDeadline { dischargedChart 44201 with facts := { (dischargedChart 44201).facts with
+  eventEvidence? := (dischargedChart 44201).facts.eventEvidence?.map (·.map fun e => { e with planned := true }) } } notice
+#guard discardWithinDeadline (dischargedChart 999) notice
+#guard discardWithinDeadline (dischargedChart 44201) { notice with encounter := "older" }
+#guard discardWithinDeadline { dischargedChart 44201 with patient := "other" } notice
+#guard discardWithinDeadline { dischargedChart 44201 with facts := { (dischargedChart 44201).facts with
+  eventEvidence? := (dischargedChart 44201).facts.eventEvidence?.map (·.map fun e => { e with episode := "other" }) } } notice
+
 end Ehr.Deficiencies.Tests

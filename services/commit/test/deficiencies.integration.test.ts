@@ -141,6 +141,31 @@ test('deficiency list, transfer reconciliation and discharge provenance through 
     f.config.actors.push(other);
     const foreign = await api(a.base, other, '/sessions', openInput('def-A', { deficiencyList: list.body.id }));
     assert.equal(foreign.body.error, 'deficiency_list_not_found');
+
+    // Reread the old encounter after readmission. Only its actual discharge
+    // starts expiry; the current admission must not replace that anchor.
+    const dischargedAt = clock;
+    const patientB = required(f.patients.find(p => p.patient === 'def-B'));
+    const originalEntries = objs(obj(patientB.bundle).entry);
+    const dischargedBundle = { ...patientB.bundle, entry: originalEntries.map(entry => {
+      const resource = obj(entry.resource);
+      return resource.resourceType === 'Encounter' ? { resource: { ...resource, status: 'finished',
+        meta: { versionId: '2' }, period: { end: new Date(dischargedAt).toISOString() } } } : entry;
+    }).concat([{ resource: { resourceType: 'Encounter', id: 'readmitted-B', meta: { versionId: '1' },
+      status: 'in-progress', class: { code: 'IMP' }, subject: { reference: 'Patient/def-B' } } }]) };
+    await a.db.query(`UPDATE commit_streams SET snapshot=jsonb_set(jsonb_set(snapshot,'{bundle}',$3::jsonb),
+      '{context,encounterId}','"readmitted-B"'::jsonb) WHERE tenant=$1 AND key=$2`,
+      [t, 'patient:def-B', JSON.stringify(dischargedBundle)]);
+    const hasDiscard = (body: Obj) => objs(body.deficiencies).some(d => d.patient === 'def-B' && d.status === 'discardedAtDischarge');
+    clock = dischargedAt + 30 * 24 * 60 * 60_000;
+    list = await api(a.base, actor, '/deficiencies');
+    assert.equal(list.status, 200, JSON.stringify(list));
+    assert.equal(hasDiscard(list.body), true, 'exact deadline remains listed');
+    clock += 60_000;
+    list = await api(a.base, actor, '/deficiencies');
+    assert.equal(hasDiscard(list.body), false, 'old encounter expires after its deadline despite readmission');
+    assert.equal((await a.db.query('SELECT captured FROM commit_discarded_drafts WHERE tenant=$1 AND patient=$2', [t, 'def-B'])).rows.length, 1,
+      'expiry keeps provenance');
   } finally {
     for (const table of ['commit_deficiency_lists', 'commit_discarded_drafts', 'commit_draft_checkpoints', 'commit_requests', 'commit_sessions', 'commit_events', 'commit_streams'])
       await a.db.query(`DELETE FROM ${table} WHERE tenant=$1`, [t]);

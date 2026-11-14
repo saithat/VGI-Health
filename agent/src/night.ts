@@ -223,12 +223,15 @@ export function completionOk(r: ReplayDay | null): boolean {
   return r !== null && r.after.tasks > 0 && r.after.tasks === r.before.tasks && r.after.completed === r.after.tasks && r.after.completed >= r.before.completed;
 }
 
-export const INTERACTION_TOLERANCE={clicks:0,scrolls:0,scrollPx:2,mouseTravelPx:2};
-/** Strict improvement in at least one dimension; no count regression; 2% pixel noise tolerance. */
+// R1 policy change: constrain typing and modeled time as well as physical effort.
+export const INTERACTION_TOLERANCE={clicks:0,scrolls:0,scrollPx:2,mouseTravelPx:2,keystrokes:2,klmDeciSec:2};
+export const INTERACTION_KEYS=['clicks','scrolls','scrollPx','mouseTravelPx','keystrokes','klmDeciSec'] as const;
+/** Full completion; no click/scroll regression; 2% pixels, typing and time tolerance.
+ * The extra one-unit rounding allowance applies only to measured pixels. */
 export function interactionAcceptable(r:ReplayDay):boolean{
  if(!completionOk(r))return false;
- return (['clicks','scrolls','scrollPx','mouseTravelPx'] as const).every(key=>{
-  const before=r.before[key],after=r.after[key];if(typeof before!=='number'||typeof after!=='number')return false;
+ return INTERACTION_KEYS.every(key=>{
+  const before=r.before[key],after=r.after[key];if(typeof before!=='number'||typeof after!=='number'||!Number.isFinite(before)||!Number.isFinite(after))return false;
   return after<=before*(1+INTERACTION_TOLERANCE[key]/100)+((key==='mouseTravelPx'||key==='scrollPx')?1:0);
  });
 }
@@ -598,7 +601,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
     return finish(null);
   }
   rec.validation.accepted = true;
-  rec.validation.reason = `validation day ${replay.day}: ${replay.saving.clicks} clicks, ${replay.saving.scrolls} scrolls, ${replay.saving.scrollPx??"unavailable"}px scroll, ${replay.saving.mouseTravelPx??"unavailable"}px mouse (keys secondary: ${replay.saving.keystrokes})`;
+  rec.validation.reason = `validation day ${replay.day}: ${replay.saving.clicks} clicks, ${replay.saving.scrolls} scrolls, ${replay.saving.scrollPx??"unavailable"}px scroll, ${replay.saving.mouseTravelPx??"unavailable"}px mouse, ${replay.saving.keystrokes} keys, ${replay.saving.klmDeciSec} deciseconds`;
 
   if (options.offline) {
     rec.outcome = 'validation-accepted';

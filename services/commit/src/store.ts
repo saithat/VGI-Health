@@ -422,15 +422,29 @@ export class Store {
       if (typeof facts.epochMinute !== 'number') facts.epochMinute = epochMinute;
       const encounter = typeof facts.episodeId === 'string' ? facts.episodeId
         : typeof maybeObj(snapshot.context)?.encounterId === 'string' ? str(obj(snapshot.context).encounterId) : '';
-      const commits = (await this.db.query(`SELECT DISTINCT event->'guard'->'input'->>'commit' AS commit FROM commit_events
-        WHERE tenant=$1 AND stream=$2 AND event->>'kind'='command' AND COALESCE(event->'session'->'context'->>'encounterId','')=$3
-        AND event->'guard'->'input'->>'commit' IS NOT NULL`, [t, key, encounter])).rows.map(r => str(r.commit));
       const stamp = adtStamp(snapshot);
-      records.push({ patient, encounter, facts, commits, ...(stamp ? { adt: stamp } : {}),
-        drafts: drafts.filter((d: Obj) => d.patient === patient).map((draft: Obj) => ({
-          checkpoint: str(latest.id), draft, savedAt: Math.floor(new Date(latest.created_at).getTime() / 60_000),
-          ...(maybeObj(stamps[patient]) ? { adt: stamps[patient] } : {}) })),
-        discards: discards.filter(d => d.patient === patient).map(d => ({ checkpoint: str(d.checkpoint_id), encounter: str(d.encounter_id), captured: d.captured })) });
+      const patientDiscards = discards.filter(d => d.patient === patient);
+      // A later admission must not replace the discharge anchor for an older
+      // discarded order. Re-project each retained encounter through native Lean.
+      const encounters = [...new Set([encounter, ...patientDiscards.map(d => str(d.encounter_id))])];
+      for (const selectedEncounter of encounters) {
+        let selectedFacts = facts;
+        if (selectedEncounter !== encounter) {
+          const historical = await this.lean.call('facts', { bundle: snapshot.bundle,
+            context: currentContext({ ...obj(snapshot.context ?? {}), encounterId: selectedEncounter }, this.now()) });
+          selectedFacts = obj(historical.facts);
+          if (typeof selectedFacts.epochMinute !== 'number') selectedFacts.epochMinute = epochMinute;
+        }
+        const commits = (await this.db.query(`SELECT DISTINCT event->'guard'->'input'->>'commit' AS commit FROM commit_events
+          WHERE tenant=$1 AND stream=$2 AND event->>'kind'='command' AND COALESCE(event->'session'->'context'->>'encounterId','')=$3
+          AND event->'guard'->'input'->>'commit' IS NOT NULL`, [t, key, selectedEncounter])).rows.map(r => str(r.commit));
+        records.push({ patient, encounter: selectedEncounter, facts: selectedFacts, commits, ...(stamp ? { adt: stamp } : {}),
+          drafts: drafts.filter((d: Obj) => selectedEncounter === encounter && d.patient === patient).map((draft: Obj) => ({
+            checkpoint: str(latest.id), draft, savedAt: Math.floor(new Date(latest.created_at).getTime() / 60_000),
+            ...(maybeObj(stamps[patient]) ? { adt: stamps[patient] } : {}) })),
+          discards: patientDiscards.filter(d => str(d.encounter_id) === selectedEncounter)
+            .map(d => ({ checkpoint: str(d.checkpoint_id), encounter: str(d.encounter_id), captured: d.captured })) });
+      }
     }
     const names = obj(obj(obj(await this.lean.call('facts', { bundle: await this.directory(actor), directoryOnly: true,
       context: currentContext({ receipts: [], record: [] }, this.now()) })).facts).patientDirectory).patients;

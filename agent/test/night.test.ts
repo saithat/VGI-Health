@@ -169,7 +169,10 @@ withData("runs/core-10day/decisions").describe("archive-backed agent prompts", (
    expect(records.length).toBeGreaterThan(0);
    for(const call of records){
     const prompt=call.system+call.prompt;
-    expect(prompt).not.toMatch(/klmDeciSec|avgKlmSec|klmSec|KLM time|timeSinksByScreen/);
+    // R1's static policy names the time constraint; measured timing still
+    // stays out of the discovery evidence and objective.
+    expect(prompt).not.toMatch(/"(?:klmDeciSec|avgKlmSec|klmSec|timeSinksByScreen)"\s*:/);
+    expect(prompt).toContain('R1 policy change: keystrokes and modeled time');
     expect(prompt).toContain('1440');
     expect(prompt).toContain('mouseTravelPx');
    }

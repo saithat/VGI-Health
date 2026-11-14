@@ -303,17 +303,24 @@ def WithinClicks (p : Program) (n : Nat) (z : ScreenId) : Prop :=
 def ReachableScreen (p : Program) (z : ScreenId) : Prop :=
   ∃ hops, GotoPath p p.start hops z
 
-/-- Where the original (non-copy) component with tag `t` sits: its screen and
-its parent. -/
+/-- New specification (R7): where a retained tag sits, preferring its original
+component. If the original was deleted, its first surviving copy represents
+the tag, even if `copyOf` still names the deleted component. Adding copies
+beside a retained original does not displace it. -/
 def placeOf (p : Program) (t : String) : Option (ScreenId × Option CompId) :=
-  p.screens.findSome? fun scr =>
+  let original := p.screens.findSome? fun scr =>
     (scr.components.find? fun c => c.tag == t && c.copyOf?.isNone).map fun c => (scr.id, c.parent?)
+  match original with
+  | some place => some place
+  | none => p.screens.findSome? fun scr =>
+      (scr.components.find? fun c => c.tag == t).map fun c => (scr.id, c.parent?)
 
-/-- The tags whose original component moved between `prev` and `prog`: same
-tag, different screen or parent. Copies are ignored; empty tags never count. -/
+/-- New specification (R7): retained tags displaced between `prev` and `prog`:
+same tag, different screen or parent, including a surviving copy after deletion
+of its original. Copies beside a retained original and empty tags do not count. -/
 def movedTags (prev prog : Program) : List String :=
   ((allComps prog).filterMap fun sc =>
-      if sc.2.tag != "" && sc.2.copyOf?.isNone then some sc.2.tag else none).eraseDups.filter fun t =>
+      if sc.2.tag != "" then some sc.2.tag else none).eraseDups.filter fun t =>
     match placeOf prev t, placeOf prog t with
     | some a, some b => a != b
     | _, _ => false

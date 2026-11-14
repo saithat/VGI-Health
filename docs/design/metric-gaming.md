@@ -2,7 +2,8 @@
 
 [Overview](../../README.md) · [Core model](core-model.md) · [Discovery and cadence](../methods/discovery-and-cadence.md)
 
-Status: **R1–R7 approved (2026-11-13), in implementation in the suggested order.**
+Status: **R1 implemented; R7 regression exposed and fixed a dangling-copy gap (new specification).**
+R2–R6 remain approved for implementation; see the [retained-decision replay](../methods/interaction-validation.md).
 Rules marked *new specification* are new definitions and stay flagged in Lean.
 
 ## What the agent is rewarded for
@@ -14,16 +15,18 @@ A nightly change ships when all of these hold:
    usage-weighted movement proxy (one click-equivalent per observed daily use of
    each displaced control) (`agent/src/structure-policy.ts`, `agent/src/night.ts`).
 2. **Validation gate** on a held-out past day: every task still completes, clicks
-   and scrolls do not regress, scroll pixels and mouse travel stay within 2%, and at
-   least one of the four improves (`interactionAcceptable`, `improved`).
-   Keystrokes are reported only as a secondary figure. Time (`klmDeciSec`),
-   popups, overrides, searches and backtracks are not gated.
+   and scrolls do not regress, scroll pixels and mouse travel stay within 2%
+   plus 1px rounding slack, and at least one of the four improves
+   (`interactionAcceptable`, `improved`). **R1 policy change:** keystrokes and
+   modeled time (`klmDeciSec`) each stay within 2%, without the pixel slack.
+   Popups, overrides, searches and backtracks are not separately gated.
 3. **Formal checks**: properties 1–9 (`lean/Ehr/Props/Properties.lean`), D1–D6
    (`core-model.md`), the geometry rules G1–G9 (`docs/methods/ui-library.md`),
    `StabilityBudget`, `AlertBudget` and the identity movement budget.
 
-So the optimizer sees **clicks and scrolls made by a clinician who already knows
-the layout perfectly**. Any cost outside that count is free to the agent.
+The release score still uses **clicks and scrolls made by a clinician who already
+knows the layout perfectly**. R1 constrains typing and modeled time on validation;
+other unmodeled costs remain outside the gate.
 
 ## Existing guards
 
@@ -46,10 +49,10 @@ the layout perfectly**. Any cost outside that count is free to the agent.
 | V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | Copies are exempt from `StabilityBudget` and from the movement proxy. The expert clinician pays nothing for clutter. | Open |
 | V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Open |
 | V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | Open: the information-needs simulator exists but is not connected to the score. |
-| V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Keystrokes and time are not gated. | Open |
+| V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
 | V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The bounded (learning) clinician exists but only feeds the opt-in switch-cost model. | Open |
 | V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | Open but low impact today (the score uses the expert). It matters once V5 is closed. |
-| V7 | **Two-night move.** Copy a control on night N, then delete the original on night N+1. | It may slip past the movement proxy. | Probably guarded (`movedTags` counts a promoted copy as a move). Needs a regression test. |
+| V7 | **Two-night move.** Copy a control on night N, then delete the original on night N+1. | Previously a survivor still marked `copyOf` was ignored by `movedTags`. | R7 fixed: the movement proxy charges deletion; `StabilityBudget` counts the surviving tag's displacement with or without `copyOf`. |
 | V8 | **Default to the usual answer.** Set field defaults to the most common train value. | Saves keystrokes only, so the score does not move. It does create default-acceptance risk. | Low impact; `defaultConfirm` already requires a human confirm. |
 
 ## Proposed rules
@@ -59,7 +62,14 @@ high-impact ones; R5–R7 are smaller.
 
 **R1. Full-cost validation gate** (gate change, no Lean change). On validation, add
 keystrokes and `klmDeciSec` to the no-regression set, with the same 2% tolerance
-used for pixels. Closes V4 and partly V2. *Policy change: flagged.*
+used for pixels, with the absolute 1px allowance confined to pixels. Full task
+completion was already required and has explicit regressions. Implemented in
+`interactionAcceptable`; the strict improvement objective is unchanged.
+Closes V4 and partly V2. *Policy change: flagged.* The read-only replay of 45
+retained decisions (28 deployments, including 18 nightly changes) finds **zero
+additional shipped-release refusals**. Details and the persona/night matrix are
+in [interaction validation](../methods/interaction-validation.md); recorded bytes
+are not rewritten.
 
 **R2. Learnability gate** (gate change). Also replay validation with the bounded
 clinician, starting from the actor's carried train memory. Completion must not
@@ -94,7 +104,16 @@ have at most `maxLabelWords` words (default 4). Closes V6.
 
 **R7. Two-night move test** (test only). Add a regression test for V7 that copies a
 control on one night, deletes the original on the next, and expects the movement
-proxy and `StabilityBudget` to charge it.
+proxy and `StabilityBudget` to charge it. The promoted-copy case passed, but
+leaving the survivor's `copyOf` set exposed a Lean gap: the move list was empty
+and even a zero stability budget passed. **New specification:** `placeOf`
+prefers the original for a tag and otherwise uses its first surviving copy;
+`movedTags` includes retained copy tags. The second-night move is now charged
+with or without clearing `copyOf`; adding copies beside an original remains
+free under this movement rule (R3 governs copy counts separately). This required
+a narrowly scoped edit in `lean/Ehr/Props/Basics.lean` under the explicit
+instruction to fix an uncharged R7 case; R3/R5 definitions and files were left
+alone. The `StabilityBudget` statement itself is unchanged.
 
 ## Suggested order
 

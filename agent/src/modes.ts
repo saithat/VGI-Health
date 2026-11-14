@@ -156,7 +156,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   const pv = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;
-  // Vendor surfacing preserves completion and the physical-interaction tolerances.
+  // Vendor surfacing preserves completion and the full-cost interaction tolerances.
   const tolerable = replay ? interactionAcceptable(replay) : false;
   rec.validation.improved = replay ? improved(replay) : null;
   rec.validation.stabilityOk = true;
@@ -165,7 +165,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
     return recertify('validation replay: interaction regression or missing geometry');
   }
   rec.validation.accepted = true;
-  rec.validation.reason = 'validation replay within count/pixel tolerances with full completion';
+  rec.validation.reason = 'validation replay within count/pixel/typing/time tolerances with full completion';
   rec.userResponse = userResponse(deps, night, persona.id, best.componentsMoved ?? 0);
   if (rec.userResponse.response === 'reverted') {
     if (rec.release) rec.release.surfaced = false;

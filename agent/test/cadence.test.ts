@@ -61,6 +61,33 @@ it('weights control displacement by this clinician’s observed train use', asyn
   expect((await usageWeightedSwitchCost(prev, next, { ...context, train: [day, { ...day, result: { ...day.result, trace: [] } }] })).cost).toBe(1);
 });
 
+it('R7 charges deletion of an original after a copy was added on the previous night', async () => {
+  const base = fakeCanonical(RELEASE_IDS.base), nightN = structuredClone(base);
+  const source = base.screens.find(s => s.components.some(c => c.id === 'w1-note'));
+  const original = source?.components.find(c => c.id === 'w1-note');
+  const target = nightN.screens.find(s => s.id !== source?.id);
+  if (!source || !original || !target) throw Error('fixture control missing');
+  target.components.push({ ...original, id: 'note-copy', copyOf: original.id });
+  const next = structuredClone(nightN);
+  for (const screen of next.screens) screen.components = screen.components.filter(c => c.id !== original.id);
+  const params = FAKE_PERSONAS[0];
+  if (!params) throw Error('fixture persona missing');
+  const schedule = fakeSchedule(1, 'P1', 7);
+  const result = await createFakeEhr().simulate({ specVersion: base.specVersion, program: nightN,
+    persona: params, schedule, worldDir: '', seed: 1 });
+  const context = { clinician: 'P1', department: 'primary-care', role: base.role,
+    train: [{ schedule, result: { ...result, trace: [
+      { task: 'train', t: 1, screen: source.id, event: { click: { comp: original.id } }, ops: [], result: 'ok' as const },
+      { task: 'train', t: 2, screen: source.id, event: { confirm: { comp: original.id } }, ops: [], result: 'ok' as const },
+    ] } }] };
+  expect((await usageWeightedSwitchCost(base, nightN, context)).cost).toBe(0);
+  // Leaving copyOf set must not make the deletion free to the proxy.
+  expect((await usageWeightedSwitchCost(nightN, next, context)).cost).toBe(2);
+  const promoted = structuredClone(next);
+  for (const c of promoted.screens.flatMap(s => s.components)) if (c.id === 'note-copy') delete c.copyOf;
+  expect((await usageWeightedSwitchCost(nightN, promoted, context)).cost).toBe(2);
+});
+
 describe('standing archive and weekly shipping (no live backend)', () => {
   let dir: string;
   let fixture: Awaited<ReturnType<typeof runFakeCadence>>;

@@ -181,7 +181,7 @@ structure Component where
   size : Size := .normal
   hotkey : Option String := none
   tag : String := ""               -- stable semantic tag used by agent patches and stability tracking
-  copyOf : Option CompId := none   -- marks a copy (copies don't count against the stability budget)
+  copyOf : Option CompId := none   -- copies beside a retained original do not count as moves
 
 structure Screen where
   id : ScreenId
