@@ -2,7 +2,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import React from '../app/node_modules/react/index.js';
 import { renderToStaticMarkup } from '../app/node_modules/react-dom/server.node.js';
-import { BenefitSummary, benefitFor } from '../app/src/dashboard/BenefitSummary.tsx';
+// The CI runner compiles TSX with the classic runtime (no app tsconfig), which
+// expects a global React; the app build uses the automatic runtime.
+globalThis.React = React;
+const { BenefitSummary, benefitFor } = await import('../app/src/dashboard/BenefitSummary.tsx');
 
 const t=(clicks,time,completed=true)=>({task:'same',clicks,scrolls:1,popups:0,klmDeciSec:time,completed});
 const day=(n,tasks)=>({day:n,persona:'P1',tasks,floor:[{...t(2,20),scrolls:0}]});
