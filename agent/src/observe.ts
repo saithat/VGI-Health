@@ -1,4 +1,5 @@
 import { expandProgram } from './composites.js';
+import { workflowFloorGaps } from './floor-evidence.js';
 /**
  * Step 1 (observe): summarize TRAIN days into the evidence the LLM sees.
  * Also: metric aggregation shared by pre-screen, validation, and the record.
@@ -7,7 +8,8 @@ import { expandProgram } from './composites.js';
  * The night loop gets later days solely through the opaque `Holdout` in
  * night.ts, which never feeds a prompt.
  */
-import type { DayResult, DaySchedule, Metrics, PctAboveFloor, Program, SignedMetrics, TaskMetrics, TrainSummary } from './schema.js';
+import type { DayResult, DaySchedule, Metrics, PctAboveFloor, Program, SignedMetrics, TaskMetrics } from './schema.js';
+import type { TrainSummary } from '../../app/src/dashboard/agent-evidence.js';
 import { componentById, fieldElement, isBackButton, markReviewedOf } from './program.js';
 
 export function sumMetrics(tasks: readonly TaskMetrics[]): Metrics {
@@ -83,8 +85,8 @@ export function summarizeTrain(persona: string, current: Program, days: readonly
   }
   const byWorkflow = [...byWf.entries()].map(([workflow, ts]) => {
     const m = sumMetrics(ts);
-    const n = Math.max(1, ts.length);
-    return { workflow, tasks: ts.length, avgClicks: round1(m.clicks / n), avgKeystrokes: round1(m.keystrokes / n), avgScrolls: round1(m.scrolls / n), avgKlmSec: round1(m.klmDeciSec / n / 10), avgMouseTravelPx:typeof m.mouseTravelPx==='number'?round1(m.mouseTravelPx/n):null, avgScrollPx:typeof m.scrollPx==='number'?round1(m.scrollPx/n):null };
+    const n = Math.max(1, m.completed);
+    return { workflow, tasks: ts.length, completed:m.completed, avgClicks: round1(m.clicks / n), avgKeystrokes: round1(m.keystrokes / n), avgScrolls: round1(m.scrolls / n), avgKlmSec: round1(m.klmDeciSec / n / 10), avgMouseTravelPx:typeof m.mouseTravelPx==='number'?round1(m.mouseTravelPx/n):null, avgScrollPx:typeof m.scrollPx==='number'?round1(m.scrollPx/n):null };
   }).sort((a, b) => a.workflow.localeCompare(b.workflow));
 
   // Trace-derived statistics.
@@ -179,6 +181,7 @@ export function summarizeTrain(persona: string, current: Program, days: readonly
     totals: days.map((d) => sumMetrics(d.result.tasks)).reduce(addMetrics, sumMetrics([])),
     perDay: days.map((d) => ({ day: d.result.day, load: d.schedule.load, programVersion: d.result.programVersion, metrics: sumMetrics(d.result.tasks) })),
     pctAboveFloor: latest ? pctAboveFloor(latest.result) : null,
+    workflowFloorGaps: workflowFloorGaps(persona, current, days, programs),
     byWorkflow,
     timeSinksByScreen: topN([...screenTime.entries()], 10, ([, v]) => v.dt).map(([screen, v]) => ({
       screen, events: v.events, klmSec: 0, share: totalDt > 0 ? Math.round((v.events / Math.max(1,allTasks.length)) * 1000) / 1000 : 0,

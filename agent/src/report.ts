@@ -1,6 +1,7 @@
 import {simulationModesSchema,withSimulationModes,legacyModes} from './simulation-modes.js';
 import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
 import { isMeasurementDay } from './protocol.js';
+import { compareDays, type DayPair } from '../../app/src/dashboard/benefit-metrics.mjs';
 /** Same-schedule canonical versus recorded costs; never feeds an overnight prompt. */
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -43,6 +44,7 @@ for (const persona of manifest.personas) {
   let noAgentBefore=sumMetrics([]),noAgentAfter=sumMetrics([]),noAgentDays=0;
   const workload: {day:number; actual: unknown; canonical: unknown; noAgent: unknown}[] = [];
   const samples:{day:number;tasks:number;completed:number}[]=[];
+  const canonicalPairs:DayPair[]=[], controlPairs:DayPair[]=[];
   const incomplete: { day: number; task: string }[] = [];
   const decisions: DecisionRecord[] = [];
   const versions = new Set<number>();
@@ -64,12 +66,14 @@ for (const persona of manifest.personas) {
     let controlWorkload: unknown = null;
     if(existsSync(controlFile)){
       const control=await readJson(controlFile,dayResultSchema), pair=pairedMetrics(control,actual);
+      controlPairs.push({before:control,after:actual});
       controlWorkload=control.workload??null;
       noAgentBefore=addMetrics(noAgentBefore,pair.before);noAgentAfter=addMetrics(noAgentAfter,pair.after);noAgentDays++;
     }else if(manifest.noAgentRequired)throw new Error(`Missing no-agent control ${persona}/${day}`);
     workload.push({day,actual:actual.workload??null,canonical:baseline.workload??null,noAgent:controlWorkload});
     samples.push({day,tasks:actual.tasks.length,completed:actual.tasks.filter(t=>t.completed).length});
     const pair = pairedMetrics(baseline,actual);
+    canonicalPairs.push({before:baseline,after:actual});
     before = addMetrics(before, pair.before);
     after = addMetrics(after, pair.after);
     incomplete.push(...actual.tasks.filter((task) => !task.completed).map((task) => ({ day, task: task.task })));
@@ -83,16 +87,21 @@ for (const persona of manifest.personas) {
     invalidPatches: decisions.flatMap((d)=>d.candidates).filter((c)=>c.check.status==='invalid-patch').length,
     infrastructureErrors:decisions.filter(d=>['error','infrastructure-error'].includes(d.outcome)||d.flags.some(f=>f.startsWith('infrastructure-error'))).length,
     screenInfrastructureErrors: decisions.filter((d)=>d.screenCheck?.status==='error').length,
-    samples, workload, noAgent: noAgentDays?{before:noAgentBefore,after:noAgentAfter,saving:saving(noAgentBefore,noAgentAfter),days:noAgentDays}:null,
+    samples, workload, benefit:{canonical:compareDays(canonicalPairs),noAgent:controlPairs.length?compareDays(controlPairs):null,
+      perDay:canonicalPairs.map(pair=>({day:pair.after.day,canonical:compareDays([pair]),noAgent:controlPairs.filter(c=>c.after.day===pair.after.day).map(c=>compareDays([c]))[0]??null}))},
+    noAgent: noAgentDays?{before:noAgentBefore,after:noAgentAfter,saving:saving(noAgentBefore,noAgentAfter),days:noAgentDays}:null,
     deployedVersions: [...versions].sort((a, b) => a - b), before, after, incomplete,
     nights: decisions.map((d) => ({ night: d.night, outcome: d.outcome, blindTest:d.measured.test?.day??null,testNote:d.flags.filter(f=>f.startsWith('test-unmeasured')), newCalibrationData:d.night%2===1, llmCalls: d.llmCalls.length, flags: d.flags })),
   });
 }
 const report = { runId: manifest.runId, ruleConformance, worldSeed: world.manifest.seed, comparison: 'Blind even measurement days (odd days are calibration only). Same schedules/seeds: active-release role canonical versus the recorded deployed fork on each work day. Agent effects are reported against the deterministic no-agent recertify/fallback arm as well as the vendor canonical. Per-day sample sizes and completion counts are explicit; unmeasured/superseded decisions remain unavailable. Candidate counts include seeded/repair proposals; accepted means passed the checker, not necessarily deployed.', rows };
-await writeJson(path.join(directory,'metrics/smoke-summary.json'),JSON.parse(JSON.stringify(report,(key,value)=>/klm|wallTime/i.test(key)?undefined:value)));
+await writeJson(path.join(directory,'metrics/smoke-summary.json'),report);
 console.log('| Persona | Candidates pass/reject | Deployed | Clicks before→after | Scrolls before→after | Scroll px before→after | Mouse px before→after | Keys before→after (secondary) | Incomplete |');
 console.log('|---|---:|---|---:|---:|---:|---:|---:|---:|');
 for (const r of rows) console.log(`| ${r.persona} | ${r.checkerAccepted}/${r.checkerRejected} | ${r.deployedVersions.map((v) => `v${v}`).join(', ')} | ${r.before.clicks}→${r.after.clicks} | ${r.before.scrolls}→${r.after.scrolls} | ${r.before.scrollPx??"—"}→${r.after.scrollPx??"—"} | ${r.before.mouseTravelPx??"—"}→${r.after.mouseTravelPx??"—"} | ${r.before.keystrokes}→${r.after.keystrokes} | ${r.incomplete.length} |`);
 console.log('Agent-only savings vs no-agent control (clicks / scrolls / scroll px / mouse px (keys secondary)):');
 for(const r of rows)console.log(`${r.persona}: ${r.noAgent?`${r.noAgent.saving.clicks} / ${r.noAgent.saving.scrolls} / ${r.noAgent.saving.scrollPx??"—"} / ${r.noAgent.saving.mouseTravelPx??"—"}`:'Unavailable'}; blind samples ${r.samples.map(s=>`day ${s.day}: ${s.completed}/${s.tasks}`).join(', ')}`);
+console.log('| Persona | Paired modeled time klmDeciSec vendor→agent | Vendor / agent completion | Action gap captured | Time gap captured |');
+console.log('|---|---:|---|---:|---:|');
+for(const r of rows){const b=r.benefit.noAgent;console.log(`| ${r.persona} | ${b?`${b.before.klmDeciSec}→${b.after.klmDeciSec}`:'Unavailable'} | ${b?`${b.completion.before.completed}/${b.completion.before.tasks} / ${b.completion.after.completed}/${b.completion.after.tasks}`:'Unavailable'} | ${b?.gapCapturedPct.actions?.toFixed(1)??'Unavailable'}% | ${b?.gapCapturedPct.klmDeciSec?.toFixed(1)??'Unavailable'}% |`);}
 await writeJson(path.join(directory, 'metrics/provenance.json'), { runId: manifest.runId, comparison: report.comparison, scheduleDays: Array.from({ length: manifest.days }, (_, i) => `day-${pad2(i + 1)}`) });

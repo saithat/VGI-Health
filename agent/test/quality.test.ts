@@ -137,7 +137,7 @@ describe('train-only prompts and offline loop',()=>{
       locality:{...quality.locality,validation:'VALIDATION_SECRET',components:quality.locality.components.map(row=>({...row,test:'TEST_SECRET'}))}};
     const parts=[nightlyPrompt(context),choosePrompt({...context,stabilityBudget:3,hypothesis:'train',candidates:prior.candidates}),repairPrompt({...context,attempt:1,maxAttempts:3,failedSummaries:[],failedPatch:[],check:prior.candidates[0]?.check??{status:'pass',property:null,message:null,counterexample:null,screens:null,verdict:'ok'}})];
     for(const p of parts)for(const arm of ['A','B','C']) {
-      const result=withQueries(withQuality(p,arm!=='A'?poisoned:undefined),arm==='C'?{files:{}}:undefined);expect(result.prompt).not.toMatch(/VALIDATION_SECRET|TEST_SECRET|klm|wallTime|timeSinksByScreen/i);
+      const result=withQueries(withQuality(p,arm!=='A'?poisoned:undefined),arm==='C'?{files:{}}:undefined);expect(result.prompt).not.toMatch(/VALIDATION_SECRET|TEST_SECRET|wallTime|timeSinksByScreen/i);
       if(arm==='A')expect(result).toBe(p);
     }
     const current={...prior,night:2};expect(repetitionCount(current,[prior],recomputedSavings([prior],[prior]))).toBe(1);

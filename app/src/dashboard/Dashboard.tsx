@@ -54,7 +54,7 @@ const views = [
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
-    ? `${value.clicks} clicks · ${value.scrolls} scrolls · ${value.scrollPx == null || value.mouseTravelPx == null ? "pixel metrics not measured for archived runs" : `${value.scrollPx}px scroll · ${value.mouseTravelPx}px mouse`} · ${value.keystrokes} keys (secondary)`
+    ? `${value.clicks} clicks · ${value.scrolls} scrolls · ${value.klmDeciSec} klmDeciSec · ${value.scrollPx == null || value.mouseTravelPx == null ? "pixel metrics not measured for archived runs" : `${value.scrollPx}px scroll · ${value.mouseTravelPx}px mouse`} · ${value.keystrokes} keys (secondary)`
     : "No prediction recorded";
 }
 function Badge({
@@ -292,6 +292,7 @@ function OutcomeTable({ record }: { record: DecisionRecord }) {
                 "scrollPx",
                 "mouseTravelPx",
                 "keystrokes",
+                "klmDeciSec",
               ] as const
             ).map((key) => (
               <tr key={key}>
@@ -356,9 +357,9 @@ function Why({
         <span className="step-label">01 · Evidence</span>
         <h3>What happened during training</h3>
         <p>
-          {record.evidence.totals.tasks} tasks · {record.evidence.totals.clicks}{" "}
+          {record.evidence.totals.completed}/{record.evidence.totals.tasks} tasks completed · {record.evidence.totals.clicks}{" "}
           clicks · {record.evidence.totals.keystrokes} keys ·{" "}
-          {record.evidence.totals.scrolls} scrolls ·{" "}
+          {record.evidence.totals.scrolls} scrolls · {record.evidence.totals.klmDeciSec} klmDeciSec ·{" "}
           {record.evidence.totals.mouseTravelPx == null ||
           record.evidence.totals.scrollPx == null
             ? "Pixel metrics not measured for archived runs."

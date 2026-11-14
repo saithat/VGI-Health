@@ -25,6 +25,7 @@ export function TaskControlSummary({
                 <th>Arm</th>
                 <th>Clicks</th>
                 <th>Scrolls</th>
+                <th>Modeled seconds</th>
                 <th>Mouse travel · px</th>
                 <th>Status</th>
               </tr>
@@ -39,6 +40,7 @@ export function TaskControlSummary({
                     <th>{String(label)}</th>
                     <td>{metrics.clicks}</td>
                     <td>{metrics.scrolls}</td>
+                    <td>{(metrics.klmDeciSec/10).toFixed(1)}</td>
                     <td>
                       {metrics.mouseTravelPx === null ||
                       metrics.mouseTravelPx === undefined

@@ -91,8 +91,10 @@ not fully reachable. It still shows that the layouts are far from saturated.
 
 - Night 1 shipped for all five clinicians and produced most of each clinician's
   final saving: day 2's saving is already 1.4–6.4%.
-- In 5 of the 9 rejections, the proposal had no effect at all on the validation
-  replay. The others made it slightly worse.
+- In 5 of the 9 rejections, net clicks plus scrolls saved were zero. Four had
+  zero count/time savings throughout; P2 on night 7 traded one click for one
+  scroll and increased modeled time by 16 deciseconds. The others made net
+  actions slightly worse.
 - Predicted savings were poorly calibrated. For example, P4 on night 2 predicted
   36 clicks plus scrolls and validated at 5, and P2 on night 4 predicted 32 and
   validated at 4. Validation used 4–15 tasks.
@@ -137,3 +139,18 @@ The tables were computed from `runs/core-10day/days/day-NN/Px.json` (agent),
 `runs/core-10day/no-agent/days/day-NN/Px.json` (vendor, including the `floor`
 records) and `runs/core-10day/decisions/night-NN/Px.json`, after the 2026-11-13
 re-certification (app `be573a35…`).
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp node scripts/report-agent-benefit.mjs runs/core-10day --days 2-10
+TMPDIR=/home/saithat/Projects/run-tmp node --test scripts/report-agent-benefit.test.mjs
+```
+
+The regression reproduces every rounded value in both savings/floor tables,
+the five night-outcome counts, P1's seven additional failures and P4's 752 saved
+scrolls. It distinguishes failures shared by both arms (P1: one; P5: three) from
+agent-only failures. The script defaults to blind even days when the run declares
+that measurement protocol; this audit explicitly includes all days 2–10.
+`--json` adds exact totals and daily comparisons. It never writes the recording,
+replays a simulator or calls a model. Recommendations 4 and 6 are implemented in
+the live pipeline; [reporting methods](../methods/agent-benefit-reporting.md)
+describes their scope. No new outcome recording is implied.

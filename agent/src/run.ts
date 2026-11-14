@@ -12,6 +12,7 @@ import { contentDigest,writeDayDigest,writeNightDigest } from './content-digest.
 import {geometryEhr,type GeometryProvider} from './geometry.js';
 import {InfrastructureError} from './night.js';
 import {noAgentDay} from './no-agent.js';
+import { compareDays, type BenefitComparison } from '../../app/src/dashboard/benefit-metrics.mjs';
 import { assertCertified } from './certification.js';
 import { fileHash,runFingerprints,treeHash } from './fingerprints.js';
 import { calibrationDay, calibrationPartition, isMeasurementDay, measurementProtocol } from './protocol.js';
@@ -94,7 +95,7 @@ export interface RunOptions {
 
 export interface PersonaTimeline {
   persona: string;
-  days: { day: number; programVersion: number; specVersion: string; load: string; clicks: number; keystrokes: number; scrolls: number; scrollPx:number|null;mouseTravelPx:number|null }[];
+  days: { day: number; programVersion: number; specVersion: string; load: string; clicks: number; keystrokes: number; scrolls: number; klmDeciSec:number; tasks:number; completed:number; vsCanonical:BenefitComparison; vsNoAgent:BenefitComparison|null; scrollPx:number|null;mouseTravelPx:number|null }[];
   nights: { night: number; mode: string; outcome: string; versionBefore: number; versionAfter: number; rejected: number; seeded: number }[];
 }
 
@@ -375,8 +376,13 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       }
       await noAgentDay(deps,view,await releaseForPersona(inForce,id),schedule,makeHoldout(deps,view,await world.schedule(calibrationDay(day-1)||1,id)));
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
-      timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s,scrollPx:result.tasks.every(t=>typeof t.scrollPx==='number')?result.tasks.reduce((n,t)=>n+(t.scrollPx??0),0):null,mouseTravelPx:result.tasks.every(t=>typeof t.mouseTravelPx==='number')?result.tasks.reduce((n,t)=>n+(t.mouseTravelPx??0),0):null });
-      log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls`);
+      const baseline = await readJson(baselineFile, dayResultSchema);
+      const controlFile = path.join(dir,'no-agent/days',`day-${String(day).padStart(2,'0')}`,`${id}.json`);
+      const vsCanonical = compareDays([{before:baseline,after:result}]);
+      const vsNoAgent = existsSync(controlFile) ? compareDays([{before:await readJson(controlFile,dayResultSchema),after:result}]) : null;
+      const completed = result.tasks.filter(t=>t.completed).length;
+      timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s,klmDeciSec:m.t,tasks:result.tasks.length,completed,vsCanonical,vsNoAgent,scrollPx:result.tasks.every(t=>typeof t.scrollPx==='number')?result.tasks.reduce((n,t)=>n+(t.scrollPx??0),0):null,mouseTravelPx:result.tasks.every(t=>typeof t.mouseTravelPx==='number')?result.tasks.reduce((n,t)=>n+(t.mouseTravelPx??0),0):null });
+      log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls, ${m.t} klmDeciSec, completed ${completed}/${result.tasks.length}; paired gap captured vs no-agent: actions ${vsNoAgent?.gapCapturedPct.actions?.toFixed(1)??'unavailable'}%, time ${vsNoAgent?.gapCapturedPct.klmDeciSec?.toFixed(1)??'unavailable'}%`);
     }));
     await writeDayDigest(dir,day,personaIds);
     if (day === opts.days) break;
