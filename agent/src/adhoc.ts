@@ -1,3 +1,5 @@
+import { releaseScoringSchema } from './release-scoring.js';
+import { carriedTrainMemory } from './train-memory.js';
 import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
 import { onlineQuality } from './online-context.js';
 import { structurePolicySchema } from './structure-policy.js';
@@ -6,7 +8,7 @@ import { CADENCE_PROTOCOL } from './cadence.js';
 import { auditedOperation } from './operation-manifest.js';
 import { retryEhr,retryScreens } from './retry-boundaries.js';
 import {geometryEhr} from './geometry.js';
-import { calibrationDay, calibrationPartition, isMeasurementDay } from './protocol.js';
+import { validationSchedules, calibrationPartition, isMeasurementDay } from './protocol.js';
 import { RELEASE_IDS, LEGACY_RELEASE_IDS } from './release-config.js';
 /**
  * Re-run ONE night of an existing run for one persona (live demos: "run this
@@ -44,6 +46,7 @@ export const NIGHT_MODES: readonly NightMode[] = ['auto', 'nightly', 'surface-fe
 const manifestSchema = z.object({
   protocol: z.string().optional(),
   nightlyDiscovery:structurePolicySchema.nullable().optional(),
+  scoring:releaseScoringSchema.optional(),
   runId: z.string(),
   days: z.number().int(),
   world: z.string(),
@@ -102,13 +105,14 @@ export async function rerunNight(args: {
   const ehr=screens.geometry?geometryEhr(native,screens.geometry,outDir):native;
   const deps: LoopDeps = {
     runId: `${manifest.runId}/adhoc`, store,ehr,screens, agent: new LlmAgent(new RecordingLlm(args.llm, outDir)),
-    seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: world.manifest.seed,
+    seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: world.manifest.seed,incompletePenalty:manifest.scoring?.incompletePenalty??0.5,
   };
   const declaredWorkload=(await Promise.all(Array.from({length:world.manifest.days},(_,i)=>world.schedule(i+1,args.persona)))).flatMap(s=>s?.tasks??[]);
   const input = {
     declaredWorkload,
     night: args.night, persona, release, current, train, programs, history,
-    holdout: makeHoldout(deps, persona, await world.schedule(calibrationDay(args.night), args.persona)),
+    holdout: makeHoldout(deps, persona, await validationSchedules(args.night,d=>world.schedule(d,args.persona)),
+      await carriedTrainMemory(ehr,params,train,programs,world.dir,world.manifest.seed)),
   };
   return auditedOperation(outDir,args.llm,args.persona,args.night,async()=>{
   let result: NightResult;

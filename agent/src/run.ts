@@ -1,3 +1,4 @@
+import { releaseScoringSchema, RELEASE_SCORING_POLICY } from './release-scoring.js';
 import {simulationModesSchema,resolvedSimulationModes,realWorkModes,legacyModes,withSimulationModes,type SimulationModes} from './simulation-modes.js';
 import { structurePolicySchema, STRUCTURE_POLICY, type StructurePolicy } from './structure-policy.js';
 import { generatorOnlyBackend } from './generator-only.js';
@@ -14,7 +15,7 @@ import {InfrastructureError} from './night.js';
 import {noAgentDay} from './no-agent.js';
 import { assertCertified } from './certification.js';
 import { fileHash,runFingerprints,treeHash } from './fingerprints.js';
-import { calibrationDay, calibrationPartition, isMeasurementDay, measurementProtocol } from './protocol.js';
+import { validationSchedules, calibrationPartition, isMeasurementDay, measurementProtocol } from './protocol.js';
 import { auditRunTranscripts } from './backends/isolation.js';
 /**
  * Run orchestrator: N work-days x personas (BRIEF 8.1).
@@ -62,6 +63,7 @@ export interface RunOptions {
   generatorOnly?: boolean;
   /** Generator-only discovery cutoff; retained bundles are still rescored/reviewed. */
   discoveryNights?: number;
+  incompletePenalty?: number;
   boundedCosts?: boolean;
   tailoringSessions?: boolean;
   frictionFlags?: readonly import('./session-schema.js').FrictionFlag[];
@@ -139,6 +141,7 @@ async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(item:T)
 }
 
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
+  const scoring={policy:RELEASE_SCORING_POLICY,...releaseScoringSchema.parse({incompletePenalty:opts.incompletePenalty})};
   const llm=opts.generatorOnly ? generatorOnlyBackend : opts.llm;
   const archiveMode = opts.protocol === CADENCE_PROTOCOL;
   const structure=opts.structurePolicy===false?false:structurePolicySchema.parse(opts.structurePolicy??{});
@@ -189,11 +192,12 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const ehr=provider?geometryEhr(nativeEhr,provider,dir):nativeEhr;
   const deps: LoopDeps = {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
-    worldDir: world.dir, worldSeed: world.manifest.seed,
+    worldDir: world.dir, worldSeed: world.manifest.seed, incompletePenalty:scoring.incompletePenalty,
   };
   const fingerprints = {...await runFingerprints(ehr, world.dir),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    scoring:z.unknown().optional(),
     simulationModes:simulationModesSchema.optional(),
     nightlyDiscovery:z.unknown().optional(),
     releasePolicy:z.unknown().optional(),
@@ -209,6 +213,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if(stableStringify(previous.scoring)!==stableStringify(scoring))throw Error('Resume release scoring policy must match');
     if(stableStringify(previous.nightlyDiscovery??null)!==stableStringify(nightlyDiscovery))throw Error('Resume nightly exploration policy/archive must match');
     if (stableStringify(previous.releasePolicy ?? null) !== stableStringify(releasePolicy)) throw Error('Resume release cadence/department/review/switch-cost policy must match');
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
@@ -223,12 +228,12 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
-    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', releasePolicy, nightlyDiscovery, simulationModes,
+    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', scoring, releasePolicy, nightlyDiscovery, simulationModes,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
     replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
-    interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'raw only; not used'},
+    interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'R1/R2 validation constraint; release score uses penalized clicks plus scrolls'},
     completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
     mode: opts.generatorOnly ? 'OFFLINE' : llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
@@ -331,6 +336,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     timelines.set(id, { persona: id, days: [], nights: [] });
   }));
 
+  const boundedTrainMemory=new Map<string,import('./schema.js').UserMemory>();
   const failures = new Map<string, number>();
   await writeJson(manifestFile, { ...manifestData, status: 'running' });
   for (let day = 1; day <= opts.days; day++) {
@@ -356,10 +362,19 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (!isMeasurementDay(day)) {
         const trainingSchedule = calibrationPartition(schedule, 'train');
         const trainingFile = path.join(dir,'training',`day-${day}`,`${id}.json`);
-        const trainingMemory = opts.boundedCosts || opts.tailoringSessions ? train.get(id)?.at(-1)?.result.memory : memory;
+        const trainingMemory = train.get(id)?.at(-1)?.result.memory;
         const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(trainingMemory ? {memory:trainingMemory} : {}) });
         if (!existsSync(trainingFile)) await writeJson(trainingFile, trainingResult);
         train.get(id)?.push({ result: trainingResult, schedule: trainingSchedule });
+        const boundedFile=path.join(dir,'bounded-training',`day-${day}`,`${id}.json`);
+        const bounded=existsSync(boundedFile)?await readJson(boundedFile,dayResultSchema):await ehr.simulate({
+          specVersion:inForce.specVersion,program:resultProgram,persona:view.params,policy:'bounded',schedule:trainingSchedule,
+          worldDir:world.dir,seed:daySeed(world.manifest.seed,day),
+          memory:structuredClone(boundedTrainMemory.get(id)??{actor:resultProgram.owner,entries:[]}),
+        });
+        if(bounded.policy!=='bounded'||!bounded.memory||bounded.memory.actor!==resultProgram.owner)throw Error('Missing bounded train-only memory');
+        if(!existsSync(boundedFile))await writeJson(boundedFile,bounded);
+        boundedTrainMemory.set(id,bounded.memory);
       }
       const baselineFile = path.join(dir, 'baselines', `day-${String(day).padStart(2,'0')}`, `${id}.json`);
       if (!existsSync(baselineFile)) {
@@ -373,7 +388,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         await writeJson(baselineFile.replace('.json','.program.json'), canonical);
         await writeJson(baselineFile, baseline);
       }
-      await noAgentDay(deps,view,await releaseForPersona(inForce,id),schedule,makeHoldout(deps,view,await world.schedule(calibrationDay(day-1)||1,id)));
+      await noAgentDay(deps,view,await releaseForPersona(inForce,id),schedule,makeHoldout(deps,view,await validationSchedules(Math.max(1,day-1),d=>world.schedule(d,id)),boundedTrainMemory.get(id)));
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
       timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s,scrollPx:result.tasks.every(t=>typeof t.scrollPx==='number')?result.tasks.reduce((n,t)=>n+(t.scrollPx??0),0):null,mouseTravelPx:result.tasks.every(t=>typeof t.mouseTravelPx==='number')?result.tasks.reduce((n,t)=>n+(t.mouseTravelPx??0),0):null });
       log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls`);
@@ -392,7 +407,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         declaredWorkload,
         night: day, persona: view, release: await releaseForPersona(inForce, id), current,
         train: [...(train.get(id) ?? [])], programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
-        holdout: makeHoldout(deps, view, await world.schedule(calibrationDay(day), id)),
+        holdout: makeHoldout(deps, view, await validationSchedules(day,d=>world.schedule(d,id)),boundedTrainMemory.get(id)),
       };
       let res: NightResult;
       const next = nextRelease ? await releaseForPersona(nextRelease, id) : null;

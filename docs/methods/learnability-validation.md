@@ -1,0 +1,131 @@
+# Learnability and incomplete-task validation
+
+[Overview](../../README.md) · [Discovery and cadence](discovery-and-cadence.md) · [Metric gaming](../design/metric-gaming.md)
+
+**Policy change: R2 is now a release gate.** These are simulated-clinician
+acceptance rules, with uncalibrated learning and cost parameters. They do not
+establish human learnability or clinical performance. No Lean statements,
+geometry rules or certified clinical app sources change.
+
+## Train and validation split
+
+On each odd calibration day, tasks at zero-based positions 0, 3, 6, … form the
+validation partition. All remaining tasks form the proposal-training partition.
+This deterministic split is unchanged. Every validation-eligible task from
+**every past odd day** now participates at each night; even days remain blind
+measurement and never enter proposals or validation. Training estimates still
+use the latest two train partitions; prompts may see all past train partitions.
+Validation aggregates, traces and rehearsal memory never feed the proposal prompt.
+
+Schedules retain their dates, cases, choices, ordering and independent validation
+seed namespace. Each partition is simulated as a separate dated workload; metrics
+are summed across partitions. The release effect floor uses the exact aggregate
+click-plus-scroll difference divided by the number of calibration days, before
+subtracting daily switch cost. Rounded display savings cannot satisfy the floor.
+
+For the retained 10-day world (`runs/world/2`), tasks per persona and night are:
+
+| Night | P1 | P2 | P3 | P4 | P5 | Total |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | 14 | 8 | 13 | 8 | 6 | 49 |
+| 2 | 14 | 8 | 13 | 8 | 6 | 49 |
+| 3 | 26 | 14 | 28 | 15 | 13 | 96 |
+| 4 | 26 | 14 | 28 | 15 | 13 | 96 |
+| 5 | 34 | 21 | 41 | 22 | 19 | 137 |
+| 6 | 34 | 21 | 41 | 22 | 19 | 137 |
+| 7 | 48 | 27 | 59 | 28 | 24 | 186 |
+| 8 | 48 | 27 | 59 | 28 | 24 | 186 |
+| 9 | 61 | 31 | 74 | 32 | 28 | 226 |
+
+There is no release night after the final day. New worlds may have different
+sizes. `validation.replay.days` and `taskCounts` retain the actual sample in each
+decision; the manifest identifies measurement protocol version 2.
+
+## Bounded replay and memory
+
+The normal shift policy may remain expert. Independently, all runs simulate each
+odd **train partition** with `policy: bounded`, starting from the preceding train
+checkpoint. These snapshots live under `bounded-training/day-N/Px.json`; resume
+loads them in chronological order. The stream never consumes a full calibration
+shift, validation partition or blind even shift. Single-night and frozen readers
+reconstruct the same bounded stream from original train layouts when needed.
+
+Validation replays both baseline and candidate with explicit expert policy, and
+again with bounded policy. Each bounded arm and each dated validation schedule
+starts from an independent clone of the same latest carried train snapshot.
+Rehearsal output is discarded, including memory; no candidate gets extra practice.
+The paired seed and clinical tasks are identical. Missing bounded support,
+foreign memory or substituted/omitted task identities fails closed.
+
+Both expert and bounded candidates must complete every scheduled task. R2 permits
+no increase in clicks or scrolls and at most 2% in keystrokes and `klmDeciSec`,
+with no absolute rounding allowance, matching those R1 tolerances. Zero baselines
+permit zero cost; nonfinite metrics refuse. R2 requires no strict bounded saving
+and imposes no additional pixel constraint. Expert R1's pixel/count/time rules
+and strict physical improvement still govern discretionary releases.
+
+`validation.replay.bounded` records before/after costs, daily savings, memory
+SHA-256, train-only provenance, acceptance and refusal reasons. The enclosing
+replay records dated sizes and scoring policy. These fields survive decision
+schema parsing and storage. The same gate applies to ordinary nights, cadence
+bundles, optional feature surfacing and mandatory recertification/migration,
+including canonical fallbacks. Mandatory paths retain their expert completion-only
+exception to discretionary improvement; they do not bypass R2. Initial day-1
+bootstrap has no prior training or validation and retains its certification path.
+
+## Incomplete-task cost
+
+`RunOptions.incompletePenalty` and `run-days --incomplete-penalty` set a positive,
+finite fraction, default **0.5**. An incomplete task costs **150% of its matched
+canonical task's cost**, in each compared arm independently. Integer costs round
+up per task and metric. This applies to clicks, scrolls, typing, modeled time and
+the other recorded effort measures; unavailable pixels remain unavailable.
+Completed tasks retain their actual costs even if the opposite arm failed.
+Completion counts remain actual; penalization never converts failure into success.
+
+The train release estimator and validation comparisons both use this policy.
+The canonical is the active release's persona-specific program, simulated on the
+same dated schedule, seed and policy (with the same train snapshot for bounded
+validation). Missing completed canonical cost for a failed task refuses scoring;
+a partial canonical attempt cannot become a cheap reference. The configured
+penalty is manifest-bound and resume refuses a change; each validation replay
+also records it. Historical descriptive reports using common completed tasks
+remain labeled historical and are not release scores.
+
+Failed train tasks appear first in the agent's evidence, with day, task ID,
+workflow completion goal, task-specific simulator complaints and blocked guard
+reasons. The simulator does not export a per-field residual goal state; the list
+therefore identifies the unmet workflow goal and available diagnostics without
+claiming every requested field remains unmet. This is the only prompt change in
+this implementation; both 35-context prompt-hash fixture sets are refreshed.
+
+## Retained recording replay
+
+`agent/src/replay-r2-gate.ts` independently evaluates each shipped decision using
+frozen certified layouts/specs, retained Chromium atlases, reconstructed train-only
+bounded memory and the recording's simulation modes. It uses the relocated world
+named by the manifest, not the seed as a directory name. The 17 nonshipping
+decisions are inventoried without inventing a deployed candidate. It makes no
+model calls, deploys nothing and issues no certificates. Checkpoints and detailed
+metrics are written to a separate scratch directory; the recording is read-only.
+This is a set of independent counterfactuals, not an alternate history propagated
+from the first refusal. It does not reconstruct the structural train effect floor.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+node --import ./agent/node_modules/tsx/dist/loader.mjs agent/src/replay-r2-gate.ts \
+  runs/core-10day "$TMPDIR/r2-retained-replay-world2"
+```
+
+Replay results and their limits are recorded below after the retained matrix
+finishes. Historical certificates and recorded outcome files are unchanged.
+
+## Targeted verification
+
+The targeted tests cover canonical penalties in both arms and the live estimator,
+all four R2 metrics and full completion, unavailable bounded output, task identity,
+pooled sizes and train/holdout disjointness, memory cloning, failed-task prompt
+ordering, live nightly refusal, mandatory release fallback and resume binding.
+Existing cadence, release-mode, safety and frozen-prompt regressions also run.
+The full browser audit pair is deferred until integration as requested; no
+browser-facing or Lean code changes require a new certified app build here.

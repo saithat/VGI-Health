@@ -6,7 +6,7 @@ import {existsSync} from 'node:fs';
 import {RunStore} from './store.js';
 import {assertCertified} from './certification.js';
 import {personalize} from './program.js';
-import {checkPatch,completionOk,deployVersion,daySeed,type LoopDeps,type Holdout} from './night.js';
+import {checkPatch,completionOk,learnabilityOk,deployVersion,daySeed,type LoopDeps,type Holdout} from './night.js';
 import {certificateSchema,programSchema,type DaySchedule} from './schema.js';
 import type {Release} from './releases.js';
 import type {PersonaView} from './prompts.js';
@@ -34,7 +34,7 @@ export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Relea
    if(!candidate)continue;
    const fallback=candidate===canonical;
    const validation=await holdout.validate(canonical,candidate,release.specVersion).catch(error=>{if(error instanceof InfrastructureError)throw error;attempts.push({fallback,error:String(error)});return null;});
-   if(!completionOk(validation)){attempts.push({fallback,reason:'validation incomplete'});continue;}
+   if(!completionOk(validation)||!learnabilityOk(validation)){attempts.push({fallback,reason:'validation incomplete'});continue;}
    const checked=await deps.ehr.check({specVersion:release.specVersion,program:candidate,prev:fallback?canonical:gate.prev,canonical:release.canonical});
    if(checked!=='ok'){attempts.push({fallback,check:checked});continue;}
    const deployed=await deployVersion({...deps,store:armStore},persona.id,candidate,{...gate,prev:fallback?canonical:gate.prev,validation});
