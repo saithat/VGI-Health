@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "216dc0064288bab627530a60e54ed706a386a11e",
+  "sourceRevision": "febd637b5d5cfe419dcc5533b42de8fa91742f5f",
   "sourceDirty": true,
-  "binarySha256": "dcc80a8f0887c41dc2e40d0f468122ebed1f041897d46f77fbe6a39d4ade49b5",
+  "binarySha256": "d1d4b75732fc4f5f74a3c5b19bf7e391bc8c1d90970fed31ac0bdf8ae551849e",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 23,
-  "badCount": 23,
+  "badRejected": 24,
+  "badCount": 24,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -1422,6 +1422,44 @@
               "reason": "entry required: refillDecision"
             }
           }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/41-copy-spray.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "26914c861b1c886d53e63d62f1339cc0bd413a0ca6d4926a606f133a0fabaa97",
+      "specSha256": "cea66cbbc3846c5454ba679c10b787055f50b7705f2a9266d4ef93df00bfb3b1",
+      "canonicalSha256": "5c7fc2df078a7b4829bcc42e15e7f87bad6e3cff13574607913cd931338ca766",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming"
+          ],
+          "property": "copyBudget",
+          "message": "R3: the program has 3 copies of w1Orders.toSign (copy budget 2); w1Rooming.sprayToSign on screen w1Rooming is one",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "copyBudget",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
+          "ok"
         ],
         "scope": "navigation replay; not a semantic violation proof"
       }

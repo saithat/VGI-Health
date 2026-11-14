@@ -264,6 +264,84 @@ manual. Both 35-context prompt snapshot sets are refreshed because their prompts
 embed these live property docstrings and generated types; the recorded prompts
 and decisions are not rewritten.
 
+### Combined verification
+
+Reproduction commands (disk-backed scratch, bounded workers, sequential tests):
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6
+export EHR_BIN="$PWD/lean/.lake/build/bin/ehr" EHR_SCREEN_WORKERS=2
+export EHR_CONFORMANCE_TRANSPORT=serve
+(cd lean && lake build && lake exe gents)
+python3 lean/Ehr/Check/certify.py
+(cd lean && xargs -r lake build < ../scripts/proof-map/extra-modules.txt)
+(cd lean && lake build ui-layout ui-port-audit)
+scripts/proof-map/build.sh --readme
+make wasm JOBS=4
+bash scripts/audit-verification.sh
+pnpm --filter app build
+pnpm --filter app --filter agent --filter world --filter @vgi/commit lint
+pnpm --filter app --filter agent --filter world --filter @vgi/commit typecheck
+pnpm --filter agent test --maxWorkers=2 --exclude test/workload-capabilities.test.ts
+pnpm --filter app test --maxWorkers=2
+pnpm --filter @vgi/commit test
+(cd lean && lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/rules-gate-commit-fixture.json")
+COMMIT_PG_PORT=55449 docker compose -p vgi-rules-gate-integration -f services/commit/compose.yml up -d --wait postgres
+DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55449/vgi_commit COMMIT_FIXTURE="$TMPDIR/rules-gate-commit-fixture.json" pnpm --filter @vgi/commit test:integration
+COMMIT_PG_PORT=55449 docker compose -p vgi-rules-gate-integration -f services/commit/compose.yml down -v
+node conformance/index.mjs --canonical --jobs 2 --out "$TMPDIR/rules-gate-conformance-canonical.json"
+node --test scripts/ui-library/program.test.mjs
+node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/replay-design-rules.mjs > "$TMPDIR/rules-gate-combined-replay.json"
+node scripts/wasm-assets.mjs
+scripts/proof-map/build.sh --check-readme
+node scripts/audit-alert-policy.mjs "$TMPDIR/rules-gate-audit-templates"
+node scripts/audit-alert-policy.mjs "$TMPDIR/rules-gate-audit-personas" --personas
+```
+
+| Check | Result |
+|---|---|
+| Lean default build; generated types | 635 jobs pass; 204 types and 44 samples generated. Only the corrected component docstring changes generated TypeScript. |
+| Protected theorem audit | 84 theorems; only permitted axioms. R3 and G10 axiom prints also use only `propext`, `Classical.choice`, `Quot.sound`. |
+| Certification matrix | Personas 15/15; bad programs 24/24, including copy spray and valid counterexample navigation replay. |
+| Proof map | 10,406 declarations, 395 headline claims; regenerated map passes the CI freshness check. |
+| Packaged WASM; app build; lint/typecheck | Rebuilt and current; all app/agent/world/service lint and typecheck commands pass. |
+| Agent tests with available data | 298 pass, 16 prerequisite skips. Both refreshed 35-context prompt snapshot sets pass. |
+| App tests | 343 pass, 15 prerequisite skips. |
+| Service units; isolated Postgres integration | 10/10 and 67/67 pass. Dedicated container, volume and network removed. |
+| Canonical conformance, CI `serve` transport | 15 targets × 201 scenarios: 1,584 pass, zero failures, 1,431 not applicable. |
+| Native layout regressions | 4/4 pass, including default and tightened G10 limits. |
+| Full template browser audit | 1,826 states; 16,434 physical measurements; zero findings. |
+| Full persona browser audit | 1,296 states; 11,664 physical measurements; zero findings. |
+
+The full browser pair ran once, sequentially under the shared lock, with two
+workers and no timeout/crash retries. The persona audit reused 443 complete
+results from the same current-build cache and checked the remaining 853 trees;
+all 1,296 states retain their coverage and physical measurements. Known-bad
+controls passed in both invocations. These audits do not re-certify the retained
+recording.
+
+The initial unfiltered agent suite had eight failures: two stale live-source
+prompt snapshots, corrected above, and six workload-capability tests requiring
+absent `runs/world/2` and `runs/world/2-original` schedules. The final command
+excludes only that unavailable-data test file; those six tests were not made to
+pass with substituted workloads. The bare `node conformance/index.mjs` invocation
+exits 2 with usage because it requires a target; CI's explicit `--canonical`
+invocation passes. No conformance target selection was changed.
+
+The rebuilt app SHA-256 is
+`8b190c8b5a36a552d967f77b65a7877ef8fcb8d9d88626b170ea911c0bd9a2a2`;
+native checker `d1d4b75732fc4f5f74a3c5b19bf7e391bc8c1d90970fed31ac0bdf8ae551849e`;
+packaged WASM `9fd0e8123f239fba6d029dab87591d6fed2c72d98e9a1c164b9b08027564c32f`.
+Changing the packaged app assets and vocabulary changes the certified build
+bindings. No retained certificate was rebound to these hashes.
+
+A SHA-256 comparison before and after the archive-backed tests found all
+**95,123 retained files byte-identical**, with no additions or removals. The
+sorted path-to-content-hash map (compact JSON) hashes to
+`423a4f39dd64eba8f280ba6c3e6b997546bf307300c6a62256ebafdd0566351c`.
+Run data, patient fixtures, programs and generated verdict data are not included
+in the commits.
+
 ## Suggested order
 
 1. R7 (test) and R1 (gate). Small, and they settle whether V7 is open.

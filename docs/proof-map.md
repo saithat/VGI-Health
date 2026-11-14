@@ -24,7 +24,7 @@ flowchart TB
     multi["Multi-actor models<br/>26 theorems, 0 headline"]:::guar
   end
   subgraph spec_g["Specification"]
-    core["Rulebook &amp; interpreter<br/>38 theorems, 0 headline"]:::spec
+    core["Rulebook &amp; interpreter<br/>38 theorems, 1 headline"]:::spec
     props["Safety properties<br/>26 theorems, 0 headline"]:::spec
     specs["Hospital rules &amp; formulary<br/>5 theorems, 0 headline"]:::spec
   end
@@ -59,6 +59,20 @@ flowchart TB
   classDef spec fill:#fdf3dc,stroke:#b7791f,color:#3d2a06
   classDef guar fill:#e3eefc,stroke:#2b6cb0,color:#0f2747
 ```
+
+<details><summary><b>Rulebook &amp; interpreter</b>: 1 headline claim. The rulebook language, guards, alerts, navigation and the step interpreter. Every safety claim is stated in these terms.</summary>
+
+```mermaid
+flowchart LR
+  n0["Deficiencies.discard_listed"]:::head
+  n1["Deficiencies.mem_open"]:::lemma
+  n0 --> n1
+  classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
+  classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
+  classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46
+```
+
+</details>
 
 <details><summary><b>Clinical guarantees</b>: 220 headline claims. Hard stop on signing, receipts, macros never act for a human, alert behaviour (T0–T6, A2, A4).</summary>
 

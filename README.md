@@ -91,7 +91,9 @@ boundaries, directory map and detailed sequence.
 
 These are synthetic, local experiments, not observed clinician performance.
 The retained recording was certified before the R1/R3/R5/R7 rule changes;
-its layouts, rule inputs and outcome scenarios are frozen. [Offline checks](docs/design/metric-gaming.md#retained-recording-against-the-combined-rules) assess the combined rules without re-certification.
+its layouts, rule inputs and outcome scenarios are frozen. All 33 revisions pass
+[combined offline checks](docs/design/metric-gaming.md#retained-recording-against-the-combined-rules);
+their certificates have not been rebound to the rebuilt runtime.
 
 | Evidence | Result and caveat |
 |---|---|
