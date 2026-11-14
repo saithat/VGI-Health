@@ -4,6 +4,7 @@
 Replays use the public native interpreter with Check.replayFacts/replayUser.
 Successful navigation replay does not imply semantic T7 violation evidence.
 Exit 1 means the required certification matrix is not yet satisfied.
+--no-write checks the same matrix without replacing reports or verdict files.
 """
 import hashlib
 import json
@@ -64,6 +65,13 @@ def main():
     expected[dependency_bad] = "completable"
     for path, prop in json.loads((ROOT / "lean/Ehr/Check/conformance-bad-programs.json").read_text()):
         expected[path] = prop
+    design_expected = {
+        "lean/Ehr/Check/bad/50-context-removed.json": "contextRetained",
+        "lean/Ehr/Check/bad/51-misleading-navigation.json": "navigation",
+        "lean/Ehr/Check/bad/52-stuffed-navigation.json": "navigation",
+    }
+    if any(expected.get(path) != prop for path, prop in design_expected.items()):
+        raise RuntimeError("R4/R6 bad-program expectations are missing or changed")
     cases += [(path, "bad") for path in expected]
     if "--bad-only" in sys.argv[1:]:
         cases = [(path, "bad") for path in expected]
@@ -130,7 +138,8 @@ def main():
         "results": results,
     }
     output = ROOT / "lean/Ehr/Check/certification-report.json"
-    output.write_text(json.dumps(report, indent=2) + "\n")
+    if "--no-write" not in sys.argv[1:]:
+        output.write_text(json.dumps(report, indent=2) + "\n")
     verdicts = {x["program"]: {"status": x["status"],
                 "sha256": x["programSha256"], "output": x["verdict"]}
                 for x in results if x["group"] != "reference"}
@@ -141,7 +150,8 @@ def main():
         verdicts[f"programs/bad/{name}.json"] = {"status": "full-profile only"}
     artifact = {"checker": "lean ehr check", "profile": "core", "programs": verdicts}
     # The browser serves /verdicts.json from app/public; retain a root copy too.
-    for path in [ROOT / "verdicts.json", ROOT / "app/public/verdicts.json"]:
+    for path in ([] if "--no-write" in sys.argv[1:] else
+                 [ROOT / "verdicts.json", ROOT / "app/public/verdicts.json"]):
         path.write_text(json.dumps(artifact, indent=2) + "\n")
     print(f"Vendor references: {len(references)} (not deployable)")
     print(f"Personas {report['personaAccepted']}/{len(personas)}; bad rejected {report['badRejected']}/{len(bad)}")

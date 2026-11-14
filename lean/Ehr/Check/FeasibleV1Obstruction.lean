@@ -48,6 +48,11 @@ def v1TrapProg : Program where
     { id := "inbox", title := "Inbox", workflow := "W2", components := [
         { id := "inbox.banner", kind := .banner },
         { id := "inbox.detail", kind := .panel "resultDetail" },
+        -- R4 preserves the same clinical context in this validation-trap witness.
+        { id := "inbox.allergies", kind := .panel "allergyList" },
+        { id := "inbox.problems", kind := .panel "problemList" },
+        { id := "inbox.vitals", kind := .panel "vitals" },
+        { id := "inbox.meds", kind := .panel "currentMeds" },
         { id := "inbox.trend", kind := .trend "resultTrend" },
         { id := "inbox.action", kind := .field "resultAction" (.fixed 0) .none },
         { id := "inbox.msg", kind := .field "patientMessage" (.fixed 0) .none },
@@ -150,7 +155,8 @@ private theorem mapConfirm_preserves_trap {cap : List Captured} {e : ElementId}
     split at hyx <;> (rw [← hyx]; exact hprov y hy)
 
 private theorem inbox_comp_cases {c : Component} (h : c ∈ v1TrapProg.compsOf "inbox") :
-    c.kind = .banner ∨ c.kind = .panel "resultDetail" ∨ c.kind = .trend "resultTrend" ∨
+    c.kind = .banner ∨ (∃ i ∈ ["resultDetail", "allergyList", "problemList", "vitals", "currentMeds"],
+      c.kind = .panel i) ∨ c.kind = .trend "resultTrend" ∨
     c.kind = .field "resultAction" (.fixed 0) .none ∨
     c.kind = .field "patientMessage" (.fixed 0) .none ∨
     c.kind = .button (.commit "ackResult") := by
@@ -164,7 +170,7 @@ private theorem inbox_clickedMacro_none (sp : Spec) (f : Facts) (s : State)
       (fun c => c.id == cid && compShown sp f s (v1TrapProg.compsOf "inbox") c) with
   | none => rfl
   | some c =>
-    rcases inbox_comp_cases (List.mem_of_find?_eq_some hfind) with hk | hk | hk | hk | hk | hk <;>
+    rcases inbox_comp_cases (List.mem_of_find?_eq_some hfind) with hk | ⟨_, _, hk⟩ | hk | hk | hk | hk <;>
       simp [hk]
 
 /-- New specification for owner review.
@@ -190,7 +196,7 @@ theorem inboxTrap_step (sp : Spec) (f : Facts) (u : User)
       · rename_i c hc
         have hmem : c ∈ v1TrapProg.compsOf "inbox" := by
           unfold shownComp? at hc; rw [hscr] at hc; exact List.mem_of_find?_eq_some hc
-        rcases inbox_comp_cases hmem with hk | hk | hk | hk | hk | hk
+        rcases inbox_comp_cases hmem with hk | ⟨_, _, hk⟩ | hk | hk | hk | hk
         · simp only [clickCore, hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
         · simp only [clickCore, hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
         · simp only [clickCore, hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
@@ -205,7 +211,7 @@ theorem inboxTrap_step (sp : Spec) (f : Facts) (u : User)
       · rename_i c hc
         have hmem : c ∈ v1TrapProg.compsOf "inbox" := by
           unfold shownComp? at hc; rw [hscr] at hc; exact List.mem_of_find?_eq_some hc
-        rcases inbox_comp_cases hmem with hk | hk | hk | hk | hk | hk
+        rcases inbox_comp_cases hmem with hk | ⟨_, _, hk⟩ | hk | hk | hk | hk
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
@@ -234,7 +240,7 @@ theorem inboxTrap_step (sp : Spec) (f : Facts) (u : User)
       · rename_i c hc
         have hmem : c ∈ v1TrapProg.compsOf "inbox" := by
           unfold shownComp? at hc; rw [hscr] at hc; exact List.mem_of_find?_eq_some hc
-        rcases inbox_comp_cases hmem with hk | hk | hk | hk | hk | hk
+        rcases inbox_comp_cases hmem with hk | ⟨_, _, hk⟩ | hk | hk | hk | hk
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
@@ -398,6 +404,7 @@ theorem v1_v2_v3_not_acceptedCompletableWhereFeasible :
             (h none v1TrapProg v1TrapProg hv3Check)),
           fun h => hv3Acc (h none v1TrapProg v1TrapProg hv3Check)⟩
 
+#print axioms inbox_comp_cases
 #print axioms inboxTrap_step
 #print axioms inboxTrap_validationsOk_false
 #print axioms inboxTrap_never_commits

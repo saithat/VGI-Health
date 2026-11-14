@@ -1,4 +1,5 @@
-import Ehr.Check.Rules
+import Ehr.Check.ContextRules
+import Ehr.Render.NavLabels
 import Ehr.Core.CriticalRuntime
 import Ehr.Props.Navigation
 import Ehr.Check.PopupRequests
@@ -387,7 +388,30 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
           some { property := "copyBudget"
                  message := s!"R3: {moved.length} components moved and {added.length} copies added since the previous version (stability budget {spec.design.stabilityBudget}); added copies: {", ".intercalate (added.map fun k => k.1 ++ "/" ++ k.2)}"
                  screen? := added.head?.map (·.1) }
-        | none => none }
+        | none => none },
+    -- R4, new specification: bounded context access from every commit screen.
+    { property := "contextRetained", passes := contextRetained spec prog
+      explain := fun _ => compFinding "contextRetained" prog false fun scr c =>
+        if (commitOf? c.kind).isSome then
+          if !decide (ContextWorkflowDeclared spec scr.workflow) then
+            some s!"R4: commit screen {scr.id} uses workflow {scr.workflow} without a declared context set"
+          else ((Specs.DesignPolicies.contextFor spec scr.workflow).find? fun i =>
+            !contextAvailable spec prog scr.id i).map fun i =>
+              s!"R4: workflow {scr.workflow}, commit screen {scr.id}: context {i} is undeclared or not shown/reachable within {spec.design.maxDepth} goto clicks"
+        else none },
+    -- R6 extends D5 on overview and interactive navigation labels.
+    { property := "navigation", passes := decide (Render.NavigationLabelsHonest spec prog)
+      explain := fun _ =>
+        match prog.screens.find? (fun scr => !decide (Render.NavLabelHonest spec scr
+            (Render.uiLabel (workflowNames scr).2 "Untitled screen"))) with
+        | some scr => some { property := "navigation", screen? := some scr.id, message := s!"R6/D5: overview label for {scr.id} must equal its title or a declared alias and have at most {spec.design.maxLabelWords} words" }
+        | none => compFinding "navigation" prog false fun scr c =>
+            if Render.navLink scr c then
+              (gotoOf? c.kind).bind fun z =>
+                if (prog.screen? z).any (fun target => decide (Render.NavLabelHonest spec target
+                    (Render.uiLabel c.label "Action"))) then none
+                else some s!"R6/D5: navigation link {c.id} to {z}, label '{c.label}', must equal the target title or a declared alias and have at most {spec.design.maxLabelWords} words"
+            else none }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

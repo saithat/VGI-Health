@@ -46,6 +46,7 @@ def usage : String :=
   "  adt-protocol-trace <file.json> administrative protocol witness check\n" ++
   "  run-batch <file.jsonl>   BatchCase per line -> BatchStep per event (JSONL)\n" ++
   "  check --spec S --program P [--prev P0] --canonical C   -> Verdict (exit 0 ok, 1 not)\n" ++
+  "  design-audit --spec S --program P  -> R4/R6 report (no certificate)\n" ++
   "  check-completion --spec S --program P [--prev P0] --canonical C --scenarios FILE\n" ++
   "  deploy --spec S --program P [--prev P0] --canonical C --out DIR [--time ISO]\n" ++
   "  spec-export <name>       spec JSON (names: " ++
@@ -117,6 +118,7 @@ def main (args : List String) : IO UInt32 := do
   | ["commit-check"] => stdinCommand Commit.Request Lean.Json Cli.Commit.output
   | ["view"] => stdinCommand ViewInput ScreenView runView
   | ["run-batch", file] => runBatch file
+  | "design-audit" :: rest => Ehr.Cli.designAuditMain rest
   | "check" :: rest => Ehr.Cli.checkMain rest
   | "check-completion" :: rest => Ehr.Cli.Completion.command rest
   | "deploy" :: rest => Ehr.Cli.deployMain rest

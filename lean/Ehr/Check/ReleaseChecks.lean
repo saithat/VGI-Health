@@ -30,6 +30,7 @@ def expandedProgram : Program :=
       else scr }
 
 theorem expanded_extends : expandedSpec.Extends spec := by decide
+set_option maxRecDepth 16384 in
 theorem expanded_accepted : check expandedSpec none goodProgram expandedProgram = .ok := by decide
 
 /-- The older catalog intentionally rejects a newly introduced component kind. -/

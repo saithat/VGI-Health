@@ -34,6 +34,7 @@ import Ehr.Check.Sound
 import Ehr.Check.SeedTests
 import Ehr.Check.CopySound
 import Ehr.Check.CopyTests
+import Ehr.Check.ContextTests
 import Ehr.Props.Examples
 
 namespace Ehr.Check.Tests

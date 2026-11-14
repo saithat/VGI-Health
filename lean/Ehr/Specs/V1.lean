@@ -1,4 +1,5 @@
 import Ehr.Specs.Profile
+import Ehr.Specs.DesignPolicies
 import Ehr.Specs.ChartInfo
 import Ehr.Specs.ClinicalTables
 import Ehr.Core.EntryTimes
@@ -2253,6 +2254,8 @@ def specForProfile (profile : RuleProfile) : Spec where
       Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ Rules.Features.alerts).filter
         fun a => coreCatalogCommits.contains a.commit)
   design := design
+  workflowContexts? := some DesignPolicies.workflowContexts
+  navigationAliases? := some DesignPolicies.navigationAliases
   displays? := if profile == .full then some Rules.Features.displays else none
 
 /-- The hospital spec with the selected rule profile. -/

@@ -106,6 +106,7 @@ def archivedMismatch : Program :=
       [{ id := "nextLine", label := "Next order", kind := .button .newOrderLine }] } }
 #guard (doseDependencyIssue declaredDrug archivedMismatch "recordReview" ["clinical"]).isSome
 
+set_option maxRecDepth 16384 in
 /-- A reachable selector on the correct line remains accepted. -/
 theorem dependency_repaired_accepted :
     check declaredDrug none (withDrug (.fixed 0)) (withDrug (.fixed 0)) = .ok := by decide
