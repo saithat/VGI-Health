@@ -699,8 +699,9 @@ structure Component where
   hotkey? : Option String := none
   /-- Stable semantic tag used by agent patches and stability tracking. -/
   tag : String := ""
-  /-- Marks a copy. A copy is never a moved tag; R3 (`CopyBudget`, `CopyStability`)
-  limits copies per tag and charges added copies to the stability budget. -/
+  /-- Marks a copy. R3 (`CopyBudget`, `CopyStability`) limits copies per tag and
+  charges added copies to the stability budget. R7 charges a surviving copy's
+  displacement after its original is deleted, even when this reference remains. -/
   copyOf? : Option CompId := none
   deriving DecidableEq, Repr, Inhabited
 

@@ -215,10 +215,54 @@ and previous program. The recording was not changed.
 | R3 stability charge | 0 of 33 | Most copies added in one version: 4 (P3 v4), within the recorded `stabilityBudget` of 8 together with that version's moved tags. |
 | R5 / G10 | 0 of 33 | Fixed-shell counts reach 11 (first viewport) and 15 (scroll window), equal to the default limit; `program-check` accepts all 51 release and recorded programs. |
 
-No shipped revision would now be refused, so nothing is grandfathered. The R5
+No shipped revision was refused by those checks, so nothing was grandfathered. The R5
 result follows from the shell capacity above, not from the recording's
 restraint. The release certification matrix also still accepts all 15 personas
 (with their previous release as `prev`).
+
+## Retained recording against the combined rules
+
+`scripts/replay-design-rules.mjs` combines the checks without changing any
+recording files or issuing certificates. It reads all 33 retained revision
+bindings and checks each with the current native checker against its frozen
+spec, canonical program and previous program (R3 and R7). It also runs the
+fixed-shell `program-check` density gate (R5/G10), then replays R1 over the
+45 recorded decisions using their original validation metrics and release paths.
+The five initial revisions plus 28 subsequent deployments account for the
+33 bindings; R1 applies to decisions, rather than the five initial layouts.
+
+| Combined check | Result |
+|---|---|
+| R1 frozen-metric replay | 45 decisions inspected; all 18 nightly and 10 mandatory vendor deployments still pass their applicable release paths. |
+| R3 + R7 native checker | 33/33 revision bindings accepted with their frozen previous and canonical programs; zero additional refusals. |
+| R5/G10 fixed-shell admission | 33/33 accepted at the default limit of 15 targets. The fixed-shell capacity caveat above still applies. |
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6
+node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/replay-design-rules.mjs \
+  > "$TMPDIR/rules-gate-combined-replay.json"
+```
+
+The output binds every checked spec, input bundle and program to its SHA-256,
+and identifies both native executables by their hashes. A refusal or incomplete
+retained matrix exits with an error. G10 admission here covers the fixed Lean
+shell, whose capacity is 15; it does not establish a React density bound or
+new clinical outcomes. The recorded certificates remain historical build
+bindings, even if the layouts pass the current offline rules.
+
+The combined Lean regression in `Ehr.Examples.TwoNightMoveTests` checks that
+R3 charges the first-night copy, R7 charges the second-night displacement for
+both promoted and dangling copies, and a retained copy is not charged as newly
+added on the second night. Zero stability budget refuses each charged change;
+a budget of one accepts it. No property or theorem statement changed during
+integration.
+
+An integration correction also removes the R3 component docstring's obsolete
+claim that a copy can never count as a move. The generated TypeScript vocabulary
+now describes R7's surviving-copy displacement, matching the interpreter and
+manual. Both 35-context prompt snapshot sets are refreshed because their prompts
+embed these live property docstrings and generated types; the recorded prompts
+and decisions are not rewritten.
 
 ## Suggested order
 

@@ -50,11 +50,14 @@ P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the retained historical recording; separately labeled successor
 measurements preserve its layout choices and identify their source lineage.
 
-## Current certified build and measurements
+## Retained certified build and measurements
 
-The current certified app SHA-256 is
+The retained recording's certified app SHA-256 is
 `be573a351df139200aff4dbf0b48d24a2805c09294b4b28f00b69c3e587aafd9`
-(checker `dcc80a8f…`, WASM `e1403682…`). The 2026-11-13 re-certification, after
+(checker `dcc80a8f…`, WASM `e1403682…`). It predates the R1/R3/R5/R7 rule
+changes and the subsequent packaged runtime rebuild; the recording has not
+been re-certified against that rebuild. [Combined offline rule checks](../design/metric-gaming.md#retained-recording-against-the-combined-rules)
+do not replace its historical build bindings. The 2026-11-13 re-certification, after
 the [chart timing and reconciliation](../design/chart-timing.md) changes,
 re-certifies all 33 retained revision bindings and refreshes 200 measurements
 across 50 source shifts in its local `runs/core-10day` copy; task completion is

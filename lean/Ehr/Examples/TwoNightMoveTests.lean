@@ -35,4 +35,22 @@ def orphanNext : Program := { nightN with screens := nightN.screens.map fun s =>
 #guard decide (StabilityBudget { spec with design := { spec.design with stabilityBudget := 0 } }
   (some base) nightN)
 
+-- R3 and R7 compose: charge the copy when added, then its displacement when
+-- the original is deleted. A retained copy is not charged as newly added again.
+#guard addedCopies base nightN == [("new", shortcut.id)]
+#guard !decide (CopyStability { spec with design := { spec.design with stabilityBudget := 0 } }
+  (some base) nightN)
+#guard decide (CopyStability { spec with design := { spec.design with stabilityBudget := 1 } }
+  (some base) nightN)
+#guard addedCopies nightN orphanNext == []
+#guard addedCopies nightN nightNext == []
+#guard !decide (CopyStability { spec with design := { spec.design with stabilityBudget := 0 } }
+  (some nightN) orphanNext)
+#guard decide (CopyStability { spec with design := { spec.design with stabilityBudget := 1 } }
+  (some nightN) orphanNext)
+#guard !decide (CopyStability { spec with design := { spec.design with stabilityBudget := 0 } }
+  (some nightN) nightNext)
+#guard decide (CopyStability { spec with design := { spec.design with stabilityBudget := 1 } }
+  (some nightN) nightNext)
+
 end Ehr.Examples.TwoNightMoveTests

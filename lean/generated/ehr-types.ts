@@ -928,8 +928,9 @@ export interface Component {
    */
   tag: string;
   /**
-   * Marks a copy. A copy is never a moved tag; R3 (`CopyBudget`, `CopyStability`)
-   * limits copies per tag and charges added copies to the stability budget.
+   * Marks a copy. R3 (`CopyBudget`, `CopyStability`) limits copies per tag and
+   * charges added copies to the stability budget. R7 charges a surviving copy's
+   * displacement after its original is deleted, even when this reference remains.
    */
   copyOf?: CompId;
 }
