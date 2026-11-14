@@ -11,6 +11,8 @@ import { compilePresentations } from './presentation-compiler.js';
  *      (render lane; ASSUMED: writes one page-tree JSON file per screen/state,
  *      named `<screenId>.json` or `<screenId>__<state>.json`)
  *   2. pnpm --filter app screen-check <dir>/*.json   (app lane, on main; exit 0 = pass)
+ *      Desktop admission includes R5 DOM action density; detailed results are
+ *      retained as screen-policy.json with the other per-version artifacts.
  *   3. only if `ehr check` AND the screen check pass may `ehr deploy` run
  *      (enforced in night.ts `deployVersion`, the only deploy path).
  *
@@ -141,6 +143,7 @@ class CliScreenChecker implements ScreenChecker {
       const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; bounded browser pool, desktop + narrow\n`);
       const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:String(Math.max(1,Math.min(6,this.workers??(Number(process.env['EHR_SCREEN_WORKERS']??4)||4)))), EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
+      if (reportDir) await writeFile(path.join(reportDir, 'screen-policy.json'), await readFile(path.join(dir, 'gate-result.json'), 'utf8').catch(() => '{}'));
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
       const measured=z.object({geometry:z.array(screenGeometrySchema).optional()}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(()=>'{}')));

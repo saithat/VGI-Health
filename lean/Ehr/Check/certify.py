@@ -64,6 +64,8 @@ def main():
     expected[dependency_bad] = "completable"
     for path, prop in json.loads((ROOT / "lean/Ehr/Check/conformance-bad-programs.json").read_text()):
         expected[path] = prop
+    # New specification: high-alert notices survive clinician personalization.
+    expected["lean/Ehr/Check/bad/42-removed-high-alert.json"] = "highAlertNotices"
     cases += [(path, "bad") for path in expected]
     if "--bad-only" in sys.argv[1:]:
         cases = [(path, "bad") for path in expected]

@@ -58,7 +58,7 @@ No row claims that regulation decides the continuous-visibility tier.
 | `duplicateTherapyInline` | workflow | [SAFER 2.1][safer]: this spec labels the condition low severity; retain access without promoting it to a severe interaction. |
 | `immunizationsDueInline` | workflow | [SAFER 2.1][safer]: preventive-care reminder; vaccine documentation duties do not prescribe persistent reminders. |
 | `healthMaintenancePopup` | advisory | [SAFER 2.1][safer]: redundant reminder for already available care gaps; no legal urgency requirement found. |
-| `highAlertOrderNotice` | advisory | [ISMP BP 19][ismp], [SAFER 2.1][safer]: generic policy notice, distinct from an actual dose/allergy warning; no legal urgency tier found. |
+| `highAlertOrderNotice` | advisory | [ISMP BP 19][ismp], [SAFER 2.1][safer]: generic policy notice; no legal attention tier found. **New specification:** its independent severity is now interruptive and its inline commit-screen notice cannot be removed ([policy](metric-gaming.md#high-alert-medication-notices-non-removable)). |
 | `activeRxPopup` | advisory | [SAFER 2.1][safer]: expected active prescription during refill; no legal urgency tier found. |
 | `refillCareGapPopup` | advisory | [SAFER 2.1][safer]: care-gap duplicate outside the preventive workflow; no legal urgency tier found. |
 | `minorInteractionPopup` | advisory | [SAFER 2.1][safer]: spec describes minor information already handled by prescriber. The successor spec uses `.minorInteraction`: explicit minor evidence is required, and severe source evidence or a formulary hazard excludes this advisory path. |

@@ -50,6 +50,93 @@ P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the retained historical recording; separately labeled successor
 measurements preserve its layout choices and identify their source lineage.
 
+## Deployed action density (R5)
+
+**New specification.** The screen gate measures active targets in real React
+screens at **1440×900**, normal text, using pinned fonts. It checks both an active
+modal (background targets excluded) and the modal-free background probe.
+The first viewport counts every enabled target with positive area after document
+and ancestor clipping. Hidden, inert, disabled, zero-area and transparent controls
+do not count; distinct DOM targets count separately, including confirmation buttons,
+links, tabs, searches and native form controls. Labels and display-only cards do
+not count. The target selector matches the physical gate's controls and includes
+focusable controls with `tabindex="0"`.
+
+For scrolling, each document/nested vertical viewport is checked independently,
+as in Lean G10. A target belongs to its nearest scrolling ancestor. The checker
+sweeps the open visibility intervals induced by rendered target rectangles at all
+boundary offsets and between adjacent boundaries (including fractional CSS pixels).
+It therefore includes partial first/last rows, rather than just sampling a page at
+0%, 50% and 100%. Nested regions use their own height, capped at 900 px.
+Horizontal/outer clipping and paint occlusion are ignored for these scroll counts,
+which is conservative. This is a per-region capacity bound, not an exhaustive
+Cartesian product of simultaneous scroll offsets in all independent panes.
+
+**Fixed-target decision:** fixed/sticky active targets outside a scrolling ancestor
+reserve one slot in **every** scroll window, including the document. They count
+once in the first viewport if actually visible. Contents of a fixed but internally
+scrolling pane belong to that pane instead of becoming permanently fixed targets.
+Sticky targets conservatively reserve their slots throughout scrolling, even before
+reaching their sticky position. This keeps pinned actions from becoming free density.
+
+The deployed policy lives in `docs/design/screen-density.json`, separately from the
+Lean text-card shell's unchanged 15-target limit. The limit is the largest measured
+vendor count; the per-screen table and complete per-program counts below report
+first and densest scroll windows across all exported initial, group, tab and alert
+states, using adult-allergic, pediatric and surgical fixture bundles.
+
+Every nightly deployment already uses `CliScreenChecker` → `screen-check.mjs` →
+`ui-check.spec.ts`. Its desktop semantic check now asserts R5 independently of the
+optional physical-policy switch; disabling physical measurements does not disable
+R5. Failures name the count, limit and scroll region/offset. Density attachments
+are retained in gate JSON and nightly `screen-policy.json`. Cache contexts bind
+both the measurement source and policy file; changing either invalidates receipts.
+Synthetic popup geometry probes are excluded from admission, as before.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=4
+export pnpm_config_verify_deps_before_run=false EHR_SCREEN_WORKERS=4
+node scripts/audit-action-density.mjs "$TMPDIR/alerts-r5-density-final"
+node scripts/replay-high-alert-policy.mjs > "$TMPDIR/alerts-r5-high-alert-replay.json"
+```
+
+The limit is **57**: vendor first viewports peak at 52 and scroll windows at 57.
+**Zero of 33 retained revisions exceed it**, including zero of 18 nightly agent
+deployments. The 7,759 distinct trees produce 8,155 active/background measurements.
+[Per-screen and per-program tables](../audits/alerts-r5-20261114.md#per-screen-counts)
+and [complete derived counts](../audits/alerts-r5-20261114.json) retain the evidence.
+
+The dedicated density collector measures all vendor and retained states without
+running the full accessibility matrix, issuing certificates, or modifying the
+recording. It fails if a state has no browser measurement. The full audit pair
+then exercises this rule through the deployment gate together with fidelity,
+physical and urgency assertions. The completed pair passed with zero findings:
+1,956 template trees / 18,774 physical measurements and 1,394 persona trees /
+13,428 measurements, run sequentially with four workers. Every tree has density
+evidence at the final limit of 57. [Commands, build bindings and results](../audits/alerts-r5-20261114.md#verification-and-build-bindings).
+
+### Retained high-alert policy replay
+
+The 33 frozen bindings are not rewritten. Hardening only their `highAlertMed`
+tiers in scratch refuses **25/33** unchanged programs:
+
+| Persona | Unchanged revisions refused | Still refused after only popup declarations migrate to inline |
+|---|---|---|
+| P1 | v0–v5 | v1–v5 |
+| P2 | v0–v7 | v2–v7 |
+| P3 | none | none |
+| P4 | v0–v8 | v0–v8 |
+| P5 | v0, v3 | none |
+
+The second column includes A2 refusals for obsolete `popup: true` declarations:
+the runtime now supplies the interruptive popup. The last column identifies
+**20/33** revisions still refused for missing inline high-alert notices. P1's
+night-1 deletion persists in v1–v5; P2 also removed its order notice from v2 onward.
+P4's pediatric order screen lacked the generic notice even in v0; the new
+specification adds it to current vendor baselines. These counts describe
+specification compatibility, not new clinical outcome measurements. Historical
+frozen-spec checks and certificates do not claim this stronger policy.
+
 ## Retained certified build and measurements
 
 The retained recording's certified app SHA-256 is

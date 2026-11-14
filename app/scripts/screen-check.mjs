@@ -361,6 +361,9 @@ for (const [index, batch] of batches.entries()) {
             ? "fail"
             : "pass",
         projects,
+        density: tests.filter(test => test.title === `semantic UI fidelity: ${file}`)
+          .flatMap(test => (test.run?.attachments ?? []).filter(a => a.name === "action-density")
+            .map(a => JSON.parse((a.path ? readFileSync(a.path) : Buffer.from(a.body, "base64")).toString()))),
         physical: state,
         geometry,
       };
@@ -396,6 +399,7 @@ const results = files.map((file) => {
     ...(result
       ? {
           sourceFile: file,
+          density: (result.density ?? []).map(sample => ({ ...sample, file })),
           physical: result.physical ? { ...result.physical, file } : null,
           geometry: result.geometry.map((geometry) => ({
             ...geometry,
@@ -465,6 +469,7 @@ if (process.env.EHR_SCREEN_RESULT)
       controlsStatus,
       elapsedMs: Math.round(performance.now() - started),
       physical,
+      density: results.flatMap(result => (result.density ?? []).map(sample => ({ ...sample, file: result.file }))),
       trees: results,
       cache: { hits: cachedResults.size, misses: checkedFiles.length },
       batches: batchResults,

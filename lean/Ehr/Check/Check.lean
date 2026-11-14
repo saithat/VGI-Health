@@ -387,7 +387,19 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
           some { property := "copyBudget"
                  message := s!"R3: {moved.length} components moved and {added.length} copies added since the previous version (stability budget {spec.design.stabilityBudget}); added copies: {", ".intercalate (added.map fun k => k.1 ++ "/" ++ k.2)}"
                  screen? := added.head?.map (·.1) }
-        | none => none }
+        | none => none },
+    -- New specification: retain high-alert notices independently of personalization.
+    { property := "highAlertNotices", passes := highAlertNoticesRetained spec prog
+      explain := fun _ => spec.alerts.findSome? fun al =>
+        if al.cond != .highAlertMed || al.tier == .removable then none else
+        prog.screens.findSome? fun scr =>
+          if scr.components.any (fun c => commitOf? c.kind == some al.commit) &&
+              !(scr.components.any fun c =>
+                (alertOf? c.kind).any (fun a => a.1 == al.id && !a.2) && fixedShown scr.components c) then
+            some { property := "highAlertNotices"
+                   screen? := some scr.id
+                   message := s!"High-alert notice {al.id} must remain inline on commit screen {scr.id}" }
+          else none }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

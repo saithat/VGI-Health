@@ -103,7 +103,9 @@ not fully reachable. It still shows that the layouts are far from saturated.
 P1's night-1 change removed three alerts the specification marks removable,
 including the high-alert medication order notice ("High-alert medication
 ordered: review policy", classified advisory with cited ISMP and SAFER sources).
-This is permitted by the current rules. Removed alert acknowledgments are 10% of
+This was permitted by the recorded rules. The new high-alert policy below refuses
+removal of that notice; the historical programs and metrics are unchanged. Removed
+alert acknowledgments are 10% of
 P1's and 23% of P5's saving.
 
 ## Recommendations
@@ -123,8 +125,12 @@ P1's and 23% of P5's saving.
 4. **Measure in time as well.** R1 (approved) makes time a constraint. Reporting
    results in modeled time, not only clicks plus scrolls, avoids counting density
    alone as progress.
-5. **Review which alerts are removable.** Decide whether high-alert medication
-   notices should be removable per clinician.
+5. **High-alert medication notices are non-removable — implemented** (*new
+   specification*). The approved policy makes the order notice interruptive,
+   including inherited issuance notices, and retains inline high-alert notices
+   on their commit screens. Administration remains interruptive. ISMP supports
+   layered safeguards; this exact tier/retention rule is hospital policy, not law.
+   [Specification, sources and retained-revision replay](../design/metric-gaming.md#high-alert-medication-notices-non-removable).
 6. **Point the agent at the structural gap.** Give it the per-workflow gap to the
    floor, so proposals target navigation and step count, not only density.
 

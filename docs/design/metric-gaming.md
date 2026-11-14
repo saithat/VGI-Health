@@ -25,6 +25,9 @@ A nightly change ships when all of these hold:
 3. **Formal checks**: properties 1–9 (`lean/Ehr/Props/Properties.lean`), D1–D6
    (`core-model.md`), the geometry rules G1–G10 (`docs/methods/ui-library.md`),
    `StabilityBudget`, the R3 copy budget, `AlertBudget` and the identity movement budget.
+4. **Rendered screen gate**: the deployed React painter passes semantic fidelity,
+   physical/urgency checks and R5's DOM-measured bound of 57 targets at 1440×900.
+   `CliScreenChecker` supplies this check before the sole nightly deployment path.
 
 The release score still uses **clicks and scrolls made by a clinician who already
 knows the layout perfectly**. R1 constrains typing and modeled time on validation;
@@ -49,7 +52,7 @@ other unmodeled costs remain outside the gate.
 | # | Gaming move | Why it scores | Status |
 |---|---|---|---|
 | V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | Copies are exempt from `StabilityBudget` and from the movement proxy. The expert clinician pays nothing for clutter. | Closed by R3 in the checker. The movement proxy still ignores copies. |
-| V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: R5 (G10) bounds Lean-computed geometry. The deployed React painter has no Lean geometry, so R1 and R2 remain the guard there. |
+| V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Closed by separate R5 gates for Lean geometry and the deployed React painter, with R1 and R2 constraining other costs. |
 | V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | Open: the information-needs simulator exists but is not connected to the score. |
 | V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
 | V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The bounded (learning) clinician exists but only feeds the opt-in switch-cost model. | Open |
@@ -200,8 +203,52 @@ shell's capacity, so no program can fail G10 at the default. Density on that
 path is converted into scrolling, which the validation gate already counts. G10
 binds custom agent layouts and any lower limit. Because `checkProgramDensity` is a
 static decision, a limit below 15 refuses every program, including ones whose
-screens are sparser. The deployed React painter has no Lean geometry, so R5 does
-not constrain it.
+screens are sparser. The deployed React painter uses a separate DOM-measured gate, described below;
+its vendor-calibrated bound of 57 does not relax the Lean limit of 15.
+
+### Deployed React painter
+
+**New specification, implemented.** `app/e2e/action-density.ts` measures the real
+React DOM at 1440×900. `docs/design/screen-density.json` owns the deployed limit,
+**57 targets**, calibrated from all 18 vendor programs (canonical and P1–P5, v1–v3), independently
+of the text-card shell's 15-target spec field. This preserves the existing Lean
+G10 specification and its capacity caveat. The TypeScript gate applies to nightly
+candidates through the existing `CliScreenChecker` deployment path; it is not a
+Lean proof about React. [Measurement contract, per-screen counts and retained
+revision results](../methods/screen-validation.md#deployed-action-density-r5).
+
+## High-alert medication notices: non-removable
+
+**New specification.** `highAlertOrderNotice` is interruptive, including all
+inherited medication-issuance notices. `highAlertAdmin` was already interruptive;
+all declared `highAlertMed` alerts now have that tier (`highAlert_not_removable`).
+A clinician cannot remove the runtime acknowledgment by editing a program.
+The checker also refuses `highAlertNotices` if an applicable commit screen lacks
+its always-shown inline notice, or tries to hide it in a collapsed group/tab.
+`accepted_highAlertNotices` proves acceptance implies that retention check.
+The generic notice's attention tier remains advisory: attention urgency and
+removability/commit acknowledgment are independent policies.
+
+The [ISMP High-Alert List (2024)](https://www.ismp.org/system/files/resources/2024-01/ISMP_HighAlert_AcuteCare_List_010924_MS5760.pdf)
+supports CDS and other safeguards for medicines whose errors can cause severe
+harm. [ISMP Targeted Best Practices (2026–2027), BP 19](https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf)
+supports safeguards across ordering, dispensing, administration and monitoring.
+Retaining this exact interruptive ordering notice and inline component is hospital
+policy, not a legal requirement or a claim that an alert replaces other safeguards.
+The administration cosign still checks distinct users, not blinded independent work.
+
+Vendor high-alert components now request no optional popup: the runtime opens
+interruptive alerts only on a relevant commit when the condition fires, preserving
+A2. Canonical construction supplies any missing inline notice (including pediatric
+ordering). `lean/Ehr/Check/bad/42-removed-high-alert.json` deletes the order notice
+and is refused as `highAlertNotices`; the certification matrix expects that refusal.
+
+`scripts/replay-high-alert-policy.mjs` replays the 33 frozen bindings with only
+`highAlertMed` tiers strengthened in scratch. It reports unchanged programs and,
+separately, a mechanical migration of obsolete optional-popup declarations to
+inline declarations. That second result distinguishes missing notices from the
+new tier's A2 migration refusals. No retained file or historical certificate is
+rewritten. Detailed results are in the screen-validation report below.
 
 ## Retained recording against R3 and R5
 

@@ -100,6 +100,15 @@ def passiveScreensKept (spec : Spec) (canonical prog : Program) : Bool :=
     al.tier != .passive || canonical.screens.all fun scr =>
       !presetScreen prog.presetOwner scr || !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
 
+/-- New specification: a high-alert-medication notice is retained inline on
+its commit screen as well as enforced by the interruptive runtime guard. -/
+def highAlertNoticesRetained (spec : Spec) (prog : Program) : Bool :=
+  spec.alerts.all fun al =>
+    al.cond != .highAlertMed || al.tier == .removable || prog.screens.all fun scr =>
+      !(scr.components.any fun c => commitOf? c.kind == some al.commit) ||
+        scr.components.any fun c =>
+          (alertOf? c.kind).any (fun a => a.1 == al.id && !a.2) && fixedShown scr.components c
+
 /-- Every record prefill names the source declared by that spec element. -/
 def recordSourcesDeclared (spec : Spec) (prog : Program) : Bool :=
   (allComps prog).all fun sc =>

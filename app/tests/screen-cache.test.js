@@ -107,6 +107,8 @@ describe("content-addressed screen results", () => {
           '{"physical":{"viewportWidths":[768,1440]}}',
         "e2e/ui-check.spec.ts": "assertions",
         "e2e/physical-policy.ts": "physical collector",
+        "e2e/action-density.ts": "density collector",
+        "../docs/design/screen-density.json": '{"maxTargetsPerViewport":100}',
         "e2e/geometry-capture.ts": "geometry collector",
         "playwright.config.ts": "viewport configuration",
         "src/ehr/ui/fidelity.ts": "fidelity",

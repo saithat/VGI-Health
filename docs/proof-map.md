@@ -16,7 +16,7 @@ run.
 flowchart TB
   subgraph guar_g["Guarantees"]
     proofs["Clinical guarantees<br/>557 theorems, 220 headline"]:::guar
-    check["Program checker<br/>384 theorems, 72 headline"]:::guar
+    check["Program checker<br/>385 theorems, 72 headline"]:::guar
     render["Screen renderer<br/>193 theorems, 12 headline"]:::guar
     layout["UI library &amp; geometry<br/>207 theorems, 43 headline"]:::guar
     commit["Commit reducers<br/>23 theorems, 8 headline"]:::guar
@@ -26,7 +26,7 @@ flowchart TB
   subgraph spec_g["Specification"]
     core["Rulebook &amp; interpreter<br/>38 theorems, 1 headline"]:::spec
     props["Safety properties<br/>26 theorems, 0 headline"]:::spec
-    specs["Hospital rules &amp; formulary<br/>5 theorems, 0 headline"]:::spec
+    specs["Hospital rules &amp; formulary<br/>6 theorems, 0 headline"]:::spec
   end
   check ==> core
   check ==> props
