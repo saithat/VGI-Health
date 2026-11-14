@@ -8,7 +8,7 @@
 branches. Six Ubuntu jobs build the pinned Lean default targets and audit
 headline theorem axioms; lint and typecheck app, agent, world and commit;
 run fast unit suites and the information-needs Python test; run all 201
-canonical conformance scenarios and the 15-accepted/23-rejected certification
+canonical conformance scenarios and the 15-accepted/24-rejected certification
 matrix; and run commit integration/protocol traces against Postgres. Native
 checks share the current run's `ehr` artifact. Protocol and ADT host trace checks
 invoke `ehr protocol-trace` and `ehr adt-protocol-trace`; neither requires a Lean

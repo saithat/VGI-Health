@@ -325,6 +325,36 @@ def movedTags (prev prog : Program) : List String :=
     | some a, some b => a != b
     | _, _ => false
 
+/-- New specification for owner review (R3): the original a copy refers to, the
+first non-copy component with that ID in screen order. -/
+def copySource? (p : Program) (cid : CompId) : Option Component :=
+  ((allComps p).find? fun sc => sc.2.id == cid && sc.2.copyOf?.isNone).map (·.2)
+
+/-- New specification for owner review (R3): the tag a copy counts against. It is
+the original's tag, or the copied component ID when the original is missing or
+untagged. A component that is not a copy has none. The copy's own tag is
+ignored, so renaming a copy cannot open a new budget. -/
+def copyTag (p : Program) (c : Component) : Option String :=
+  c.copyOf?.map fun cid =>
+    match copySource? p cid with
+    | some o => if o.tag != "" then o.tag else cid
+    | none => cid
+
+/-- New specification for owner review (R3): copies on `scr` counted against tag `t`. -/
+def screenCopies (p : Program) (scr : Screen) (t : String) : Nat :=
+  (scr.components.filter fun c => copyTag p c == some t).length
+
+/-- New specification for owner review (R3): copies in the program counted against tag `t`. -/
+def programCopies (p : Program) (t : String) : Nat :=
+  ((allComps p).filter fun sc => copyTag p sc.2 == some t).length
+
+/-- New specification for owner review (R3): copies in `prog` (by screen and
+component ID) that were not copies on that screen in `prev`. -/
+def addedCopies (prev prog : Program) : List (ScreenId × CompId) :=
+  ((allComps prog).filterMap fun sc =>
+      if sc.2.copyOf?.isSome then some (sc.1.id, sc.2.id) else none).eraseDups.filter fun k =>
+    !(allComps prev).any fun sc => sc.2.copyOf?.isSome && sc.1.id == k.1 && sc.2.id == k.2
+
 /-- The number of popup requests (alert components with `popup := true`) on
 screens reachable from the start screen. -/
 def popupRequestCount (p : Program) (reachable : List ScreenId) : Nat :=

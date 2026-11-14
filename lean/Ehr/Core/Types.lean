@@ -584,6 +584,13 @@ structure DesignRules where
   /-- New specification for owner review: local policy deadline in minutes (default 1440, 24 hours)
   for saved unsigned drafts whose commit has no temporal deadline. -/
   unsignedDraftMinutes : Nat := 1440
+  /-- New specification for owner review (R3): maximum copies of one tag per program
+  (default 2). A screen may also hold at most one copy of each tag. -/
+  copyBudget : Nat := 2
+  /-- New specification for owner review (R5, geometry rule G10): maximum active
+  targets in the first 1440×900 viewport and in each scroll viewport (default 15,
+  the largest count measured in the current release programs). -/
+  maxTargetsPerViewport : Nat := 15
   deriving DecidableEq, Repr, Inhabited
 
 /-- New specification for owner review: local late-entry policy default. -/
@@ -692,7 +699,8 @@ structure Component where
   hotkey? : Option String := none
   /-- Stable semantic tag used by agent patches and stability tracking. -/
   tag : String := ""
-  /-- Marks a copy (copies don't count against the stability budget). -/
+  /-- Marks a copy. A copy is never a moved tag; R3 (`CopyBudget`, `CopyStability`)
+  limits copies per tag and charges added copies to the stability budget. -/
   copyOf? : Option CompId := none
   deriving DecidableEq, Repr, Inhabited
 

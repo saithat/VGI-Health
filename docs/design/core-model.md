@@ -134,6 +134,8 @@ structure DesignRules where
   stabilityBudget : Nat            -- max components moved per accepted version
   landmarks : List InfoId          -- e.g. ["patientBanner"]: must be on every screen
   catalog : List String            -- allowed component kind tags
+  copyBudget : Nat := 2            -- R3 (new specification): copies of one tag per program; ≤ 1 per screen
+  maxTargetsPerViewport : Nat := 15 -- R5/G10 (new specification): active targets per 1440×900 viewport
 
 structure Spec where
   version : String
@@ -181,7 +183,7 @@ structure Component where
   size : Size := .normal
   hotkey : Option String := none
   tag : String := ""               -- stable semantic tag used by agent patches and stability tracking
-  copyOf : Option CompId := none   -- copies beside a retained original do not count as moves
+  copyOf : Option CompId := none   -- marks a copy: R3 limits copies and charges added ones to the stability budget; deleting the original charges the move (R7)
 
 structure Screen where
   id : ScreenId

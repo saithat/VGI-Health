@@ -2,4 +2,5 @@
  ["lean/Ehr/Check/bad/37-stale-dosing-weight.json", "capturesAllOnce"],
  ["lean/Ehr/Check/bad/38-cross-patient-panel.json", "writesOnly"],
  ["lean/Ehr/Check/bad/39-empty-order-signing.json", "completable"],
- ["lean/Ehr/Check/bad/40-denial-without-reason.json", "completable"]]
+ ["lean/Ehr/Check/bad/40-denial-without-reason.json", "completable"],
+ ["lean/Ehr/Check/bad/41-copy-spray.json", "copyBudget"]]

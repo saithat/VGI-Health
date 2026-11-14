@@ -20,8 +20,8 @@ deriving instance Lean.ToJson, Lean.FromJson for
   InteractionSeverity, InteractionEvidence,
   OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, EncounterRoleRule, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec
 
-/-- Preserve legacy spec JSON with default policies; retain both explicitly configured
-late-entry and unsigned-draft policies.
+/-- Preserve legacy spec JSON with default policies; retain explicitly configured
+late-entry, unsigned-draft, copy-budget and target-density policies.
 New specification for owner review. -/
 instance : Lean.ToJson DesignRules where
   toJson d := Lean.Json.mkObj <| [
@@ -31,10 +31,13 @@ instance : Lean.ToJson DesignRules where
     ("landmarks", Lean.toJson d.landmarks),
     ("catalog", Lean.toJson d.catalog)] ++
     (match d.lateEntryMinutes? with | none => [] | some n => [("lateEntryMinutes", Lean.toJson n)]) ++
-    (if d.unsignedDraftMinutes == 1440 then [] else [("unsignedDraftMinutes", Lean.toJson d.unsignedDraftMinutes)])
+    (if d.unsignedDraftMinutes == 1440 then [] else [("unsignedDraftMinutes", Lean.toJson d.unsignedDraftMinutes)]) ++
+    (if d.copyBudget == 2 then [] else [("copyBudget", Lean.toJson d.copyBudget)]) ++
+    (if d.maxTargetsPerViewport == 15 then [] else [("maxTargetsPerViewport", Lean.toJson d.maxTargetsPerViewport)])
 
-/-- Decode both policies independently. Omitted late-entry and unsigned-draft
-policies retain their 1440-minute local defaults; malformed supplied values fail.
+/-- Decode each policy independently. Omitted late-entry and unsigned-draft
+policies retain their 1440-minute local defaults, an omitted copy budget is 2 and
+an omitted target density limit is 15; malformed supplied values fail.
 New specification for owner review. -/
 instance : Lean.FromJson DesignRules where
   fromJson? j := do
@@ -44,13 +47,20 @@ instance : Lean.FromJson DesignRules where
     let lateEntryMinutes ← match j.getObjVal? "lateEntryMinutes" with
       | .error _ => pure none
       | .ok v => some <$> Lean.fromJson? v
+    let copyBudget ← match j.getObjVal? "copyBudget" with
+      | .error _ => pure 2
+      | .ok v => Lean.fromJson? v
+    let maxTargetsPerViewport ← match j.getObjVal? "maxTargetsPerViewport" with
+      | .error _ => pure 15
+      | .ok v => Lean.fromJson? v
     return {
       maxDepth := ← j.getObjValAs? Nat "maxDepth"
       minTextSize := ← j.getObjValAs? Nat "minTextSize"
       stabilityBudget := ← j.getObjValAs? Nat "stabilityBudget"
       landmarks := ← j.getObjValAs? (List InfoId) "landmarks"
       catalog := ← j.getObjValAs? (List String) "catalog"
-      unsignedDraftMinutes := unsignedDraftMinutes, lateEntryMinutes? := lateEntryMinutes }
+      unsignedDraftMinutes := unsignedDraftMinutes, lateEntryMinutes? := lateEntryMinutes,
+      copyBudget := copyBudget, maxTargetsPerViewport := maxTargetsPerViewport }
 
 deriving instance Lean.ToJson, Lean.FromJson for Spec
 

@@ -45,3 +45,12 @@ test('layout certificate does not turn a clinical rejection into acceptance',()=
   const p=spawnSync(join(root,'lean/.lake/build/bin/ehr'),['check','--spec','releases/v1/spec.json','--program','programs/bad/05-self-cosign.json','--canonical','releases/v1/canonical.json'],{encoding:'utf8'});
   assert.equal(p.status,1);assert.equal(JSON.parse(p.stdout).violation.property,'humanOnlyKept');
 });
+test('program density uses the spec limit and reports the fixed-shell capacity',()=>{
+  const spec=json('releases/v1/spec.json'),program=json('releases/v1/personas/P1.json');
+  const ok=request({op:'program-check',spec,program});
+  assert.equal(ok.accepted,true);assert.equal(ok.maxTargetsPerViewport,15);assert.equal(ok.shellCapacity,15);
+  assert.deepEqual(ok.findings,[]);
+  const tight=request({op:'program-check',spec:{...spec,design:{...spec.design,maxTargetsPerViewport:12}},program});
+  assert.equal(tight.accepted,false);
+  assert.deepEqual(tight.findings.map(f=>[f.rule,f.metric,f.actual,f.required]),[['G10','fixed-shell-capacity',15,12]]);
+});

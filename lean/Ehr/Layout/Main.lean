@@ -23,9 +23,17 @@ def main : IO Unit := do
       else if (json.getObjValAs? String "op").toOption.getD "" == "program-check" then
         let spec ← json.getObjValAs? Ehr.Spec "spec"
         let program ← json.getObjValAs? Ehr.Program "program"
-        pure (Json.mkObj [("accepted",toJson (Range.checkProgram spec program)),
+        let dense := Density.checkProgramDensity spec program
+        pure (Json.mkObj [("accepted",toJson (Range.checkProgram spec program && dense)),
           ("scope",toJson "fixed-shell-v2 layout admission"),
           ("theorem",toJson "Ehr.Layout.Range.checkProgram_sound"),
+          ("densityTheorem",toJson "Ehr.Layout.Density.checkProgramDensity_sound"),
+          ("maxTargetsPerViewport",toJson spec.design.maxTargetsPerViewport),
+          ("shellCapacity",toJson Density.shellCapacity),
+          ("findings",toJson (if dense then ([] : List Finding) else
+            [{ rule := "G10", metric := "fixed-shell-capacity", actual := Density.shellCapacity,
+               required := spec.design.maxTargetsPerViewport,
+               deficit := (Density.shellCapacity : Int) - spec.design.maxTargetsPerViewport }])),
           ("program",toJson program.id)])
       else if (json.getObjValAs? String "op").toOption.getD "" == "program-paint" then
         let input ← json.getObjValAs? Ehr.Render.RenderInput "render"
@@ -38,24 +46,30 @@ def main : IO Unit := do
       else if ["family-check","family-paint"].contains ((json.getObjValAs? String "op").toOption.getD "") then
         let refs ← json.getObjValAs? (List FamilyReference) "references"
         let family ← parseFamily refs
+        let limit := (json.getObjValAs? Nat "maxTargetsPerViewport").toOption.getD 15
         if (json.getObjValAs? String "op").toOption.getD "" == "family-check" then
-          pure (Json.mkObj [("accepted",toJson (acceptFamily family)),("shapes",toJson (family.map Candidate.shape))])
+          pure (Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family)),
+            ("shapes",toJson (family.map Candidate.shape)),
+            ("findings",toJson (family.flatMap fun (c : Candidate) => viewports.flatMap fun (v : Size) =>
+              densityFindings limit v (boxes v (c.tree v))))])
         else
           let screen : Ehr.Render.UiScreen ← match json.getObjVal? "render" with
             | .ok r => do pure (Ehr.Render.runRenderUi (← fromJson? r))
             | .error _ => json.getObjValAs? Ehr.Render.UiScreen "screen"
           let viewport := (json.getObjValAs? Size "viewport").toOption.getD ⟨92160,57600⟩
-          pure (familyOutput family screen viewport)
+          pure (familyOutput family screen viewport limit)
       else if (json.getObjValAs? String "op").toOption.getD "" == "port" then
         let screen ← json.getObjValAs? Ehr.Render.UiScreen "screen"
         let viewport := (json.getObjValAs? Size "viewport").toOption.getD ⟨92160,57600⟩
+        let limit := (json.getObjValAs? Nat "maxTargetsPerViewport").toOption.getD 15
         let (n,data,expected) := portScreen viewport screen
         let ps := boxes viewport n
         let errors := contentErrors data ps
-        pure (Json.mkObj [("accepted",toJson (check expected viewport ps && errors.isEmpty)),
+        pure (Json.mkObj [("accepted",toJson (checkDensity limit expected viewport ps && errors.isEmpty)),
           ("viewport",toJson viewport), ("tree",semanticPaintTree screen (layout ⟨{},viewport⟩ n)),
           ("boxes",toJson (ps.map (bindSemantic screen))), ("lineWidths",toJson (ps.map (fun p => drawnLineWidths (bindSemantic screen p)))),
-          ("findings",toJson (findings expected viewport ps ++ errors ++ realizationWarnings (ps.map (bindSemantic screen))))])
+          ("findings",toJson (findings expected viewport ps ++ densityFindings limit viewport ps ++ errors ++
+            realizationWarnings (ps.map (bindSemantic screen))))])
       else
         let r ← fromJson? json
         runRequest r

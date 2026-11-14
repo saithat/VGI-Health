@@ -166,7 +166,7 @@ modules serially (about 8.3 GiB peak); the weekly `ehrheavy.yml` workflow audits
 all 24 seeded-defect axioms.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
-runs unit tests, 201 canonical conformance scenarios, the 15-accepted/23-rejected
+runs unit tests, 201 canonical conformance scenarios, the 15-accepted/24-rejected
 certification matrix, and Postgres integration/protocol tests. Archive-backed
 tests skip without local data. CI checks packaged WASM evidence but does not
 rebuild WASM. Full Comparator verification is `make verify`; browser audits,
@@ -223,7 +223,7 @@ responsible/covering user ID, which is stricter than a role check.
 | `accepted_*` | Checker acceptance implies 12 of 13 screen properties for all patients and reachable states. Property 6 (completion) is proved only for restricted families. For the V1–V3 rule sets `Completable` is false as defined: it ranges over records with no trusted payload, where no program can commit (`v1_payload_domain_not_satisfies`, `EhrHeavy`). A [feasibility premise (`CompletableWhereFeasible`)](docs/design/property6-record-domain.md) excludes missing-payload records (`missing_payload_not_commitFeasible`) and carries over all restricted-family proofs (`completable_imp_completableWhereFeasible`), while static acceptance under V1–V3 still permits a reachable cross-field validation trap (`v1_v2_v3_not_acceptedCompletableWhereFeasible`). |
 | Multi-actor safety | Bed exclusivity, at-most-once doses and critical-result resolution or escalation by deadline in the Lean reducers/models. |
 | Protocol invariants | Unbounded request-effect uniqueness, durable retries, guarded expected-version replacement, refusal isolation and event-fold projections, under the storage/sole-writer contract. ADT uses the actual native reducer; host trace refinement is tested. |
-| Research layout range | `renderer_range`, `checkProgram_sound`, `layoutAccepted_program`: the fixed semantic text-card compiler covers every renderer output and preserves G1–G9. This does not certify deployed widget fidelity or integrate DOM/APG dispatch. |
+| Research layout range | `renderer_range`, `checkProgram_sound`, `layoutAccepted_program`: the fixed semantic text-card compiler covers every renderer output and preserves G1–G9; `checkProgramDensity_sound` adds the G10 target-density limit. This does not certify deployed widget fidelity or integrate DOM/APG dispatch. |
 
 Not proved: clinical completeness or appropriateness of the rules; general
 completion; TypeScript/SQL/FHIR refinement, imports and projections; actual
@@ -273,7 +273,8 @@ appropriateness and the uncalibrated rates are not validated.
 | Interruption service and calibration | Role/activity minute-bin rates, channel service, fixed exposure, urgency/type mix, protected-popup triage and return costs are provisional; parameter provenance and opt-outs are in [simulation methods](docs/methods/wave3-simulation.md). Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
 | Commit and ADT protocol assumptions | [Models and storage contract](docs/methods/commit-protocol.md): sole writer, consistent imports, locked current snapshots and atomic durable publication; host refinement remains tested. |
 | Completion interaction rules | [Scenario checker](docs/methods/completion-checker.md): acknowledgment before commit and Back retention; general property 6 and patient-switch durability remain open. |
-| Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G9, safety-text preservation and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
+| Anti-gaming design rules | [Metric gaming](docs/design/metric-gaming.md): at most 2 copies of a control per program and 1 per screen, with added copies charged to the stability budget; at most 15 active targets per 1440×900 viewport (G10). Both limits are spec fields. |
+| Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G10, safety-text preservation and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
 | Release and user-model choices | [Cadence](docs/methods/discovery-and-cadence.md) uses a provisional effect floor, movement proxy and auto-approval; [bounded learning and preferences](docs/methods/simulation.md) are uncalibrated. [Tool-driven arm E](docs/methods/agent-loop.md) stays opt-in: in the 35-decision B/E paired run B accepted 88.6% and E 0%, because every E sample hit its 120K cumulative token ceiling before submitting, a ceiling B did not have. [Arm R](docs/methods/rlm-night.md), an opt-in recursive-language-model agent with a confined REPL, submitted within budget on all 70 full-study samples but accepted 57/70 versus B’s 58/70, using 1.86× the input tokens and 1.43× the charged sample wall time. |
 
 The [full 35-decision paired B/R study](docs/methods/rlm-night.md#full-paired-results) accepted 81.4% for R versus 82.9% for B; the [Luna-root pilot](docs/methods/rlm-night.md#cheaper-model-pilots) accepted 2/7. R remains opt-in.

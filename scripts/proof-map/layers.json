@@ -70,7 +70,7 @@
     "name": "UI library & geometry",
     "cls": "guar",
     "tier": 1,
-    "note": "Integer layout, layout rules G1–G9, structural certificates and the renderer-range theorem."
+    "note": "Integer layout, layout rules G1–G10, structural certificates and the renderer-range theorem."
   },
   {
     "id": "commit",

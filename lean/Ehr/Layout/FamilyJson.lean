@@ -1,4 +1,4 @@
-import Ehr.Layout.Range
+import Ehr.Layout.Density
 namespace Ehr.Layout
 open Lean Ehr.Render
 
@@ -26,19 +26,20 @@ def parseFamily (refs : List FamilyReference) : Except String Family := refs.map
     pure (r.viewport,tree)
   return ⟨shape,fun v => ((layouts.find? (fun p => p.1 == v)).map Prod.snd).getD invalidTree⟩
 
-def familyOutput (family : Family) (screen : UiScreen) (v : Size) : Json :=
+def familyOutput (family : Family) (screen : UiScreen) (v : Size) (limit : Nat := 15) : Json :=
   match selectCandidate family screen with
   | none => Json.mkObj [("accepted",toJson false),("uncoveredShape",toJson (screenShape screen)),
       ("error",toJson "semantic shape not in admitted family; this is not a text-length or glyph failure")]
   | some c =>
     let ps := boxes v (c.tree v)
     let data := ps.map (bindSemantic screen)
-    let layoutOk := check (shapeSources c.shape) v ps
-    Json.mkObj [("accepted",toJson (acceptFamily family && viewports.contains v)),
+    let layoutOk := checkDensity limit (shapeSources c.shape) v ps
+    Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family && viewports.contains v)),
       ("viewport",toJson v),("boxes",toJson data),
       ("tree",semanticPaintTree screen (layout ⟨{},v⟩ (c.tree v))),
       ("lineWidths",toJson (data.map drawnLineWidths)),
-      ("findings",toJson (findings (shapeSources c.shape) v ps ++ realizationWarnings data)),
+      ("findings",toJson (findings (shapeSources c.shape) v ps ++ densityFindings limit v ps ++
+        realizationWarnings data)),
       ("layoutOk",toJson layoutOk),("linked",toJson (decide (Linked c.shape ps)))]
 /-- Research-only class painter: runtime checks structural membership and the
 viewport, not geometry, record lengths or glyph/string limits. -/
@@ -68,9 +69,13 @@ def programOutput (input : RenderInput) (v : Size) : Json :=
       | [] => Json.null
       | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
           (rest.map fun d => Json.mkObj [("drawn",toJson d),("children",toJson ([] : List Json))]))]
-    Json.mkObj [("accepted",toJson (Range.checkProgram input.spec input.program)),("viewport",toJson v),
+    Json.mkObj [("accepted",toJson (Range.checkProgram input.spec input.program &&
+        Density.checkProgramDensity input.spec input.program)),("viewport",toJson v),
       ("boxes",toJson data),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
-      ("findings",toJson (realizationWarnings data)),("structuralClass",toJson "fixed-shell-v2"),
-      ("rangeTheorem",toJson "Ehr.Layout.Range.layoutAccepted_program")]
+      ("structuralClass",toJson "fixed-shell-v2"),
+      ("rangeTheorem",toJson "Ehr.Layout.Range.layoutAccepted_program"),
+      ("densityTheorem",toJson "Ehr.Layout.Density.checkProgramDensity_sound"),
+      ("findings",toJson (realizationWarnings data ++ densityFindings input.spec.design.maxTargetsPerViewport v
+        (data.map Drawn.box)))]
 
 end Ehr.Layout

@@ -132,6 +132,122 @@ theorem G9_exempt (v : Size) (ps : List Placed) (absent : ps.any (·.info.commit
   intro _ present
   simp [absent] at present
 
+/-! ### G10 (R5): action density. New specification for owner review. -/
+
+/-- New specification for owner review: two rectangles share painted area. -/
+def Meets (a b : Rect) : Prop := a.x < b.right ∧ b.x < a.right ∧ a.y < b.bottom ∧ b.y < a.bottom
+instance (a b : Rect) : Decidable (Meets a b) := by unfold Meets; infer_instance
+
+/-- New specification for owner review: with every scroll offset at zero (the
+first viewport), the box has area inside the page viewport and inside each
+enclosing scroll viewport. -/
+def AtRest (v : Size) (p : Placed) : Prop :=
+  Meets (viewportRect v) p.rect ∧ ∀ c ∈ p.clips, Meets c.2 p.rect
+instance (v p) : Decidable (AtRest v p) := by unfold AtRest; infer_instance
+
+/-- New specification for owner review: active targets visible in the first viewport. -/
+def firstViewportTargets (v : Size) (ps : List Placed) : List Placed :=
+  ps.filter fun p => activeTarget ps p && decide (AtRest v p)
+
+/-- New specification for owner review: the innermost scroll viewport of a box. -/
+def scrollRegion (p : Placed) : Option (String × Rect) := p.clips.head?
+
+/-- New specification for owner review: in content coordinates, scroll viewport
+`r` scrolled down by `o` shows the band `[r.y + o, r.bottom + o)`. -/
+def InWindow (r : Rect) (o : Int) (p : Placed) : Prop :=
+  r.x < p.rect.right ∧ p.rect.x < r.right ∧ r.y + o < p.rect.bottom ∧ p.rect.y < r.bottom + o
+instance (r o p) : Decidable (InWindow r o p) := by unfold InWindow; infer_instance
+
+/-- New specification for owner review: active targets of scroll viewport `c`
+visible at scroll offset `o`. -/
+def windowTargets (ps : List Placed) (c : String × Rect) (o : Int) : List Placed :=
+  ps.filter fun p => activeTarget ps p && scrollRegion p == some c && decide (InWindow c.2 o p)
+
+/-- The offset whose window starts on the last row of `q`. The densest window
+of a region is always one of these (`G10_window`). -/
+def windowAt (c : String × Rect) (q : Placed) : Int := q.rect.bottom - 1 - c.2.y
+
+/-- Target counts of the finitely many candidate scroll windows. -/
+def windowCounts (ps : List Placed) : List Nat :=
+  ps.filterMap fun q => (scrollRegion q).map fun c => (windowTargets ps c (windowAt c q)).length
+
+/-- G10 (R5), new specification for owner review: at 1440×900 the first
+viewport, and every scroll position of each scroll viewport, contain at most
+`limit` active targets. Other sizes impose no density constraint. -/
+def G10 (limit : Nat) (v : Size) (ps : List Placed) : Prop :=
+  v = ⟨92160,57600⟩ →
+    (firstViewportTargets v ps).length ≤ limit ∧ ∀ n ∈ windowCounts ps, n ≤ limit
+instance (limit v ps) : Decidable (G10 limit v ps) := by unfold G10; infer_instance
+
+private theorem filter_length_mono (l : List α) (p q : α → Bool)
+    (h : ∀ a ∈ l, p a = true → q a = true) : (l.filter p).length ≤ (l.filter q).length := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    have ih' := ih (fun b hb => h b (List.mem_cons_of_mem a hb))
+    by_cases hp : p a = true
+    · simp [hp, h a List.mem_cons_self hp]; omega
+    · cases hq : q a <;> simp [hp, hq] <;> omega
+
+private theorem lowest_bottom (l : List Placed) (ne : l ≠ []) :
+    ∃ q ∈ l, ∀ p ∈ l, q.rect.bottom ≤ p.rect.bottom := by
+  induction l with
+  | nil => contradiction
+  | cons a l ih =>
+    by_cases empty : l = []
+    · subst empty; exact ⟨a, by simp, by simp⟩
+    · obtain ⟨q, hq, low⟩ := ih empty
+      by_cases le : a.rect.bottom ≤ q.rect.bottom
+      · refine ⟨a, by simp, ?_⟩
+        intro p hp
+        rcases List.mem_cons.mp hp with rfl | hp
+        · exact Int.le_refl _
+        · exact Int.le_trans le (low p hp)
+      · refine ⟨q, List.mem_cons_of_mem a hq, ?_⟩
+        intro p hp
+        rcases List.mem_cons.mp hp with rfl | hp
+        · omega
+        · exact low p hp
+
+/-- New specification for owner review: every scroll offset of every scroll
+viewport, not only the finitely many checked candidates, satisfies the bound. -/
+theorem G10_window (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
+    (hv : v = ⟨92160,57600⟩) (c : String × Rect) (o : Int) :
+    (windowTargets ps c o).length ≤ limit := by
+  by_cases empty : windowTargets ps c o = []
+  · simp [empty]
+  obtain ⟨q, hq, low⟩ := lowest_bottom _ empty
+  have qmem := List.mem_filter.mp hq
+  simp only [Bool.and_eq_true, beq_iff_eq, decide_eq_true_eq] at qmem
+  obtain ⟨qps, ⟨⟨_, qregion⟩, qwin⟩⟩ := qmem
+  have counted : (windowTargets ps c (windowAt c q)).length ∈ windowCounts ps := by
+    unfold windowCounts
+    exact List.mem_filterMap.mpr ⟨q, qps, by simp [qregion]⟩
+  refine Nat.le_trans ?_ ((h hv).2 _ counted)
+  unfold windowTargets
+  apply filter_length_mono
+  intro p _ hp
+  simp only [Bool.and_eq_true, beq_iff_eq, decide_eq_true_eq] at hp ⊢
+  refine ⟨hp.1, ?_⟩
+  have pin : p ∈ windowTargets ps c o := by
+    unfold windowTargets
+    exact List.mem_filter.mpr ⟨‹_›, by simp only [Bool.and_eq_true, beq_iff_eq, decide_eq_true_eq]; exact hp⟩
+  have lowp := low p pin
+  obtain ⟨x1, x2, y1, y2⟩ := hp.2
+  obtain ⟨_, _, qy1, _⟩ := qwin
+  simp only [InWindow, windowAt, Rect.bottom, Rect.right] at *
+  omega
+
+/-- New specification for owner review: the first-viewport half of G10. -/
+theorem G10_first (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
+    (hv : v = ⟨92160,57600⟩) : (firstViewportTargets v ps).length ≤ limit := (h hv).1
+
+/-- A larger limit never refuses an accepted layout. -/
+theorem G10_mono {small large : Nat} (le : small ≤ large) (v : Size) (ps : List Placed)
+    (h : G10 small v ps) : G10 large v ps := by
+  intro hv
+  exact ⟨Nat.le_trans (h hv).1 le, fun n hn => Nat.le_trans ((h hv).2 n hn) le⟩
+
 instance (v ps) : Decidable (G1 v ps) := by unfold G1; infer_instance
 instance (v ps) : Decidable (G2 v ps) := by unfold G2; infer_instance
 instance (ps) : Decidable (G3 ps) := by unfold G3; infer_instance
@@ -153,6 +269,15 @@ def check (expected : List (List Nat)) (v : Size) (ps : List Placed) : Bool := d
 
 theorem layoutAccepted_rules (expected v ps) (h : check expected v ps = true) : Rules expected v ps := by
   exact of_decide_eq_true h
+
+/-- New specification for owner review: G1–G9 plus G10 with a density limit. -/
+def checkDensity (limit : Nat) (expected : List (List Nat)) (v : Size) (ps : List Placed) : Bool :=
+  check expected v ps && decide (G10 limit v ps)
+
+theorem layoutAccepted_density (limit expected v ps) (h : checkDensity limit expected v ps = true) :
+    Rules expected v ps ∧ G10 limit v ps := by
+  simp only [checkDensity, Bool.and_eq_true, decide_eq_true_eq] at h
+  exact ⟨layoutAccepted_rules expected v ps h.1, h.2⟩
 
 /-- Universal over bound content for a fixed semantic template. This theorem
 makes no claim that every EHR state has the same tree shape as the template. -/
@@ -304,6 +429,32 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
       out := out ++ [{ rule := "G9", metric := "current-commit-count", actual := count, required := 1, deficit := (1 : Int)-count }]
   return out
 
+/-- New specification for owner review: G10 diagnostics with counts. A region
+reports its densest candidate window; `deficit` is the excess over the limit. -/
+def densityFindings (limit : Nat) (v : Size) (ps : List Placed) : List Finding :=
+  if v != ⟨92160,57600⟩ then [] else
+  let first := (firstViewportTargets v ps).length
+  let firstOut : List Finding := if limit < first then
+    [{ rule := "G10", metric := "first-viewport-targets", actual := first, required := limit,
+       deficit := (first : Int) - limit }] else []
+  let worst := ps.foldl (fun (acc : List (String × String × Nat)) q =>
+    match scrollRegion q with
+    | none => acc
+    | some c =>
+      let n := (windowTargets ps c (windowAt c q)).length
+      match acc.find? (·.1 == c.1) with
+      | some (_, _, m) => if m < n then (c.1, q.info.id, n) :: acc.filter (·.1 != c.1) else acc
+      | none => (c.1, q.info.id, n) :: acc) []
+  firstOut ++ (worst.reverse.filterMap fun (region, top, n) =>
+    if limit < n then
+      some { rule := "G10", node := region, other := top, metric := "scroll-window-targets",
+             actual := n, required := limit, deficit := (n : Int) - limit }
+    else none)
+
+/-- Largest first-viewport and scroll-window active-target counts (measurement). -/
+def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
+  ((firstViewportTargets v ps).length, (windowCounts ps).foldl max 0)
+
 #print axioms G9_exempt
 #print axioms apart_pixels
 #print axioms separated_pixels
@@ -315,4 +466,8 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
 #print axioms layoutAccepted_allViewports
 #print axioms layoutAccepted_textComplete
 #print axioms modal_blocks
+#print axioms G10_window
+#print axioms G10_first
+#print axioms G10_mono
+#print axioms layoutAccepted_density
 end Ehr.Layout
