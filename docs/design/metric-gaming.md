@@ -2,8 +2,8 @@
 
 [Overview](../../README.md) · [Core model](core-model.md) · [Discovery and cadence](../methods/discovery-and-cadence.md)
 
-Status: **proposal for owner review.** Every rule marked *new specification* below
-is a new definition and needs approval before it is implemented.
+Status: **R1–R7 approved (2026-11-13), in implementation in the suggested order.**
+Rules marked *new specification* are new definitions and stay flagged in Lean.
 
 ## What the agent is rewarded for
 
