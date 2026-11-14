@@ -134,9 +134,14 @@ export function historyItem(r: DecisionRecord): HistoryItem {
   };
 }
 
-async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(item:T)=>Promise<void>):Promise<void>{
+/** Real parallel runs share at most four persona workers (memory bound); more personas queue. */
+export const PERSONA_WORKER_LIMIT=4;
+export async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(item:T)=>Promise<void>,limit=Infinity):Promise<void>{
  if(!parallel){for(const item of items)await work(item);return;}
- const results=await Promise.allSettled(items.map(work));
+ const results:PromiseSettledResult<void>[]=new Array(items.length);
+ let next=0;
+ const worker=async()=>{for(let i=next++;i<items.length;i=next++){const item=items[i];if(item===undefined)continue;results[i]=await work(item).then(()=>({status:'fulfilled',value:undefined}) as const,(reason:unknown)=>({status:'rejected',reason}) as const);}};
+ await Promise.all(Array.from({length:Math.max(1,Math.min(limit,items.length))},worker));
  const failure=results.find((r):r is PromiseRejectedResult=>r.status==='rejected');
  if(failure)throw failure.reason;
 }
@@ -172,11 +177,13 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
     throw new Error('Every requested persona must occur exactly once in the world');
   if(opts.parallel&&opts.screens?.mode==='real')throw new Error('Parallel real runs require per-persona screen checkers; omit the shared screen override');
-  if(opts.parallel&&underlyingEhr.mode==='real'&&personaIds.length>4)throw new Error('Parallel real mode permits at most four persona workers');
-  const screenWorkers=Number(process.env['EHR_SCREEN_WORKERS']??(opts.parallel?Math.max(1,Math.floor(4/personaIds.length)):4));
+  // Real parallel runs queue personas onto at most four concurrent workers.
+  const personaWorkerLimit=opts.parallel&&underlyingEhr.mode==='real'?PERSONA_WORKER_LIMIT:Infinity;
+  const concurrentPersonas=opts.parallel?Math.min(personaIds.length,personaWorkerLimit):1;
+  const screenWorkers=Number(process.env['EHR_SCREEN_WORKERS']??(opts.parallel?Math.max(1,Math.floor(4/concurrentPersonas)):4));
   if(underlyingEhr.mode==='real'){
     const requested=screenWorkers;
-    const maximum=opts.parallel?Math.max(1,Math.floor(6/personaIds.length)):6;
+    const maximum=opts.parallel?Math.max(1,Math.floor(6/concurrentPersonas)):6;
     if(!Number.isSafeInteger(requested)||requested<1||requested>maximum)throw new Error(`EHR_SCREEN_WORKERS must be between 1 and ${maximum} for this run`);
   }
   const releaseDays = opts.releaseDays ?? RELEASE_DAYS;
@@ -235,7 +242,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
     interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'R1/R2 validation constraint; release score uses penalized clicks plus scrolls'},
-    completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
+    completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:concurrentPersonas,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
     mode: opts.generatorOnly ? 'OFFLINE' : llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
@@ -335,7 +342,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     train.set(id, []);
     history.set(id, []);
     timelines.set(id, { persona: id, days: [], nights: [] });
-  }));
+  }),personaWorkerLimit);
 
   const boundedTrainMemory=new Map<string,import('./schema.js').UserMemory>();
   const failures = new Map<string, number>();
@@ -398,7 +405,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const completed = result.tasks.filter(t=>t.completed).length;
       timelines.get(id)?.days.push({ day, programVersion: result.programVersion, specVersion: inForce.specVersion, load: schedule.load, clicks: m.c, keystrokes: m.k, scrolls: m.s,klmDeciSec:m.t,tasks:result.tasks.length,completed,vsCanonical,vsNoAgent,scrollPx:result.tasks.every(t=>typeof t.scrollPx==='number')?result.tasks.reduce((n,t)=>n+(t.scrollPx??0),0):null,mouseTravelPx:result.tasks.every(t=>typeof t.mouseTravelPx==='number')?result.tasks.reduce((n,t)=>n+(t.mouseTravelPx??0),0):null });
       log(`${recorded ? 'recorded ' : ''}day ${day} ${id}: v${result.programVersion} ${m.c} clicks, ${m.k} keys, ${m.s} scrolls, ${m.t} klmDeciSec, completed ${completed}/${result.tasks.length}; paired gap captured vs no-agent: actions ${vsNoAgent?.gapCapturedPct.actions?.toFixed(1)??'unavailable'}%, time ${vsNoAgent?.gapCapturedPct.klmDeciSec?.toFixed(1)??'unavailable'}%`);
-    }));
+    }),personaWorkerLimit);
     await writeDayDigest(dir,day,personaIds);
     if (day === opts.days) break;
 
@@ -450,7 +457,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         rejected: r.candidates.filter((e) => e.check.status === 'fail').length, seeded: r.candidates.filter((e) => e.candidate.seeded).length,
       });
       log(`night ${day} ${id}: ${r.mode} -> ${r.outcome} (v${r.versionBefore} -> v${r.versionAfter}); ${r.candidates.length} candidates, ${r.candidates.filter((e) => e.check.status === 'fail').length} rejected`);
-    }));
+    }),personaWorkerLimit);
     await writeNightDigest(dir,day,personaIds);
     if (nextRelease) inForce = nextRelease;
   }
