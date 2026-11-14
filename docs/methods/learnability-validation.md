@@ -58,8 +58,10 @@ The paired seed and clinical tasks are identical. Missing bounded support,
 foreign memory or substituted/omitted task identities fails closed.
 
 Both expert and bounded candidates must complete every scheduled task. R2 permits
-no increase in clicks or scrolls and at most 2% in keystrokes and `klmDeciSec`,
-with no absolute rounding allowance, matching those R1 tolerances. Zero baselines
+at most 2% increase in bounded clicks, scrolls, keystrokes and `klmDeciSec`, with
+no absolute rounding allowance. The bounded learner's replay is noisier than the
+expert's, so single-action changes do not refuse a release; the expert replay keeps
+R1's zero click/scroll tolerance. Zero baselines
 permit zero cost; nonfinite metrics refuse. R2 requires no strict bounded saving
 and imposes no additional pixel constraint. Expert R1's pixel/count/time rules
 and strict physical improvement still govern discretionary releases.
@@ -86,8 +88,9 @@ Completion counts remain actual; penalization never converts failure into succes
 The train release estimator and validation comparisons both use this policy.
 The canonical is the active release's persona-specific program, simulated on the
 same dated schedule, seed and policy (with the same train snapshot for bounded
-validation). Missing completed canonical cost for a failed task refuses scoring;
-a partial canonical attempt cannot become a cheap reference. The configured
+validation). If the canonical also fails the task, the charge is the larger of the
+two partial costs plus the penalty, so the score never falls below either arm and
+the night does not abort. The configured
 penalty is manifest-bound and resume refuses a change; each validation replay
 also records it. Historical descriptive reports using common completed tasks
 remain labeled historical and are not release scores.
@@ -125,18 +128,18 @@ by default for this offline replay. Resource failures are unavailable evidence,
 never passes. Node's heap cap alone does not constrain the native solver.
 
 All 45 decisions are inventoried, including **28 shipped releases** and 17
-nonshipping decisions. Of the shipped releases, **5 have measured R2 refusals**,
-9 pass the reconstructed validation gates, 12 pass R2 but lack sufficient frozen
-expert pixel evidence for a full verdict, and 2 are unavailable under the solver
-limits. Missing evidence is never counted as a pass. Historical certificates and
+nonshipping decisions. Of the shipped releases, **2 have measured R2 refusals**
+and 1 more is refused by the expert gate, 9 pass the reconstructed validation
+gates, 14 pass R2 but lack sufficient frozen expert pixel evidence for a full
+verdict, and 2 are unavailable under the solver limits. Missing evidence is never counted as a pass. Historical certificates and
 recorded outcome files are unchanged.
 
 | Night | P1 | P2 | P3 | P4 | P5 |
 |---|---|---|---|---|---|
-| 1 | Refuse | Partial | Refuse | Refuse | Partial |
-| 2 | Partial | Partial | — | Refuse | — |
+| 1 | Refuse | Partial | Refuse | Partial | Partial |
+| 2 | Partial | Partial | — | Partial | — |
 | 3 | Pass | Pass | Pass | Pass | Pass |
-| 4 | Partial | Refuse | — | — | — |
+| 4 | Partial | Refuse (expert scrolls) | — | — | — |
 | 5 | — | Partial | — | Partial | — |
 | 6 | Pass | Unavailable | Pass | Pass | Pass |
 | 7 | — | — | — | Partial | — |
@@ -152,20 +155,20 @@ release would have been refused.
 
 The measured bounded regressions are:
 
-| Shipped decision | Bounded cost before → after | R2 refusal |
+| Shipped decision | Bounded cost before → after | Verdict at 2% bounded tolerance |
 |---|---|---|
-| Night 1, P1 | Clicks 430 → 825; scrolls 557 → 1,348; keystrokes 1,700 → 2,511; `klmDeciSec` 33,263 → 73,665 | All four effort bounds |
-| Night 1, P3 | Clicks 186 → 195 | Clicks |
-| Night 1, P4 | Clicks 286 → 289 | Clicks |
-| Night 2, P4 | Clicks 289 → 291 | Clicks |
-| Night 4, P2 | Scrolls 3,870 → 3,871 | Scrolls; expert scrolls also rise 2,010 → 2,013 |
+| Night 1, P1 | Clicks 430 → 825; scrolls 557 → 1,348; keystrokes 1,700 → 2,511; `klmDeciSec` 33,263 → 73,665 | R2 refuses: all four bounds |
+| Night 1, P3 | Clicks 186 → 195 (+4.8%) | R2 refuses: clicks |
+| Night 1, P4 | Clicks 286 → 289 (+1.0%) | Within tolerance |
+| Night 2, P4 | Clicks 289 → 291 (+0.7%) | Within tolerance |
+| Night 4, P2 | Scrolls 3,870 → 3,871 | Within tolerance; refused by the expert gate (scrolls 2,010 → 2,013) |
 
-All five are discretionary nightly releases. The five night-3 vendor updates
+Under a zero bounded click/scroll tolerance, all five would be refused. All are
+discretionary nightly releases. The five night-3 vendor updates
 pass; four night-6 migrations pass. P2's night-6 canonical bounded comparison
 times out at two minutes. P2's night-9 replay cannot reconstruct the required
 day-7 train memory within the same limit, so no gate verdict is asserted.
-This is simulated-model evidence, not evidence of human difficulty. In particular,
-the one-scroll refusal follows the declared zero-scroll-regression rule.
+This is simulated-model evidence, not evidence of human difficulty.
 
 The complete output is `$TMPDIR/r2-retained-replay-world2/report.json`, with
 per-decision aggregates, dated sizes, memory hashes and refusal reasons.

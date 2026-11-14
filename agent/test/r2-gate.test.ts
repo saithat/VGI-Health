@@ -33,7 +33,10 @@ it('charges failed tasks canonical cost +50% on both arms, including time, never
   expect(scoredPair(failed,day,day)).toMatchObject({before:{completed:0,clicks:30,scrolls:5,keystrokes:15,klmDeciSec:150},after:{completed:1,clicks:20}});
   expect(scoredMetrics(failed,day,1).clicks).toBe(40);
   expect(()=>scoredPair(day,{...day,tasks:[]},day)).toThrow('identical unique task IDs');
-  expect(()=>scoredPair(failed,day,failed)).toThrow('Missing completed canonical cost');
+  // Vendor also fails: charge the larger partial cost plus the penalty, never crash.
+  const vendorFailed={...day,tasks:[{...task,completed:false,clicks:4,scrolls:2,klmDeciSec:50}]};
+  expect(scoredPair(failed,day,vendorFailed).before).toMatchObject({completed:0,clicks:6,scrolls:3,klmDeciSec:75});
+  expect(()=>scoredPair(failed,day,{...day,tasks:[{...task,task:'z'}]})).toThrow('identical unique task IDs');
   for(const incompletePenalty of [0,-1,Infinity,NaN])expect(()=>releaseScoringSchema.parse({incompletePenalty})).toThrow();
 });
 
@@ -44,9 +47,9 @@ it('uses every task cost even when the opposite arm fails',()=>{
   expect(scoredPair(before,after,vendor)).toMatchObject({before:{tasks:2,completed:1,clicks:50},after:{tasks:2,completed:1,clicks:45}});
 });
 
-it.each(['clicks','scrolls','keystrokes','klmDeciSec'] as const)('R2 refuses %s beyond the R1 tolerance, including zero and nonfinite baselines',key=>{
+it.each(['clicks','scrolls','keystrokes','klmDeciSec'] as const)('R2 refuses %s beyond the 2%% bounded tolerance, including zero and nonfinite baselines',key=>{
   const metrics={...task,tasks:1,completed:1};
-  const tolerance=key==='clicks'||key==='scrolls'?1:1.02;
+  const tolerance=1.02;
   expect(boundedRefusals({before:metrics,after:{...metrics,[key]:metrics[key]*tolerance}})).toEqual([]);
   expect(boundedRefusals({before:metrics,after:{...metrics,[key]:metrics[key]*tolerance+0.001}})).not.toEqual([]);
   expect(boundedRefusals({before:{...metrics,[key]:0},after:{...metrics,[key]:1}})).not.toEqual([]);

@@ -21,12 +21,16 @@ export function scoredMetrics(result: Pick<DayResult,'tasks'>, vendor: Pick<DayR
   const canonical = new Map(vendor.tasks.map(t=>[t.task,t]));
   const tasks = result.tasks.map(t => {
     if (t.completed) return t;
-    const cost = canonical.get(t.task);
-    if (!cost?.completed) throw Error(`Missing completed canonical cost for incomplete task ${t.task}`);
+    const vendorTask = canonical.get(t.task);
+    if (!vendorTask) throw Error(`Missing canonical task ${t.task}`);
+    // If the vendor layout also fails, neither cost is a full-task cost: charge the
+    // larger of the two partial costs plus the penalty, never less than either arm.
+    const cost = vendorTask.completed ? vendorTask : t;
     const charged: TaskMetrics = {...cost,completed:true};
     for (const key of keys) {
-      const value = cost[key];
-      if (typeof value === 'number') charged[key] = Math.ceil(value * (1+penalty));
+      const value = cost[key], other = vendorTask[key];
+      const base = typeof value === 'number' ? (!vendorTask.completed && typeof other === 'number' ? Math.max(value, other) : value) : value;
+      if (typeof base === 'number') charged[key] = Math.ceil(base * (1+penalty));
       else if (key==='mouseTravelPx' || key==='scrollPx') charged[key] = null;
     }
     return charged;

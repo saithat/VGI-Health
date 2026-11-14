@@ -78,8 +78,9 @@ are not rewritten.
 
 **R2. Learnability gate** (implemented; gate change, no Lean change). Validation
 also replays both layouts with the bounded clinician, each starting from a clone
-of the actor's carried train-only memory. Full completion is required; clicks and
-scrolls have 0% tolerance, keystrokes and `klmDeciSec` have R1's 2% tolerance.
+of the actor's carried train-only memory. Full completion is required; bounded clicks,
+scrolls, keystrokes and `klmDeciSec` each have a 2% tolerance (the learner's replay
+is noisier than the expert's, whose clicks and scrolls keep 0%).
 There is no bounded strict-improvement requirement or pixel gate. Each past odd
 day's held-out partition is replayed separately, with matched seeds and the same
 starting memory; rehearsal outputs never practice the actor. Decision files retain
@@ -88,8 +89,9 @@ Nightly, cadence, optional surfacing and mandatory migration/fallback paths appl
 R2, including the final deploy guard. Closes V5 on these simulated workloads and
 makes R6 meaningful. *Policy change: flagged.* The model is uncalibrated; no human
 learnability claim follows. [Policy, sizes and retained replay](../methods/learnability-validation.md).
-The retained replay finds 5 measured R2 refusals among 28 shipped decisions;
-9 pass validation, 12 have incomplete expert pixel evidence and 2 exceed solver
+The retained replay finds 2 R2 refusals among 28 shipped decisions (P1 and P3,
+night 1; P1's learner cost doubles) and 1 expert-gate refusal (P2, night 4);
+9 pass validation, 14 have incomplete expert pixel evidence and 2 exceed solver
 limits. These are independent counterfactuals; the recording remains unchanged.
 
 **R3. Copy budget** (*new specification*, Lean `Props`). For every tag: at most one

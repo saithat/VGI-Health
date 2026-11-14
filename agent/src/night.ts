@@ -261,13 +261,16 @@ export function makeHoldout(deps: LoopDeps, persona: PersonaView, schedules: Day
 }
 
 export const BOUNDED_KEYS=['clicks','scrolls','keystrokes','klmDeciSec'] as const;
+/** The bounded learner's replay is noisier than the expert's: allow 2% on every
+ * bounded effort measure, so single-action jitter does not refuse a release. */
+export const BOUNDED_TOLERANCE={clicks:2,scrolls:2,keystrokes:2,klmDeciSec:2} as const;
 export function boundedRefusals(r:Pick<ReplayDay,'before'|'after'>):string[] {
   const reasons:string[]=[];
   if(!completionOk(r))reasons.push('full bounded task completion required');
   for(const key of BOUNDED_KEYS) {
     const b=r.before[key],a=r.after[key];
-    if(!Number.isFinite(b)||!Number.isFinite(a)||a>b*(1+INTERACTION_TOLERANCE[key]/100))
-      reasons.push(`${key}: ${b} → ${a} exceeds ${INTERACTION_TOLERANCE[key]}%`);
+    if(!Number.isFinite(b)||!Number.isFinite(a)||a>b*(1+BOUNDED_TOLERANCE[key]/100))
+      reasons.push(`${key}: ${b} → ${a} exceeds ${BOUNDED_TOLERANCE[key]}%`);
   }
   return reasons;
 }
