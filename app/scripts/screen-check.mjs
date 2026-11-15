@@ -114,7 +114,7 @@ if (ui && !process.env.EHR_GEOMETRY_DIR)
 let reference = null;
 if (ui && process.env.EHR_SCREEN_REFERENCE_MANIFEST) {
   reference = await measureReference(JSON.parse(readFileSync(process.env.EHR_SCREEN_REFERENCE_MANIFEST,'utf8')), {
-    appDir, output, env: {...process.env, EHR_PRESENTATION_BUNDLE:process.env.EHR_REFERENCE_PRESENTATION_BUNDLE ?? ''},
+    appDir, output, env: {...process.env, APP_TEST_PORT: port, EHR_PRESENTATION_BUNDLE:process.env.EHR_REFERENCE_PRESENTATION_BUNDLE ?? ''},
   });
   reference.exportMs=Number(process.env.EHR_REFERENCE_EXPORT_MS ?? 0);
   reference.source=process.env.EHR_REFERENCE_SOURCE ?? 'manifest';
