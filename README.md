@@ -1,4 +1,4 @@
-_README last reviewed against commit `0d02261a` (2026-11-14)._
+_README last reviewed against commit `bb78a09a` (2026-11-14)._
 
 # VGI Health
 
