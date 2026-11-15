@@ -349,10 +349,14 @@ def recalledEvent (ctx : Context) (s : State) (m : MemoryEntry) : Option Event :
       ((eventComp e).bind (shownComp? ctx.sp ctx.prog ctx.facts s)).isSome &&
       navKey (ctx.next s e) != navKey s &&
       (match e with
+      -- Replay navigation only. Clicks that change the record (a new order
+      -- line, a macro, a commit, a review receipt) are not wayfinding, and
+      -- replaying one can grow the state without ever reaching the place.
       | .click id => match (shownComp? ctx.sp ctx.prog ctx.facts s id).map (fun (c : Component) => c.kind) with
         | some (.group true _) => !s.expanded.contains id
         | some (.button (.goto _)) => s.screen != m.place.screen
-        | _ => true
+        | some (.button .back) => true
+        | _ => false
       | _ => true)
 /-- Backtracking uses interpreter events, never restoration of a saved state. -/
 def reverseEvent (ctx : Context) (current prior : State) : Option Event :=

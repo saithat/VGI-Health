@@ -101,6 +101,11 @@ def check (b : Bool) (msg : String) : IO Unit := unless b do throw (IO.userError
   let recallCtx : Context := { sp := fixtureSpec, prog := oldLayout, facts, user, goals := default }
   let recallState := init fixtureSpec oldLayout facts user
   check (Bounded.recalledEvent recallCtx recallState { entry with place := { screen := "old" }, route := [.click "trap", .click "old"] } == some (Event.click "old")) "recall uses a direct visible link, skipping learned detours"
+  let lineRoot : Screen := { routeRoot with components := routeRoot.components ++ [({ id := "addLine", label := "New line", kind := .button .newOrderLine } : Component)] }
+  let lineLayout : Program := { oldLayout with screens := lineRoot :: oldLayout.screens.tail! }
+  let lineCtx : Context := { recallCtx with prog := lineLayout }
+  let lineState := init fixtureSpec lineLayout facts user
+  check (Bounded.recalledEvent lineCtx lineState { entry with place := { screen := "gone" }, route := [.click "addLine"] } == none) "recall never replays a record-changing click as navigation"
   let decayed := Bounded.simulate fixtureSpec moved params { afterSchedule with day := 10, tasks := [{ task with day := 10 }] } (fun _ => facts) 7 trained.memory
   check (decayed.effort.all (·.misses == 0) && decayed.effort.any (·.searches > 0)) "weak decayed memory searches without a confident stale reach"
   check (routeMoved.tasks.all (·.completed)) "moved screen discovered after stale navigation"
