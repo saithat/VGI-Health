@@ -132,19 +132,29 @@ class CliScreenChecker implements ScreenChecker {
       // Missing release-day snapshots at stand-alone call sites use the role's
       // release program. An available but unreadable reference is an error.
       const referenceStarted=performance.now();
+      // Limits are the per-screen maximum over every vendor layout available to
+      // this persona at this release: the no-agent arm's layout (which may leave
+      // optional release features unsurfaced) and the release's own persona
+      // layout (the certified migration fallback), so neither can be refused.
       const suppliedReference = input.referenceProgram ?? await this.referenceProgram?.(input);
-      const reference = suppliedReference ?? await releaseReference(input);
-      const referenceSource = input.referenceProgram ? 'explicit' : suppliedReference ? 'no-agent' : 'release-role-fallback';
-      if (reference.role !== input.program.role) throw Error('R5 reference role mismatch');
+      const release = await releaseReference(input).catch(error=>{if(suppliedReference)return null;throw error;});
+      const references = [suppliedReference, release].filter((p):p is Program=>!!p)
+        .filter((p,i,all)=>all.findIndex(q=>stableStringify(layoutOf(q))===stableStringify(layoutOf(p)))===i);
+      const reference = references[0]!;
+      const referenceSource = [input.referenceProgram ? 'explicit' : suppliedReference ? 'no-agent' : null, release && references.includes(release) ? 'release' : null].filter(Boolean).join('+') || 'release';
+      if (references.some(r=>r.role !== input.program.role)) throw Error('R5 reference role mismatch');
       const referenceFiles: string[] = [];
-      if(stableStringify(reference)===stableStringify(input.program))referenceFiles.push(...files);
-      else for (const [i, bundle] of this.bundles.entries()) {
-        referenceFiles.push(...await this.ehr.renderScreens({specVersion:input.specVersion,program:reference,fhir:bundle,ui:true,
-          outDir:path.join(dir,'reference',`b${i}`),...(i===0&&input.schedule&&input.worldDir?{workspace:{schedule:input.schedule,worldDir:input.worldDir}}:{})}));
+      for (const [r, ref] of references.entries()) {
+        if(stableStringify(layoutOf(ref))===stableStringify(layoutOf(input.program))){referenceFiles.push(...files);continue;}
+        for (const [i, bundle] of this.bundles.entries()) {
+          referenceFiles.push(...await this.ehr.renderScreens({specVersion:input.specVersion,program:ref,fhir:bundle,ui:true,
+            outDir:path.join(dir,'reference',`r${r}`,`b${i}`),...(i===0&&input.schedule&&input.worldDir?{workspace:{schedule:input.schedule,worldDir:input.worldDir}}:{})}));
+        }
       }
       if (!referenceFiles.length) throw Error('R5 reference produced no states');
       const referenceManifest = path.join(dir,'reference-files.json');
       await writeFile(referenceManifest,JSON.stringify(referenceFiles.filter(file=>!/-geometry\.json$/.test(file))));
+      if (new Set(references.map(r=>JSON.stringify(compilePresentations(r)??null))).size>1) throw Error('R5 references use different presentation bundles');
       const referenceComponents = compilePresentations(reference), referenceComponentFile=path.join(dir,'reference-components.json');
       if(referenceComponents)await writeFile(referenceComponentFile,JSON.stringify(referenceComponents));
       if (files.length === 0) return { ...base, status: 'error', pages: 0, failingScreens: [], failingFiles: [], message: 'render-screens produced no page trees' };
@@ -165,7 +175,7 @@ class CliScreenChecker implements ScreenChecker {
       }
       const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; bounded browser pool, desktop + narrow\n`);
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:String(Math.max(1,Math.min(4,this.workers??(Number(process.env['EHR_SCREEN_WORKERS']??4)||4)))), EHR_REFERENCE_EXPORT_MS:String(Math.round(performance.now()-referenceStarted)),EHR_REFERENCE_PROGRAM_HASH:sha256(stableStringify(reference)),EHR_REFERENCE_SOURCE:referenceSource,EHR_SCREEN_REFERENCE_MANIFEST:referenceManifest,EHR_REFERENCE_PRESENTATION_BUNDLE:referenceComponents?referenceComponentFile:'', EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:String(Math.max(1,Math.min(4,this.workers??(Number(process.env['EHR_SCREEN_WORKERS']??4)||4)))), EHR_REFERENCE_EXPORT_MS:String(Math.round(performance.now()-referenceStarted)),EHR_REFERENCE_PROGRAM_HASH:references.map(r=>sha256(stableStringify(r))).join(','),EHR_REFERENCE_SOURCE:referenceSource,EHR_SCREEN_REFERENCE_MANIFEST:referenceManifest,EHR_REFERENCE_PRESENTATION_BUNDLE:referenceComponents?referenceComponentFile:'', EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
       if (reportDir) await writeFile(path.join(reportDir, 'screen-policy.json'), await readFile(path.join(dir, 'gate-result.json'), 'utf8').catch(() => '{}'));
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
@@ -249,3 +259,6 @@ export async function releaseReference(input: ScreenCheckInput): Promise<Program
   if (!reference) throw Error(`No R5 vendor reference for role ${input.program.role}`);
   return {...reference,owner:input.program.owner,id:input.program.id};
 }
+
+/** Identity fields do not change rendered layout. */
+function layoutOf(p: Program): Program { return {...p,id:'',owner:'',version:0}; }

@@ -61,6 +61,10 @@ Entries are maxima over the first viewport and every scroll window in every expo
 
 **17/33 revisions exceed their release-matched no-agent per-screen limits** on these sample bundles: 11 of the 18 discretionary nightly deployments and six vendor-release deployments. This includes initial/vendor-migration revisions as well as discretionary agent deployments; none of the five initial v0 programs exceeds its reference. The frozen recording and certificates were not modified. These are counterfactual refusals under a new specification, not new outcome runs.
 
+The gate now takes each screen's limit as the larger of the no-agent layout and
+the release's persona layout (the certified migration fallback). Recomputed from
+`r5-per-screen.json`, the same 17 revisions exceed with the same screens.
+
 | Revision | Reference release | Screen: measured / limit |
 |---|---|---|
 | P1/v4 | P1/v2 | `w2Result`: 12 / 11 |

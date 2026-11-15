@@ -121,8 +121,8 @@ measures the remaining cost.
 1440×900, the number of active targets in the first viewport and in each scroll
 viewport is at most `spec.design.maxTargetsPerViewport`. Set the default from the
 largest count in the current release programs. This Lean fixed-shell default stays
-15. The deployed React gate separately uses each screen's no-agent reference maximum
-on identical data, with 57 only for absent screen ids. Partly closes V2 with R1 and R2.
+15. The deployed React gate separately uses each screen's vendor-reference maximum
+(no-agent arm or release layout) on identical data, with 57 only for absent screen ids. Partly closes V2 with R1 and R2.
 
 **R6. Honest navigation labels** (*new specification*, extends D5). A nav link's
 label equals its target screen's title or one of its declared aliases, and labels
@@ -233,9 +233,11 @@ its per-screen vendor-reference limits do not relax the Lean limit of 15.
 React DOM targets at 1440×900. For each screen id, the limit is the largest count
 in the first viewport or any scroll window over **all exported states of the
 same persona's vendor reference on the same data** (sample bundles plus any
-workspace). The reference is the no-agent arm's program at the candidate's release,
-including its merged vendor migrations: the layout the clinician would have without
-the agent. Its own counts therefore pass by construction. Sparse screens cannot
+workspace). The references are the no-agent arm's program at the candidate's release,
+including its merged vendor migrations (the layout the clinician would have without
+the agent), and the release's own persona layout (the certified migration fallback,
+with release features surfaced); each screen takes the larger maximum. Both vendor
+layouts therefore pass by construction. Sparse screens cannot
 expand to another screen's maximum. A new/merged screen id absent from the reference
 uses **57**, the global vendor-calibrated fallback in `docs/design/screen-density.json`.
 Renaming/merging into a new id can still reach that fallback; scanning cost is not proved.

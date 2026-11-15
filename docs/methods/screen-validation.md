@@ -82,9 +82,14 @@ reaching their sticky position. This keeps pinned actions from becoming free den
 **Per-screen limits are a new specification.** A candidate screen id is limited
 to the maximum of these counts over every exported state of that id in its
 persona's **vendor reference**, rendered with exactly the candidate's sample
-bundles and optional workspace schedule/world. The vendor reference is the
-no-agent arm's layout for that release, including its accepted vendor migrations.
-The vendor passes its own limits by construction; a sparse existing screen cannot
+bundles and optional workspace schedule/world. The vendor references are the
+no-agent arm's layout for that release (including its accepted vendor migrations)
+and the release's own persona layout, which is the certified migration fallback;
+each screen's limit is the larger of the two. The no-agent arm may keep a release
+feature unsurfaced, so its layout alone would refuse the vendor's own release
+layout (a fresh recording aborted on P1's v2 Labs screen: no-agent 24, release
+25–28; `scripts/check-r5-release-fallback.mts` is the regression).
+Both vendor layouts pass their own limits by construction; a sparse existing screen cannot
 borrow capacity from a dense one. A screen id absent from the reference (including
 a new/merged id) uses the global vendor-calibrated **57** in
 `docs/design/screen-density.json`. That fallback leaves a residual incentive to
