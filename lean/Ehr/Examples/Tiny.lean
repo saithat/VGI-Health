@@ -14,6 +14,8 @@ def prescribers : List Role := [.physician, .np, .surgeon]
 /-- The tiny spec. -/
 def spec : Spec where
   version := "tiny-1"
+  -- This small interpreter example intentionally has no additional R4 context.
+  workflowContexts? := some []
   elements := [
     { id := "weight", label := "Weight (kg)", kind := .quantity .kg
       enteredBy := [.rn, .physician, .np, .surgeon], prefill := .recordConfirm

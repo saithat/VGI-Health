@@ -1,0 +1,16 @@
+{
+  "version": "future-missing-context",
+  "elements": [],
+  "infos": [{"id": "patientBanner", "label": "Patient banner", "version": ""}],
+  "commits": [],
+  "entries": [],
+  "reviews": [],
+  "alerts": [],
+  "design": {
+    "maxDepth": 0,
+    "minTextSize": 12,
+    "stabilityBudget": 0,
+    "landmarks": ["patientBanner"],
+    "catalog": ["banner"]
+  }
+}

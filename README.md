@@ -94,7 +94,7 @@ The retained recording was certified before the latest anti-gaming rule changes;
 its layouts, rule inputs and outcome scenarios are frozen. Current checks refuse
 25 of 33 revisions under the new [high-alert policy](docs/audits/alerts-r5-20261114.md#retained-alert-refusals);
 none exceeds the [rendered-screen limit](docs/methods/screen-validation.md#deployed-action-density-r5)
-of 57 targets, and all pass the other [combined checks](docs/design/metric-gaming.md#retained-recording-against-the-combined-rules).
+of 57 targets. Five P5 revisions also fail the stricter [navigation-label rule](docs/design/metric-gaming.md#r6-honest-navigation-labels-implemented).
 Historical certificates have not been rebound to this runtime.
 
 | Evidence | Result and caveat |
@@ -174,7 +174,7 @@ modules serially (about 8.3 GiB peak); the weekly `ehrheavy.yml` workflow audits
 all 24 seeded-defect axioms.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
-runs unit tests, 202 canonical conformance scenarios, the 15-accepted/28-rejected
+runs unit tests, 202 canonical conformance scenarios, the 15-accepted/29-rejected
 certification matrix, and Postgres integration/protocol tests. Archive-backed
 tests skip without local data. CI checks packaged WASM evidence but does not
 rebuild WASM. Full Comparator verification is `make verify`; browser audits,
@@ -281,7 +281,7 @@ appropriateness and the uncalibrated rates are not validated.
 | Interruption service and calibration | Role/activity minute-bin rates, channel service, fixed exposure, urgency/type mix, protected-popup triage and return costs are provisional; parameter provenance and opt-outs are in [simulation methods](docs/methods/wave3-simulation.md). Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
 | Commit and ADT protocol assumptions | [Models and storage contract](docs/methods/commit-protocol.md): sole writer, consistent imports, locked current snapshots and atomic durable publication; host refinement remains tested. |
 | Completion interaction rules | [Scenario checker](docs/methods/completion-checker.md): acknowledgment before commit and Back retention; general property 6 and patient-switch durability remain open. |
-| Anti-gaming design rules | [Metric gaming](docs/design/metric-gaming.md): at most 2 copies of a control per program and 1 per screen, with added copies charged to the stability budget; at most 15 active targets per 1440×900 viewport in Lean G10, plus a vendor-calibrated limit on rendered screens; high-alert medication notices cannot be removed per clinician; declared workflow context stays within 8 goto hops of commit screens; navigation labels match titles/aliases within 4 words. These are new specifications. |
+| Anti-gaming design rules | [Metric gaming](docs/design/metric-gaming.md): at most 2 copies of a control per program and 1 per screen, with added copies charged to the stability budget; at most 15 active targets per 1440×900 viewport in Lean G10, plus a vendor-calibrated limit on rendered screens; high-alert medication notices cannot be removed per clinician; declared workflow context stays within 8 goto hops of commit screens, with explicit context policies required after v3; navigation labels match titles/equivalent aliases within 4 words. These are new specifications. |
 | Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G10, safety-text preservation and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
 | Release and user-model choices | [Cadence](docs/methods/discovery-and-cadence.md) uses a provisional effect floor, movement proxy and auto-approval; [bounded learning and preferences](docs/methods/simulation.md) are uncalibrated. [Tool-driven arm E](docs/methods/agent-loop.md) stays opt-in: in the 35-decision B/E paired run B accepted 88.6% and E 0%, because every E sample hit its 120K cumulative token ceiling before submitting, a ceiling B did not have. [Arm R](docs/methods/rlm-night.md), an opt-in recursive-language-model agent with a confined REPL, submitted within budget on all 70 full-study samples but accepted 57/70 versus B’s 58/70, using 1.86× the input tokens and 1.43× the charged sample wall time. |
 

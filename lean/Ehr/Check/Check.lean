@@ -390,8 +390,11 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
                  screen? := added.head?.map (·.1) }
         | none => none },
     -- R4, new specification: bounded context access from every commit screen.
-    { property := "contextRetained", passes := contextRetained spec prog
-      explain := fun _ => compFinding "contextRetained" prog false fun scr c =>
+    { property := "contextRetained", passes := Specs.DesignPolicies.contextsDeclared spec && contextRetained spec prog
+      explain := fun _ =>
+        if !Specs.DesignPolicies.contextsDeclared spec then
+          plain "contextRetained" s!"R4: non-historical spec {spec.version} must explicitly declare workflowContexts (only v1–v3 inherit hospital defaults)"
+        else compFinding "contextRetained" prog false fun scr c =>
         if (commitOf? c.kind).isSome then
           if !decide (ContextWorkflowDeclared spec scr.workflow) then
             some s!"R4: commit screen {scr.id} uses workflow {scr.workflow} without a declared context set"

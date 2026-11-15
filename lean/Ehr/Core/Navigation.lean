@@ -47,7 +47,7 @@ def presetLandings : String → List (ScreenId × String)
   | "P3" => [("w4Worklist", "Unit Census & MAR")]
   | "P4" => [("w5Rooming", "Schedule"), ("w2Inbox", "Inbox: Results"), ("w7Queue", "Inbox: Rx Requests")]
   | "P5" => [("w6Schedule", "OR Schedule"), ("w6Consults", "Consults"),
-             ("w1Rooming", "Clinic Schedule"), ("w2Inbox", "Inbox: Results")]
+             ("w1Rooming", "Rooming"), ("w2Inbox", "Inbox: Results")]
   | _ => []
 
 /-- ED and ward clinicians sign in to their department activity. Existing
