@@ -49,6 +49,7 @@ import {
   type UserMemory, type JsonPatchOp, type LlmCallRef, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
 } from '../../app/src/dashboard/agent-evidence.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
+import {noAgentReference} from './vendor-reference.js';
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
 import type { RunStore } from './store.js';
 import { errorMessage, hash32, pad2, rng } from './util.js';
@@ -110,6 +111,7 @@ export function invalidPatch(error: unknown): CheckResult {
 }
 
 export interface Gate {
+  referenceProgram?: Program;
   workload?: DaySchedule['tasks'];
   specVersion: string;
   /** Previous version for the stability budget. */
@@ -387,7 +389,8 @@ export async function deployVersion(deps: LoopDeps, persona: string, program: Pr
   stage='build';
   const build = deps.ehr.mode === 'real' ? await retryInfrastructure('deploy:build',()=>installedBuild(undefined, deps.ehr.binary ?? undefined),true) : undefined;
   stage='screen-check';
-  screenCheck = await retryScreens(deps.screens).check({ specVersion: gate.specVersion, program });
+  const referenceProgram=gate.referenceProgram ?? await noAgentReference(deps.store.dir,gate.night===undefined?Infinity:gate.night+1)({specVersion:gate.specVersion,program});
+  screenCheck = await retryScreens(deps.screens).check({ specVersion: gate.specVersion, program, ...(referenceProgram?{referenceProgram}:{}) });
   if (screenCheck.status === 'error') throw new InfrastructureError(screenCheck.message);
   if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
   stage='native-deploy';
@@ -881,7 +884,8 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
       try { validateCandidate(describeProgram(program, workflows), current, release.spec); }
       catch (error) { observation.staticError = errorMessage(error); }
       if (check.status === 'pass' && !observation.staticError) {
-        observation.screen = await retryScreens(deps.screens).check({ specVersion: release.specVersion, program });
+        const referenceProgram=await noAgentReference(deps.store.dir,night+1)({specVersion:release.specVersion,program});
+        observation.screen = await retryScreens(deps.screens).check({ specVersion: release.specVersion, program, ...(referenceProgram?{referenceProgram}:{}) });
         if (observation.screen.status === 'pass') {
           observation.trainEstimate = await estimator.estimate(program);
           try {

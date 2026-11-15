@@ -47,7 +47,7 @@ interface EvidenceScope {previous:string;oldWorld:string;world:string;app:string
 export function cachedScreenReports(inner:ScreenChecker,scope:EvidenceScope) {
   const hits={checks:0,geometry:0};
   const directory=(input:Parameters<ScreenChecker['check']>[0])=>{
-    if(input.specVersion!==input.program.specVersion || compilePresentations(input.program) ||
+    if(input.referenceProgram || input.specVersion!==input.program.specVersion || compilePresentations(input.program) ||
        !/^[\w.-]+$/.test(input.program.owner) ||
        (input.schedule && input.worldDir!==scope.world))return null;
     const key=geometryCacheKey(input.program)+(input.schedule&&input.worldDir?
@@ -62,7 +62,7 @@ export function cachedScreenReports(inner:ScreenChecker,scope:EvidenceScope) {
     return result.mode==='real' && result.status!=='error' ? {dir,result}:null;
   };
   const screens:ScreenChecker={mode:inner.mode,
-    async check(input){const prior=await report(input);if(!prior)return inner.check(input);hits.checks++;return structuredClone(prior.result);},
+    async check(input){return structuredClone(await inner.check(input));},
     async geometry(input){
       const prior=await report(input);
       if(prior?.result.status==='pass' && existsSync(path.join(prior.dir,'geometry.json'))) {

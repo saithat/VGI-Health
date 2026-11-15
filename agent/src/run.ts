@@ -13,6 +13,7 @@ import { contentDigest,writeDayDigest,writeNightDigest } from './content-digest.
 import {geometryEhr,type GeometryProvider} from './geometry.js';
 import {InfrastructureError} from './night.js';
 import {noAgentDay} from './no-agent.js';
+import {noAgentReference} from './vendor-reference.js';
 import { compareDays, type BenefitComparison } from '../../app/src/dashboard/benefit-metrics.mjs';
 import { assertCertified } from './certification.js';
 import { fileHash,runFingerprints,treeHash } from './fingerprints.js';
@@ -131,6 +132,7 @@ export function historyItem(r: DecisionRecord): HistoryItem {
       return { id, summary: c?.summary ?? '', moveType: c?.moveType ?? '' };
     }),
     patch: deployedPatch(r),
+    ...(r.certification.attempts.some(a=>a.source==='screen-check'&&a.check.message)?{screenFailures:r.certification.attempts.filter(a=>a.source==='screen-check'&&a.check.message).map(a=>({message:a.check.message??'',screens:a.check.screens??[],patch:a.patch}))}:{}),
   };
 }
 
@@ -194,7 +196,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const store = new RunStore(dir,opts.verificationRelease || opts.generatorOnly ? path.join(dir,'custom'):undefined);
   const recorder = new RecordingLlm(llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
-  const screens = opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), artifactsDir: path.join(dir, 'reports/screens'), workers: screenWorkers });
+  const screens = opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), referenceProgram:noAgentReference(dir), artifactsDir: path.join(dir, 'reports/screens'), workers: screenWorkers });
   const rawProvider=opts.geometry??screens.geometry;
   const provider=rawProvider?((input:Parameters<typeof rawProvider>[0])=>retryInfrastructure('geometry',()=>rawProvider(input),true)):undefined;
   const ehr=provider?geometryEhr(nativeEhr,provider,dir):nativeEhr;
@@ -269,7 +271,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   for(const id of personaIds){
 
     const workerNative=underlyingEhr.mode==='real'?retryEhr(recordingEhr(underlyingEhr,path.join(dir,'ehr',id),id)):retryEhr(underlyingEhr);
-    const workerScreens=opts.screens??createScreenChecker(workerNative,{...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),artifactsDir:path.join(dir,'reports/screens'),workers:screenWorkers});
+    const workerScreens=opts.screens??createScreenChecker(workerNative,{...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),referenceProgram:noAgentReference(dir),artifactsDir:path.join(dir,'reports/screens'),workers:screenWorkers});
     const rawGeometry=opts.geometry??workerScreens.geometry;
     const geometry=rawGeometry?((input:Parameters<typeof rawGeometry>[0])=>retryInfrastructure('geometry',()=>rawGeometry(input),true)):undefined;
     const workerEhr=geometry?geometryEhr(workerNative,geometry,dir):workerNative;
@@ -424,6 +426,14 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       };
       let res: NightResult;
       const next = nextRelease ? await releaseForPersona(nextRelease, id) : null;
+      // Prepare tomorrow's independent control before gating this release's
+      // candidates, so R5 uses the exact merged no-agent layout. This result
+      // stays outside the agent prompt; the following day reuses its checkpoint.
+      if(next) {
+        const nextSchedule=await world.schedule(day+1,id);
+        if(!nextSchedule)throw Error(`Missing no-agent reference schedule ${id}/${day+1}`);
+        await noAgentDay(deps,view,next,nextSchedule,makeHoldout(deps,view,await validationSchedules(day,d=>world.schedule(d,id)),boundedTrainMemory.get(id)));
+      }
       if (opts.resume && existsSync(store.decisionPath(day, id))) {
         const record = await store.readDecision(day, id);
         for (const candidate of record.candidates) {

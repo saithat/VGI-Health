@@ -31,6 +31,26 @@ for (const persona of ['P1', 'P2', 'P3', 'P4', 'P5'])
     writeFileSync(file, JSON.stringify(inputs.program));
     programs.push({ group: 'retained', id: `${persona}/${version}`, spec: join(binding, 'spec.json'), program: file });
   }
+// Include the actual vendor v0 and every release-era no-agent reference used
+// by retained revisions, rather than silently treating one global maximum as
+// the policy. The retained snapshots stay immutable.
+for (const persona of ['P1','P2','P3','P4','P5']) {
+  const binding=join(root,'runs/core-10day/certifications',persona,'v0');
+  const inputs=read(join(binding,'inputs.json'));
+  const file=join(out,`${persona}-vendor-v0.json`);writeFileSync(file,JSON.stringify(inputs.program));
+  programs.push({group:'vendor-v0',id:persona,spec:join(binding,'spec.json'),program:file});
+}
+for(const item of programs.filter(p=>p.group==='retained')) {
+  const [persona,version]=item.id.split('/');
+  const binding=join(root,'runs/core-10day/certifications',persona,version), inputs=read(join(binding,'inputs.json'));
+  const day=String((inputs.night ?? 0)+1).padStart(2,'0');
+  const reference=join(root,'runs/core-10day/no-agent/days',`day-${day}`,`${persona}.program.json`);
+  const p=read(reference);
+  if(p.specVersion!==inputs.program.specVersion)throw Error(`Reference release mismatch: ${item.id}`);
+  const id=`${persona}/${p.specVersion}`;item.reference=id;
+  if(!programs.some(p=>p.group==='reference' && p.id===id))
+    programs.push({group:'reference',id,spec:item.spec,program:reference});
+}
 const files = new Map(), entries = [];
 if (!process.argv.includes('--reuse-exports')) {
   for (const [i, item] of programs.entries()) {
@@ -90,17 +110,23 @@ try {
         screens.set(id, prior);
       }
     }
-    return { group: entry.group, id: entry.id, programSha256: entry.programSha256,
+    return { group: entry.group, id: entry.id, ...(entry.reference?{reference:entry.reference}:{}), programSha256: entry.programSha256,
       states: entry.states.length, screens: [...screens.values()].sort((a,b) => a.screen.localeCompare(b.screen)) };
   });
   const limit = Math.max(...measured.filter(m => m.group === 'vendor').flatMap(m => m.screens.map(s => s.maximum)));
-  const refused = measured.filter(m => m.group === 'retained' && m.screens.some(s => s.maximum > limit)).map(m => m.id);
-  const summary = { viewport: [1440, 900], bundles, vendorLimit: limit, retainedRefused: refused,
+  const refused = measured.filter(m=>m.group==='retained').flatMap(m=>{
+    const reference=measured.find(r=>r.group==='reference'&&r.id===m.reference);
+    if(!reference)throw Error(`Missing reference ${m.reference}`);
+    const limits=Object.fromEntries(reference.screens.map(s=>[s.screen,s.maximum]));
+    const screens=m.screens.filter(s=>s.maximum>(limits[s.screen]??57)).map(s=>({screen:s.screen,measured:s.maximum,limit:limits[s.screen]??57}));
+    return screens.length?[{id:m.id,reference:m.reference,screens}]:[];
+  });
+  const summary = { viewport: [1440, 900], bundles, vendorMaximum: limit, fallbackLimit:57, retainedRefused: refused,
     bindings: { app: read(join(root, 'app/dist/build.json')),
       measurementSha256: createHash('sha256').update(readFileSync(join(root, 'app/e2e/action-density.ts'))).digest('hex'),
       policy: read(join(root, 'docs/design/screen-density.json')),
       checkerSha256: read(join(out, 'exports.json')).checkerSha256 },
     distinctTrees: byFile.size, measurements: samples.length, programs: measured };
   write('density-report.json', summary);
-  console.log(JSON.stringify({ vendorLimit: limit, retainedRefused: refused, distinctTrees: byFile.size }));
+  console.log(JSON.stringify({ vendorMaximum: limit, fallbackLimit:57, retainedRefused: refused, distinctTrees: byFile.size }));
 } finally { lock.release(); }

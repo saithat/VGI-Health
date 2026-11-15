@@ -157,6 +157,10 @@ if (urgencyOnly) {
   }, null, 2));
   console.log(`Urgency audit: ${selected.length} representatives from ${hashes.size} unique source trees`);
 }
+// These are vendor reference trees: each screen is bounded by its own observed
+// states in this audit. Candidate checks receive a separately rendered reference.
+const referenceManifest = resolve(output, 'reference-manifest.json');
+writeFileSync(referenceManifest,JSON.stringify(selected));
 const result = spawnSync(
   process.execPath,
   [resolve(root, "app/scripts/screen-check.mjs"), "--ui", ...selected],
@@ -165,6 +169,7 @@ const result = spawnSync(
     stdio: "inherit",
     env: {
       ...process.env,
+      EHR_SCREEN_REFERENCE_MANIFEST: referenceManifest,
       EHR_PHYSICAL_POLICY: "1",
       EHR_ENFORCE_PHYSICAL: "1",
       EHR_PHYSICAL_REPORT: resolve(output, "physical.json"),
