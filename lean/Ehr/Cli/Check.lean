@@ -91,7 +91,7 @@ def designAuditMain (args : List String) : IO UInt32 := do
     let some pp := flag args "program" | throw (IO.userError "missing --program")
     let spec ← readJson Spec sp
     let prog ← readJson Program pp
-    let context := contextRetained spec prog
+    let context := Specs.DesignPolicies.contextsDeclared spec && contextRetained spec prog
     let labels := decide (Render.NavigationLabelsHonest spec prog)
     let findings := ((rules spec none prog prog).filter fun r =>
       (r.property == "contextRetained" || r.property == "navigation") && !r.passes).map fun r =>

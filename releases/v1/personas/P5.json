@@ -78,7 +78,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "home.work",
-     "label": "Clinic Schedule",
+     "label": "Rooming",
      "kind": {"button": {"action": {"goto": {"screen": "w1Rooming"}}}},
      "id": "home.work.w1Rooming"},
     {"visibility": "always",

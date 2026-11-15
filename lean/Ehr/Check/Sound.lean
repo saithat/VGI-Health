@@ -227,6 +227,8 @@ theorem completion_dependency_rejected :
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where
   version := "proof-empty"
+  -- The empty-task assembly witness explicitly has no additional R4 context.
+  workflowContexts? := some []
   elements := []
   infos := []
   commits := []
@@ -255,6 +257,7 @@ theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyPro
     simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, emptyProgram] at hc)
 
 #print axioms satisfies_of_checked_completable
+#print axioms empty_program_satisfies
 #print axioms satisfies_of_checked_scalar
 #print axioms scalar_identity_satisfies
 #print axioms satisfies_of_checked_fixed_lines

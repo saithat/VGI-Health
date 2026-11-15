@@ -119,7 +119,7 @@
   ["Inbox: Rx Requests", ["Rx Requests", "Refill Review"]],
   ["OR Schedule", ["Case list"]],
   ["Sign orders", ["Sign Orders"]],
-  ["Rooming", ["Visit workflow", "Pediatric workflow", "Clinic Schedule"]],
+  ["Rooming", ["Visit workflow", "Pediatric workflow"]],
   ["Triage summary", ["ED workflow"]],
   ["Preprocedure", ["Surgical workflow"]],
   ["Surgical consult", ["Consult note"]]],

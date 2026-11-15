@@ -31,12 +31,17 @@ def navigationAliases : List (String × List String) :=
    ("ED order sets", ["Order sets"]), ("Inbox: Results", ["Results", "Result Review"]),
    ("Inbox: Rx Requests", ["Rx Requests", "Refill Review"]), ("OR Schedule", ["Case list"]),
    ("Sign orders", ["Sign Orders"]),
-   ("Rooming", ["Visit workflow", "Pediatric workflow", "Clinic Schedule"]),
+   ("Rooming", ["Visit workflow", "Pediatric workflow"]),
    ("Triage summary", ["ED workflow"]), ("Preprocedure", ["Surgical workflow"]), ("Surgical consult", ["Consult note"])]
 
 /-- Historical release specs omit the new fields. They receive the same
 hospital policies as newly exported specs, without rewriting the recording. -/
 def hospitalRelease (sp : Spec) : Bool := ["v1", "v2", "v3"].contains sp.version
+
+/-- New specification R4: future releases must explicitly declare their context
+policy. Only historical v1–v3 may omit it and inherit the hospital defaults. -/
+def contextsDeclared (sp : Spec) : Bool :=
+  hospitalRelease sp || sp.workflowContexts?.isSome
 
 def contexts (sp : Spec) : List (String × List InfoId) :=
   sp.workflowContexts?.getD (if hospitalRelease sp then workflowContexts else [])

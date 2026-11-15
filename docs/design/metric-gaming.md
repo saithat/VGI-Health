@@ -61,7 +61,7 @@ reproduces the retained audit. These are reporting changes, not a new score.
 |---|---|---|---|
 | V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | Copies are exempt from `StabilityBudget` and from the movement proxy. The expert clinician pays nothing for clutter. | Closed by R3 in the checker. The movement proxy still ignores copies. |
 | V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: separate R5 gates cover Lean geometry and the deployed React painter. The React limit (57) is one vendor-calibrated maximum, so it binds only screens near the densest vendor screen; R1 and R2 constrain other costs. |
-| V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | R4 closes removal beyond the context bound; the information-needs simulator is not connected to the score. |
+| V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | R4 closes removal beyond the context bound and refuses missing policies after v3; deliberately empty policies remain possible, and the information-needs simulator is not connected to the score. |
 | V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
 | V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The expert has no discovery cost. | Closed by R2 on sampled past holdouts; the user model remains uncalibrated. |
 | V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | R6 bounds navigation labels and restricts them to titles or declared aliases. |
@@ -315,8 +315,21 @@ every commit screen's workflow; renaming it to an undeclared tag refuses.
 Duplicate workflow declarations are unioned, so an empty earlier row cannot
 shadow required items.
 
+**New specification: missing-policy refusal.** For every non-historical spec,
+the checker requires `workflowContexts` to be present, including programs with
+no commit buttons. A missing list fails `contextRetained` with a message naming
+the spec version and `workflowContexts`. V1–V3 still inherit hospital defaults.
+An explicit `workflowContexts: []` remains a deliberate empty policy; this check
+prevents omission, not inadequate policy authorship. `accepted_contextsDeclared`
+proves acceptance requires an explicit declaration or historical defaults;
+the existing `ContextRetained` statement and its access guarantee are unchanged.
+The read-only `design-audit` applies the same declaration check.
+
 Bad program 50 removes every `problemList` provider from the P1 release and
-fails `contextRetained`. `ContextTests.lean` covers local/remote context, exact
+fails `contextRetained`. Fixture 53 pairs a minimal future spec missing its
+context list with an otherwise acceptable, commit-free program and fails for
+that omission. The certification matrix now expects 29 refusals and 15 accepted
+personas, with native counterexample replays. `ContextTests.lean` covers local/remote context, exact
 bounds, hidden/tiny/conditional controls, groups, tabs, missing info IDs,
 stranded commit screens, duplicate declarations and undeclared workflows.
 The existing completion-trap witness gains four read-only context panels; its
@@ -331,9 +344,25 @@ currently hidden or disabled controls. Action buttons outside navigation keep
 their action labels. Every checked label must **exactly** equal its target
 screen title or an alias declared for that title in `Spec.navigationAliases`.
 Aliases live in spec data, so changing a program cannot authorize new terms.
-The short vendor vocabulary includes `Medications` for `Medication Review`,
-`Summary` for `Chart Summary`, and the existing activity entry labels; no release
-labels or layouts were rewritten.
+The short vendor vocabulary includes `Medications` for `Medication Review` and
+`Summary` for `Chart Summary`. **New specification: remove the misleading
+`Clinic Schedule` alias for `Rooming`.** P5's vendor landing link now says
+`Rooming`, matching its destination, in all three exported releases. This changes
+those vendor program hashes; retained programs and certificates are untouched.
+
+P1/P4 keep `Schedule` as their landing activity name. Their encounter openers
+render as `Open encounter` in a schedule row (`present.row|home.schedule|0`),
+outside the navigation groups and without a `nav` tag segment, so R6 does not
+check those action labels. Their Rooming overview labels match the target title.
+Neither persona depends on a `Schedule` alias for Rooming; no such alias exists.
+P5's opener stays in the workflow navigation group and is checked by R6.
+All three encounter-opener labels fit the four-word bound. Other preset landing
+labels already match their target titles; no other alias removal is needed.
+
+Missing `navigationAliases` remains strict for non-historical specs: it admits
+only exact titles. Requiring an alias list would add no honesty constraint, so
+its absent-to-empty behavior is unchanged. Historical specs use the tightened
+hospital vocabulary.
 
 `spec.design.maxLabelWords` defaults to 4. Words are whitespace-separated tokens
 containing an alphanumeric character; standalone `/` and `&` are punctuation,
@@ -353,8 +382,9 @@ punctuation. Existing D5 group, uniqueness and coverage rules remain intact.
 Old frozen V1–V3 spec JSON omits these fields. The checker applies the **same
 sourced context sets and declared alias vocabulary** when they are absent;
 there is no empty-policy exemption for historical release specs. Newly exported
-release specs include both policies explicitly. Recorded specs, programs,
-certificates and decisions remain unchanged; passing offline checks does not
+release specs include both policies explicitly. The exported P5 vendor programs
+use the corrected Rooming label; recorded specs, programs, certificates and
+decisions remain unchanged. Passing offline checks does not
 rebind a historical certificate to the new native/WASM runtime.
 
 ```sh
@@ -370,12 +400,15 @@ refusal before returning failure. Retained combined checks use the frozen
 canonical and previous program; output binds inputs and native binary by SHA-256.
 `certify.py --no-write` checks the full persona/bad-program matrix without
 replacing existing verdict or report files.
+With the tightened alias vocabulary, `audit-context-navigation.py` intentionally
+exits 1 after reporting the five retained P5 refusals; this is the expected
+result for the unchanged recording.
 
 | Native audit | Result |
 |---|---|
 | Release programs (canonical plus P1–P5, V1–V3) | 18/18 pass R4 and R6 independently. |
-| Retained revisions | 33/33 pass both rules and the combined checker with frozen canonical/previous inputs. |
-| Additional refusals | 0; no historical exemption, layout rewrite or certificate replacement. |
+| Retained revisions | 33/33 pass R4; 28/33 pass R6 and the combined checker with frozen canonical/previous inputs. |
+| Additional refusals | P5 v0–v4 fail `navigation`: their frozen `Clinic Schedule` link targets `Rooming`. No historical exemption, recording rewrite or certificate replacement. |
 
 The three mixed-role canonical references retain an **existing D5 refusal**:
 their Schedule overview has 16 entries (limit 12). `design-audit` includes that
@@ -392,7 +425,7 @@ which differs from all 33 retained current build bindings.
 Native/WASM certificate bindings remain historical; this work does not rebuild
 WASM or re-certify the recording.
 
-Verification: default Lean build **647 jobs**; **204 types / 44 samples**
+Before the label and missing-policy corrections, verification included: default Lean build **647 jobs**; **204 types / 44 samples**
 regenerated; proof map regenerated and freshness checked; verification audit
 **91 theorems**, only permitted axioms. `certify.py --no-write` accepts **15/15**
 personas and rejects **27/27** bad programs at the expected properties with valid
@@ -400,6 +433,19 @@ navigation replays. App/agent typechecks, **23 targeted agent tests**, and the a
 build pass. Native canonical conformance: **15 targets × 201 scenarios**, 1,584
 passes, **0 failures**, 1,431 not applicable. The full browser audit was outside
 this implementation's scope.
+
+The label and missing-policy corrections were verified with `cd lean && lake
+build` (647 jobs), the proof-map extra modules (125 jobs), proof-map regeneration
+and freshness checking, and `certify.py --no-write` (15/15 accepted, 29/29
+expected refusals with valid replays). Explicit `#print axioms` checks for the
+changed acceptance proof, new declaration theorem and affected proof examples
+use only `propext`, `Classical.choice` and `Quot.sound`. A six-case native probe
+checks both `check` and `design-audit`: omitted and null policies refuse;
+explicitly empty policies and historical v1–v3 defaults pass. The three small
+proof-example specs now declare their deliberately empty policies explicitly;
+their theorem statements and clinical obligations are preserved. The 33 retained
+program/spec/input hash triples are unchanged. App inputs and packaged WASM were
+not changed; full browser verification remains separate from these native checks.
 
 ## Retained recording against R3 and R5
 
@@ -430,6 +476,10 @@ This historical combined replay does not apply R2 or the enlarged holdouts; the
 separate [R2 replay](../methods/learnability-validation.md#retained-recording-replay) does.
 The five initial revisions plus 28 subsequent deployments account for the
 33 bindings; R1 applies to decisions, rather than the five initial layouts.
+The following results predate the tightened R6 vocabulary. With the current
+checker, this command stops at P5 v0's `navigation` refusal; the R4/R6 audit above
+reports all five affected revisions. The independent R1/R3/R5/R7 measurements
+below remain historical results.
 
 | Combined check | Result |
 |---|---|
@@ -542,13 +592,14 @@ sorted path-to-content-hash map (compact JSON) hashes to
 Run data, patient fixtures, programs and generated verdict data are not included
 in the commits.
 
-## Suggested order
+## Remaining limits
 
-1. R7 (test) and R1 (gate). Small, and they settle whether V7 is open.
-2. R3 and R5 in one Lean lane. Both are counting rules over existing structures. *Done.*
-3. R2. Needs replay plumbing, plus a check of how many retained releases still pass.
-4. R4 and R6. Both need new spec data (context sets, screen aliases), and R4 needs
-   cited sources for each workflow's context set.
+All seven rules are implemented. R4 now rejects omitted policies after v3, but
+explicitly empty context sets and clinical sufficiency remain policy-authoring
+questions. Connecting information-needs costs to the release gate and calibrating
+the simulated clinician remain open. R6 constrains declared navigation labels;
+the equivalence of spec-owned aliases still needs human judgment, and ordinary
+action labels such as a schedule row's encounter opener are outside its scope.
 
 Each new rule must be checked against `runs/core-10day`'s retained releases before
 it is enforced. A rule that would retroactively reject a shipped version is

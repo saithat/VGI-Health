@@ -79,7 +79,18 @@ theorem accepted_contextRetained (sp prev can p) (h : check sp prev can p = .ok)
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
   rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcontext, _⟩
-  exact contextRetained_sound sp p hcontext
+  simp only [Bool.and_eq_true] at hcontext
+  exact contextRetained_sound sp p hcontext.2
+
+/-- New specification R4: acceptance requires an explicit context policy or
+the historical hospital defaults, independently of whether any commit exists. -/
+theorem accepted_contextsDeclared (sp prev can p) (h : check sp prev can p = .ok) :
+    Specs.DesignPolicies.contextsDeclared sp = true := by
+  have hall := (check_ok_iff sp prev can p).mp h
+  simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcontext, _⟩
+  simp only [Bool.and_eq_true] at hcontext
+  exact hcontext.1
 
 /-- New specification R6/D5: accepted programs have honest bounded nav labels. -/
 theorem accepted_navigationLabels (sp prev can p) (h : check sp prev can p = .ok) :
@@ -99,6 +110,7 @@ theorem accepted_D5 (sp prev can p) (h : check sp prev can p = .ok) :
 #print axioms contextProvider_sound
 #print axioms contextRetained_sound
 #print axioms accepted_contextRetained
+#print axioms accepted_contextsDeclared
 #print axioms accepted_navigationLabels
 #print axioms accepted_D5
 end Ehr.Check

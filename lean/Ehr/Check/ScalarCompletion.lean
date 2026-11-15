@@ -25,6 +25,8 @@ def alert (cond : AlertCond) (tier : Tier) : AlertSpec :=
 /-- A scalar clinical-review spec with real entry, review and alert obligations. -/
 def spec (kind : ValueKind) (role : Role) (mode : ReviewMode) (cond : AlertCond) (tier : Tier) : Spec :=
   { version := "scalar-completion", elements := [element kind role],
+    -- This scalar proof family intentionally adds no R4 context requirements.
+    workflowContexts? := some [],
     infos := [{ id := "allergyList", label := "Allergies", version := "allergyVersion" }],
     commits := [{ id := "recordReview", label := "Record review", roles := [role] }],
     entries := [entry], reviews := [review mode], alerts := [alert cond tier],

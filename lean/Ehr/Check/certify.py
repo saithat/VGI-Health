@@ -67,10 +67,15 @@ def main():
         expected[path] = prop
     # New specification: high-alert notices survive clinician personalization.
     expected["lean/Ehr/Check/bad/42-removed-high-alert.json"] = "highAlertNotices"
+    # New specification R4: a future spec cannot omit its context policy.
+    missing_context = "lean/Ehr/Check/bad/53-missing-context.json"
+    overrides[missing_context] = ("lean/Ehr/Check/bad/missing-context-spec.json", missing_context)
+    expected[missing_context] = "contextRetained"
     design_expected = {
         "lean/Ehr/Check/bad/50-context-removed.json": "contextRetained",
         "lean/Ehr/Check/bad/51-misleading-navigation.json": "navigation",
         "lean/Ehr/Check/bad/52-stuffed-navigation.json": "navigation",
+        missing_context: "contextRetained",
     }
     if any(expected.get(path) != prop for path, prop in design_expected.items()):
         raise RuntimeError("R4/R6 bad-program expectations are missing or changed")
@@ -105,6 +110,8 @@ def main():
                 verdict["violation"]["property"] == expected[path])
             if not item["expectedPropertyRejected"]:
                 raise RuntimeError(f"bad fixture did not fail expected property {expected[path]}: {path}: {verdict}")
+            if path == missing_context and "workflowContexts" not in verdict["violation"]["message"]:
+                raise RuntimeError(f"missing context refusal must name workflowContexts: {verdict}")
         if run.returncode == 1:
             item["replay"] = replay(json.loads((ROOT / sp).read_text()), program,
                                     verdict["violation"]["counterexample"])

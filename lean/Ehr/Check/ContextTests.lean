@@ -48,12 +48,34 @@ def replaceDestination (cs : List Component) : Program := { remote with screens 
 -- Legacy frozen releases apply the exact sourced policy, not an empty set.
 #guard Specs.DesignPolicies.contexts { sp with version := "v1", workflowContexts? := none } == Specs.DesignPolicies.workflowContexts
 #guard Specs.DesignPolicies.aliases { sp with version := "v1", navigationAliases? := none } == Specs.DesignPolicies.navigationAliases
+-- New specification: omitting the policy cannot silently disable R4 on a
+-- future spec, even for a program without any commit buttons.
+def missingContextSpec : Spec := { sp with version := "v4", workflowContexts? := none }
+#guard !Specs.DesignPolicies.contextsDeclared missingContextSpec
+#guard ["v1", "v2", "v3"].all fun v =>
+  Specs.DesignPolicies.contextsDeclared { missingContextSpec with version := v } &&
+    Specs.DesignPolicies.contexts { missingContextSpec with version := v } == Specs.DesignPolicies.workflowContexts
+#guard (rules missingContextSpec none remote remote).any fun r =>
+  r.property == "contextRetained" && !r.passes
+def noCommits : Program := { remote with screens := [{ destination with components := [] }] }
+#guard contextRetained missingContextSpec noCommits
+#guard (rules missingContextSpec none noCommits noCommits).any fun r =>
+  r.property == "contextRetained" && !r.passes &&
+    (r.explain ()).any (fun f => (f.message.splitOn "workflowContexts").length > 1)
+-- Explicitly empty is still an intentional policy. Missing aliases remain
+-- strict: future specs accept exact titles and no undeclared synonyms.
+#guard Specs.DesignPolicies.contextsDeclared { missingContextSpec with workflowContexts? := some [] }
+#guard (rules { missingContextSpec with workflowContexts? := some [] } none noCommits noCommits).any fun r =>
+  r.property == "contextRetained" && r.passes
+#guard Specs.DesignPolicies.aliases { missingContextSpec with navigationAliases? := none } == []
 
 open Ehr.Render
 #guard labelWords "Exam / Assessment & Plan" == 3
 #guard labelWords " one\ttwo\nthree four " == 4
 #guard decide (NavLabelHonest sp destination "Context")
 #guard !decide (NavLabelHonest sp destination "Orders")
+#guard !decide (NavLabelHonest Specs.V1.specV1 { destination with title := "Rooming" } "Clinic Schedule")
+#guard !decide (NavLabelHonest Specs.V1.specV1 { destination with title := "Rooming" } "Schedule")
 def aliasSpec : Spec := { sp with navigationAliases? := some [("Context", ["Clinical context", "one two three four five"])] }
 #guard decide (NavLabelHonest aliasSpec destination "Clinical context")
 #guard !decide (NavLabelHonest aliasSpec { destination with title := "Other" } "Clinical context")
@@ -80,5 +102,15 @@ def aliasSpec : Spec := { sp with navigationAliases? := some [("Context", ["Clin
 #guard Specs.DesignPolicies.workflowContexts.length == 7
 #guard Specs.DesignPolicies.workflowContexts.all fun (_, infos) =>
   infos.all fun i => (Specs.V1.specV1.info? i).isSome
+
+-- P1/P4 schedule-row actions are outside navigation; P5's activity link is
+-- checked by R6 and must use the target's title. All labels fit four words.
+#guard [("P1", Role.physician, "w1Rooming"), ("P4", Role.np, "w5Rooming"),
+  ("P5", Role.surgeon, "w1Rooming")].all fun (id, role, target) =>
+    let p := Canonical.forPersona Specs.V1.specV1 Canonical.canonicalV1 id role
+    (p.screen? "home").any fun home => home.components.any fun c =>
+      c.kind == .button (.goto target) && labelWords c.label ≤ 4 &&
+        if id == "P5" then navLink home c && c.label == "Rooming"
+        else !navLink home c && c.label == "Open encounter"
 
 end Ehr.Check.ContextTests

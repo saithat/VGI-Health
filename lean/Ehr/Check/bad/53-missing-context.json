@@ -1,0 +1,18 @@
+{
+  "id": "missing-context",
+  "owner": "P1",
+  "role": "physician",
+  "version": 1,
+  "specVersion": "future-missing-context",
+  "start": "review",
+  "screens": [{
+    "id": "review",
+    "title": "Review",
+    "workflow": "W1",
+    "components": [{
+      "id": "banner", "kind": "banner", "label": "Patient banner",
+      "tag": "banner", "tab": 0, "size": "normal", "visibility": "always"
+    }]
+  }],
+  "macros": []
+}
