@@ -117,6 +117,7 @@ describe("content-addressed screen results", () => {
         "scripts/screen-check.mjs": "runner",
         "scripts/audit-execution.mjs": "execution",
         "../scripts/screen-results.mjs": "protocol",
+        "../scripts/density-reference.mjs": "reference collector",
         browser: "browser bytes",
         "presentation.json": "[]",
       };

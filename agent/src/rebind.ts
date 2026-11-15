@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 import { createEhr, type EhrClient } from './ehr.js';
 import { bindBuild, installedBuild } from './build-binding.js';
 import { readBinding } from './binding-pointer.js';
+import {noAgentReference} from './vendor-reference.js';
 import { createScreenChecker, type ScreenChecker } from './screencheck.js';
 import { recordingEhr } from './recording-ehr.js';
 import { programSchema, certificateSchema, screenCheckResultSchema } from './schema.js';
@@ -79,7 +80,8 @@ async function rebindRunImpl(dir: string, options: {ehr?: EhrClient; screens?: S
         if (alreadyRebound && old && stableStringify(old) === stableStringify(target)) {results.push({persona,version,status:'cached'});continue;}
         check = await infrastructurePersona(persona,()=>ehr.check({specVersion:specFile,program,prev:inputs.prev,canonical:inputs.canonical}));
         if (check !== 'ok') throw new Error(`CURRENT CHECKER REFUSED: ${JSON.stringify(check)}`);
-        screen = await infrastructurePersona(persona,()=>screens.check({specVersion:specFile,program}));
+        const referenceProgram=await noAgentReference(dir,(inputs.night??0)+1)({specVersion:specFile,program});
+        screen = await infrastructurePersona(persona,()=>screens.check({specVersion:specFile,program,...(referenceProgram?{referenceProgram}:{})}));
         if (screenCheckResultSchema.parse(screen).status !== 'pass') throw new Error(`CURRENT SCREEN GATE REFUSED: ${JSON.stringify(screen)}`);
         const files = await readdir(path.dirname(prefix));
         const generations = files.flatMap((f) => {const m=new RegExp(`^v${version}\\.build\\.(\\d+)\\.json$`).exec(f);return m?[Number(m[1])]:[];});

@@ -30,6 +30,8 @@ export interface HistoryItem {
   chosen: { id: string; summary: string; moveType: string }[];
   /** Deployed patches (customizations); included for migration prompts. */
   patch: JsonPatchOp[];
+  /** Public rendered-screen refusals, without validation/test outcomes. */
+  screenFailures?: {message:string;screens:string[];patch:JsonPatchOp[]}[];
 }
 
 export const SYSTEM_PROMPT = `You are the overnight interface designer in a certified adaptive EHR. Each night you redesign ONE clinician's UI program (JSON) so that tomorrow they spend fewer clicks, scrolls and mouse-travel pixels (keystrokes are secondary) on the same clinical work. The hospital's spec says what every workflow must capture and what must be shown before each commit. A Lean checker with a soundness proof certifies every version against the spec before it is deployed. Proposals that violate the spec are rejected, logged with a counterexample, and shown on a public dashboard, so propose changes you expect to pass and to reduce physical interactions for this specific user.
@@ -99,7 +101,7 @@ function header(title: string, persona: PersonaView, program: Program, spec: Spe
 function historyBlock(history: readonly HistoryItem[], withPatches: boolean): string {
   if (history.length === 0) return '(none yet)';
   return history.map((h) => json({
-    night: h.night, mode: h.mode, outcome: h.outcome, chosen: h.chosen, ...(withPatches ? { patch: h.patch } : {}),
+    night: h.night, mode: h.mode, outcome: h.outcome, chosen: h.chosen, ...(h.screenFailures?.length?{screenFailures:h.screenFailures}:{}), ...(withPatches ? { patch: h.patch } : {}),
   })).join('\n');
 }
 

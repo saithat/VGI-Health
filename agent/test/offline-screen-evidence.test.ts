@@ -26,7 +26,7 @@ describe('offline immutable evidence reuse',()=>{
     await writeJson(path.join(b,'world.json'),{seed:2});
     expect(await worldCoreHash(a)).not.toBe(await worldCoreHash(b));
   });
-  it('reuses exact program/workspace reports with matching screen context and checks measured atlas identities',async()=>{
+  it('remeasures admission against the current reference while reusing exact geometry',async()=>{
     const previous=await mkdtemp(path.join(tmpdir(),'prior-screen-'));
     const oldWorld=path.join(previous,'world'),world=path.join(previous,'new-world');
     const program=fakeCanonical('v1'),schedule=fakeSchedule(1,'P1',7),input={specVersion:'v1',program,schedule,worldDir:world};
@@ -43,12 +43,12 @@ describe('offline immutable evidence reuse',()=>{
     const result=await cache.screens.check(input);result.failingScreens.push('mutation');
     expect((await cache.screens.check(input)).failingScreens).toEqual([]);
     expect((await cache.screens.geometry?.(input))?.programHash).toBe(atlas.programHash);
-    expect(check).not.toHaveBeenCalled();expect(geometry).not.toHaveBeenCalled();
+    expect(check).toHaveBeenCalledTimes(2);expect(geometry).not.toHaveBeenCalled();
     await cache.screens.check({...input,program:{...program,version:program.version+1}});
-    expect(check).toHaveBeenCalledOnce();
+    expect(check).toHaveBeenCalledTimes(3);
     await cache.screens.geometry?.({...input,worldDir:'foreign'});expect(geometry).toHaveBeenCalledOnce();
     await writeJson(path.join(dir,'result.json'),{...pass,status:'fail'});
-    expect((await cache.screens.check(input)).status).toBe('fail');
+    expect((await cache.screens.check(input)).status).toBe('pass');
     await cache.screens.geometry?.(input);expect(geometry).toHaveBeenCalledTimes(2);
     await writeJson(path.join(dir,'result.json'),{...pass,status:'error'});
     expect((await cache.screens.check(input)).message).toBe('fresh');

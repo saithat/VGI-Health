@@ -37,7 +37,7 @@ export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Relea
    if(!completionOk(validation)||!learnabilityOk(validation)){attempts.push({fallback,reason:'validation incomplete'});continue;}
    const checked=await deps.ehr.check({specVersion:release.specVersion,program:candidate,prev:fallback?canonical:gate.prev,canonical:release.canonical});
    if(checked!=='ok'){attempts.push({fallback,check:checked});continue;}
-   const deployed=await deployVersion({...deps,store:armStore},persona.id,candidate,{...gate,prev:fallback?canonical:gate.prev,validation});
+   const deployed=await deployVersion({...deps,store:armStore},persona.id,candidate,{...gate,referenceProgram:candidate,prev:fallback?canonical:gate.prev,validation});
    attempts.push({fallback,validation,deployed});
    if(deployed.ok){program=candidate;certificate=deployed.certificate;accepted=true;break;}
   }

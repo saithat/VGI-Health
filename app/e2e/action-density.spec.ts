@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { test, expect } from '@playwright/test';
 import { actionDensity } from './action-density';
 import { waitForCaptureFonts, captureCss } from './capture-environment';
+import { presentationBundleSchema } from '../src/ehr/ui/presentation-types';
 import { uiScreenSchema } from '../src/ehr/ui/types';
 
 test.describe.configure({ mode: 'parallel' });
@@ -37,6 +38,8 @@ test('R5 finds dense later windows and reserves sticky controls', async ({ page 
   expect(density.windows[0]?.offset).toBeGreaterThan(0);
 });
 
+const presentations = process.env.EHR_PRESENTATION_BUNDLE
+  ? presentationBundleSchema.parse(JSON.parse(readFileSync(process.env.EHR_PRESENTATION_BUNDLE, 'utf8'))) : null;
 const files: string[] = process.env.EHR_DENSITY_MANIFEST
   ? JSON.parse(readFileSync(process.env.EHR_DENSITY_MANIFEST, 'utf8')) : [];
 for (let start = 0; start < files.length; start += 32) {
@@ -50,10 +53,10 @@ for (let start = 0; start < files.length; start += 32) {
     for (const file of files.slice(start, start + 32)) {
       const screen = uiScreenSchema.parse(JSON.parse(readFileSync(file, 'utf8')));
       for (const phase of screen.modal ? ['active', 'background-probe'] : ['active']) {
-        await page.evaluate(({ screen, phase }) => {
+        await page.evaluate(({ screen, phase, presentations }) => {
           window.scrollTo(0, 0);
-          window.renderUi(phase === 'active' ? screen : { ...screen, modal: null });
-        }, { screen, phase });
+          window.renderUi(phase === 'active' ? screen : { ...screen, modal: null }, presentations);
+        }, { screen, phase, presentations });
         await waitForCaptureFonts(page);
         await page.evaluate(() => {
           window.scrollTo(0, 0);

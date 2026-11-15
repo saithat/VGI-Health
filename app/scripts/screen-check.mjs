@@ -41,6 +41,7 @@ import {
   recoverTimeouts,
   exactGrep,
 } from "./audit-execution.mjs";
+import { measureReference, densityFindings } from '../../scripts/density-reference.mjs';
 const started = performance.now();
 const ui = process.argv[2] === "--ui";
 // Explicit 0 is the operator escape hatch; certification uses the full matrix.
@@ -110,6 +111,15 @@ if (ui && !process.env.EHR_GEOMETRY_DIR)
 // Bounded Playwright controllers prevent failure-report accumulation from exhausting Node.
 // Measurement caches bind painter, assertions, policy, browser and configuration;
 // they may retain failures but can never mint a whole-version pass receipt.
+let reference = null;
+if (ui && process.env.EHR_SCREEN_REFERENCE_MANIFEST) {
+  reference = await measureReference(JSON.parse(readFileSync(process.env.EHR_SCREEN_REFERENCE_MANIFEST,'utf8')), {
+    appDir, output, env: {...process.env, EHR_PRESENTATION_BUNDLE:process.env.EHR_REFERENCE_PRESENTATION_BUNDLE ?? ''},
+  });
+  reference.exportMs=Number(process.env.EHR_REFERENCE_EXPORT_MS ?? 0);
+  reference.source=process.env.EHR_REFERENCE_SOURCE ?? 'manifest';
+  reference.programSha256=process.env.EHR_REFERENCE_PROGRAM_HASH ?? null;
+}
 let sampleDirectory = resolve(output, "physical-samples");
 const measurementContext = cache?.context ?? "non-ui";
 if (ui) {
@@ -418,6 +428,23 @@ if (ui)
     else if (result.status === "fail" && gateStatus !== "error")
       gateStatus = "fail";
   }
+let densityFailures = [];
+if (ui) {
+  try {
+    const fallbackLimit=JSON.parse(readFileSync(resolve(appDir,'../docs/design/screen-density.json'),'utf8')).maxTargetsPerViewport;
+    for(const tree of results) for(const sample of tree.density ?? []) {
+      sample.limit=Object.hasOwn(reference?.limits??{},sample.screen)?reference.limits[sample.screen]:fallbackLimit;
+      sample.pass=sample.maximum<=sample.limit;
+    }
+    densityFailures = densityFindings(results,reference?.limits ?? {},fallbackLimit);
+    for (const failure of densityFailures) {
+      const tree = results.find(tree => tree.file === failure.file);
+      if (tree.status !== 'error') tree.status = 'fail';
+      process.stderr.write(`${failure.message} in ${failure.file}\n`);
+    }
+    if (densityFailures.length && gateStatus !== 'error') gateStatus = 'fail';
+  } catch (error) { gateStatus = 'error'; process.stderr.write(`${error.message}\n`); }
+}
 const physical = ui
   ? results.flatMap((result) =>
       result.physical ? [{ ...result.physical, file: result.file }] : [],
@@ -467,6 +494,8 @@ if (process.env.EHR_SCREEN_RESULT)
     JSON.stringify({
       status: gateStatus,
       controlsStatus,
+      densityReference: reference,
+      densityFailures,
       elapsedMs: Math.round(performance.now() - started),
       physical,
       density: results.flatMap(result => (result.density ?? []).map(sample => ({ ...sample, file: result.file }))),

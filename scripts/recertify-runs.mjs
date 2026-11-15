@@ -46,6 +46,7 @@ export async function recertifyRuns({
 }) {
   const root = runRoot;
   const started = performance.now();
+  const { noAgentReference } = await import("../agent/src/vendor-reference.ts");
   const { createEhr } = await import("../agent/src/ehr.ts");
   const { installedBuild } = await import("../agent/src/build-binding.ts");
   const { compilePresentations } =
@@ -127,6 +128,13 @@ export async function recertifyRuns({
         prev: revision.inputs.prev,
         outDir: join(directory, "native"),
       });
+      const reference=await noAgentReference(revision.dir,(revision.inputs.night??0)+1)({specVersion:revision.specFile,program:revision.program}) ?? programSchema.parse(revision.inputs.canonical);
+      const referencePresentations=compilePresentations(reference);
+      const referenceFiles=[];
+      if(native.deployed)for(const [index,fhir] of bundles.entries())
+        referenceFiles.push(...await ehr.renderScreens({specVersion:revision.specFile,program:reference,fhir,ui:true,outDir:join(directory,'reference',`b${index}`)}));
+      const referenceKey=contextDigest({program:reference,presentations:referencePresentations,
+        trees:await Promise.all(referenceFiles.filter(file=>!/-geometry\.json$/.test(file)).map(async file=>contextDigest(await read(file))))});
       const presentations = compilePresentations(revision.program);
       const files = [];
       if (native.deployed)
@@ -140,7 +148,7 @@ export async function recertifyRuns({
               outDir: join(directory, `b${index}`),
             })),
           );
-      return { ...revision, directory, native, presentations, files };
+      return { ...revision, directory, native, presentations, files, referenceFiles, referencePresentations, referenceKey };
     },
   );
   for (const [index, revision] of prepared.entries())
@@ -151,7 +159,7 @@ export async function recertifyRuns({
   for (const revision of prepared.filter(
     (revision) => revision.native.deployed,
   )) {
-    const key = contextDigest(revision.presentations ?? null);
+    const key = contextDigest([revision.presentations ?? null,revision.referenceKey]);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(revision);
   }
@@ -162,6 +170,9 @@ export async function recertifyRuns({
       result = join(output, `${key}.screens.json`);
     if (revisions[0].presentations)
       await write(bundle, revisions[0].presentations);
+    const referenceManifest=join(output,`${key}.reference.json`),referenceBundle=join(output,`${key}.reference-presentations.json`);
+    await write(referenceManifest,revisions[0].referenceFiles.filter(file=>!/-geometry\.json$/.test(file)));
+    if(revisions[0].referencePresentations)await write(referenceBundle,revisions[0].referencePresentations);
     const manifest = join(output, `${key}.files.json`);
     await write(
       manifest,
@@ -181,6 +192,8 @@ export async function recertifyRuns({
         EHR_SCREEN_WORKERS: String(workers),
         EHR_PRESENTATION_BUNDLE: revisions[0].presentations ? bundle : "",
         EHR_SCREEN_RESULT: result,
+        EHR_SCREEN_REFERENCE_MANIFEST:referenceManifest,
+        EHR_REFERENCE_PRESENTATION_BUNDLE:revisions[0].referencePresentations?referenceBundle:"",
       },
     );
     const report = await read(result);

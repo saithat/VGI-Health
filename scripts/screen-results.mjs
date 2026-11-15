@@ -134,6 +134,7 @@ export function screenContext(appDir, browser, env = process.env) {
       "scripts/screen-check.mjs",
       "scripts/audit-execution.mjs",
       "../scripts/screen-results.mjs",
+      "../scripts/density-reference.mjs",
     ].map((file) => [file, hash(file)]),
   };
 }

@@ -29,7 +29,7 @@ A nightly change ships when all of these hold:
    (`core-model.md`), the geometry rules G1–G10 (`docs/methods/ui-library.md`),
    `StabilityBudget`, the R3 copy budget, `AlertBudget` and the identity movement budget.
 4. **Rendered screen gate**: the deployed React painter passes semantic fidelity,
-   physical/urgency checks and R5's DOM-measured bound of 57 targets at 1440×900.
+   physical/urgency checks and R5's per-screen vendor-reference target limits at 1440×900.
    `CliScreenChecker` supplies this check before the sole nightly deployment path.
 
 The release score still uses **clicks and scrolls made by a clinician who already
@@ -60,7 +60,7 @@ reproduces the retained audit. These are reporting changes, not a new score.
 | # | Gaming move | Why it scores | Status |
 |---|---|---|---|
 | V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | Copies are exempt from `StabilityBudget` and from the movement proxy. The expert clinician pays nothing for clutter. | Closed by R3 in the checker. The movement proxy still ignores copies. |
-| V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: separate R5 gates cover Lean geometry and the deployed React painter. The React limit (57) is one vendor-calibrated maximum, so it binds only screens near the densest vendor screen; R1 and R2 constrain other costs. |
+| V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: separate R5 gates cover Lean geometry and the deployed React painter. Each existing React screen is bounded by that persona's no-agent reference on identical data; absent screen ids use the vendor-calibrated fallback of 57. New/merged screens and unmodeled scanning costs remain partly open; R1 and R2 constrain other costs. |
 | V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | R4 closes removal beyond the context bound; the information-needs simulator is not connected to the score. |
 | V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
 | V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The expert has no discovery cost. | Closed by R2 on sampled past holdouts; the user model remains uncalibrated. |
@@ -120,8 +120,9 @@ measures the remaining cost.
 **R5. Screen action density** (*new specification*, geometry rule G10). At
 1440×900, the number of active targets in the first viewport and in each scroll
 viewport is at most `spec.design.maxTargetsPerViewport`. Set the default from the
-largest count in the current release programs, so no existing design fails. Closes
-V2 together with R1 and R2.
+largest count in the current release programs. This Lean fixed-shell default stays
+15. The deployed React gate separately uses each screen's no-agent reference maximum
+on identical data, with 57 only for absent screen ids. Partly closes V2 with R1 and R2.
 
 **R6. Honest navigation labels** (*new specification*, extends D5). A nav link's
 label equals its target screen's title or one of its declared aliases, and labels
@@ -224,18 +225,30 @@ path is converted into scrolling, which the validation gate already counts. G10
 binds custom agent layouts and any lower limit. Because `checkProgramDensity` is a
 static decision, a limit below 15 refuses every program, including ones whose
 screens are sparser. The deployed React painter uses a separate DOM-measured gate, described below;
-its vendor-calibrated bound of 57 does not relax the Lean limit of 15.
+its per-screen vendor-reference limits do not relax the Lean limit of 15.
 
 ### Deployed React painter
 
-**New specification, implemented.** `app/e2e/action-density.ts` measures the real
-React DOM at 1440×900. `docs/design/screen-density.json` owns the deployed limit,
-**57 targets**, calibrated from all 18 vendor programs (canonical and P1–P5, v1–v3), independently
-of the text-card shell's 15-target spec field. This preserves the existing Lean
-G10 specification and its capacity caveat. The TypeScript gate applies to nightly
-candidates through the existing `CliScreenChecker` deployment path; it is not a
-Lean proof about React. [Measurement contract, per-screen counts and retained
-revision results](../methods/screen-validation.md#deployed-action-density-r5).
+**New specification, implemented.** `app/e2e/action-density.ts` measures active
+React DOM targets at 1440×900. For each screen id, the limit is the largest count
+in the first viewport or any scroll window over **all exported states of the
+same persona's vendor reference on the same data** (sample bundles plus any
+workspace). The reference is the no-agent arm's program at the candidate's release,
+including its merged vendor migrations: the layout the clinician would have without
+the agent. Its own counts therefore pass by construction. Sparse screens cannot
+expand to another screen's maximum. A new/merged screen id absent from the reference
+uses **57**, the global vendor-calibrated fallback in `docs/design/screen-density.json`.
+Renaming/merging into a new id can still reach that fallback; scanning cost is not proved.
+
+The nightly pipeline prepares the independent no-agent release checkpoint before
+screen-gating candidates. Stand-alone checks without that checkpoint use the release's
+persona/role vendor program. Reference DOM counts are cached by tree and painter/data
+context; candidate thresholds are applied after raw tree-cache lookup, so changing
+the reference cannot reuse a stale admission verdict. Refusals report screen, count
+and limit in the decision and subsequent agent proposal feedback. This TypeScript deployment gate preserves Lean G10's
+**unchanged 15-target fixed-shell specification** and capacity caveat; it is not a
+Lean proof about React. [Measurement contract, limits, retained revisions and
+verification](../methods/screen-validation.md#deployed-action-density-r5).
 
 ## High-alert medication notices: non-removable
 

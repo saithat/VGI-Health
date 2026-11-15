@@ -79,41 +79,73 @@ scrolling pane belong to that pane instead of becoming permanently fixed targets
 Sticky targets conservatively reserve their slots throughout scrolling, even before
 reaching their sticky position. This keeps pinned actions from becoming free density.
 
-The deployed policy lives in `docs/design/screen-density.json`, separately from the
-Lean text-card shell's unchanged 15-target limit. The limit is the largest measured
-vendor count; the per-screen table and complete per-program counts below report
-first and densest scroll windows across all exported initial, group, tab and alert
-states, using adult-allergic, pediatric and surgical fixture bundles.
+**Per-screen limits are a new specification.** A candidate screen id is limited
+to the maximum of these counts over every exported state of that id in its
+persona's **vendor reference**, rendered with exactly the candidate's sample
+bundles and optional workspace schedule/world. The vendor reference is the
+no-agent arm's layout for that release, including its accepted vendor migrations.
+The vendor passes its own limits by construction; a sparse existing screen cannot
+borrow capacity from a dense one. A screen id absent from the reference (including
+a new/merged id) uses the global vendor-calibrated **57** in
+`docs/design/screen-density.json`. That fallback leaves a residual incentive to
+rename/merge screens. **Lean G10's fixed-shell limit stays 15**, unchanged.
 
-Every nightly deployment already uses `CliScreenChecker` → `screen-check.mjs` →
-`ui-check.spec.ts`. Its desktop semantic check now asserts R5 independently of the
-optional physical-policy switch; disabling physical measurements does not disable
-R5. Failures name the count, limit and scroll region/offset. Density attachments
-are retained in gate JSON and nightly `screen-policy.json`. Cache contexts bind
-both the measurement source and policy file; changing either invalidates receipts.
-Synthetic popup geometry probes are excluded from admission, as before.
+`run-days` reads `no-agent/days/day-N/<persona>.program.json`. On release nights
+it prepares tomorrow's independent no-agent checkpoint before evaluating candidates;
+this uses the same past validation partition and does not add control outcomes to
+agent prompts. The next day's control simulation reuses that checkpoint. No-agent
+release admission uses the proposed control itself as the density reference.
+Nightly and archive candidates, ad-hoc reruns, rebind and batch recertification
+use the corresponding actual no-agent program when available. Historical tools
+bound the snapshot search to the candidate's release night. If no matching snapshot
+exists at a stand-alone/offline call site, `CliScreenChecker` selects the release
+vendor by persona id/owner, then role; frozen batch recertification uses its recorded
+vendor canonical. An unreadable available snapshot fails closed. Program-free UI
+fixtures and synthetic probes have no release reference and retain the fallback.
+
+Every nightly deployment uses `CliScreenChecker` → `screen-check.mjs` →
+`ui-check.spec.ts`. The desktop semantic check collects R5 independently of the
+optional physical-policy switch. `screen-check.mjs` compares the counts **after**
+expanding cached raw tree results, so a pass or failure under one reference never
+becomes a verdict under another. Missing measurements are infrastructure errors.
+Failures name screen id, measured count, limit and phase; `screenCheckRejection`
+records that message; the next nightly prompt includes the public refusal and failed patch so the agent can repair its next proposal. The existing immediate native-check repair loop is unchanged. `screen-policy.json` retains the
+reference limits, program hash/source, content/context key, cache hits/misses,
+reference export/collection timings, detailed first/scroll measurements and failures. Synthetic popup geometry
+probes remain excluded from admission.
+
+Reference collection uses only the density browser pass, not the fidelity/physical
+matrix. `$EHR_SCREEN_CACHE_DIR/density` (default `$TMPDIR/vgi-screen-check-cache/density`)
+atomically stores checksummed per-tree counts bound to the painter build, assets,
+fonts, browser/runtime, presentation bundle, capture and measurement/assertion sources.
+Tree hashes bind the rendered data; changed workspace rows cause misses. Matching
+ordinary gate measurements are reusable too. Each screen limit is recomputed from
+all reference states, including active-modal and background phases. Corrupt/incomplete
+cache records miss; `EHR_SCREEN_CACHE=0` bypasses both measurement caches. Only the
+candidate runs the full screen matrix. Geometry receipts may be reused independently;
+offline whole-version admission receipts are re-evaluated against today's reference.
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=4
 export pnpm_config_verify_deps_before_run=false EHR_SCREEN_WORKERS=4
-node scripts/audit-action-density.mjs "$TMPDIR/alerts-r5-density-final"
-node scripts/replay-high-alert-policy.mjs > "$TMPDIR/alerts-r5-high-alert-replay.json"
+node scripts/audit-action-density.mjs "$TMPDIR/r5-per-screen-density"
+node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/check-r5-p2.mts \
+  --out "$TMPDIR/r5-p2-final"
+node scripts/audit-alert-policy.mjs "$TMPDIR/r5-per-screen-templates"
+node scripts/audit-alert-policy.mjs "$TMPDIR/r5-per-screen-personas" --personas
 ```
 
-The limit is **57**: vendor first viewports peak at 52 and scroll windows at 57.
-**Zero of 33 retained revisions exceed it**, including zero of 18 nightly agent
-deployments. The 7,759 distinct trees produce 8,155 active/background measurements.
-[Per-screen and per-program tables](../audits/alerts-r5-20261114.md#per-screen-counts)
-and [complete derived counts](../audits/alerts-r5-20261114.json) retain the evidence.
-
-The dedicated density collector measures all vendor and retained states without
-running the full accessibility matrix, issuing certificates, or modifying the
-recording. It fails if a state has no browser measurement. The full audit pair
-then exercises this rule through the deployment gate together with fidelity,
-physical and urgency assertions. The completed pair passed with zero findings:
-1,956 template trees / 18,774 physical measurements and 1,394 persona trees /
-13,428 measurements, run sequentially with four workers. Every tree has density
-evidence at the final limit of 57. [Commands, build bindings and results](../audits/alerts-r5-20261114.md#verification-and-build-bindings).
+The density collector reads every current vendor/release, retained revision and
+release-matched no-agent state on adult-allergic, pediatric and surgical sample
+bundles. It issues no certificates and does not modify recordings. Its tables and
+current full-audit results are recorded in [the per-screen R5 report](../audits/r5-per-screen.md).
+The previous single-limit result (0/33 above 57, vendor maximum 57) remains historical
+in [the original report](../audits/alerts-r5-20261114.md#per-screen-counts).
+The workspace regression uses the unchanged P2 v0 and day-1 workspace that previously
+measured `w3OrderSets` at **61 > 57**, including order rows 10–11; it requires the
+current whole-version gate to pass at its own reference limit **61** and requires
+zero new reference DOM measurements on the repeat check. See the report for measured
+added time and exact build bindings.
 
 ### Retained high-alert policy replay
 
