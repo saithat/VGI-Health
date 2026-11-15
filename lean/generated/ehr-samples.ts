@@ -492,7 +492,8 @@ export const temporalFacts: Facts = {"weightToday": [200, "kg"],
  "allergyClasses": ["penicillin"],
  "abnormalResult": false};
 
-export const temporalSpec: Spec = {"version": "tiny-1",
+export const temporalSpec: Spec = {"workflowContexts": [],
+ "version": "tiny-1",
  "reviews": [],
  "infos":
  [{"version": "", "label": "Patient banner", "id": "patientBanner"},
@@ -581,7 +582,8 @@ export const scheduleIIRefillsRequirement: EntryReq = {"when": {"drugClass": {"c
  "commit": "signOrders",
  "allowed": ["0"]};
 
-export const scheduleIIRefillsSpec: Spec = {"version": "tiny-1",
+export const scheduleIIRefillsSpec: Spec = {"workflowContexts": [],
+ "version": "tiny-1",
  "reviews": [],
  "infos":
  [{"version": "", "label": "Patient banner", "id": "patientBanner"},
@@ -700,7 +702,8 @@ export const sampleRenderInput: RenderInput = {"user": {"role": "physician", "id
     "byHuman": false}],
   "acked": []},
  "spec":
- {"version": "tiny-1",
+ {"workflowContexts": [],
+  "version": "tiny-1",
   "reviews":
   [{"when": "always",
     "mode":
@@ -1115,7 +1118,8 @@ export const sampleFactsOutput: FactsOutput = {"facts":
   "allergies": [],
   "administrations": []}};
 
-export const tinySpec: Spec = {"version": "tiny-1",
+export const tinySpec: Spec = {"workflowContexts": [],
+ "version": "tiny-1",
  "reviews":
  [{"when": "always",
    "mode":
@@ -1521,7 +1525,8 @@ export const sampleDay: DaySchedule = {"tasks":
  "load": "normal",
  "day": 1};
 
-export const tinySpecV2: Spec = {"version": "tiny-2",
+export const tinySpecV2: Spec = {"workflowContexts": [],
+ "version": "tiny-2",
  "reviews":
  [{"when": "always",
    "mode":
@@ -2430,7 +2435,8 @@ export const tinyStepOutput: StepOutput = {"state":
 
 export const tinyBatchCase: BatchCase = {"user": {"role": "physician", "id": "u1"},
  "spec":
- {"version": "tiny-1",
+ {"workflowContexts": [],
+  "version": "tiny-1",
   "reviews":
   [{"when": "always",
     "mode":
