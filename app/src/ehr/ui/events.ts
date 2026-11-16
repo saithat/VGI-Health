@@ -6,8 +6,9 @@ import {
 import type { NodeOf } from "./types";
 
 /** Same Value constructors and tenths rounding as the original Html painter. */
+type EntryField = Pick<NodeOf<"field">, "comp" | "kind" | "unit">;
 export function fieldValue(
-  field: NodeOf<"field">,
+  field: EntryField,
   raw: string | number | boolean,
 ): Value | undefined {
   const kind = field.kind.split(":")[0];
@@ -32,7 +33,7 @@ export function fieldValue(
   return { text: { s: String(raw) } };
 }
 export function entryEvent(
-  field: NodeOf<"field">,
+  field: EntryField,
   raw: string | number | boolean,
 ): Event | undefined {
   const value = fieldValue(field, raw);

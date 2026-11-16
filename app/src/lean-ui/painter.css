@@ -151,3 +151,43 @@ body {
 #status:empty {
   display: none;
 }
+/* Presentation by Lean's part role and state. Text, its colours and every
+   rectangle stay Lean's; these rules add only an inset edge, so no glyph cell
+   moves and no measured contrast changes. */
+[data-role="control"],
+[data-role="button"],
+[data-role="tab"],
+[data-role="pending"][data-interactive="true"] {
+  outline: 1px solid #64748b;
+  outline-offset: -1px;
+}
+[data-role="button"][data-kind="primary"],
+[data-role="tab"][data-selected="true"],
+[data-role="button"][data-selected="true"],
+[data-role="step"][data-selected="true"] {
+  outline: 2px solid #1d4ed8;
+  outline-offset: -2px;
+}
+[data-disabled="true"] {
+  outline-style: dashed;
+}
+[data-tone="red"],
+[data-tone="critical"],
+[data-tone="high"] {
+  box-shadow: inset 0 -2px 0 #b91c1c;
+}
+[data-tone="orange"],
+[data-tone="yellow"] {
+  box-shadow: inset 0 -2px 0 #a16207;
+}
+[data-tone="green"] {
+  box-shadow: inset 0 -2px 0 #15803d;
+}
+[data-tone="blue"],
+[data-tone="low"],
+[data-tone="violet"] {
+  box-shadow: inset 0 -2px 0 #1d4ed8;
+}
+input.lean-control[type="checkbox"] {
+  opacity: 0;
+}

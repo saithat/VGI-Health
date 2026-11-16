@@ -8,5 +8,10 @@ export const drawn = z.object({box:z.object({rect,style:z.object({fg:color,bg:co
 export type Drawn = z.infer<typeof drawn>;
 export interface PaintTree { drawn:Drawn; children:PaintTree[] }
 export const tree:z.ZodType<PaintTree> = z.lazy(()=>z.object({drawn,children:z.array(tree)}));
-export const output = z.object({accepted:z.boolean(),viewport:z.object({w:z.number(),h:z.number()}),tree,boxes:z.array(drawn),lineWidths:z.array(z.array(z.number())),findings:z.array(z.object({rule:z.string(),metric:z.string(),warning:z.boolean()}))});
+/** Lean's display part of a painted box (Ehr.Layout.Display.Part): its role and state.
+ * Fields at their default are omitted by Lean. `cells` counts the painted glyph
+ * cells of each run, in order, so runs can be styled without re-reading the text. */
+export const part = z.object({role:z.string(),text:z.string(),raw:z.string().optional(),target:z.boolean().optional(),commit:z.boolean().optional(),comp:z.string().optional(),kind:z.string().optional(),tone:z.string().optional(),selected:z.boolean().optional(),enabled:z.boolean().optional(),row:z.number().optional(),col:z.number().optional(),runs:z.array(z.object({role:z.string(),text:z.string()})).optional(),cells:z.array(z.number()).optional(),options:z.array(z.tuple([z.string(),z.string()])).optional(),entry:z.string().optional(),unit:z.string().optional(),placeholder:z.string().optional()});
+export type Part = z.infer<typeof part>;
+export const output = z.object({accepted:z.boolean(),viewport:z.object({w:z.number(),h:z.number()}),tree,boxes:z.array(drawn),parts:z.array(part.nullable()).optional(),lineWidths:z.array(z.array(z.number())),findings:z.array(z.object({rule:z.string(),metric:z.string(),warning:z.boolean()}))});
 export type Output = z.infer<typeof output>;

@@ -4,8 +4,9 @@
 
 `/lean.html?persona=P1` is a separate, experimental live clinical page. The
 existing application, dashboard and replay entry points retain their renderers.
-Lean supplies geometry and safety text; a plain TypeScript painter patches native
-DOM controls into those rectangles. This changes the certified application and
+Lean supplies geometry, every displayed text and the role of every part; a
+plain TypeScript painter patches native DOM controls into those rectangles and
+formats nothing. This changes the certified application and
 WASM hashes. Historical certificates must be rebound before deployment; this
 page does not claim that the deployed application has switched.
 
@@ -63,11 +64,28 @@ scalar cells; the full original source string is the accessible name. Focused
 editors display the native editing surface in the same rectangle; blurring
 restores the complete Lean text card.
 
-Occurrence paths reproduce `Semantic.screenNodes`, including wrappers and the
-patient-pane child/modal concatenation. They join each placed box to the exact
-`UiNode` and inherited choice metadata. DOM keys use component identity plus
-occurrence ordinal within a screen, so inserting a preceding text card does not
-replace an editing control. Focus, caret, text selection, local in-flight text,
+Each painted box is one display part of Lean's semantic inventory
+([display parts](ui-library.md)): a field's label, its control, its unit, a
+table cell, a button, its blocked reason. Lean sends the part of every box
+with the layout (`parts`, in box order): its role, the text already measured
+and wrapped, and its state (target, component, kind, tone, selected, enabled,
+row and column, the options of a select, the value kind and unit of an entry,
+the placeholder). The painter draws the box from that part alone. It does not
+read the `UiScreen` to find text, compose labels with values, format dates,
+units or names, or choose a control kind: a `control` part becomes the native
+control named by its kind, sized to its box, showing Lean's text until it is
+edited; a `button`, `tab` or unconfirmed `pending` part becomes a native
+button; every other part is text. The recorded datum, where a formatter
+reworded it, is the box's `title`. Role and state are exposed as `data-role`,
+`data-kind`, `data-tone`, `data-selected`, `data-disabled`, `data-row` and
+`data-col`; the style sheet adds only inset edges by role and tone, so no
+glyph cell moves and the colours Lean checked stay as they are. The banner's
+runs (name, identity, badges, details, clinician) are tagged per glyph cell
+from Lean's cell counts (`data-run`). `app/src/lean-ui/sources.ts` mirrors the
+inventory's paths, roles and components for the agent's geometry and for
+tests; the painter does not use it. DOM keys use the part's role and component
+plus occurrence ordinal within a screen, so inserting a preceding part does
+not replace an editing control. Focus, caret, text selection, local in-flight text,
 control scroll, text scroll and native region scroll survive patches. New
 clinical screens reset the region scroll offsets. Text-only changes replace
 only the prebroken text layer. Scroll events translate/intersect the existing
@@ -76,7 +94,10 @@ reveals controls within those clips.
 
 Native controls emit the same `enter`, `click`, `confirm`, `ack` and `selectTab`
 events as the current renderer, using its `entryEvent` conversion for units and
-tenths. Events are serialized through the live session to preserve rapid
+tenths on the component, value kind and unit of Lean's control part. A control
+is labelled by its field's label box and described by the field's other part
+boxes (`aria-labelledby`, `aria-describedby`); a button is described by its
+reason and hotkey boxes. No accessible name is composed in TypeScript. Events are serialized through the live session to preserve rapid
 keystrokes and asynchronous command order. Composition dispatches only its
 completed value. Guard refusals and service feedback appear in a live status
 region. Painting must succeed before a screen enters the command journal;
@@ -98,14 +119,16 @@ interruptive boxes. A proper per-cell grid is missing: its cells have no
 separate Lean rectangles. The WASM keyboard API nevertheless exposes and tests
 all five profiles without reimplementing their transitions in TypeScript.
 
-**Admission limitation.** The semantic inventory now has one target occurrence
-per navigation link, per tab and per section toggle, so the size, separation
-and density rules see every one of them. An implicit pending-field confirmation
-still reuses the field's target rectangle rather than inventing another
-target, and grid cells have no rectangles of their own. Geometry/text
-agreement does not prove control fidelity or accessibility. Separate cell
-rectangles, nested pane modalities and richer widget geometry remain cut-over
-blockers, not grounds for weakening G1–G11.
+**Admission limitation.** The semantic inventory has one target occurrence
+per navigation link, per tab, per section toggle, per field control and per
+unconfirmed prefill without an explicit confirmation button, so the size,
+separation and density rules see every one of them; the pending field no
+longer turns into a confirmation button. Table cells are occurrences with
+rectangles, rows and columns of their own, but the reference layouts stack
+them and `Keyboard.grid` is not connected to them. Geometry/text agreement
+does not prove control fidelity or accessibility. Tables as grids, nested pane
+modalities and richer widget geometry remain cut-over blockers, not grounds
+for weakening G1–G11.
 
 ## Widget inventory
 
@@ -120,34 +143,34 @@ covered by the presentation row; their underlying child controls remain present.
 |---|---|---|
 | `section` and collapsible groups | Simpler look | Full heading card; the existing `toggle` child button sends `click`. Lean decides which children remain visible. No host collapse state. |
 | `columns` | Simpler look | Wrapper source and all children retained in Lean's order; no CSS columns. |
-| `tabs` | Works, simpler look | One button per tab in its own Lean target box sends `selectTab` with its index; roles and `aria-selected` are set and arrow keys call Lean. The wrapper card shows all labels and the selection. Panel relationships are still required for APG parity. |
-| `stepper` | Simpler look | Complete steps/current index as Lean semantic text. No invented navigation; current renderer also treats this as a read-only overview. |
-| `field`: text and textarea | Works, simpler look | Native textarea in the field box; typing/composition emits `enter`; full semantic label/value/provenance returns on blur. No auto-growing editor. |
-| `field`: number/quantity/qty and unit | Works, simpler look | Native nonnegative number input, step 0.1; existing unit/tenths conversion. Unit and source remain in the full semantic text. |
-| `field`: flag | Works, simpler look | Native checkbox sends the same boolean constructor. Semantic text includes current value. |
-| `field`: fixed code/coded choices | Works, simpler look | Native select from field metadata, inherited `valueSet` or kind suffix; underlying codes are sent. Lean listbox keys; browser-native popup. |
+| `tabs` | Works, simpler look | One button per tab in its own Lean target box sends `selectTab` with its index; roles and `aria-selected` follow Lean's `selected` flag and arrow keys call Lean. The wrapper prints nothing. Panel relationships are still required for APG parity. |
+| `stepper` | Simpler look | One numbered part per step from Lean; the current step is flagged (`aria-current`). No invented navigation; current renderer also treats this as a read-only overview. |
+| `field`: text and textarea | Works, simpler look | Lean's label part above Lean's control part; a native textarea in the control box; typing/composition emits `enter`; the value text returns on blur. No auto-growing editor. |
+| `field`: number/quantity/qty and unit | Works, simpler look | Native nonnegative number input, step 0.1, in the control box; existing unit/tenths conversion on the unit Lean sends with the control. The unit is its own part. |
+| `field`: flag | Works, simpler look | Native checkbox over Lean's text (Yes/No) sends the same boolean constructor. |
+| `field`: fixed code/coded choices | Works, simpler look | Native select; options, the empty choice's caption and the selected option's label are Lean's (field choices, inherited `valueSet` or kind suffix); underlying codes are sent. Lean listbox keys; browser-native popup. |
 | `field`: custom code, scan, identity, user/cosign | Simpler look | Native text entry sends the existing code/text/user constructors. Free-entry code suggestions are missing; manual barcode entry works. The stock UiNode field renderer also has no camera acquisition surface. The live service still validates identity/cosign authority. |
 | `field`: search | Works, simpler look | Native search input emits `enter`; Lean owns filtering and patient selection. |
-| `field`: observation-time | Works, simpler look | Native local datetime input converts to the same epoch-minute string. No changed timing policy. |
-| `field`: provenance, required/human-only, pending confirmation | Simpler look | Lean's complete semantic string and required accessibility state retained. An explicit confirm button uses its own box; otherwise the pending field box becomes a confirm button until confirmed. Editing an implicit pending field before confirmation and styled source hints need additional control geometry. |
-| `info`: table/list/summary/document/status/entryTimes | Simpler look | Every row/value retained in the unbounded safety-text scroller, including dates/source metadata. No formatted table columns, medication cards, document sections or localized time presentation. |
-| `info`: structured row actions / keyboard grid | Simpler look; grid missing | Existing action child buttons remain separate Lean cards and retain events. Clicking an entire displayed table row is missing; no cell geometry exists for `Keyboard.grid` DOM focus. |
-| `alert` | Simpler look | Full text/severity and alert role; modal sources receive fixed interruptive placement and inert ordinary controls. No CSS severity icon. |
-| `button`: navigation, primary commit, macro, review, toggle, add/remove, reconciliation | Works, simpler look | Native button; `click` unchanged. Enabled state and complete blocked reason come from Lean. Lean step owns every action, including macro confirmations and group visibility. |
+| `field`: observation-time | Works, simpler look | Lean displays the recorded instant in UTC, labelled UTC (it has no display time zone). The native local datetime editor still converts to the same epoch-minute string in the browser's zone. No changed timing policy. |
+| `field`: provenance, required/human-only, pending confirmation | Works, simpler look | Source caption, required marker, human-entry marker and entry hint are parts of their own from Lean. A pending value has a `pending` part: text when an explicit confirm button exists, otherwise a button of its own that sends `confirm`; the field stays editable. |
+| `info`: table/list/summary/document/status/entryTimes | Simpler look | Lean's caption and one part per cell with row and column, value text formatted in Lean; state cells and result flags carry a tone; an empty table says so. The reference layouts stack the cells; no column tracks, medication cards or document sections. Late-entry times read in UTC. |
+| `info`: structured row actions / keyboard grid | Simpler look; grid missing | Action child buttons stay separate parts; their `rowAction` wrapper carries the table and row. Clicking an entire displayed table row is missing; `Keyboard.grid` is not connected to the cell boxes. |
+| `alert` | Simpler look | Lean's label with the alert role; the severity is kind and tone, not text; modal sources receive fixed interruptive placement and inert ordinary controls. No severity icon. |
+| `button`: navigation, primary commit, macro, review, toggle, add/remove, reconciliation | Works, simpler look | Native button; `click` unchanged. Enabled state comes from Lean; the complete blocked reason is its own part. Lean step owns every action, including macro confirmations and group visibility. |
 | `button`: acknowledgment / explicit confirmation | Works, simpler look | `ack {alert: comp}` or `confirm {comp}` exactly as the current renderer. No automatic acknowledgment or confirmation. |
-| `button`: hotkey badge | Simpler look | Original hotkey text is retained. Global shortcut activation is not added (the stock button renderer displays the badge). |
+| `button`: hotkey badge | Simpler look | The hotkey is its own part. Global shortcut activation is not added (the stock button renderer displays the badge). |
 | `text` | Works | Complete source and pinned prebroken visual spelling; missing scalars use Lean's escapes. |
 | `presentation` | Simpler look; rich surfaces missing | All wrapper/child occurrences painted. React presentation overrides are ignored. Structured tables, MAR time grids, note cards and growth/trend charts need native presentations and appropriate Lean mark/row geometry before visual parity. |
-| `valueSet` | Works, simpler look | Options/custom permission inherited by child fields; metadata itself remains as semantic text. |
-| `chartReferences` | Simpler look | All reference metadata/points preserved; no overlaid percentile/reference curves. Needs a native plotted presentation and checked mark geometry. |
-| `rowAction` | Simpler look | Child controls retain their events and separate source boxes; embedding controls into displayed table rows requires row geometry. |
+| `valueSet` | Works, simpler look | The wrapper prints nothing; Lean passes its options to the controls inside. |
+| `chartReferences` | Simpler look | One readable part per reference curve with every sample; no overlaid percentile/reference curves. Needs a native plotted presentation and checked mark geometry. |
+| `rowAction` | Simpler look | Child controls retain their events and separate source boxes; the wrapper names the table and row; embedding controls into displayed table rows requires a grid layout. |
 | `timeline` | Simpler look | Heading and ordered children preserved as read-only cards; no styled event list. |
-| `datedTimeline` | Simpler look | Exact dated/undated metadata and children retained; no graphical UTC-aligned axis. |
-| `board` | Missing multi-patient interaction | Urgency metadata and all pane occurrences are readable. No patient-scoped board session/dispatch host is connected; pane controls are disabled to prevent unscoped events. |
-| `patientPane` | Missing interaction | Banner, metadata, ordinary/modal children retained by source path. Needs patient-scoped event transport, per-pane choice metadata, modal ownership and board shell geometry; disabled here. |
-| `UiScreen.banner`, title and side nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome or patient avatar. |
+| `datedTimeline` | Simpler look | One readable part per dated source (UTC instant, record, field, recorded timestamp) and per undated source, then the children; no graphical UTC-aligned axis. |
+| `board` | Missing multi-patient interaction | One alert part per urgent demand (patient, record number, alert) and all pane occurrences are readable. No patient-scoped board session/dispatch host is connected; pane controls are disabled to prevent unscoped events. |
+| `patientPane` | Missing interaction | The pane banner as one part with runs, urgent atoms, ordinary/modal children by source path. Needs patient-scoped event transport, modal ownership and board shell geometry; disabled here. |
+| `UiScreen.banner`, title and side nodes | Simpler look | One fixed banner part whose runs (name, identity, badges, details, clinician) are tagged for styling; title and child parts. Banner fields are not separate boxes: rule G1 admits one banner box. No patient avatar. |
 | `UiScreen.urgent` nodes | Works, simpler look | Lean pins them in a fixed strip (rule G11): outside every scroller, in the viewport and clear of every other box. The painter keeps strip boxes operable while a modal is open and blocks everything else. A state with more urgent nodes than the layout can pin is refused, not painted. |
-| `UiScreen.nav` | Works, simpler look | A heading card per group and one button per link, each in its own Lean target box, sends the existing `click` IDs. In the reference shell the navigation follows the workspace in the body scroller. |
+| `UiScreen.nav` | Works, simpler look | A heading per group and one button per link, each in its own Lean target box, sends the existing `click` IDs; the active link is flagged by Lean. In the reference shell the navigation follows the workspace in the body scroller. |
 | Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean `alertDialog` Tab transitions, inert ordinary controls, initial focus and restoration. Escape is ignored by the Lean profile and swallowed by the painter. Board modality remains missing. |
 | Review/sign persistence and draft restoration | Existing live path | Same `createLiveSession`, native screen comparison, guarded command endpoint and database. No alternate save implementation. |
 

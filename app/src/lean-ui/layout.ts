@@ -1,5 +1,5 @@
-import type { Drawn, Output } from "../browser/ui-library/schema";
-export type { Drawn, Output };
+import type { Drawn, Output, Part } from "../browser/ui-library/schema";
+export type { Drawn, Output, Part };
 export type KeyboardKey =
   | "left"
   | "right"
