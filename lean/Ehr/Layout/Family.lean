@@ -16,14 +16,14 @@ structure Candidate where
 
 abbrev Family := List Candidate
 
-/-- An untrusted designer cannot omit a real commit flag to claim G9 exemption,
-relabel a target as static, or replace a semantic value by a non-safety slot.
-Nonsemantic ornaments remain free; they cannot invent a patient banner/commit.
+/-- New specification for owner review: only an occurrence of the urgent strip
+may carry the `urgent` flag, which keeps a box active beside a modal. An
+ornament or an ordinary control cannot claim it. Rule G11 separately requires
+every urgent occurrence to carry the flag.
 
-New specification for owner review: only an occurrence of the urgent strip may
-carry the `urgent` flag, which keeps a box active beside a modal. An ornament
-or an ordinary control cannot claim it. Rule G11 separately requires every
-urgent occurrence to carry the flag. -/
+An untrusted designer cannot omit a real commit flag to claim G9 exemption,
+relabel a target as static, or replace a semantic value by a non-safety slot.
+Nonsemantic ornaments remain free; they cannot invent a patient banner/commit. -/
 def SourceLinked (shape : ScreenShape) (p : Placed) : Prop :=
   match p.info.source with
     | none => p.info.banner = false ∧ p.info.commit = false ∧ p.info.urgent = false

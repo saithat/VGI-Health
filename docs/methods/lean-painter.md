@@ -45,9 +45,12 @@ Lean changes are API/export routing and narrower runtime imports only. The
 layout types/fonts/keyboard files use `Lean.Data.Json` (and `Std` for keyboard
 proof tactics) instead of the full `Lean` compiler umbrella so Emscripten links
 only runtime dependencies. The font generator emits the same narrower import.
-No rule, specification, theorem statement, proof body or clinical definition is
-changed. The checked API and certificate dependencies use only `propext`,
-`Classical.choice` and `Quot.sound`.
+Introducing the painter changed no rule, specification, theorem statement,
+proof body or clinical definition. The layout rules were strengthened
+afterwards (12 px text, 4.5:1 contrast, fixed targets in the density count,
+the pinned urgent strip, one target per navigation link and tab); the
+[UI library](ui-library.md) page states them. The checked API and certificate
+dependencies use only `propext`, `Classical.choice` and `Quot.sound`.
 
 ## Painting and interaction boundary
 
@@ -205,7 +208,7 @@ page requests its 60,004-byte face. WASM layout timing includes JSON encoding,
 parsing and the boundary call; it is sampled, not a responsiveness guarantee.
 
 Native/WASM paint agreement covers six P1/P3 screens at all three viewports,
-including program and family painting (36 byte comparisons), all 52
+including program and family painting (36 byte comparisons), all 65
 profile/key combinations, and error paths. The browser differential checks
 outer DOM rectangles after clip translations, Lean text line widths and
 independent intrinsic browser glyph advances on the workflow screens. Focused
@@ -215,17 +218,20 @@ Measured results for this implementation:
 
 | Check | Result |
 |---|---|
-| Native/WASM layout and keyboard | 3 tests passed; 36 byte-identical paint requests and 52 keyboard comparisons |
-| Existing native layout regressions | 23 tests passed |
-| App unit tests | 335 passed; 32 existing opt-in/data-dependent skips |
+| Native/WASM layout and keyboard | 3 tests passed; 36 byte-identical paint requests and 65 keyboard comparisons (five profiles) |
+| Existing native layout regressions | 30 tests passed |
+| App unit tests | 337 passed; 32 existing opt-in/data-dependent skips |
 | Browser workflows | P1 note + prescription signed; P3 nursing assessment filed; 2 tests passed, one worker |
 | Browser differential | 10 snapshots, 500 boxes, 586 lines, 32,737 intrinsic glyph advances; rectangle/line worst deviation 0px, glyph worst deviation 0.00005px (tolerance 1/64px) |
 | WASM layout in Chromium | Landing P1 13.5ms / P3 8.9ms; P1 documentation 15.8ms, orders 26.0ms, signing 14.9ms; P3 assessment 13.5ms; other supported-size samples 14.7–18.6ms |
-| WASM layout in Node | Program paint samples 14.36–47.90ms across six screens and three sizes |
+| WASM layout in Node | Program paint samples 14.25–61.37ms across six screens and three sizes |
 | New entry transitive JavaScript | 184,682 bytes raw / 61,143 bytes gzip, with no React/Mantine modules or chunk markers |
 | Existing app, including its lazy routes | 919,978 bytes raw / 305,482 bytes gzip; same emitted build, no duplicate shared chunk counting |
-| Shared WASM asset | 5,027,703 bytes, versus the previous 4,401,917 bytes (+625,786) |
+| Shared WASM asset | 5,061,591 bytes with the strengthened layout rules; 5,027,703 when the layout API was first exported, versus 4,401,917 before it |
 
+The browser rows (workflows, differential, Chromium timing) and the JavaScript
+sizes were measured before navigation links and tabs became separate controls
+and before the urgent strip was pinned; they were not measured again.
 Browser timing includes the render/layout API JSON boundary; ten samples are
 not a benchmark distribution. The unsupported-viewport test checks inert
 refusal and recovery. The P1 task includes real sequential typing and caret

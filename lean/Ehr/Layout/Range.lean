@@ -192,11 +192,15 @@ Keeping it here makes every range argument depend on the actual adapter. -/
 def commitPath (screen : UiScreen) : Option (List Nat) :=
   ((screenNodes screen).find? (fun e => semanticCommit e.2)).map Prod.fst
 
-/-- The first root index of `screen.urgent?`: after the banner, title and
-navigation roots, the workspace, the side nodes and the modal. -/
+/-- New specification for owner review: the first root index of
+`screen.urgent?`: after the banner, title and navigation roots, the workspace,
+the side nodes and the modal. -/
 def urgentRoot (screen : UiScreen) : Nat :=
   3+screen.workspace.length+screen.side.length+screen.modal.toList.length
 
+/-- New specification for owner review: occurrences under an urgent root have
+region `urgent`; the other regions are as before. Definitionally the region
+assignment of `screenShape` (`screenShape_normal`). -/
 def regionOf (screen : UiScreen) (path : List Nat) : Region :=
   if path == [0] then .banner else if path == [1] then .title
   else if path.head?.getD 0 ≥ urgentRoot screen then .urgent
@@ -470,8 +474,9 @@ private theorem strip_small (sp : Ehr.Spec) (facts : Ehr.Facts) (user : Ehr.User
     · simp [hp,urgent] at member
     · exact small node (by simpa [hp,urgent] using member)
 
-/-- The clinical screen with its urgent strip, for any facts, fits the fixed
-shell. This is the screen `Sem.UrgentStrip` reasons about. -/
+/-- New specification for owner review: the clinical screen with its urgent
+strip, for any facts, fits the fixed shell. This is the screen
+`Sem.UrgentStrip` reasons about. -/
 theorem strip_range (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
     (display : Display) (user : Ehr.User) (state : Ehr.State) :
     Shell.accepts (screenShape (withUrgentStrip sp facts user state

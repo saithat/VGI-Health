@@ -57,12 +57,10 @@ def G2 (v : Size) (ps : List Placed) : Prop :=
   ∀ p ∈ ps, p.info.interruptive = true → visible v p ∧
     ∀ q ∈ ps, q.info.paint = true → q.info.interruptive = false → q.style.z < p.style.z
 
-/-- A target is active unless a modal is open, in which case only the modal's
-own targets are active.
-
-New specification for owner review: targets of the pinned urgent strip also
+/-- New specification for owner review: targets of the pinned urgent strip
 stay active beside a modal, so G3 separates them from the modal's targets and
-G10 counts them. -/
+G10 counts them. As before, a target is active unless a modal is open, in
+which case the modal's own targets are active. -/
 def activeTarget (ps : List Placed) (p : Placed) : Bool :=
   p.info.target && (!(ps.any (·.info.interruptive)) || p.info.interruptive || p.info.urgent)
 
@@ -82,12 +80,12 @@ def activePaint (ps : List Placed) (p : Placed) : Bool :=
 1/64 CSS px (12 CSS px = 768 units, `PhysicalBounds.minFontPx`). -/
 def minFontUnits : Nat := 64 * Ehr.Specs.PhysicalBounds.minFontPx
 
-/-- G4 checks declared capacity, vertical reserve, safety policy and parent
-scroll clipping. Pixel glyph containment additionally trusts the pinned font
-metrics; wrap completeness is proved independently by `wrap_complete`.
+/-- New specification for owner review: the font size is at least
+`minFontUnits` (12 CSS px). The rule previously required only a positive size.
 
-New specification for owner review: the font size is at least `minFontUnits`
-(12 CSS px). The rule previously required only a positive size. -/
+G4 checks declared capacity, vertical reserve, safety policy and parent
+scroll clipping. Pixel glyph containment additionally trusts the pinned font
+metrics; wrap completeness is proved independently by `wrap_complete`. -/
 def textFits (p : Placed) (t : TextSlot) : Prop :=
   t.font < Fonts.tables.size ∧ minFontUnits ≤ t.fontSize ∧
   (t.fontSize * Fonts.lineExtent[t.font]?.getD 2000 + 999)/1000 ≤ t.lineHeight ∧
@@ -116,12 +114,13 @@ def textTwiceRatio : Nat := Ehr.Specs.PhysicalBounds.textContrastTenths / 5
 and vector marks, as twice the ratio: 3:1 (`PhysicalBounds.nontextContrastTenths`). -/
 def nonTextTwiceRatio : Nat := Ehr.Specs.PhysicalBounds.nontextContrastTenths / 5
 
-/-- The two thresholds are the hospital bounds exactly (no rounding). -/
+/-- New specification for owner review: the two thresholds are the hospital
+bounds exactly (no rounding). -/
 theorem contrast_thresholds_exact :
     5 * textTwiceRatio = Ehr.Specs.PhysicalBounds.textContrastTenths ∧
     5 * nonTextTwiceRatio = Ehr.Specs.PhysicalBounds.nontextContrastTenths := by decide
 
-/-- G6. New specification for owner review: foreground against background is
+/-- New specification for owner review (G6): foreground against background is
 at least 4.5:1 for all text regardless of size or weight, and at least 3:1 for
 every target and every painted vector mark (circle, wedge, polyline). The rule
 previously allowed 3:1 for large text and did not check non-target marks.
@@ -213,7 +212,7 @@ def windowCounts (ps : List Placed) : List Nat :=
   ps.filterMap fun q => (scrollRegion q).map fun c =>
     (fixedTargets ps).length + (windowTargets ps c (windowAt c q)).length
 
-/-- G10 (R5), new specification for owner review: at 1440×900 at most `limit`
+/-- New specification for owner review (G10, R5): at 1440×900 at most `limit`
 active targets are in the first viewport, at most `limit` are fixed, and at
 every scroll position of each scroll viewport the fixed targets together with
 the targets in that window number at most `limit`. Other sizes impose no
@@ -295,7 +294,8 @@ the limit (they are in view whether or not anything scrolls). -/
 theorem G10_fixed (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
     (hv : v = ⟨92160,57600⟩) : (fixedTargets ps).length ≤ limit := (h hv).2.1
 
-/-- The earlier, weaker statement of `G10_window`: a scroll window alone. -/
+/-- New specification for owner review: the earlier, weaker statement of
+`G10_window`, a scroll window alone, still holds. -/
 theorem G10_scrollWindow (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
     (hv : v = ⟨92160,57600⟩) (c : String × Rect) (o : Int) :
     (windowTargets ps c o).length ≤ limit :=
@@ -319,7 +319,7 @@ def PinnedBox (v : Size) (ps : List Placed) (p : Placed) : Prop :=
   ∀ q ∈ ps, q.info.paint = true → q.info.id ≠ p.info.id → separated p q
 instance (v ps p) : Decidable (PinnedBox v ps p) := by unfold PinnedBox; infer_instance
 
-/-- G11, new specification for owner review: every box flagged as part of the
+/-- New specification for owner review (G11): every box flagged as part of the
 urgent strip is pinned, and every painted source box of an urgent occurrence
 (`urgent`, taken from the semantic inventory) carries the flag. With G7, each
 urgent occurrence therefore has exactly one box, which is pinned. G4 and G6
@@ -411,6 +411,8 @@ G11 for the urgent occurrences `urgent`. -/
 def checkAll (limit : Nat) (expected urgent : List (List Nat)) (v : Size) (ps : List Placed) : Bool :=
   checkDensity limit expected v ps && decide (G11 v urgent ps)
 
+/-- New specification for owner review: `checkAll` reflects into G1–G9, G10
+and G11. -/
 theorem layoutAccepted_all (limit expected urgent v ps)
     (h : checkAll limit expected urgent v ps = true) :
     Rules expected v ps ∧ G10 limit v ps ∧ G11 v urgent ps := by
@@ -504,7 +506,8 @@ beside a modal, and nothing else gains dispatch. -/
 def stripDispatchable (ps : List Placed) (id : String) : Bool :=
   ps.any fun p => p.info.id == id && activeTarget ps p
 
-/-- Everything `dispatchable` admits is still admitted. -/
+/-- New specification for owner review: everything `dispatchable` admits is
+still admitted. -/
 theorem stripDispatchable_of_dispatchable (ps : List Placed) (id : String)
     (h : dispatchable ps id = true) : stripDispatchable ps id = true := by
   obtain ⟨p,hp,h⟩ := List.any_eq_true.mp h
@@ -657,8 +660,9 @@ def densityFindings (limit : Nat) (v : Size) (ps : List Placed) : List Finding :
              actual := n, required := limit, deficit := (n : Int) - limit }
     else none)
 
-/-- Largest first-viewport count, and largest count of fixed targets together
-with one scroll window (measurement). -/
+/-- New specification for owner review: the largest first-viewport count, and
+the largest count of fixed targets together with one scroll window
+(measurement). The second figure previously left the fixed targets out. -/
 def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
   ((firstViewportTargets v ps).length, (windowCounts ps).foldl max (fixedTargets ps).length)
 

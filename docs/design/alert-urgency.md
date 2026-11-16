@@ -164,6 +164,16 @@ This closes the semantic modal-obstruction gap. It does not prove CSS geometry,
 infinite capacity, arbitrary zoom, or continuity between browser samples. The
 screen gate measures finite scroll/focus samples and rejects overflow/occlusion.
 
+For layouts computed in Lean the `StripLayout` premise is now a theorem. Layout
+rule G11 pins every urgent occurrence: fixed, inside the viewport and
+separated from every other painted box, a modal included.
+`Ehr.Layout.Strip.layoutAccepted_stripLayout` derives `StripLayout` from an
+accepted layout, and `render_strip_continuous` gives continuous perceivability
+for the reference layout with no layout premise, for every state whose strip
+has at most six occurrences, two of them controls. A state with a larger strip
+is refused, not painted. See [UI library](../methods/ui-library.md), "Pinned
+urgent strip".
+
 ## Physical policy and measured scope
 
 The owner selects [WCAG 2.2 AA](https://www.w3.org/TR/WCAG22/) as **hospital policy
@@ -177,6 +187,10 @@ exports SC-labelled constants to the same JSON used by the screen gate:
 | 1.4.11 | 3:1 | Authored input boundaries, visible selected/checked/focus indicators, meaningful SVG shape paint including curves, rectangles and opacity. Text-labelled buttons use their text for identification; decorative icons and separators are excluded. |
 | 1.4.4 | 200% | Text-only resize stress at 1280 and 768 CSS px; computed fonts doubled. This does not emulate browser chrome zoom. |
 | 1.4.10 | 320 CSS px | Reflow equivalent to 1280 at 400%; also 640px equivalent to 200%. Contained two-dimensional tables may scroll; surrounding text/controls must reflow. |
+
+`PhysicalBounds.minFontPx` (12 CSS px) is a further constant, read by layout
+rule G4 for layouts computed in Lean. It is not part of the exported JSON; the
+browser checks keep their own 12 px floor.
 
 Each supplied clinical export is measured at **768, 1280, 1440, 1600 and 1920px**
 (height 900px), plus the reflow/resize probes above. Endpoints and intermediate

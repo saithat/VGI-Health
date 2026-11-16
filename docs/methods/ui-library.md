@@ -108,8 +108,8 @@ content environments for one fixed semantic template.
 | G7 | Expected semantic occurrence paths and painted IDs are unique; each expected path is painted exactly once and no invented source path is painted. The W1 adapter derives the inventory from the actual `UiScreen`; the lower-level proposal API takes the expected inventory as an input. |
 | G8 | Document order is top-to-bottom, then left-to-right at equal y. Within a shared scroller use content positions; between regions use outer viewports. Distinct z layers are separate reading regions. This does not establish an assistive technology's traversal order. |
 | G9 | At 1440×900, **if any current-task commit target is present**, exactly one is fixed and fully contained without page scrolling. A screen with no current-task commit is exempt. Other sizes impose no extra commit constraint. Family admission links commit flags to the actual semantic source, preventing omission to claim an exemption. |
-| G11 | *New specification for owner review.* Every box flagged `urgent` (the pinned urgent strip) is painted, outside every scroll viewport, contained in the page viewport and separated from every other painted box, a modal included, whatever the stacking order; and every painted source box of an urgent occurrence of the semantic inventory carries the flag. It holds at every supported size. It is checked next to G1–G9 and G10 (`checkAll`, `layoutAccepted_all`); see "Pinned urgent strip" below. |
 | G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero; at most that many fixed targets (outside every scroll viewport); and, at every scroll offset of each scroll viewport, at most that many fixed targets and targets in the window together. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G9 conjunction; see "Action density" below. |
+| G11 | *New specification for owner review.* Every box flagged `urgent` (the pinned urgent strip) is painted, outside every scroll viewport, contained in the page viewport and separated from every other painted box, a modal included, whatever the stacking order; and every painted source box of an urgent occurrence of the semantic inventory carries the flag. It holds at every supported size. It is checked next to G1–G9 and G10 (`checkAll`, `layoutAccepted_all`); see "Pinned urgent strip" below. |
 
 The pixel model overapproximates nested clipping with the outermost viewport;
 inner clips can only remove pixels. Scroll ancestor identities distinguish
@@ -468,7 +468,13 @@ including G9. The original W1 port also remains 3,468/3,468; the two named bad
 clinical inputs remain refused. The [current range inventory](../audits/ui-certs-range-20261107.json)
 records every program alias and declared screen, program/spec/source hashes,
 exact theorem statements and verification commands. Those counts are backed by
-`renderer_range`, rather than inferred from the finite probes.
+`renderer_range`, rather than inferred from the finite probes. They were taken
+before rules G4, G6 and G10 were strengthened, G11 was added and navigation
+links and tabs became occurrences of their own. Afterwards the audit was
+repeated on the fifteen release persona programs: 4,314/4,314 class probes,
+279/279 W1 port checks and 279/279 shell geometry checks pass, and every
+probed urgent strip (up to four occurrences) is pinned. The recorded-run
+programs were not audited again.
 
 The [earlier ordinary-class inventory](../audits/ui-certs-20261107.json)
 records the narrower `repeat-body-v1` implementation. The current fixed-shell
@@ -515,13 +521,16 @@ pnpm --filter app lint
 flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright test --config src/browser/ui-library/playwright.config.ts
 ```
 
-Targeted checks passed 21 native regressions (19 layout/program tests and two
-font tests) and seven Playwright tests (one worker under the shared lock, after
-the refreshed port audit). The differential compared
-228 boxes, 153 text lines and 6,861 intrinsic glyph advances: all worst
-deviations were 0 CSS px. The named-declaration audit covers 186 theorems. Environment-wide inspection
-also checks generated helper lemmas: 1,143 theorem declarations, of which 592
-are axiom-free and 551 use only `propext`, `Classical.choice` and `Quot.sound`.
+Targeted checks pass 30 native regressions (28 layout/program tests and two
+font tests). The named-declaration audit covers 253 theorems in
+`lean/Ehr/Layout`; each uses at most `propext`, `Classical.choice` and
+`Quot.sound`. The following figures predate the strengthened rules G4, G6,
+G10 and G11 and the per-link inventory, and were not measured again: seven
+Playwright tests (one worker under the shared lock, after the refreshed port
+audit); a differential of 228 boxes, 153 text lines and 6,861 intrinsic glyph
+advances with all worst deviations 0 CSS px; and an environment-wide
+inspection of generated helper lemmas (1,143 theorem declarations, 592
+axiom-free and 551 using only `propext`, `Classical.choice` and `Quot.sound`).
 
 The targeted browser command also paints the audit's W1 sample when present
 and verifies vertical scrolling/preservation of a 70,000-character safety value

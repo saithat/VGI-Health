@@ -8,7 +8,8 @@ set_option maxHeartbeats 4000000
 namespace Ehr.Layout.Structural
 open Lean Ehr.Render
 
-/-- The body scroll viewport. It starts at 272 px, below the banner, the
+/-- New specification for owner review: the body scroll viewport is shorter
+than before. It starts at 272 px, below the banner, the
 commit row and the band the fixed shell reserves for the pinned urgent strip
 (128–272 px). At 1440×900 it is 612 px tall, so any scroll position meets at
 most 12 of the 48 px rows on their 56 px pitch. -/

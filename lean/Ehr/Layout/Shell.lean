@@ -30,6 +30,7 @@ def stripCapacity : Nat := 6
 may be targets. Pinned targets are in view at every scroll position, so they
 count against the shell's density capacity with every body window. -/
 def stripTargetCapacity : Nat := 2
+/-- New specification for owner review: box identifiers of the pinned rows. -/
 def stripId : Nat → String
   | 0 => "fixed-urgent-0" | 1 => "fixed-urgent-1" | 2 => "fixed-urgent-2"
   | 3 => "fixed-urgent-3" | 4 => "fixed-urgent-4" | _ => "fixed-urgent-5"
@@ -40,14 +41,17 @@ def strip (v : Size) (entry : List Nat × Bool) (i : Nat) : Placed :=
   { rect := ⟨1024,8192+i*1536,v.w-2048,1536⟩,
     style := { fg := ⟨15,23,42⟩, z := 40 },
     info := { id := stripId i, source := some entry.1, text := some footerText, target := entry.2, urgent := true } }
+/-- New specification for owner review: the pinned rows of the strip. -/
 def stripBoxes (v : Size) (us : Body) : List Placed :=
   us.zipIdx.map (fun (entry,i) => strip v entry i)
 
-/-- `us` are the pinned urgent occurrences (at most `stripCapacity`). -/
+/-- New specification for owner review: the shell's boxes now include the
+pinned urgent rows `us` (at most `stripCapacity`). -/
 def placements (v : Size) (first : List Nat) (body : Body)
     (commit : Option (List Nat)) (ms : Body) (us : Body) : List Placed :=
   Structural.placements v first body ++ (commit.toList.map (footer v) ++ (modalBoxes v ms ++ stripBoxes v us))
 
+/-- New specification for owner review: the inventory includes the pinned rows. -/
 def inventory (first : List Nat) (body : Body) (commit : Option (List Nat)) (ms : Body) (us : Body) :
     List (List Nat) :=
   (first :: body.map Prod.fst) ++ (commit.toList ++ (ms.map Prod.fst ++ us.map Prod.fst))
@@ -639,10 +643,11 @@ private theorem reading_order (v : Size) (hv : v ∈ viewports) (first body comm
         change p.style.z = 40 at same
         omega
 
-/-- Quantifies over arbitrary list sizes and content-independent occurrence
-paths. G9 is nonvacuous when commit is present, including under an active modal.
-`us` are the pinned urgent occurrences; with `us = []` this is the shell
-without a strip. -/
+/-- New specification for owner review: the statement now also covers the
+pinned urgent rows `us`; with `us = []` it is the shell without a strip.
+
+Quantifies over arbitrary list sizes and content-independent occurrence
+paths. G9 is nonvacuous when commit is present, including under an active modal. -/
 theorem shell_rules (v : Size) (hv : v ∈ viewports) (first body commit ms us)
     (unique : (inventory first body commit ms us).Nodup) (limited : ms.length ≤ 2)
     (pinned : us.length ≤ stripCapacity) :
@@ -715,15 +720,17 @@ def stripFits (shape : ScreenShape) : Bool :=
   decide ((urgentSlots shape).length ≤ stripCapacity ∧
     ((urgentSlots shape).filter (·.target)).length ≤ stripTargetCapacity)
 
-/-- The urgent occurrences the shell pins: all of them, or none. -/
+/-- New specification for owner review: the urgent occurrences the shell
+pins: all of them, or none. -/
 def pinnedSlot (fit : Bool) (s : SlotShape) : Bool := fit && s.region == .urgent
 private theorem pinnedSlot_true : pinnedSlot true = fun s => s.region == .urgent := by
   funext s; simp [pinnedSlot]
 private theorem pinnedSlot_false : pinnedSlot false = fun _ => false := by
   funext s; simp [pinnedSlot]
 
-/-- A body row of the shell: an ordinary occurrence that is not pinned. `side`
-selects the navigation and side occurrences. -/
+/-- New specification for owner review: a body row of the shell is an ordinary
+occurrence that is not pinned. `side` selects the navigation and side
+occurrences. -/
 def bodySlot (fit side : Bool) (s : SlotShape) : Bool :=
   ordinaryRegion s && !pinnedSlot fit s && ((s.region == .side) == side)
 
@@ -742,6 +749,8 @@ def Parts.bodyData (p : Parts) : Body := p.body.map (fun s => (s.path,s.target))
 def Parts.commitData (p : Parts) : Option (List Nat) := p.commit.map SlotShape.path
 def Parts.modalData (p : Parts) : Body := p.modal.map (fun s => (s.path,s.target))
 def Parts.stripData (p : Parts) : Body := p.strip.map (fun s => (s.path,s.target))
+/-- New specification for owner review: the pinned rows are urgent occurrences
+within the two strip capacities; the earlier conditions are unchanged. -/
 def Good (p : Parts) : Prop :=
   p.banner.region = .banner ∧ p.banner.target = false ∧
   (∀ s ∈ p.body, s.region ≠ .banner ∧ s.region ≠ .footer ∧ s.region ≠ .modal) ∧

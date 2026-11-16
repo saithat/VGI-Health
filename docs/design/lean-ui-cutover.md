@@ -232,6 +232,52 @@ Today, the clinical application has two React rendering paths in `app/src/ehr/` 
 
 This section lists every distinct check performed today by the browser screen gate (`app/e2e/ui-check.spec.ts`, `app/e2e/screen-check.spec.ts`, `app/e2e/physical-policy.ts`, `app/e2e/action-density.ts`, `app/e2e/visibility.ts`, `app/e2e/geometry-capture.ts`, `app/src/ehr/ui/fidelity.ts`, `app/scripts/screen-check.mjs`, `scripts/density-reference.mjs`) and the browser audits (`scripts/audit-alert-policy.mjs`, `app/e2e/contrast.spec.ts`, `app/e2e/columns.spec.ts`, `app/e2e/urgent-transition.spec.ts`, `app/e2e/density.spec.ts`, `app/e2e/audit/buttons.spec.ts`), and maps each one to its Lean counterpart.
 
+### Status after the guardrail changes
+
+The rows below record the state before Step 1 of Section 5 was carried out.
+Since then the Lean rules were strengthened and the following rows are closed:
+**2.2** (Escape: clinical alerts use `Keyboard.alertDialog`), **2.3** (urgent
+strip: rule G11 and `Ehr.Layout.Strip.layoutAccepted_stripLayout`), **3.1** and
+**3.2** for navigation links and tabs (each is its own target occurrence),
+**3.3** (12 px minimum in G4), **3.6** items 1 and 2 (4.5:1 for all text, 3:1
+for targets and vector marks) and **4.2** item 1 (fixed targets are counted
+with every scroll window). Current statements of the rules are in
+`docs/methods/ui-library.md`.
+
+Corrections to claims in this section and in Sections 5 and 6, found while
+implementing them:
+
+* `PhysicalBounds.minFontPx` did not exist; line 10 of that file is
+  `nontextContrastTenths`. The 12 px floor lived only in the browser checks. The
+  constant has been added.
+* `Region` is defined in `lean/Ehr/Layout/Semantic.lean` with the values
+  `banner`, `title`, `body`, `side`, `footer`, `modal` (now also `urgent`), not
+  in `Types.lean` with `banner`, `nav`, `body`, `modal`. A placed box has the
+  flags `banner`, `interruptive`, `commit` (now also `urgent`); there is no
+  `info.region` or `info.currentCommit`.
+* `StripLayout` is not a record of four flags (`stripPinned`,
+  `stripAboveModal`, `stripDisjointFromModal`, `bannerPinned`). It is a
+  proposition: at every view reachable by view changes, each fact of the strip
+  is in the viewport, legible and unoccluded.
+* `UiScreen` has `workspace`, `side`, one optional `modal` and `urgent?`; it has
+  no `body` or `modals`. `viewer?` is an `Option String` in
+  `lean/Ehr/Render/Types.lean`, not an `Option UiNode` in `Ui.lean`.
+* Urgent nodes were the last roots of the inventory, after the modal, not path
+  `[1]` (which is the title). `Shell.bodyChildren`, `Semantic.bannerText`,
+  `Semantic.rowText` and `Semantic.nodeText` do not exist; the text of a node is
+  `semanticText`, and the shell is `Shell.placements` over
+  `Structural.placements`.
+* No reference layout uses a 15 px font (`960`); they use 14 px and, for the
+  title of the family reference layout, 20 px. `Style` has no border field.
+* No `fixedTargets` definition existed in Lean before this change.
+* Section toggles were already target occurrences: a collapsible section
+  carries a child button with role `toggle`. Only tabs and navigation links
+  were missing.
+* `Keyboard.dialog` does close on Escape, but the plain DOM painter never
+  applied that key to an interruptive alert. Removing the Escape transition
+  from `dialog`, as Step 1 proposed, would have falsified
+  `dialog_escape_restores`; a separate profile was added instead.
+
 ### Summary of Coverage Categories
 * **Covered by Lean**: A Lean rule or theorem proves the same (or strictly stronger) property over the Lean layout/semantic representation.
 * **Partly covered**: Lean proves the core property, but specific sub-checks, node kinds, viewports, or thresholds checked by the browser gate are missing or differ in Lean.

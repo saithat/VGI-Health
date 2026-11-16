@@ -177,8 +177,9 @@ bounded memory model still tracks Program slots rather than free coordinates;
 this mode adds no new spatial relearning model.
 
 Limitations inherited from the current physical metric include its viewport
-boundary reveal test (not a complete nested-clip visibility test) and the
-reference compiler's single aggregate navigation text card. List contents in
+boundary reveal test (not a complete nested-clip visibility test). Navigation
+links have their own boxes; a tab selection is still measured at the tabs
+wrapper box, not at the individual tab. List contents in
 safety text scroll independently; bounded interactive lists remain open. Exported
 variants and observed trace replay are finite evidence, not a proof that a
 custom family covers every reachable state. A new shape refuses rather than

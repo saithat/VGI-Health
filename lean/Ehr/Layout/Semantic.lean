@@ -14,11 +14,11 @@ the children is the tab index. -/
 def tabNodes (id : String) (labels : List String) : List UiNode :=
   labels.map fun label => .button id label "tab" true none none
 
-/-- Every UiNode occurrence, including wrappers and selected-tab bodies. Paths
-identify occurrences even when two nodes have identical component IDs/text.
+/-- New specification for owner review: the children of a tabs node are its
+tab targets (`tabNodes`) followed by the selected body.
 
-New specification for owner review: the children of a tabs node are its tab
-targets (`tabNodes`) followed by the selected body. -/
+Every UiNode occurrence, including wrappers and selected-tab bodies. Paths
+identify occurrences even when two nodes have identical component IDs/text. -/
 def semanticNodes (node : UiNode) : List (List Nat × UiNode) :=
   ([],node) :: (match node with
   | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs
@@ -63,9 +63,9 @@ def semanticCommit : UiNode → Bool
   | .button _ _ "primary" _ _ _ => true
   | _ => false
 
-/-- The banner occurrence: the patient fields and, new specification for owner
-review, the signed-in clinician (`viewer?`), which the application shows in
-the same banner. It was missing from the inventory. -/
+/-- New specification for owner review: the banner occurrence carries the
+signed-in clinician (`viewer?`) after the patient fields, as the application's
+banner does. `viewer?` was missing from the inventory. -/
 def bannerNode (screen : UiScreen) : UiNode :=
   .text (String.intercalate "  " ((screen.banner.map fun (k,v) => k ++ ": " ++ v) ++
     (screen.viewer?.map ("Signed in: " ++ ·)).toList))
@@ -78,7 +78,8 @@ def navNode (nav : List (String × List (String × String))) : UiNode :=
   .section "navigation" "Navigation" (nav.map fun (title,items) =>
     .section title title (items.map fun (id,label) => .button id label "nav" true none none))
 
-/-- The three roots before the workspace: banner, title, navigation. -/
+/-- New specification for owner review: the three roots before the workspace
+are the banner, the title and the navigation tree. -/
 def chromeNodes (screen : UiScreen) : List UiNode :=
   [bannerNode screen, .text screen.title, navNode screen.nav]
 
@@ -153,7 +154,10 @@ theorem screenShape_flat_length (n : Nat) : (screenShape (flatScreen n)).length 
     List.length_flatMap, hm, List.sum_replicate_nat, Nat.add_comm]
   omega
 
-/-- W1 reference geometry, evaluated solely on the erased semantic shape.
+/-- New specification for owner review: urgent occurrences are pinned rows
+between the title and the review scroller (see the comment in the body).
+
+W1 reference geometry, evaluated solely on the erased semantic shape.
 Every safety slot is an unbounded vertical text scroller; no patient string is
 consulted during geometry computation. Arbitrary designs remain separate Nodes
 and are admitted by the same checker through `Family`. -/
