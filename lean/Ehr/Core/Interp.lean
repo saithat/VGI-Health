@@ -584,13 +584,18 @@ def ackCore (actor : Actor) (s : State) (a : AlertId) : State × StepResult :=
                 else (s, .ignored)
     | none => (s, .ignored)
 
-/-- Select a tab of a shown tabs component. -/
+/-- Select a tab of a shown tabs component. New specification for owner
+review: the same event selects page `idx` of a shown list component (a panel,
+table, trend or prior-authorization info), the pager of a bounded list
+(`Ehr.Layout.Window`). Like a tab, the page is view state in `tabSel`; it goes
+through the same guards (a popup blocks it; a hidden component ignores it). -/
 def selectTabCore (sp : Spec) (prog : Program) (facts : Facts) (s : State) (cid : CompId)
     (idx : Nat) : State × StepResult :=
   match shownComp? sp prog facts s cid with
   | some c =>
     match c.kind with
-    | .tabs => ({ s with tabSel := (cid, idx) :: s.tabSel.filter (·.1 != cid) }, .ok)
+    | .tabs | .panel _ | .table _ | .trend _ | .priorAuth _ =>
+      ({ s with tabSel := (cid, idx) :: s.tabSel.filter (·.1 != cid) }, .ok)
     | _ => (s, .ignored)
   | none => (s, .ignored)
 

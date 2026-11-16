@@ -1,7 +1,9 @@
 import {occurrences} from './generator.mjs';
+import {windowOnce} from './window.mjs';
 // Convert only native boxes/clips to the existing pointerTravel atlas contract.
 // This is an estimator, not an admission decision or browser measurement.
 export function geometryFor(screen,painted,{state='',sample}={}) {
+  screen=windowOnce(screen);
   const boxes=painted.boxes, components={},scrollers={},clipRects={},approximations=[];
   const sourceBoxes=new Map();
   for(const {box} of boxes)if(box.info.source) {

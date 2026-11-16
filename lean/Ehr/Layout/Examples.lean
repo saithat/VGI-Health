@@ -30,7 +30,8 @@ covers every payload through the fixed shell. -/
 theorem review_shape_payload_independent (banner reason) :
     screenShape (reviewScreen banner [] false reason) = reviewShape := by
   simp [reviewShape, screenShape, reviewScreen, screenNodes, chromeEntries, screenRoots, navNode, prefixChildren,
-    partEntries, semanticNodes, leafParts, infoParts, buttonParts, optionList, ownPart, bannerPart, Part.lines]
+    partEntries, semanticNodes, leafParts, windowParts, screenCx, infoParts, buttonParts, optionList, ownPart,
+    bannerPart, Part.lines]
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 4000000 in

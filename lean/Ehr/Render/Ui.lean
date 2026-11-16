@@ -754,6 +754,18 @@ def uiDatedWorkspace (cx : Ctx) : List UiNode :=
 def uiCompact (cx : Ctx) : List CompId :=
   (cx.v.items.filter (fun it => it.shown && it.comp.size == .compact)).map (·.comp.id)
 
+/-- New specification for owner review: the page selected for each shown list
+component (a panel, table, trend or prior-authorization info), read from the
+view state `State.tabSel`. Page 0 is not listed, so a screen nobody paged
+keeps its earlier form. -/
+def uiPages (cx : Ctx) : Option (List (CompId × Nat)) :=
+  let pages := cx.v.items.filterMap fun it =>
+    match it.comp.kind with
+    | .panel _ | .table _ | .trend _ | .priorAuth _ =>
+      if it.shown && cx.s.tabOf it.comp.id != 0 then some (it.comp.id, cx.s.tabOf it.comp.id) else none
+    | _ => none
+  if pages.isEmpty then none else some pages
+
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
@@ -770,6 +782,7 @@ def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     compact? := if compact.isEmpty then none else some compact,
     entryHints? := if hints.isEmpty then none else some hints,
     fieldChoices? := if choices.isEmpty then none else some choices,
-    workspace := uiDatedWorkspace cx, side := uiSide cx, modal := uiModal cx }
+    workspace := uiDatedWorkspace cx, side := uiSide cx, modal := uiModal cx,
+    pages? := uiPages cx }
 
 end Ehr.Render

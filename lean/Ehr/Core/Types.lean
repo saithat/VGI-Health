@@ -975,7 +975,10 @@ structure State where
   commits : List CommitId
   /-- Groups that are open. -/
   expanded : List CompId
-  /-- Selected tab per tabs component (default 0). -/
+  /-- Selected tab per tabs component (default 0). New specification for owner
+  review: the same view state also holds the selected page of a bounded list
+  component (a panel, table, trend or prior-authorization info, default 0);
+  it is view state, never clinical record. -/
   tabSel : List (CompId × Nat)
   /-- Queries entered into shown search components. Absent in legacy episodes. -/
   searchQueries? : Option (List (CompId × String)) := none

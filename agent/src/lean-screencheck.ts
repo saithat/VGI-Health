@@ -142,6 +142,41 @@ export async function vendorDensityLimits(
       };
     }
   }
+  // Lean-painted screens show bounded lists one page at a time. The frozen
+  // vendor baseline (owner-approved rule) is the larger of the measured vendor
+  // limit and the vendor release Program's own dense layout over the retained
+  // recorded states; a candidate's layout never sets a limit.
+  const pagedFile = path.join(REPO_ROOT, "docs/methods/lean-paged-density.json");
+  const pagedBytes = await readFile(pagedFile).catch(() => undefined);
+  if (pagedBytes) {
+    const paged = z
+      .object({
+        limits: z.record(
+          z.string(),
+          z.object({
+            limit: z.number().int().nonnegative(),
+            measured: z.number().int().nonnegative(),
+            applied: z.enum(["measured", "vendor-dense"]),
+          }),
+        ),
+      })
+      .parse(JSON.parse(pagedBytes.toString("utf8")));
+    const digest = sha256(pagedBytes.toString("utf8"));
+    for (const [key, entry] of Object.entries(paged.limits)) {
+      const prefix = `${version}/${persona}/`;
+      if (!key.startsWith(prefix)) continue;
+      const screen = key.slice(prefix.length);
+      const measuredLimit = limits[screen]?.limit ?? 15;
+      const limit = Math.max(entry.limit, measuredLimit);
+      limits[screen] = {
+        limit,
+        source:
+          limit > measuredLimit
+            ? `vendor dense layout with bounded lists: docs/methods/lean-paged-density.json#sha256=${digest}`
+            : (limits[screen]?.source ?? "Lean default (15)"),
+      };
+    }
+  }
   return limits;
 }
 export interface LeanCheckerOptions {

@@ -1316,7 +1316,10 @@ export interface State {
    */
   expanded: CompId[];
   /**
-   * Selected tab per tabs component (default 0).
+   * Selected tab per tabs component (default 0). New specification for owner
+   * review: the same view state also holds the selected page of a bounded list
+   * component (a panel, table, trend or prior-authorization info, default 0);
+   * it is view state, never clinical record.
    */
   tabSel: [CompId, number][];
   /**
@@ -2705,6 +2708,26 @@ export type UiNode =
   | { text: { s: string } };
 
 /**
+ * New specification for owner review: the window a bounded list shows.
+ * The layout decides it (`Ehr.Layout.Window.windowScreen`), never the renderer:
+ * the list shows page `page` of `pages`, at most `size` of its `total` records,
+ * in its rendered order. `flagged` counts its flagged records (an abnormal
+ * result flag or an urgent state), `flaggedElsewhere` those on other pages, and
+ * `nextFlagged?` is the next page after this one, cyclically, holding a flagged
+ * record that is not on this page.
+ */
+export interface UiWindow {
+  comp: CompId;
+  page: number;
+  pages: number;
+  size: number;
+  total: number;
+  flagged: number;
+  flaggedElsewhere: number;
+  nextFlagged?: number;
+}
+
+/**
  * A semantic screen. The banner is the first and sole banner landmark.
  */
 export interface UiScreen {
@@ -2747,6 +2770,16 @@ export interface UiScreen {
   side: UiNode[];
   modal: UiNode | null;
   urgent?: UiNode[];
+  /**
+   * New specification for owner review: the page selected for a list
+   * component (view state `State.tabSel`); a list not listed is on page 0.
+   */
+  pages?: [CompId, number][];
+  /**
+   * New specification for owner review: the windows of the bounded lists,
+   * written by the layout's window (`Ehr.Layout.Window`), never by the renderer.
+   */
+  windows?: UiWindow[];
 }
 
 /**

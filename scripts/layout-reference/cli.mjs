@@ -1,11 +1,17 @@
 #!/usr/bin/env node
-import {readFileSync,writeFileSync,readdirSync,mkdirSync} from 'node:fs';
+import {readFileSync,writeFileSync,readdirSync,mkdirSync,existsSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {resolve,dirname,join} from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {ReferenceLayouts,limitFor,digest,recordedLimits} from './admission.mjs';
 export const read=path=>JSON.parse(readFileSync(path,'utf8'));
 export function write(path,value) {mkdirSync(dirname(path),{recursive:true});writeFileSync(path,JSON.stringify(value,null,2)+'\n');}
-export const densityPolicy=()=>({...read('docs/audits/r5-per-screen.json'),measurements:read('docs/methods/lean-screen-density.json').measurements});
+/** The vendor density policy: measured vendor limits and, for Lean-painted
+ * screens with bounded lists, the frozen vendor dense baseline (when present). */
+export const densityPolicy=({paged=true}={})=>({...read('docs/audits/r5-per-screen.json'),
+  measurements:read('docs/methods/lean-screen-density.json').measurements,
+  ...(paged&&existsSync('docs/methods/lean-paged-density.json')?{paged:{...read('docs/methods/lean-paged-density.json'),
+    sha256:createHash('sha256').update(readFileSync('docs/methods/lean-paged-density.json')).digest('hex')}}:{})});
 export function familyFile(program,states,{cacheDir,density=densityPolicy(),cache=new ReferenceLayouts({cacheDir})}={}) {
   const groups=new Map(),results=[];
   for(const screen of states) {

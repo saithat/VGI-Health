@@ -20,6 +20,113 @@ JavaScript module. Agent admission is bounded and cached by augmented shape and
 limit; a thousand changing-value states require one family admission. The page
 checks the family with WASM, then paints the actual semantic screen through WASM.
 
+## Bounded lists (dense-reference-v10)
+
+`dense-reference-v10` is v8 with the painter-parity widgets (v9) and bounded
+lists: every pageable list is shown one page at a time
+([bounded lists](../methods/ui-library.md#bounded-lists)), the pager sits in one
+row above the table header, and a uniform table's single-button row actions sit
+in their record's row. The figures below were measured with it; the v8 sections
+that follow are the earlier evidence and were not repeated.
+
+**Worst screen.** P1's result review screen (`w2Result`, the largest retained
+state, two 705-record result tables) before and after the window, native
+`ui-layout`, one sample each, dense family at a limit no layout reaches:
+
+| | Parts | Targets | `family-check` (3 viewports) | `family-paint` (1440×900) | Fixed-shell paint |
+|---|---:|---:|---:|---:|---:|
+| Whole lists | 10,930 | 24 | 89.4 s | 148.6 s | 3.4 s |
+| Bounded lists | 640 | 40 | 0.36 s | 0.74 s | 0.09 s |
+
+The sixteen added targets are four pagers (the two result tables, the
+encounter history and the side problem list).
+
+**Retained-state coverage and three-way costs.** All 84 persona-days and all
+132,843 retained event pre-states of `core-10day` and
+`rules3-10day-invalid-simloop` were rechecked, **including `core-10day` P1
+day 10**, which v8 skipped. Each checksummed snapshot's complete event sequence
+matched the recording; zero mismatches and zero missing targets. Every state
+is admitted dense at its frozen limit (below), by construction, since those
+limits are computed from these states. 54,047 states
+(40.7%) show at least one paged list. "Within measured limit" counts states
+whose dense layout also stays within the earlier measured vendor limit.
+Columns are scroll count / scroll pixels / pointer-travel pixels on the same
+retained traces; the traces predate paging, so no page actions are in them.
+
+| Recording | Persona | Days | States paged | Within measured limit | Fixed | Dense (bounded lists) | Stored browser |
+|---|---|---:|---:|---:|---|---|---|
+| core-10day | P1 | 10 | 5,630/15,753 | 13,063 | 13,459 / 42,060,864 / 875,656 | 9,894 / 7,261,388 / 4,040,414 | 10,029 / 10,140,457 / 3,538,181 |
+| core-10day | P2 | 10 | 10,311/26,779 | 24,450 | 22,092 / 32,137,284 / 3,384,636 | 21,475 / 15,138,318 / 6,235,244 | 23,739 / 21,103,992 / 5,768,934 |
+| core-10day | P3 | 10 | 7,503/10,410 | 9,483 | 7,211 / 22,443,052 / 1,144,556 | 5,682 / 4,627,206 / 3,324,963 | 6,730 / 6,689,826 / 3,046,256 |
+| core-10day | P4 | 10 | 2,155/11,216 | 10,895 | 9,746 / 20,483,040 / 908,120 | 7,413 / 5,489,062 / 2,470,664 | 8,075 / 7,673,840 / 2,544,165 |
+| core-10day | P5 | 10 | 5,369/13,122 | 12,561 | 11,885 / 20,374,212 / 691,008 | 10,435 / 8,242,534 / 2,250,692 | 10,602 / 9,826,197 / 2,059,013 |
+| rules3-10day-invalid-simloop | P1 | 7 | 4,379/12,183 | 10,586 | 10,492 / 30,138,324 / 670,450 | 7,687 / 5,753,130 / 2,879,611 | 8,684 / 13,082,999 / 2,576,979 |
+| rules3-10day-invalid-simloop | P2 | 6 | 6,375/17,039 | 15,080 | 13,961 / 20,493,448 / 2,265,340 | 13,527 / 9,431,544 / 3,809,086 | 15,550 / 18,267,105 / 3,442,477 |
+| rules3-10day-invalid-simloop | P3 | 7 | 6,130/7,901 | 6,561 | 5,577 / 16,429,880 / 951,590 | 4,934 / 4,071,444 / 2,569,002 | 5,690 / 5,811,207 / 2,382,515 |
+| rules3-10day-invalid-simloop | P4 | 7 | 1,957/8,602 | 8,337 | 7,435 / 15,783,152 / 643,818 | 5,873 / 4,237,356 / 1,951,978 | 6,270 / 6,397,272 / 1,855,322 |
+| rules3-10day-invalid-simloop | P5 | 7 | 4,238/9,838 | 9,575 | 8,888 / 15,130,956 / 501,254 | 7,618 / 5,963,434 / 1,635,106 | 6,407 / 6,147,927 / 1,516,005 |
+
+On the nine `core-10day` P1 days v8 covered, dense scroll distance falls from
+22.2M px (2.4 times the stored browser atlas's 9.1M) to **6.5M px (0.72
+times)**, and dense pointer travel rises from 3.0M to 3.6M px (browser 3.2M):
+targets below a long table are near, and the pager row and row-action columns
+move other targets. Across `core-10day` dense scroll distance is now below the
+browser atlas's for every persona (40.8M against 55.4M px) and travel is 1.08
+times it (18.3M against 17.0M px). These remain re-layouts of recorded traces,
+not fresh simulations, and the browser atlas belongs to an earlier build; a
+clinician paging to records it reads would add page actions the traces lack
+(see [metric gaming](../design/metric-gaming.md#bounded-lists-paging-is-not-free)).
+
+**Density limits.** `docs/methods/lean-paged-density.json` freezes, for the
+218 release/persona/screen keys the retained states visit, the larger of the
+measured vendor limit and the most targets in view of the vendor Program's own
+dense layout with bounded lists (rule approved by the owner; computed once
+with `--probe-limit 999`). **101 screens still need the larger value** (P1 46,
+P5 24, P2 13, P3 12, P4 6), the largest steps being `w2Result` (11 → 23 for P1
+v1/v3 and P5 v2) and the ED track board (15 → 25). 120,591 of the 132,843
+states (90.8%) stay within the measured limit; v8 without paging refused
+4.7% at it. The pager's four targets account for part of the excess, the dense
+placement of navigation and tabs for the rest; the probe does not separate
+them. None of the 84 retained no-agent Programs equals today's release export
+byte for byte (later vendor fixes); the limits are those of the recorded vendor
+layouts.
+
+**Lean-mode initialization.** A one-day replayed run (`run-days --screens
+lean --backend replay --days 1 --personas P1,P5 --seed-policy none`, no model
+call) initializes **P1** (all 375 exported screen states admitted under Lean
+G1–G11 in 141 s, the limit and its source recorded per screen, the frozen file
+and the window mirror fingerprinted in the manifest). **P5 does not
+initialize**: on `w2Result` and `w6Consult`, the states showing the three
+interruptive alerts (interaction on order or refill) need 21 and 31 targets in
+view in the dense layout, above the frozen limits 20 and 25, and the fixed
+shell then fails G11 (the alerts and their severity marks are more urgent
+occurrences than its pinned strip holds; the same with lists unbounded). The retained no-agent recordings never
+show those alert states on those screens, so the rule's baseline does not cover
+them. Changing the rule's state set or the strip is an owner decision.
+
+**Verification (v10, once after the merge).** `lake build` of the libraries,
+`ehr`, `ui-layout`, `ui-port-audit` and `gents` (generated types unchanged);
+`#print axioms` on the 62 new or edited theorems shows only `propext`,
+`Classical.choice` and `Quot.sound`; `make wasm` and `make wasm-check` pass;
+layout-reference 39/39 and ui-library 42/42 node tests; app typecheck, lint,
+350 unit tests (32 existing skips), build and the Lean bundle audit; agent
+typecheck, lint and 312 tests (80 existing skips); the lean-ui browser
+workflows 5/5 (one worker, disposable Postgres).
+
+Throughput: 18,866 distinct shape admissions (all three viewports plus a dense
+paint each) took 10,346 s of native time over ten worker processes, 1.8 per
+second; 109,000 states reused a cached admission.
+
+Reproduce (from the repository root, `TMPDIR` set, the retained snapshots under
+`<native-screens>`):
+
+```sh
+node scripts/layout-reference/visited.mjs --out "$TMPDIR/paging/probe/<run>-<persona>" --runs <run> \
+  --personas <persona> --frozen-snapshots <native-screens> --probe-limit 999
+node scripts/layout-reference/vendor-limits.mjs --visited <merged visited.json>
+```
+
+
 ## Evidence scope
 
 All patients and clinicians are synthetic. Local output is under

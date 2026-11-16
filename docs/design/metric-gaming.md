@@ -67,6 +67,7 @@ reproduces the retained audit. These are reporting changes, not a new score.
 | V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | R6 bounds navigation labels and restricts them to titles or declared aliases. |
 | V7 | **Two-night move.** Copy a control on night N, then delete the original on night N+1. | Previously a survivor still marked `copyOf` was ignored by `movedTags`. | R7 fixed: the movement proxy charges deletion; `StabilityBudget` counts the surviving tag's displacement with or without `copyOf`. Night N is also charged by R3 (an added copy counts against `stabilityBudget`). |
 | V8 | **Default to the usual answer.** Set field defaults to the most common train value. | Saves keystrokes only, so the score does not move. It does create default-acceptance risk. | Low impact; `defaultConfirm` already requires a human confirm. |
+| V9 | **Page records away.** Shorten a long list by paging it, so controls below it need no scrolling and records the clinician needs are out of sight. | A short page removes the reveal scrolling past the list; records on other pages cost nothing if the clinician never pages. | Closed for Lean-painted screens, see [bounded lists](#bounded-lists-paging-is-not-free). |
 
 ## Proposed rules
 
@@ -260,6 +261,52 @@ and limit in the decision and subsequent agent proposal feedback. This TypeScrip
 **unchanged 15-target fixed-shell specification** and capacity caveat; it is not a
 Lean proof about React. [Measurement contract, limits, retained revisions and
 verification](../methods/screen-validation.md#deployed-action-density-r5).
+
+## Bounded lists: paging is not free
+
+*New specification.* Lean-painted screens show every pageable list one page
+at a time (`Ehr.Layout.Window`, [UI library](../methods/ui-library.md#bounded-lists)).
+A page shortens the screen, which removes reveal scrolling past a long list
+for controls below it. That saving is real geometry, but paging must not be a
+way to drop the cost of records the clinician needs:
+
+- **Page actions are clicks.** A page is selected by the interpreter's
+  `selectTab` event on the list, through the same guards as a tab (a popup
+  blocks it). The trace metric counts every non-scroll event as one activation
+  (`Sim.Metrics.activation`), so each page action is a click in traces, task
+  metrics, day results and the release score.
+- **The clinician pages to what it reads.** With `--lists paged` (selected
+  automatically for `run-days --screens lean`), an information-need lookup
+  selects the page holding the record it reads (`Layout.Window.pagingOf`):
+  the next or previous target when the page is adjacent, otherwise the page
+  selector at two pointings; it then scrolls only within the page. Reading
+  chart notes pages to each note's page. Neither is free.
+- **Nothing flagged hides on another page.** Each page shows how many flagged
+  records are on other pages and an enabled target to the next page holding
+  one (`Window.nothing_buried`).
+- **Page sizes are bounded.** A layout may set a list's page size only within
+  `Window.minPageSize`–`maxPageSize` (5–50); the pager's four targets count
+  under G3 and G10 like any other.
+- **Limits come from the vendor.** Pager targets raise the targets in view; the
+  per-screen limit for Lean-painted screens is frozen from the vendor release
+  Program's own dense layout (`docs/methods/lean-paged-density.json`), never
+  from a candidate's layout.
+
+Simulated evidence (synthetic, `runs/paging-world` copy of the recorded world,
+seed 1, information needs on): over thirty persona-days (P1, P3, P5, days 1–10,
+releases v1–v3) the paged and whole-list runs are identical at the default page
+size of 20, because every record and note the clinician read was on a list's
+first page (results are newest first). With `--page-size 5` as a sensitivity
+setting, P1's note reading pages on days 1, 4 and 6 (25, 22 and 22 page
+actions), and clicks rise by exactly those counts (1,114 → 1,139, 824 → 846,
+881 → 903) with completion unchanged: page actions are paid, not free.
+
+Minimum clicks are unaffected: `MinClicks` searches clinical goal events and
+leaves Back, search and scroll outside its space; no clinical goal requires a
+page action, and its information-reading edges cost no activations, as for
+scrolls. Recorded traces predate paging: the retained-trace geometry comparison
+in [dense reference defaults](../audits/dense-reference-defaults.md) re-lays out
+their events and adds no page actions, so it is not a fresh simulation.
 
 ## High-alert medication notices: non-removable
 

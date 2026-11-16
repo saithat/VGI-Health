@@ -8,6 +8,7 @@ import {
 } from "../../../scripts/layout-reference/generator.mjs";
 import density from "../../../docs/methods/lean-screen-density.json";
 import audit from "../../../docs/audits/r5-per-screen.json";
+import paged from "../../../docs/methods/lean-paged-density.json";
 import type { UiScreen } from "../ehr/ui/types";
 import type { Output } from "./layout";
 /** Same vendor snapshots as the nightly gate; absent screens keep limit 15. */
@@ -16,6 +17,12 @@ export function referenceLimit(
   persona: string,
   screen: string,
 ): number {
+  // Bounded lists: the frozen vendor baseline (the larger of the measured
+  // vendor limit and the vendor Program's own dense layout over the retained
+  // recorded states) when it covers the screen.
+  const frozen: Record<string, { limit: number }> = paged.limits;
+  const baseline = frozen[`${release}/${persona}/${screen}`];
+  if (baseline !== undefined) return baseline.limit;
   const measurements: Record<string, { limits: Record<string, number> }> =
     density.measurements;
   const recorded = measurements[`${release}/${persona}`]?.limits[screen];
@@ -40,12 +47,19 @@ export function referenceLimit(
 export function createReferencePainter(call: (request: string) => string) {
   const cache = new Map<string, { references: unknown; dense: boolean }>();
   return (
-    screen: UiScreen,
+    rendered: UiScreen,
     viewport: { w: number; h: number },
     limit: number,
   ) => {
     if (!viewports.some((v) => v.w === viewport.w && v.h === viewport.h))
       throw Error("Unsupported layout viewport");
+    // Lean decides the window of every bounded list (Layout.Window); the
+    // family is generated and checked for the screen as it is shown.
+    const windowed: { screen?: UiScreen } = JSON.parse(
+      call(JSON.stringify({ op: "window", screen: rendered })),
+    );
+    const screen = windowed.screen;
+    if (!screen) throw Error("Missing Lean window");
     const shape = shapeFor(screen),
       key = JSON.stringify([version, shape, limit]);
     let selected = cache.get(key);

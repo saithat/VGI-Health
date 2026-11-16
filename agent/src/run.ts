@@ -179,7 +179,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   armCrashHook(llm.name);
   if(opts.verificationRelease&&llm.name!=='scripted'&&llm.name!=='replay')throw new Error('Verification release refuses live models');
   const log = opts.log ?? (() => undefined);
-  const simulationModes=simulationModesSchema.parse(opts.simulationModes??realWorkModes);
+  const requestedModes=simulationModesSchema.parse(opts.simulationModes??realWorkModes);
+  // Lean-painted screens page bounded lists (Layout.Window): the simulated
+  // clinician pages to the records it reads, and each page action is a click.
+  const simulationModes:SimulationModes=leanMode&&requestedModes.lists===undefined?{...requestedModes,lists:'paged'}:requestedModes;
   const underlyingEhr = withSimulationModes(opts.ehr ?? createEhr(),simulationModes);
   const world = await loadWorld(opts.worldDir);
   if (['codex','claude','openai-compat'].includes(llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
@@ -212,7 +215,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed, incompletePenalty:scoring.incompletePenalty,
   };
-  const fingerprints = {...(leanMode?{referenceGenerator:await fileHash(path.join(REPO_ROOT,'scripts/layout-reference/generator.mjs')),layoutExecutable:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(REPO_ROOT,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-screen-density.json'))}:{}),...await runFingerprints(ehr, world.dir,REPO_ROOT,leanMode?'lean':'browser'),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
+  const fingerprints = {...(leanMode?{referenceGenerator:await fileHash(path.join(REPO_ROOT,'scripts/layout-reference/generator.mjs')),layoutExecutable:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(REPO_ROOT,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-screen-density.json')),...(existsSync(path.join(REPO_ROOT,'docs/methods/lean-paged-density.json'))?{pagedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-paged-density.json'))}:{}),windowMirror:await fileHash(path.join(REPO_ROOT,'scripts/layout-reference/window.mjs'))}:{}),...await runFingerprints(ehr, world.dir,REPO_ROOT,leanMode?'lean':'browser'),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
     screenGate:z.string().optional(),

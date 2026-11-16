@@ -65,6 +65,8 @@ export interface SimulateInput {
   interruptions?: 'realWork' | 'fixedCost';
   simModel?: 'wave3' | 'legacy';
   textCost?: 'length' | 'legacy';
+  /** Bounded lists: the clinician pages to the records it reads (Layout.Window). */
+  lists?: 'whole' | 'paged';
   /** Opt-in experimental additional choice service per mental operator. */
   choiceLatencyMs?: number;
   /** Independent absolute-time offered-work stream for paired measurements. */
@@ -164,6 +166,7 @@ class CliEhr implements EhrClient {
         ...(i.interruptions ? ['--interruptions', i.interruptions] : []),
         ...(i.simModel ? ['--sim-model', i.simModel] : []),
         ...(i.textCost ? ['--text-cost', i.textCost] : []),
+        ...(i.lists === 'paged' ? ['--lists', 'paged'] : []),
         ...(i.choiceLatencyMs !== undefined ? ['--choice-latency-ms', String(i.choiceLatencyMs)] : []),
         ...(i.arrivalSeed !== undefined ? ['--arrival-seed', String(i.arrivalSeed)] : []),
         ...(i.interruptionProfile ? ['--interruption-profile', i.interruptionProfile] : []),

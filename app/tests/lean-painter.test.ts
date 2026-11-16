@@ -960,3 +960,111 @@ test("an empty pane binding never falls through to ambient patient dispatch", ()
   painter.destroy();
   root.remove();
 });
+
+test("a paged list's pager sends selectTab with the page Lean gives each target", () => {
+  const { root, painter, dispatch } = setup();
+  const pager = (kind: string, col: number, extra: Partial<Part> = {}): Part => ({
+    role: "pager",
+    text: kind,
+    target: true,
+    comp: "results",
+    kind,
+    col,
+    ...extra,
+  });
+  painter.patch(
+    screen([]),
+    output(
+      [
+        drawn("heading", [3], 0, { target: false }),
+        drawn("position", [3, 0], 3584, { target: false }),
+        drawn("flagged", [3, 1], 3584, { target: false }),
+        drawn("previous", [3, 2], 7168),
+        drawn("next", [3, 3], 7168),
+        drawn("page", [3, 4], 7168),
+        drawn("nextFlagged", [3, 5], 7168),
+      ],
+      [
+        { role: "heading", text: "Results", comp: "results" },
+        { role: "position", text: "Records 21–40 of 47", comp: "results" },
+        { role: "flagged", text: "1 flagged record on another page", comp: "results", tone: "red" },
+        pager("previous", 0),
+        pager("next", 2),
+        pager("page", 1, {
+          options: [
+            ["0", "Page 1: records 1–20"],
+            ["1", "Page 2: records 21–40"],
+            ["2", "Page 3: records 41–47"],
+          ],
+          selected: true,
+        }),
+        pager("nextFlagged", 1, { enabled: false }),
+      ],
+    ),
+  );
+  const box = (id: string) => root.querySelector<HTMLElement>(`[data-box="${id}"]`);
+  box("next")?.querySelector("button")?.click();
+  expect(dispatch).toHaveBeenLastCalledWith({ selectTab: { comp: "results", idx: 2 } });
+  box("previous")?.querySelector("button")?.click();
+  expect(dispatch).toHaveBeenLastCalledWith({ selectTab: { comp: "results", idx: 0 } });
+  const select = box("page")?.querySelector("select");
+  if (!select) throw new Error("No page selector");
+  expect([...select.options].map((o) => o.value)).toEqual(["0", "1", "2"]);
+  expect(select.value).toBe("1");
+  expect(select.dataset.event).toBe("selectTab");
+  select.value = "2";
+  select.dispatchEvent(new window.Event("change", { bubbles: true }));
+  expect(dispatch).toHaveBeenLastCalledWith({ selectTab: { comp: "results", idx: 2 } });
+  // A target that cannot move is shown, disabled, and sends nothing.
+  const flagged = box("nextFlagged")?.querySelector("button");
+  expect(flagged?.disabled).toBe(true);
+  expect(box("position")?.querySelector(".lean-control")).toBeNull();
+  expect(box("flagged")?.dataset.tone).toBe("red");
+});
+
+test("a table is a grid: Lean's grid keys move focus and a single-action row clicks its action", () => {
+  const { root, painter, dispatch, keyboard } = setup();
+  const cell = (row: number, col: number): Part => ({ role: "cellValue", text: `${row}.${col}`, row, col });
+  painter.patch(
+    screen([]),
+    output(
+      [
+        drawn("table", [3], 0, { target: false }),
+        drawn("c00", [3, 0], 3584, { target: false }),
+        drawn("c01", [3, 1], 3584, { target: false }),
+        drawn("c10", [3, 2], 7168, { target: false }),
+        drawn("c11", [3, 3], 7168, { target: false }),
+        drawn("actions", [4], 7168, { target: false }),
+        drawn("open", [4, 0], 7168),
+      ],
+      [
+        { role: "heading", text: "Schedule", comp: "schedule" },
+        cell(0, 0),
+        cell(0, 1),
+        cell(1, 0),
+        cell(1, 1),
+        { role: "wrapper", text: "", comp: "schedule", kind: "rowAction", row: 1 },
+        action("openVisit", "nav", "Open encounter"),
+      ],
+    ),
+  );
+  const box = (id: string) => root.querySelector<HTMLElement>(`[data-box="${id}"]`);
+  expect(box("c00")?.getAttribute("role")).toBe("gridcell");
+  expect(box("c00")?.tabIndex).toBe(0);
+  expect(box("c11")?.getAttribute("aria-rowindex")).toBe("2");
+  box("c00")?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+  expect(keyboard).toHaveBeenLastCalledWith(
+    "grid",
+    2,
+    2,
+    { focus: 0, selected: 0, isOpen: true, invoker: "" },
+    "right",
+  );
+  // The mocked transition answers focus 1: the cell at row 0, column 1.
+  expect(document.activeElement).toBe(box("c01"));
+  box("c10")?.click();
+  expect(dispatch).toHaveBeenLastCalledWith({ click: { comp: "openVisit" } });
+  dispatch.mockClear();
+  box("c00")?.click();
+  expect(dispatch).not.toHaveBeenCalled();
+});

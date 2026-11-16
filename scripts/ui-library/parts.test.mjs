@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { windowScreen } from '../layout-reference/window.mjs';
 import { readFileSync, readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
@@ -130,8 +131,12 @@ test('the TypeScript mirror lists the same occurrences as Lean on actual P1/P3 s
       samples.push([ehr('render-ui', { spec, program, ...projection, user, state }), `${persona}/${screenId}`]);
     }
   }
-  for (const [ui, name] of samples) {
-    const { inventory } = layout({ op: 'inventory', screen: ui });
+  for (const [raw, name] of samples) {
+    // The layout shows bounded lists one page at a time (Layout.Window); the
+    // mirror reads the windowed screen, which Lean's window operation decides.
+    const { inventory } = layout({ op: 'inventory', screen: raw });
+    const ui = layout({ op: 'window', screen: raw }).screen;
+    assert.deepEqual(JSON.parse(JSON.stringify(windowScreen(raw))).windows, ui.windows, `${name} window mirror`);
     const lean = inventory.map((e) => [key(e.path), e.part.role, e.part.target === true]);
     const mirror = screenOccurrences(ui).map((o) => [key(o.path), o.role, o.target]);
     assert.deepEqual(mirror, lean, name);

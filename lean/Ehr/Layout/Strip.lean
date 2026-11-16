@@ -292,7 +292,9 @@ private def probeOk (screen : UiScreen) : Bool := viewports.all fun v =>
   Shell.accepts shape && checkAll Density.shellCapacity (shapeSources shape) (urgentPaths shape) v ps &&
     decide (Linked shape ps)
 -- Up to six urgent occurrences, at most two of them targets, are pinned at every size, also beside a modal.
-#guard probeOk (probe 2 1 false) && probeOk (probe 2 1 true) && probeOk (probe 5 1 true) && probeOk (probe 4 2 false)
+-- An alert is two occurrences since alerts carry a severity mark: its label and the mark.
+#guard probeOk (probe 2 1 false) && probeOk (probe 2 1 true) && probeOk (probe 3 0 true) && probeOk (probe 2 2 false)
+#guard !Shell.stripFits (screenShape (probe 5 1 true)) && !Shell.stripFits (screenShape (probe 4 2 false))
 -- Beyond that the shell still satisfies G1–G9 and G10 but not G11.
 #guard !Shell.stripFits (screenShape (probe 6 1 false)) && !Shell.stripFits (screenShape (probe 1 3 false))
 #guard !decide (G11 desk (urgentPaths (screenShape (probe 6 1 false))) (probeBoxes (probe 6 1 false)))
@@ -300,7 +302,7 @@ private def probeOk (screen : UiScreen) : Bool := viewports.all fun v =>
   decide (G10 Density.shellCapacity desk (probeBoxes (probe 6 1 false)))
 -- The strip rows sit between the commit row (104–128 px) and the body (from 272 px).
 #guard ((probeBoxes (probe 2 1 true)).filter (·.info.urgent)).map (fun p => (p.rect.y,p.info.target)) ==
-  [(8192,false),(9728,false),(11264,true)]
+  [(8192,false),(9728,false),(11264,false),(12800,false),(14336,true)]
 -- Body order: title and workspace first, then the navigation; each link and tab is a target row.
 private def bodyRows (screen : UiScreen) : List (List Nat) :=
   ((probeBoxes screen).filter (fun p => !p.clips.isEmpty)).filterMap (·.info.source)

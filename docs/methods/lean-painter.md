@@ -55,8 +55,9 @@ The reference shell leaves a 16px bottom margin for host status feedback. The
 host login/status surfaces and browser popup ink are outside layout admission;
 custom families should reserve space for status feedback.
 The default is the same plain JavaScript dense generator used by the Node
-reports and Lean nightly mode. The page generates a content-free family for its
-current shape, checks all three supported viewports with WASM, then binds the
+reports and Lean nightly mode. The page first asks Lean's `window` operation for the screen
+as shown (bounded lists one page at a time), generates a content-free family
+for that shape, checks all three supported viewports with WASM, then binds the
 actual screen for painting. Admission is cached by augmented shape and screen
 limit (256 entries). A refused dense family tries the fixed shell at the same
 recorded screen limit; refusal of both makes the page inert. Transport/decoder
@@ -138,19 +139,23 @@ when Lean removes the alert. Escape is sent to the same profile, which ignores
 it (`alertDialog_stays_open`); the painter swallows the key and there is no
 dismiss event, so acknowledgment cannot be bypassed. `Keyboard.dialog`, which
 closes on Escape, remains for ordinary dismissible dialogs and is not used for
-interruptive boxes. The generic table/grid keyboard remains separate work. Rich medication
-cells have checked rectangles and supplied action controls. The WASM keyboard API nevertheless exposes and tests
-all five profiles without reimplementing their transitions in TypeScript.
+interruptive boxes. Rich medication cells have checked rectangles and supplied action
+controls. Table cells are grid cells: arrows, Home/End and
+Control+Home/End call `Keyboard.grid` with the table's rows and columns and
+move a roving focus between the cell boxes (`app/src/lean-ui/grid.ts`). The
+WASM keyboard API exposes and tests all five profiles without reimplementing
+their transitions in TypeScript.
 
 **Admission boundary.** The semantic inventory has one target occurrence
 per navigation link, per tab, per section toggle, per field control and per
 unconfirmed prefill without an explicit confirmation button, so the size,
 separation and density rules see every one of them; the pending field no
 longer turns into a confirmation button. Table cells are occurrences with
-rectangles, rows and columns of their own, but the reference layouts stack
-them and `Keyboard.grid` is not connected to them. Geometry/text agreement
-does not prove control fidelity or accessibility. Generic table grids and paging remain cut-over blockers. Rich board modalities
-and widget marks use checked family geometry, with no weakening of G1–G11.
+rectangles, rows and columns of their own, laid out in shared column tracks,
+and `Keyboard.grid` moves focus among them; grid ARIA ownership (rows inside a
+grid element) is not built, since the boxes are flat. Geometry/text agreement
+does not prove control fidelity or accessibility. Rich board modalities and widget marks use checked family geometry, with no
+weakening of G1–G11.
 
 ## Widget inventory
 
@@ -175,17 +180,18 @@ covered by the presentation row; their underlying child controls remain present.
 | `field`: search | Works, simpler look | Native search input emits `enter`; Lean owns filtering and patient selection. |
 | `field`: observation-time | Works, simpler look | Lean displays the recorded instant in UTC, labelled UTC (it has no display time zone). The native local datetime editor still converts to the same epoch-minute string in the browser's zone. No changed timing policy. |
 | `field`: provenance, required/human-only, pending confirmation | Works, simpler look | Source caption, required marker, human-entry marker and entry hint are parts of their own from Lean. A pending value has a `pending` part: text when an explicit confirm button exists, otherwise a button of its own that sends `confirm`; the field stays editable. |
-| `info`: table/list/summary/document/status/entryTimes | Simpler look | Lean's caption and one part per cell with row and column, value text formatted in Lean; state cells and result flags carry a tone; an empty table says so. The reference layouts stack the cells; no column tracks, medication cards or document sections. Late-entry times read in UTC. |
-| `info`: structured row actions / keyboard grid | Simpler look; grid missing | Action child buttons stay separate parts; their `rowAction` wrapper carries the table and row. Clicking an entire displayed table row is missing; `Keyboard.grid` is not connected to the cell boxes. |
+| `info`: table/list/summary/document/status/entryTimes | Works, simpler look | Lean's caption and one part per cell with row and column, value text formatted in Lean; state cells and result flags carry a tone; an empty table says so. Uniform tables are a header row and value rows in shared column tracks; cells are grid cells (`role=gridcell`, row and column indexes). No medication cards or document sections. Late-entry times read in UTC. |
+| `info`: bounded lists (pager) | Works | A paged list shows one page (Lean's window): its position ("Records 21–40 of 705") and flagged count are text parts; previous, next and next-flagged are native buttons and the page selector a native select over Lean's page options; each sends `selectTab` with the page Lean gives it. A target that cannot move is disabled. |
+| `info`: structured row actions / keyboard grid | Works, simpler look | Action child buttons stay separate Lean target boxes; the dense layout puts a record's single-button actions in its row. A click or Enter on any cell of a row whose record has one navigation action sends that action's own `click` (no extra target or geometry). Arrow, Home/End and Control+Home/End move a roving focus through `Keyboard.grid` over the cell boxes. Rows with several actions keep their buttons. |
 | `alert` | Works, simpler look | Lean label, severity tone and a checked geometric severity mark; interruptive placement and inert ordinary controls remain. |
 | `button`: navigation, primary commit, macro, review, toggle, add/remove, reconciliation | Works, simpler look | Native button; `click` unchanged. Enabled state comes from Lean; the complete blocked reason is its own part. Lean step owns every action, including macro confirmations and group visibility. |
 | `button`: acknowledgment / explicit confirmation | Works, simpler look | `ack {alert: comp}` or `confirm {comp}` exactly as the current renderer. No automatic acknowledgment or confirmation. |
 | `button`: hotkey badge | Works | A displayed hotkey activates a unique enabled button; editors, modal ownership and patient scope are respected. Ambiguous shortcuts require focus in a pane. |
 | `text` | Works | Complete source and pinned prebroken visual spelling; missing scalars use Lean's escapes. |
-| `presentation` | Works for rich displays; tables remain simpler | Dedicated time-grid, note/folder card and plotted trend/growth parts; complete original info/actions remain available. Generic table/list/row-action parity remains separate work. |
+| `presentation` | Works for rich displays; tables remain simpler | Dedicated time-grid, note/folder card and plotted trend/growth parts; complete original info/actions remain available. Tables are grids and long lists are paged (rows above). |
 | `valueSet` | Works, simpler look | The wrapper prints nothing; Lean passes its options to the controls inside. |
 | `chartReferences` | Works | Every reference sample/source stays readable; matching growth series overlay Lean-placed dashed reference curves. |
-| `rowAction` | Simpler look | Child controls retain their events and separate source boxes; the wrapper names the table and row; embedding controls into displayed table rows requires a grid layout. |
+| `rowAction` | Works, simpler look | Child controls retain their events and separate source boxes; the wrapper names the table and row; single-button actions sit in their record's row and the row forwards a click to a single navigation action. A list named by a row action is not paged. |
 | `timeline` | Works, simpler look | Lean-placed source-order axis plus the complete ordered children; no dates are inferred. |
 | `datedTimeline` | Works | Lean-placed proportional UTC axis, exact timestamp/source labels, explicit undated entries and complete children. |
 | `board` | Works; large boards have a simpler look | Opt-in patient-scoped live sessions, a pinned urgent rail, pane shell geometry and global modal ownership. A pane explicitly selects its named patient; other-patient selection is refused. Large clinical boards can use the checked fixed-shell fallback when the dense candidate exceeds the existing limits. |

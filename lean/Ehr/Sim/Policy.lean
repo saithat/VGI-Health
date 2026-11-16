@@ -4,6 +4,7 @@ import Ehr.Sim.TaskContext
 import Ehr.Sim.Scheduling.Clock
 import Ehr.Sim.Workflow.Timing
 import Ehr.Sim.Resumption.Work
+import Ehr.Layout.WindowCore
 
 /-!
 Deterministic persona policy. Clinical goals are fixed outside the UI. Each
@@ -290,17 +291,35 @@ Synthetic Hospital (2026) supplies text, not either coefficient. -/
 def textReadMs (characters : Nat) : Nat := characters * 50
 def textPages (characters : Nat) : Nat := (characters - 1) / 1800
 
+/-- New specification for owner review: the layout's window configuration the
+simulated clinician follows: the default, or the page size it was given. -/
+def pageConfig (config : Resumption.InterruptionConfig) : Layout.Window.Config :=
+  match config.pageSize? with
+  | some size => { size }
+  | none => {}
+
 def readSection (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : EpisodeResult := Id.run do
   if r.resumption.config.legacyModel || !r.resumption.config.lengthCosts then return r
   let mut out := r
   -- Read only notes actually exposed in this patient's visible chart panel.
   -- Relevance selection (decision 16) stays deferred; no hidden chart is read.
-  let visibleNotes := (shown ctx r.state).any fun c =>
+  let notesComp := (shown ctx r.state).find? fun c =>
     showsInfo "priorNotes" c.kind || showsInfo "encounterNotes" c.kind
+  let visibleNotes := notesComp.isSome
+  -- New specification for owner review: with bounded lists a note on another
+  -- page of the notes list is reached by paging to it (one activation each).
+  let notesPaging := match notesComp with
+    | some c => if r.resumption.config.pagedLists then
+        Layout.Window.pagingOf (pageConfig r.resumption.config) (Render.renderUi ctx.sp ctx.prog ctx.facts (r.resumption.config.chartDisplay task)
+          ctx.user r.state) c.id |>.map (c.id, ·) else none
+    | none => none
   if visibleNotes then
-    for note in (r.resumption.config.chartDisplay task).notes do
+    for (note, index) in (r.resumption.config.chartDisplay task).notes.zipIdx do
       let key := "chart:" ++ note.id
       if !out.readSections.contains key then
+        if let some (comp, k, _) := notesPaging then
+          if index / k != out.state.tabOf comp then
+            out := emit ctx task out (.selectTab comp (index / k)) [.point, .click]
         for _ in List.range (textPages note.text.length) do
           out := emit ctx task out (.scroll out.state.screen) [.scroll]
         let ms := textReadMs note.text.length
@@ -345,8 +364,21 @@ def readNeed (ctx : Context) (task : Task) (r : EpisodeResult) (n : Information.
   let samples := (readable.flatMap (fun m => Information.selected m now)).eraseDups
   let inventories := readable.foldl (fun total m => total + m.inventory.length) 0
   let items := max 1 (samples.length + inventories)
-  for _ in List.range ((depth - 1) / 10) do
-    out := emit ctx task out (.scroll out.state.screen) [.scroll]
+  -- New specification for owner review: with bounded lists the record is on a
+  -- page of its list (`Layout.Window.pagingOf`). The clinician selects that page
+  -- (one activation: the next or previous page target, or the page selector,
+  -- which takes two pointings) and scrolls only within the page.
+  match (if r.resumption.config.pagedLists then Layout.Window.pagingOf (pageConfig r.resumption.config) ui comp else none) with
+  | some (k, current) =>
+    let page := (depth - 1) / k
+    if page != current then
+      out := emit ctx task out (.selectTab comp page)
+        (if page + 1 == current || current + 1 == page then [.point, .click] else [.point, .click, .point, .click])
+    for _ in List.range (((depth - 1) % k) / 10) do
+      out := emit ctx task out (.scroll out.state.screen) [.scroll]
+  | none =>
+    for _ in List.range ((depth - 1) / 10) do
+      out := emit ctx task out (.scroll out.state.screen) [.scroll]
   -- Reading is paid mental time without a fabricated UI activation/receipt.
   out := { out with elapsedMs := out.elapsedMs + mentalMs * items, readingMs := out.readingMs + mentalMs * items }
   let seen := { out.state with clock := out.elapsedMs / 100 }

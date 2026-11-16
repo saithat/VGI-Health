@@ -15,15 +15,17 @@ namespace Ehr.Layout.Parts
 open Ehr Ehr.Render
 
 /-- New specification for owner review: `child` under context `ccx` is a child
-node of `node` under context `cx`. A value set passes its options, and a
-patient pane its metadata, to its children. -/
+node of `node` under context `cx`. A value set passes its options, reference
+curves their curves, and a patient pane its metadata and confirmations, to its
+children, as `semanticNodes` does. -/
 def ChildOf (cx : DisplayCx) (node : UiNode) (ccx : DisplayCx) (child : UiNode) : Prop :=
   match node with
   | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs
-  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
+  | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
     child ∈ cs ∧ ccx = cx
+  | .chartReferences refs cs => child ∈ cs ∧ ccx = { cx with references := refs }
   | .valueSet options custom cs => child ∈ cs ∧ ccx = cx.inValueSet options custom
-  | .patientPane _ _ metadata cs modal => (child ∈ cs ∨ child ∈ modal) ∧ ccx = cx.inPane metadata
+  | .patientPane _ _ metadata cs modal => (child ∈ cs ∨ child ∈ modal) ∧ ccx = paneCx cx metadata cs modal
   | _ => False
 
 /-- New specification for owner review: `sub` (under `scx`) is `node` (under
@@ -50,7 +52,7 @@ private theorem child_entries (cx ccx : DisplayCx) (node child : UiNode) (h : Ch
        exact ⟨_, List.mem_map.mpr ⟨child, member, rfl⟩, by simp only [semanticNodes]⟩)
     | (rename_i patient banner metadata cs modal
        obtain ⟨member, rfl⟩ := h
-       refine ⟨cs.map (semanticNodes (cx.inPane metadata)) ++ modal.map (semanticNodes (cx.inPane metadata)),
+       refine ⟨cs.map (semanticNodes (paneCx cx metadata cs modal)) ++ modal.map (semanticNodes (paneCx cx metadata cs modal)),
          ?_, by simp only [semanticNodes]⟩
        rcases member with member | member
        · exact List.mem_append_left _ (List.mem_map.mpr ⟨child, member, rfl⟩)

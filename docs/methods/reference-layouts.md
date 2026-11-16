@@ -24,8 +24,11 @@ control (beside it when the field has the whole row to itself), with its unit,
 code and required marker on the control's row when they fit and its hint,
 source, confirmation and human-entry markers on a line below; fields and
 buttons pack into wrapping rows of up to five and eight cells. A table is its
-caption, then, when two or more records share their captions, one header row
-of captions and the value cells in equal column tracks; a single record (or
+caption, then (for a paged list, `dense-reference-v10`) one row with its
+position, flagged count and four pager targets, then, when two or more records
+share their captions, one header row
+of captions and the value cells in equal column tracks, with each record's
+single-button row actions in an action column of its own row; a single record (or
 records with different captions) is laid out as caption/value pairs, as many
 pairs per line as fit in 300px each. Tabs share one row of targets and steps
 one row of numbered parts; a button keeps its blocked reason and hotkey on its
@@ -75,6 +78,13 @@ wrapping bars. Each tab label has its own target before the selected body.
 `placementRules` centralizes the widget/role-to-placement mapping. Urgent
 occurrences use region `urgent` and the `urgent` flag, clear of the banner,
 scroller, footer and modal at every supported viewport.
+
+Every screen is windowed before its shape is taken: bounded lists show one
+page ([bounded lists](ui-library.md#bounded-lists)); `window.mjs` mirrors
+Lean's window, `occurrences`, `shapeFor` and the geometry atlas read the
+windowed screen, and the admission cache windows a screen before it looks it
+up. A pager target answers the geometry address of the `selectTab` event that
+selects its page (`id#tab:p`), as a tab target does.
 
 Table cells are occurrences, so the native semantic shape includes the number
 of records and cells, which optional field parts are present and whether a
@@ -240,9 +250,10 @@ following adapter/language gaps prevent full vendor fidelity without Lean work:
   Disabled controls and buttons are still targets, unlike enabled DOM counts.
 - The patient banner is one part (rule G1 admits one banner box); its fields
   are styled runs, not separately placed boxes.
-- Row actions are not attached to their table rows; they stay in the row of
-  buttons after the table. Column tracks are equal width, not content-measured,
-  and every cell is a one-line safety scroller rather than a growing cell.
+- Single-button row actions of a uniform table sit in their record's row;
+  other row actions stay after the table. Column tracks are equal width, not
+  content-measured, and every cell is a one-line safety scroller rather than a
+  growing cell.
 - Several records shown on one line in today's application (blood-pressure
   pairs, same-time vital signs, medication tasks) remain separate rows.
 - The fixed-shell fallback and dense safety cards expose local text scrollers;
@@ -273,10 +284,41 @@ would allow a new simulator policy to omit them. No savings from these tables
 should be attributed to a layout agent until these residual differences are
 accounted for.
 
-Checking cost grows with the square of the number of boxes. Screens with long
-tables (the largest retained screen has 10,930 parts) take tens of seconds to
-admit natively; the admission timeout of the report tools can be raised with
+Checking cost grows with the square of the number of boxes. Before lists were
+bounded, screens with long tables (the largest retained screen had 10,930
+parts) took tens of seconds to admit natively; windowed, that screen has 640
+parts. The admission timeout of the report tools can still be raised with
 `REFERENCE_NATIVE_TIMEOUT_MS`.
+
+## Density limits with bounded lists
+
+Pager targets add to the targets in view. For Lean-painted screens the
+per-screen limit is frozen in `docs/methods/lean-paged-density.json` by the
+owner-approved rule: the larger of the measured vendor limit (the snapshot and
+audit above) and the most targets in view that the vendor release Program's own
+dense layout shows on that screen over the retained recorded no-agent states
+(releases v1–v3, personas P1–P5). It is computed once:
+
+```sh
+node scripts/layout-reference/visited.mjs --out "$TMPDIR/paging/probe-<run>-<persona>" --runs <run> \
+  --personas <persona> --frozen-snapshots <native-screens> --probe-limit 999
+node scripts/layout-reference/vendor-limits.mjs --visited <each probe visited.json, comma-separated>
+```
+
+`--probe-limit` admits at a limit no layout reaches, so the counts are the
+vendor layout's own; the measured limit is recorded beside them. The file binds
+the generator, window mirror, layout executable, measured sources and every
+retained no-agent Program (the release persona Program as exported at
+recording time; whether it still equals today's export is recorded). A
+candidate's own layout never sets a limit. `limitFor`, the agent's
+`vendorDensityLimits` and the painter's `referenceLimit` read it first and
+report which limit applied; Lean-mode run manifests fingerprint it.
+
+The current file covers all 84 retained persona-days (132,843 states, 218
+release/persona/screen keys). 101 keys take the vendor layout's larger value,
+most of them by a few targets; the largest steps are the result review
+(`w2Result`, 11 → 23) and the ED track board (15 → 25). Screens it does not
+cover keep the measured limit.
 
 ## Default integration evidence
 

@@ -80,10 +80,10 @@ def structuralOutput (screen : UiScreen) (v : Size) : Json :=
 
 /-- Runtime path after a program/class certificate: bind the actual native
 render without repeating per-patient class/geometry/content admission. -/
-def programOutput (input : RenderInput) (v : Size) : Json :=
+def programOutput (input : RenderInput) (v : Size) (window : UiScreen → UiScreen := id) : Json :=
   if !viewports.contains v then Json.mkObj [("accepted",toJson false),("error",toJson "unsupported viewport")]
   else
-    let screen := runRenderUi input
+    let screen := window (runRenderUi input)
     -- `Range.uncheckedPaint` with the inventory computed once (`Range.uncheckedPaint_bound`).
     let data := bindAll screen (Shell.classBoxes v (screenShape screen))
     let tree := match data with

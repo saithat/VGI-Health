@@ -1,7 +1,8 @@
 import {widgetParts,placeWidgetParts,numeric,dated} from "./widgets.mjs";
 // Untrusted, content-independent vendor reference geometry. All sizes are 1/64px.
+import {windowOnce} from './window.mjs';
 export const viewports = [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}];
-export const version = 'dense-reference-v9';
+export const version = 'dense-reference-v10';
 const px = n => Math.round(n * 64);
 const key = path => path.join('.');
 const button=(comp,label,role)=>({button:{comp,label,role,enabled:true,blockedReason:null,hotkey:null}});
@@ -13,7 +14,7 @@ export const placementRules={field:'field',button:'button',alert:'line',text:'li
   valueSet:'transparent',presentation:'wrapper',rowAction:'wrapper',chartReferences:'wrapper',board:'wrapper',
   control:'field',unit:'field',code:'field',required:'field',hint:'field',source:'field',pending:'field',human:'field',
   reason:'button',hotkey:'button',tab:'tabs',step:'steps',cellLabel:'table',cellValue:'table',status:'table',badge:'table',
-  empty:'table',item:'line'};
+  empty:'table',item:'line',position:'pager',flagged:'pager',pager:'pager'};
 
 /* The semantic inventory, mirrored from Lean (Layout.Display, Layout.Semantic):
    a node's own part, then its further display parts in reading order, then its
@@ -37,10 +38,8 @@ function leafParts(cx,kind,v) {
   if(kind==='tabs') return v.labels.map((_,i)=>({role:'tab',target:true,comp:v.id,ids:[`${v.id}#tab:${i}`],col:i}));
   if(kind==='stepper') return v.steps.map((_,i)=>({role:'step',col:i}));
   if(kind==='info') {
-    if(!v.rows.length) return v.display==='status'?[]:[{role:'empty'}];
-    return uniformRows(v.rows)?[...v.rows[0].map((_,c)=>({role:'cellLabel',row:0,col:c})),
-        ...v.rows.flatMap((row,r)=>row.map(([k],c)=>({role:cellRole(k),row:r,col:c})))]:
-      v.rows.flatMap((row,r)=>row.flatMap(([k],c)=>[{role:'cellLabel',row:r,col:c},{role:cellRole(k),row:r,col:c}]));
+    if(!v.rows.length) return [...windowParts(cx,v.comp),...(v.display==='status'?[]:[{role:'empty'}])];
+    return [...windowParts(cx,v.comp),...infoCells(v)];
   }
   if(kind==='presentation')return widgetParts(v.kind,v.children,cx.references);
   if(kind==='timeline')return [{role:'item',widget:'timeAxis'}];
@@ -51,6 +50,25 @@ function leafParts(cx,kind,v) {
   if(kind==='patientPane') return (v.metadata.urgent??[]).map(a=>'alert' in a?{role:'alert',comp:a.alert.comp}:
     {role:'button',target:true,comp:a.button.comp});
   return [];
+}
+/* Layout.Display.pagerParts: a paged list's position, flagged count and four
+   targets. A pager target answers the geometry for the page it selects
+   (`id#tab:p`, the address of `selectTab id p`); the next and previous targets
+   take their pages, the page selector every other page. */
+function windowParts(cx,comp) {
+  const w=(cx.windows??[]).find(x=>x.comp===comp);if(!w)return [];
+  const page=q=>`${comp}#tab:${q}`;
+  return [{role:'position',comp},{role:'flagged',comp},
+    {role:'pager',target:true,comp,pager:'previous',col:Math.max(0,w.page-1),ids:w.page>0?[page(w.page-1)]:[]},
+    {role:'pager',target:true,comp,pager:'next',col:w.page+1,ids:w.page+1<w.pages?[page(w.page+1)]:[]},
+    {role:'pager',target:true,comp,pager:'page',col:w.page,
+      ids:[...Array(w.pages).keys()].filter(q=>Math.abs(q-w.page)!==1).map(page)},
+    {role:'pager',target:true,comp,pager:'nextFlagged',col:w.nextFlagged??w.page,ids:[]}];
+}
+function infoCells(v) {
+  return uniformRows(v.rows)?[...v.rows[0].map((_,c)=>({role:'cellLabel',row:0,col:c})),
+      ...v.rows.flatMap((row,r)=>row.map(([k],c)=>({role:cellRole(k),row:r,col:c})))]:
+    v.rows.flatMap((row,r)=>row.flatMap(([k],c)=>[{role:'cellLabel',row:r,col:c},{role:cellRole(k),row:r,col:c}]));
 }
 function ownPart(kind,v,chrome) {
   if(kind==='text') return {role:'text'};
@@ -63,19 +81,22 @@ function ownPart(kind,v,chrome) {
   if(kind==='timeline'||kind==='datedTimeline') return {role:'heading'};
   if(kind==='patientPane') return {role:'heading',comp:v.patient};
   if(kind==='tabs') return {role:'wrapper',comp:v.id,ids:[v.id]};
-  if(kind==='rowAction') return {role:'wrapper',comp:v.target};
+  if(kind==='rowAction') return {role:'wrapper',comp:v.target,row:v.row};
   return {role:'wrapper'};
 }
 const childNodes=(kind,v)=>kind==='patientPane'?[...v.children,...v.modal]:kind==='tabs'?v.body:v?.children??[];
 const confirmComps=node=>{const [kind,v]=Object.entries(node)[0];return kind==='button'?(v.role==='confirm'?[v.comp]:[]):childNodes(kind,v).flatMap(confirmComps);};
 /** Every occurrence of the semantic inventory, in Lean's order and with Lean's
  * paths: `{path, role, target, commit, comp, ids, kind, value, leaf, ...}`.
- * `kind`/`value` are the UiNode of an own part; a display part has `leaf`. */
-export function occurrences(screen) {
+ * `kind`/`value` are the UiNode of an own part; a display part has `leaf`.
+ * Like Lean's `inventory` operation, it reads the screen as the layout shows
+ * it: bounded lists one page at a time (window.mjs mirrors Layout.Window). */
+export const occurrences=screen=>inventoryOf(windowOnce(screen));
+function inventoryOf(screen) {
   const result=[],body=[...screen.workspace,...screen.side,...(screen.modal?[screen.modal]:[]),...(screen.urgent??[])];
   const push=(path,part,extra={})=>result.push({path,role:part.role,target:part.target??false,commit:part.commit??false,
     comp:part.comp??'',ids:part.ids??[],...(part.narrative?{narrative:true}:{}),...(part.row!==undefined?{row:part.row}:{}),
-    ...(part.col!==undefined?{col:part.col}:{}),...(part.widget?{widget:part.widget}:{}),...extra});
+    ...(part.col!==undefined?{col:part.col}:{}),...(part.pager?{pager:part.pager}:{}),...(part.widget?{widget:part.widget}:{}),...extra});
   function visit(node,path,cx,chrome=false,scope={}) {
     const [kind,value]=Object.entries(node)[0];
     push(path,ownPart(kind,value,chrome),{kind,value,...scope});
@@ -88,7 +109,8 @@ export function occurrences(screen) {
     childNodes(kind,value).forEach((child,i)=>visit(child,[...path,leaves.length+i],inner,chrome,
       kind==='patientPane'?{patient:value.patient,...(i>=value.children.length?{nestedRegion:'modal'}:{})}:scope));
   }
-  const cx={options:[],fieldChoices:screen.fieldChoices??[],entryHints:screen.entryHints??[],confirms:new Set(body.flatMap(confirmComps))};
+  const cx={options:[],fieldChoices:screen.fieldChoices??[],entryHints:screen.entryHints??[],confirms:new Set(body.flatMap(confirmComps)),
+    windows:screen.windows??[]};
   push([0],{role:'banner'});push([1],{role:'title'});
   visit(navNode(screen.nav),[2],cx,true);
   body.forEach((node,i)=>visit(node,[i+3],cx));
@@ -98,6 +120,7 @@ export function occurrences(screen) {
 // This mirrors screenShape for authoring only; family-check independently derives
 // the authoritative shape and verifies every source, target and semantic flag.
 export function shapeFor(screen) {
+  screen=windowOnce(screen);
   const entries=occurrences(screen);
   const commit=entries.find(e=>e.commit);
   const sideStart=3+screen.workspace.length,modalRoot=sideStart+screen.side.length,urgentRoot=modalRoot+Number(Boolean(screen.modal));
@@ -110,6 +133,8 @@ export function shapeFor(screen) {
     ...(e.leaf?{leaf:true,placement:placementRules[e.role]??'line'}:{kind:e.kind,placement:placementRules[e.kind]??'line'}),
     ...(e.path[0]>=urgentRoot?{urgent:true}:{}),
     ...(e.kind==='button'?{buttonRole:e.value.role}:{}),
+    ...(e.kind==='info'?{comp:e.comp}:{}),...(e.kind==='rowAction'?{rowTarget:e.comp}:{}),
+    ...(e.pager?{pager:e.pager}:{}),
     ...(e.narrative?{narrative:true}:{}),
     ...(e.row!==undefined?{row:e.row}:{}),...(e.col!==undefined?{col:e.col}:{}),...(e.widget?{widget:e.widget}:{}),...(e.patient?{patient:e.patient}:{}),
     ...(e.kind==='info'&&e.value.rows.length?{uniform:uniformRows(e.value.rows),cols:e.value.rows[0].length}:{})}]));
@@ -123,7 +148,7 @@ export function shapeFor(screen) {
 export function eraseContent(screen) {
   const result=structuredClone(screen);result.banner=[];result.title='';result.viewer=null;result.nav=result.nav.map(([,items])=>['',items.map(([id])=>[id,''])]);
   const blank=v=>v===null||v===undefined?v:'';
-  const entries=occurrences(result).filter(e=>e.path[0]>=3&&!e.leaf);
+  const entries=inventoryOf(result).filter(e=>e.path[0]>=3&&!e.leaf);
   for(const {kind,value} of entries) {
     for(const field of ['label','title','s']) if(typeof value[field]==='string') value[field]='';
     if(kind==='info') value.rows=value.rows.map(row=>row.map(([k,v])=>[k,numeric(v)?'0':/^(Test|Measure|Unit)$/.test(k)?v:dated(v)?'1970-01-01T00:00:00Z':'']));
@@ -203,6 +228,13 @@ export function layoutFor(shape,viewport) {
     const isLeaf=s=>hint(s).leaf===true && byKey.has(key(s.path.slice(0,-1)));
     const gutter=list.some(s=>!hint(s).leaf && (hint(s).role==='wrapper'))?22:0,W=Math.floor(width-gutter);
     const placed=new Set();let gutterBottom=-1e9;
+    // Uniform tables of this list and the row-action groups that name them.
+    const tables=new Set(list.filter(s=>hint(s).kind==='info'&&hint(s).uniform).map(s=>hint(s).comp));
+    const rowActions=new Map(),tablesPlaced=new Set();
+    for(const s of list)if(hint(s).kind==='rowAction'){const t=hint(s).rowTarget;if(!rowActions.has(t))rowActions.set(t,[]);rowActions.get(t).push(s);}
+    // Row actions a table could not attach (narrow or stale rows) follow it.
+    const detached=(comp,x,bottom,w)=>{let y=bottom;for(const a of (rowActions.get(comp)??[]))
+      if(!placed.has(key(a.path)))y=place(a,x,y+6,w);return y;};
     const add=(slot,x,y,w,h,opts={})=>{placed.add(key(slot.path));
       output.push(card(slot,gutter+x,y,Math.max(24,Math.floor(w)),h,{lines:Math.max(1,Math.floor(h/18)),...opts}));};
     const wrapperBox=(slot,y)=>{const gy=Math.max(y,gutterBottom+2);placed.add(key(slot.path));output.push(card(slot,0,gy,20,18));gutterBottom=gy+18;};
@@ -252,17 +284,41 @@ export function layoutFor(shape,viewport) {
       }
       add(node,x,y,w,28);return lines(leaves,x,y+30,w)-2;
     }
+    // A paged list's position, flagged count and pager targets share one row
+    // above its header (Layout.Display.pagerParts); they wrap when narrow.
+    function pagerRow(leaves,x,y,w) {
+      const parts=leaves.filter(l=>['position','flagged','pager'].includes(hint(l).role));
+      if(!parts.length) return y;
+      const width={position:170,flagged:250,previous:104,next:88,page:180,nextFlagged:108};
+      return pack(parts.map(p=>({slot:p,width:width[hint(p).role==='pager'?hint(p).pager:hint(p).role]})),x,y,w,24)+4;
+    }
+    // Row actions attached to their record's row: a uniform table reserves an
+    // action column and each record's single-button actions sit in its row.
+    const attachable=a=>(kidsOf.get(key(a.path))??[]).length>0&&(kidsOf.get(key(a.path))??[]).every(b=>
+      hint(b).kind==='button'&&!(kidsOf.get(key(b.path))??[]).length);
+    function attach(actions,x,y,pitch,aw) {
+      for(const a of actions) {
+        const ay=y+hint(a).row*pitch,buttons=kidsOf.get(key(a.path)),bw=Math.floor((aw-4*(buttons.length-1))/buttons.length);
+        wrapperBox(a,ay);buttons.forEach((b,j)=>add(b,x+j*(bw+4),ay,bw,28));
+      }
+    }
     function table(node,leaves,x,y,w) {
       const h=hint(node);add(node,x,y,w,18,{bg:'slate-100'});y+=20;
+      y=pagerRow(leaves,x,y,w);
       const cells=leaves.filter(l=>hint(l).row!==undefined);
+      const actions=(rowActions.get(h.comp)??[]).filter(a=>!placed.has(key(a.path)));
       if(h.uniform) {
-        const n=h.cols,cw=Math.floor((w-4*(n-1))/n);
+        const records=Math.max(0,...cells.map(c=>hint(c).row+1));
+        const attached=actions.filter(a=>attachable(a)&&hint(a).row<records);
+        const most=Math.max(0,...attached.map(a=>kidsOf.get(key(a.path)).length));
+        const aw=most?Math.min(260,most*92):0,n=h.cols,cw=Math.floor((w-aw-(aw?4:0)-4*(n-1))/n);
         if(cw>=56) {
-          const header=cells.slice(0,n),values=cells.slice(n);
+          const header=cells.slice(0,n),values=cells.slice(n),pitch=most?30:20,cellH=most?28:18;
           header.forEach(c=>add(c,x+hint(c).col*(cw+4),y,cw,18,{bg:'slate-100'}));y+=20;
-          let rowY=y,row=-1;
-          for(const c of values){if(hint(c).row!==row){if(row>=0)rowY+=20;row=hint(c).row;}add(c,x+hint(c).col*(cw+4),rowY,cw,18);}
-          return lines(leaves,x,rowY+20,w)-2;
+          for(const c of values)add(c,x+hint(c).col*(cw+4),y+hint(c).row*pitch,cw,cellH);
+          attach(attached,x+w-aw,y,pitch,aw);
+          const bottom=y+records*pitch;
+          return lines(leaves,x,bottom,w)-2;
         }
         return lines(leaves,x,y,w)-2;
       }
@@ -302,7 +358,10 @@ export function layoutFor(shape,viewport) {
       return cursor-6;
     }
     function place(node,x,y,w) {
+      // Attached row actions were placed with their table's rows.
+      if(placed.has(key(node.path))) return y-6;
       const h=hint(node),kids=kidsOf.get(key(node.path))??[];
+      if(h.kind==='rowAction' && tables.has(h.rowTarget) && !tablesPlaced.has(h.rowTarget) && attachable(node)) return y-6;
       const leaves=kids.filter(isLeaf),children=kids.filter(k=>!isLeaf(k));
       if(h.leaf) return lines([node],x,y,w)-2;
       let bottom=y;
@@ -313,7 +372,7 @@ export function layoutFor(shape,viewport) {
       else switch(h.placement) {
         case 'field': bottom=field(node,leaves,x,y,w);break;
         case 'button': bottom=buttonCell(node,leaves,x,y,w);break;
-        case 'table': bottom=table(node,leaves,x,y,w);break;
+        case 'table': bottom=table(node,leaves,x,y,w);tablesPlaced.add(h.comp);bottom=detached(h.comp,x,bottom,w);break;
         case 'line': add(node,x,y,w,lineHeight(node));bottom=lines(leaves,x,y+lineHeight(node)+2,w)-2;break;
         case 'tabs': wrapperBox(node,y);bottom=strip(leaves,x,y,w,24,180);break;
         case 'steps': wrapperBox(node,y);bottom=strip(leaves,x,y,w,18,200);break;

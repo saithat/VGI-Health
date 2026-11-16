@@ -50,9 +50,10 @@ const inside=(v,r)=>r.x>=0&&r.y>=0&&r.x+r.w<=v.w&&r.y+r.h<=v.h;
 const overlap=(a,b)=>a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h;
 test('urgent alerts are pinned by the fixed shell: fixed, in view and clear of every other box, also beside a modal',()=>{
   for(const viewport of [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}]) for(const modal of [null,notice]) {
-    const out=run({...screen(40),modal,urgent:strip(3)},viewport);
+    // An alert is two urgent occurrences, its label and its severity mark.
+    const out=run({...screen(40),modal,urgent:strip(2)},viewport);
     assert.equal(out.accepted,true,JSON.stringify(out.findings));assert.equal(out.urgentPinned,true);
-    const pinned=out.boxes.filter(d=>d.box.info.urgent);assert.equal(pinned.length,4);
+    const pinned=out.boxes.filter(d=>d.box.info.urgent);assert.equal(pinned.length,5);
     assert.equal(pinned.filter(d=>d.box.info.target).length,1);
     for(const d of pinned) {
       assert.deepEqual(d.box.clips,[]);assert.ok(inside(viewport,d.box.rect));
@@ -68,8 +69,8 @@ test('urgent alerts are pinned by the fixed shell: fixed, in view and clear of e
   }
 });
 test('an urgent strip beyond the pinned capacity is refused with counts, never painted as accepted',()=>{
-  assert.equal(run({...screen(4),urgent:strip(5)}).accepted,true);
-  const many=run({...screen(4),urgent:strip(6)});
+  assert.equal(run({...screen(4),urgent:strip(2,2)}).accepted,true);
+  const many=run({...screen(4),urgent:strip(3)});
   assert.equal(many.accepted,false);assert.equal(many.urgentPinned,false);
   assert.deepEqual(many.findings.filter(f=>f.rule==='G11').map(f=>[f.metric,f.actual,f.required]),[['urgent-strip-capacity',7,6]]);
   assert.equal(many.boxes.filter(d=>d.box.info.urgent).length,0);
