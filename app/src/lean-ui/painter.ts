@@ -385,17 +385,13 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     }
   }
   const dialogKeys = (event: KeyboardEvent) => {
-    if (!modalOpen || event.key !== "Tab") return;
+    if (!modalOpen || (event.key !== "Tab" && event.key !== "Escape")) return;
     const controls = [...entries.values()]
       .filter(
         (e) =>
           e.drawn.box.info.interruptive && e.control && !e.control.disabled,
       )
       .flatMap((e) => (e.control ? [e.control] : []));
-    if (!controls.length) {
-      event.preventDefault();
-      return;
-    }
     const state = {
       focus: Math.max(
         0,
@@ -405,8 +401,26 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       isOpen: true,
       invoker: modalInvoker?.id ?? "",
     };
+    // Interruptive boxes are clinical alerts: Lean's alert-dialog profile
+    // traps Tab and ignores Escape (Keyboard.alertDialog_stays_open). There
+    // is no dismiss Event, so Escape is swallowed whatever the host would do.
+    if (event.key === "Escape") {
+      options.keyboard(
+        "alert-dialog",
+        1,
+        Math.max(1, controls.length),
+        state,
+        "escape",
+      );
+      event.preventDefault();
+      return;
+    }
+    if (!controls.length) {
+      event.preventDefault();
+      return;
+    }
     const next = options.keyboard(
-      "dialog",
+      "alert-dialog",
       1,
       controls.length,
       state,
@@ -414,8 +428,6 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     );
     event.preventDefault();
     controls[next.focus]?.focus({ preventScroll: true });
-    // Clinical interruptive alerts have no dismiss Event. Escape must not
-    // apply Keyboard.dialog's close transition without Lean authorization.
   };
   root.addEventListener("keydown", dialogKeys);
   return {

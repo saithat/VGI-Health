@@ -211,12 +211,30 @@ test("interruptive controls block ordinary actions, trap Tab through Lean, then 
     }),
   );
   expect(keyboard).toHaveBeenCalledWith(
-    "dialog",
+    "alert-dialog",
     1,
     1,
     expect.anything(),
     "tab",
   );
+  // Escape goes to Lean's clinical alert profile and dismisses nothing.
+  const escape = new KeyboardEvent("keydown", {
+    key: "Escape",
+    bubbles: true,
+    cancelable: true,
+  });
+  acknowledgment?.dispatchEvent(escape);
+  expect(keyboard).toHaveBeenLastCalledWith(
+    "alert-dialog",
+    1,
+    1,
+    expect.anything(),
+    "escape",
+  );
+  expect(escape.defaultPrevented).toBe(true);
+  expect(dispatch).not.toHaveBeenCalled();
+  expect(root.querySelector('[data-box="ack"]')).not.toBeNull();
+  expect(sign?.disabled).toBe(true);
   acknowledgment?.click();
   expect(dispatch).toHaveBeenCalledWith({ ack: { alert: "alert" } });
   painter.patch(screen([button]), output([drawn("sign", [3])]));

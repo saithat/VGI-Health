@@ -41,7 +41,7 @@ test('native and WASM program/family paint are byte-identical across P1/P3 scree
   console.log(`Byte agreement: 36 paint requests; program-paint ${Math.min(...times.map(t=>t.ms)).toFixed(2)}–${Math.max(...times.map(t=>t.ms)).toFixed(2)} ms (Node WASM, includes JSON).`);
 });
 test('WASM uses the native proved keyboard transitions, including manual activation and dialog close',()=>{
-  for(const profile of ['tabs','listbox','dialog','grid']) for(const key of ['left','right','up','down','home','end','ctrlHome','ctrlEnd','enter','space','tab','shiftTab','escape']) {
+  for(const profile of ['tabs','listbox','dialog','alert-dialog','grid']) for(const key of ['left','right','up','down','home','end','ctrlHome','ctrlEnd','enter','space','tab','shiftTab','escape']) {
     const input={op:'keyboard',profile,key,rows:2,cols:3,state:{focus:4,selected:1,isOpen:true,invoker:'sign'}};
     assert.equal(wasm.call('ehr_layout',JSON.stringify(input)),layout(input));
   }

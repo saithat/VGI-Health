@@ -83,12 +83,15 @@ The one tab source rectangle becomes one button: pointer activation cycles
 choices; arrows/Home/End move its candidate and Enter/Space activate through
 `Keyboard.tabs`. This is a simpler chooser, not an APG tablist. Native selects
 use `Keyboard.listbox` for Up/Down/Home/End and retain native popup/type-ahead
-behavior. Dialog Tab/Shift+Tab use `Keyboard.dialog`, block ordinary controls,
-and restore the invoking focus on closure. Clinical interruptive alerts have
-no dismiss event, so Escape cannot apply the profile's close transition to
-bypass acknowledgment. A proper per-cell grid is missing: its cells have no
+behavior. Interruptive alert dialogs use `Keyboard.alertDialog`: Tab/Shift+Tab
+stay inside, ordinary controls are blocked, and the invoking focus is restored
+when Lean removes the alert. Escape is sent to the same profile, which ignores
+it (`alertDialog_stays_open`); the painter swallows the key and there is no
+dismiss event, so acknowledgment cannot be bypassed. `Keyboard.dialog`, which
+closes on Escape, remains for ordinary dismissible dialogs and is not used for
+interruptive boxes. A proper per-cell grid is missing: its cells have no
 separate Lean rectangles. The WASM keyboard API nevertheless exposes and tests
-all four profiles without reimplementing their transitions in TypeScript.
+all five profiles without reimplementing their transitions in TypeScript.
 
 **Admission limitation.** The reference semantic inventory classifies only
 fields and buttons as targets. Its combined navigation string and tabs wrapper
@@ -141,7 +144,7 @@ covered by the presentation row; their underlying child controls remain present.
 | `patientPane` | Missing interaction | Banner, metadata, ordinary/modal children retained by source path. Needs patient-scoped event transport, per-pane choice metadata, modal ownership and board shell geometry; disabled here. |
 | `UiScreen.banner`, title, side and urgent nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome, separate urgent rail or patient avatar. |
 | `UiScreen.nav` | Simpler look; admitted target classification missing | One native chooser in the combined navigation text box sends existing `click` IDs. Requires explicit Lean navigation targets before G3/G10/APG parity can be claimed. |
-| Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean dialog Tab transitions, inert ordinary controls, initial focus and restoration. Escape cannot dismiss clinical alerts. Board modality remains missing. |
+| Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean `alertDialog` Tab transitions, inert ordinary controls, initial focus and restoration. Escape is ignored by the Lean profile and swallowed by the painter. Board modality remains missing. |
 | Review/sign persistence and draft restoration | Existing live path | Same `createLiveSession`, native screen comparison, guarded command endpoint and database. No alternate save implementation. |
 
 The stock presentation kinds are fully enumerated below. None introduces a

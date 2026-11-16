@@ -124,7 +124,15 @@ W3C APG [tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/),
 [dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) and
 [grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) profiles. Theorems cover
 entry/activation, focus/selection bounds, modal Tab containment/Escape restoration,
-and grid bounds/row boundaries. Optional deletion, popup menus, multiselection,
+and grid bounds/row boundaries. *New specification for owner review:*
+`alertDialog` is the profile of interruptive clinical alerts. It traps Tab like
+`dialog` and no key closes it: `alertDialog_stays_open`,
+`alertDialog_escape_ignored`, `alertDialog_never_closes`, `alertDialog_traps`,
+`alertDialog_agrees` (it differs from `dialog` on Escape only) and
+`interruptive_stays_open` (any key sequence). `dialogFor` selects the profile
+from a box's `interruptive` flag. `dialog` and `dialog_escape_restores` are
+unchanged and describe ordinary dismissible dialogs. The API profile name is
+`alert-dialog`. Optional deletion, popup menus, multiselection,
 type-ahead and editable cells are absent. The visual harness emits requested
 roles and blocks ordinary buttons beneath a modal; it does not yet connect DOM
 keyboard events or ARIA relationships to these proved transition functions.

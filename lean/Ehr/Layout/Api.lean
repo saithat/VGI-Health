@@ -13,6 +13,7 @@ def dispatch (json : Json) : Except String Json := do
     pure (toJson (match profile with
       | "tabs" => Keyboard.tabs (rows*cols) state key
       | "dialog" => Keyboard.dialog (rows*cols) state key
+      | "alert-dialog" => Keyboard.alertDialog (rows*cols) state key
       | "listbox" => Keyboard.listbox (rows*cols) state key
       | _ => Keyboard.grid rows cols state key))
   else if (json.getObjValAs? String "op").toOption.getD "" == "program-check" then

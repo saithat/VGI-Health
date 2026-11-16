@@ -53,6 +53,11 @@ test('APG transitions use native Lean semantics',()=>{
   assert.equal(run('tabs','enter',4).selected,4);
   assert.equal(run('dialog','shiftTab').focus,5);
   assert.equal(run('dialog','escape').isOpen,false);
+  // Clinical alert dialogs trap Tab like any dialog and never close on a key.
+  assert.equal(run('alert-dialog','shiftTab').focus,5);
+  assert.equal(run('alert-dialog','tab',5).focus,0);
+  for(const key of ['left','right','up','down','home','end','ctrlHome','ctrlEnd','enter','space','tab','shiftTab','escape']) assert.equal(run('alert-dialog',key).isOpen,true,key);
+  assert.deepEqual(run('alert-dialog','escape'),state);
   assert.equal(run('listbox','down').selected,1);
   assert.equal(run('grid','right',2).focus,2);
   assert.equal(run('grid','down',2).focus,5);
