@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "cf7f8335f00dde173281bbc53dad75c2275077c922d8eda32d87b46cdc2a424b",
+  "leanSourceHash": "11ec2a911071b72bb1d9b98a26e5e13d27115d54f8724592dbcfa5a21f64c91a",
   "sources": {
     "lean/Audit/SpecSurface.lean": "9149e833ded951dc9aaf66fc8848f2eb3dbe142ec14c885b4d290d8303830cec",
     "lean/CommitProtocol.lean": "5d42e502a3b4016d216becffb7c99bfb2940852167a3948e2273cfea98e295a6",
@@ -199,7 +199,7 @@
     "lean/Ehr/JsonCompat.lean": "dd8b7847ec7dc49bbe70b28ba325963a523e4d461a0490c4fb34090f888a6f4c",
     "lean/Ehr/Layout/Api.lean": "30ad79e1efd04c1ad39a1298ae4b3317cd670ed61bd52832792da217fcdb899a",
     "lean/Ehr/Layout/Audit.lean": "b0b286964a7842be93b324fe4bd710856af85d30d526baad2eb8120ced2f0d8c",
-    "lean/Ehr/Layout/Check.lean": "d38cbd547c3ac196925455ca83fb074ce202bbff5125f9bdeded9b102f5b9113",
+    "lean/Ehr/Layout/Check.lean": "2250b973459135336bba824b6a2112d3688aff5ec83005a880e49352d8617097",
     "lean/Ehr/Layout/Contrast.lean": "4b40e34d9c65b2433d951596fa49e6a7e9b821863de77b0f5776aa5e3119fd61",
     "lean/Ehr/Layout/Density.lean": "2c9b075d47847f55bf133b6005ec0816ce781d89535101dbad7ba2d925ff6aba",
     "lean/Ehr/Layout/Display.lean": "7a39790424d8f0dabb577797ff6c35ea584593d152bade0634a30e0a556108c8",
@@ -424,7 +424,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "ac46e93351c74eb1f45a0121957587dfef43e4c0d58143d77a71f3749fa1c2fb",
+    "ehr-interp.wasm": "9e3d370e49f4d86056d8f302ec1302abc5a076c6720d78421af9f503fa08dba0",
     "interp-loader.mjs": "97bdde445bef78a3aec9f5664e1274b9399094191d5282a71a656b88713040b7",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

@@ -111,6 +111,13 @@ content environments for one fixed semantic template.
 | G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero; at most that many fixed targets (outside every scroll viewport); and, at every scroll offset of each scroll viewport, at most that many fixed targets and targets in the window together. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G9 conjunction; see "Action density" below. |
 | G11 | *New specification for owner review.* Every box flagged `urgent` (the pinned urgent strip) is painted, outside every scroll viewport, contained in the page viewport and separated from every other painted box, a modal included, whatever the stacking order; and every painted source box of an urgent occurrence of the semantic inventory carries the flag. It holds at every supported size. It is checked next to G1–G9 and G10 (`checkAll`, `layoutAccepted_all`); see "Pinned urgent strip" below. |
 
+The decision procedures for G3 and G4 compute whether a modal is open once
+per layout (`G3Hoisted`, `G4Hoisted`, equal to G3 and G4 by `G3_hoisted` and
+`G4_hoisted`, both `Iff.rfl`); they previously recomputed it for every pair of
+boxes, which made checking cubic in the number of boxes. With one box per
+display part a 1,000-part screen took 10.5 s to paint through a family and
+now takes 1.1 s; a 3,000-part screen takes 9.4 s. No rule changed.
+
 The pixel model overapproximates nested clipping with the outermost viewport;
 inner clips can only remove pixels. Scroll ancestor identities distinguish
 independent regions; this conservative envelope test can reject safe nested

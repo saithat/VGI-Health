@@ -353,9 +353,40 @@ theorem G11_pixels (v : Size) (urgent : List (List Nat)) (ps : List Placed) (h :
 
 instance (v ps) : Decidable (G1 v ps) := by unfold G1; infer_instance
 instance (v ps) : Decidable (G2 v ps) := by unfold G2; infer_instance
-instance (ps) : Decidable (G3 ps) := by unfold G3; infer_instance
+/-! The decision procedures for G3 and G4 compute "a modal is open" once per
+layout instead of once per pair of boxes (which made them cubic in the number
+of boxes). The propositions are unchanged: `G3_hoisted` and `G4_hoisted` are
+definitional. -/
+
+/-- New specification for owner review: `G3` with the modal test given as
+`modal`; with `ps.any (·.info.interruptive)` it is `G3` itself (`G3_hoisted`). -/
+def G3Hoisted (ps : List Placed) (modal : Bool) : Prop :=
+  (∀ p ∈ ps, p.info.target = true → 1536 ≤ p.rect.w ∧ 1536 ≤ p.rect.h) ∧
+  ps.Pairwise (fun p q =>
+    (p.info.target && (!modal || p.info.interruptive || p.info.urgent)) = true →
+    (q.info.target && (!modal || q.info.interruptive || q.info.urgent)) = true → separated p q)
+
+theorem G3_hoisted (ps : List Placed) : G3 ps ↔ G3Hoisted ps (ps.any (·.info.interruptive)) := Iff.rfl
+
+/-- New specification for owner review: `G4` with the modal test given as
+`modal`; with `ps.any (·.info.interruptive)` it is `G4` itself (`G4_hoisted`). -/
+def G4Hoisted (v : Size) (ps : List Placed) (modal : Bool) : Prop :=
+  (∀ p ∈ ps, p.info.paint = true → Contains (viewportRect v) (envelope p)) ∧
+  (∀ p ∈ ps, ∀ t ∈ p.info.text, textFits p t) ∧
+  ∀ p ∈ ps, p.info.text.isSome = true →
+    (!modal || p.info.interruptive || p.info.banner || p.info.urgent) = true →
+    ∀ q ∈ ps, q.info.paint = true → q.info.id ≠ p.info.id →
+      (!modal || q.info.interruptive || q.info.banner || q.info.urgent) = true →
+      (p.style.z < q.style.z ∨ (p.style.z = q.style.z ∧ q.info.id ∉ p.parents)) → separated p q
+
+theorem G4_hoisted (v : Size) (ps : List Placed) :
+    G4 v ps ↔ G4Hoisted v ps (ps.any (·.info.interruptive)) := Iff.rfl
+
+instance (ps modal) : Decidable (G3Hoisted ps modal) := by unfold G3Hoisted; infer_instance
+instance (ps) : Decidable (G3 ps) := decidable_of_iff _ (G3_hoisted ps).symm
 instance (p t) : Decidable (textFits p t) := by unfold textFits; infer_instance
-instance (v ps) : Decidable (G4 v ps) := by unfold G4; infer_instance
+instance (v ps modal) : Decidable (G4Hoisted v ps modal) := by unfold G4Hoisted; infer_instance
+instance (v ps) : Decidable (G4 v ps) := decidable_of_iff _ (G4_hoisted v ps).symm
 instance (v ps) : Decidable (G5 v ps) := by unfold G5; infer_instance
 instance (ps) : Decidable (G6 ps) := by unfold G6; infer_instance
 instance (expected ps) : Decidable (G7 expected ps) := by unfold G7; infer_instance
@@ -597,11 +628,13 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
       let ratio := nonTextTwiceRatio*500000
       if lower < ratio then
         out := out ++ [{ rule := "G6", node := p.info.id, metric := "nontext-contrast-lower-millionths", actual := lower, required := ratio, deficit := (ratio : Int)-lower }]
+  let modal := ps.any (·.info.interruptive)
+  let active := fun (p : Placed) => p.info.target && (!modal || p.info.interruptive || p.info.urgent)
   for (p,i) in ps.zipIdx do
     for q in ps.drop (i+1) do
       if p.info.banner && q.info.paint && !decide (separated p q) then
         out := out ++ [{ rule := "G1", node := p.info.id, other := q.info.id, metric := "overlap-area", actual := overlapArea (envelope p) (envelope q) }]
-      if activeTarget ps p && activeTarget ps q && !decide (separated p q) then
+      if active p && active q && !decide (separated p q) then
         out := out ++ [{ rule := "G3", node := p.info.id, other := q.info.id, metric := "overlap-area", actual := overlapArea p.rect q.rect }]
       if p.info.paint && q.info.paint && p.info.source.isNone && q.info.source.isNone && !decide (Apart p.rect q.rect) then
         out := out ++ [{ rule := "exploit", node := p.info.id, other := q.info.id, metric := "overlap-area", actual := overlapArea p.rect q.rect, warning := true }]
@@ -672,6 +705,8 @@ def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
 #print axioms layoutAccepted_bannerPixels
 #print axioms layoutAccepted_textPixels
 #print axioms layoutAccepted_safety
+#print axioms G3_hoisted
+#print axioms G4_hoisted
 #print axioms layoutAccepted_rules
 #print axioms layoutAccepted_minFont
 #print axioms contrast_thresholds_exact
