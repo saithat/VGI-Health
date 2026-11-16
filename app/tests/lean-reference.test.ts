@@ -14,35 +14,39 @@ const ui: UiScreen = {
   screen: "absent",
 };
 const viewport = { w: 92160, h: 57600 };
+/** Lean's window operation returns the screen as the layout shows it. */
+const windowed = (request: string, answer: () => unknown) => {
+  const parsed = JSON.parse(request);
+  return JSON.stringify(parsed.op === "window" ? { screen: parsed.screen } : answer());
+};
 test("checks all viewport cases once per shape, then binds actual values for each paint", () => {
-  const call = vi.fn((request: string) => {
-    void request;
-    return JSON.stringify({ accepted: true });
-  });
+  const call = vi.fn((request: string) => windowed(request, () => ({ accepted: true })));
   const paint = createReferencePainter(call);
   expect(paint(ui, viewport, 7).dense).toBe(true);
   paint({ ...ui, title: "Changed clinical value" }, viewport, 7);
-  expect(call).toHaveBeenCalledTimes(3);
-  const check = JSON.parse(call.mock.calls[0]?.[0] ?? "{}");
+  // Each paint asks Lean for the window; the family is checked once.
+  const ops = call.mock.calls.map(([request]) => JSON.parse(request).op);
+  expect(ops).toEqual(["window", "family-check", "family-paint", "window", "family-paint"]);
+  const check = JSON.parse(call.mock.calls[1]?.[0] ?? "{}");
   expect(check.references[0].layouts).toHaveLength(3);
   expect(check.maxTargetsPerViewport).toBe(7);
   expect(referenceLimit("v1", "P1", "absent")).toBe(15);
 });
 test("refused dense layout checks the fixed shell at the same limit; double refusal blocks", () => {
+  let checks = 0;
   const call = vi.fn((request: string) =>
-    JSON.stringify({
-      accepted:
-        JSON.parse(request).op !== "family-check" || call.mock.calls.length > 1,
-    }),
+    windowed(request, () => ({
+      accepted: JSON.parse(request).op !== "family-check" || ++checks > 1,
+    })),
   );
   expect(createReferencePainter(call)(ui, viewport, 9).dense).toBe(false);
   expect(
-    call.mock.calls.every(
-      ([request]) => JSON.parse(request).maxTargetsPerViewport === 9,
-    ),
+    call.mock.calls
+      .filter(([request]) => JSON.parse(request).op !== "window")
+      .every(([request]) => JSON.parse(request).maxTargetsPerViewport === 9),
   ).toBe(true);
   expect(() =>
-    createReferencePainter(() => JSON.stringify({ accepted: false }))(
+    createReferencePainter((request) => windowed(request, () => ({ accepted: false })))(
       ui,
       viewport,
       1,

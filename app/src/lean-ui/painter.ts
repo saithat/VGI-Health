@@ -9,6 +9,7 @@ import {
   type Part,
 } from "./layout";
 import { paintShape, paintText, px, rgb } from "./text";
+import { connectGrids, pagerEvent } from "./grid";
 
 type Control =
   | HTMLInputElement
@@ -38,6 +39,8 @@ function nativeKind(part: Part | undefined): string {
   if (!part?.target) return "";
   if (part.role === "control")
     return part.kind === "datetime" ? "datetime-local" : (part.kind ?? "text");
+  // A paged list's page selector is a select over Lean's page options.
+  if (part.role === "pager" && part.kind === "page") return "select";
   return "button";
 }
 /** Layout is already decided, and so is every text: each box draws the part
@@ -148,7 +151,10 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     };
     control.addEventListener("compositionend", sendValue);
     control.onchange = () => {
-      if (control instanceof HTMLSelectElement) sendValue();
+      if (control instanceof HTMLSelectElement && entry.part?.role === "pager") {
+        const event = entry.pane ? undefined : pagerEvent(entry.part, control.value);
+        if (event) emit(event);
+      } else if (control instanceof HTMLSelectElement) sendValue();
       else if (
         control instanceof HTMLInputElement &&
         control.type === "checkbox"
@@ -159,7 +165,11 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       const part = entry.part;
       if (!part || entry.pane) return; // Board dispatch needs a patient-scoped host.
       const comp = part.comp ?? "";
-      if (part.role === "pending") emit({ confirm: { comp } });
+      if (part.role === "pager") {
+        // The pager's targets select their page of the list (selectTab).
+        const event = control instanceof HTMLSelectElement ? undefined : pagerEvent(part);
+        if (event) emit(event);
+      } else if (part.role === "pending") emit({ confirm: { comp } });
       else if (part.role === "tab")
         // Each tab is its own Lean target box; Lean gives its index.
         emit({ selectTab: { comp, idx: part.col ?? 0 } });
@@ -270,7 +280,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     control.dataset.event =
       part.role === "control"
         ? "enter"
-        : part.role === "tab"
+        : part.role === "tab" || part.role === "pager"
           ? "selectTab"
           : part.role === "pending" || part.kind === "confirm"
             ? "confirm"
@@ -314,6 +324,18 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       control.removeAttribute("role");
       control.removeAttribute("aria-selected");
       delete control.dataset.tabIndex;
+    }
+    if (part.role === "pager" && control instanceof HTMLSelectElement) {
+      // Lean names every page; the selected one is the page shown.
+      const key = JSON.stringify(part.options ?? []);
+      if (control.dataset.options !== key) {
+        control.replaceChildren(
+          ...(part.options ?? []).map(([value, label]) => new Option(label, value)),
+        );
+        control.dataset.options = key;
+      }
+      control.value = String(part.col ?? 0);
+      return;
     }
     if (part.role !== "control") return;
     const raw = part.raw ?? part.text;
@@ -586,6 +608,18 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         );
         entry.element.dataset.interactive = String(Boolean(entry.control));
       }
+      // Tables are grids: Lean's cell rows and columns, its grid keyboard
+      // profile and each record's single navigation action.
+      connectGrids(
+        [...entries.values()].map((e) => ({
+          element: e.element,
+          part: e.part,
+          source: sourceKey(e.drawn),
+        })),
+        emit,
+        options.keyboard,
+        (box) => box.element.inert,
+      );
       Object.assign(root.style, {
         width: px(output.viewport.w),
         height: px(output.viewport.h),

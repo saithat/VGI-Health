@@ -191,3 +191,21 @@ body {
 input.lean-control[type="checkbox"] {
   opacity: 0;
 }
+/* Bounded lists: the pager's targets read as controls; the position and the
+   flagged count read as the table's status line. Inset edges only: no glyph
+   cell moves and Lean's checked colours stay as they are. */
+[data-role="pager"] {
+  outline: 1px solid #64748b;
+  outline-offset: -1px;
+}
+[data-role="position"]:not([data-tone]),
+[data-role="flagged"]:not([data-tone]) {
+  box-shadow: inset 0 -1px 0 #cbd5e1;
+}
+[role="gridcell"]:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: -2px;
+}
+[data-row-action] {
+  cursor: pointer;
+}

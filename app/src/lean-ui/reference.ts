@@ -40,12 +40,19 @@ export function referenceLimit(
 export function createReferencePainter(call: (request: string) => string) {
   const cache = new Map<string, { references: unknown; dense: boolean }>();
   return (
-    screen: UiScreen,
+    rendered: UiScreen,
     viewport: { w: number; h: number },
     limit: number,
   ) => {
     if (!viewports.some((v) => v.w === viewport.w && v.h === viewport.h))
       throw Error("Unsupported layout viewport");
+    // Lean decides the window of every bounded list (Layout.Window); the
+    // family is generated and checked for the screen as it is shown.
+    const windowed: { screen?: UiScreen } = JSON.parse(
+      call(JSON.stringify({ op: "window", screen: rendered })),
+    );
+    const screen = windowed.screen;
+    if (!screen) throw Error("Missing Lean window");
     const shape = shapeFor(screen),
       key = JSON.stringify([version, shape, limit]);
     let selected = cache.get(key);

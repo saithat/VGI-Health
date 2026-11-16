@@ -266,6 +266,25 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     workspace: z.array(uiNodeSchema),
     side: z.array(uiNodeSchema),
     modal: uiNodeSchema.nullable(),
+    // View state (selected page of a list) and the layout's windows of bounded lists.
+    pages: z.array(z.tuple([label, z.number().int().nonnegative()])).optional(),
+    windows: z
+      .array(
+        z.strictObject({
+          comp: label,
+          page: z.number().int().nonnegative(),
+          pages: z.number().int().positive(),
+          size: z.number().int().positive(),
+          total: z.number().int().nonnegative(),
+          flagged: z.number().int().nonnegative(),
+          flaggedElsewhere: z.number().int().nonnegative(),
+          nextFlagged: z.number().int().nonnegative().optional(),
+        })
+        .transform(({ nextFlagged, ...w }) =>
+          nextFlagged === undefined ? w : { ...w, nextFlagged },
+        ),
+      )
+      .optional(),
   })
   .transform(
     ({
@@ -278,6 +297,8 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
       entryHints,
       fieldChoices,
       urgent,
+      pages,
+      windows,
       ...screen
     }) => ({
       ...screen,
@@ -290,5 +311,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
       ...(entryHints === undefined ? {} : { entryHints }),
       ...(fieldChoices === undefined ? {} : { fieldChoices }),
       ...(urgent === undefined ? {} : { urgent }),
+      ...(pages === undefined ? {} : { pages }),
+      ...(windows === undefined ? {} : { windows }),
     }),
   );
