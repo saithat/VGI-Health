@@ -1,5 +1,5 @@
 import { test, expect, type Page, type Locator } from "@playwright/test";
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { startPainterService } from "../../tests/lean-painter-support";
 import type { Output } from "./layout";
 import type {} from "../core/buttonAudit";
@@ -266,6 +266,56 @@ async function differential(page: Page, label: string) {
   expect(result.lineWorst, label).toBeLessThanOrEqual(1 / 64);
   expect(result.glyphWorst, label).toBeLessThanOrEqual(1 / 64);
   metrics.push({ label, ...result });
+  const shots = process.env.DENSE_LAYOUT_SHOTS;
+  if (
+    shots &&
+    [
+      "P1/landing",
+      "P1/document",
+      "P1/orders",
+      "P1/sign",
+      "P3/assessment",
+    ].includes(label)
+  ) {
+    const ui = await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().ui,
+    );
+    if (!ui) throw Error("Missing screenshot state");
+    const dir = `${shots}/${label.replace("/", "-")}`;
+    mkdirSync(dir, { recursive: true });
+    await page.locator("[data-box]").evaluateAll((elements) =>
+      elements.forEach((e) => {
+        e.scrollTop = 0;
+      }),
+    );
+    await page.screenshot({ path: `${dir}/dense.png` });
+    writeFileSync(`${dir}/screen.json`, JSON.stringify(ui));
+    const vendor = await page.context().newPage();
+    try {
+      await vendor.goto("/screen-check.html");
+      await vendor.waitForFunction(() => typeof window.renderUi === "function");
+      await vendor.evaluate((screen) => window.renderUi?.(screen), ui);
+      await vendor.evaluate(() => document.fonts.ready);
+      await vendor.screenshot({ path: `${dir}/vendor.png` });
+    } finally {
+      await vendor.close();
+    }
+    writeFileSync(
+      `${dir}/evidence.json`,
+      JSON.stringify(
+        {
+          label,
+          viewport: page.viewportSize(),
+          referenceLayout: await page
+            .locator("#root")
+            .getAttribute("data-reference-layout"),
+          ...result,
+        },
+        null,
+        2,
+      ),
+    );
+  }
 }
 
 for (const persona of ["P1", "P3"])

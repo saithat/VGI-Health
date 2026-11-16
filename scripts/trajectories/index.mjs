@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {readStoredGeometry} from '../../agent/src/geometry-format.mjs';
+import {readGeometryJson} from '../../agent/src/geometry-json.mjs';
 import {extractionKey,cachedExtraction} from './context-cache.mjs';
 import { dailyCanonical, recordedWorld } from './daily-canonical.mjs';
 import { readFile, writeFile, readdir, mkdir, mkdtemp, rm, access } from 'node:fs/promises';
@@ -169,7 +171,7 @@ export async function indexTrajectories({ root = defaultRoot, runDirectory, cont
           if((typeof entry.metrics?.mouseTravelPx!=='number'||typeof entry.metrics?.scrollPx!=='number')&&await exists(geometryFile)){
             const componentsFile=progPath.replace(/\.json$/,'.components.json'),components=await exists(componentsFile)?await read(componentsFile):[];
             const componentHash=createHash('sha256').update(JSON.stringify(stableForGeometry(components))).digest('hex');
-            const variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`),atlas=await read(await exists(variant)?variant:geometryFile);
+            const variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`),atlas=await readStoredGeometry(await exists(variant)?variant:geometryFile,readGeometryJson,{result:recorded});
             const cost=(!atlas.componentsSha256||atlas.componentsSha256===componentHash)?pointerTravel(recorded.trace,atlas,recorded.day)[task.id]:null;
             if(cost&&entry.metrics)entry.metrics={...entry.metrics,mouseTravelPx:cost.mouseTravelPx,scrollPx:cost.scrollPx,scrolls:cost.scrolls};
           }

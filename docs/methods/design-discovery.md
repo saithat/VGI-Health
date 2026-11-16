@@ -9,8 +9,9 @@ loop. The agent reads one simulated persona's training evidence and proposes
 Program edits and optional free layouts together. The objective is clicks plus
 scrolls saved on that persona's traces. Completion, clinical admission,
 learnability and physical-interaction validation still gate each release.
-There is no pointer-travel ranking, fixed Program, placement catalogue or layout
-search separate from the nightly agent. P1–P5 have separate programs, histories,
+There is no pointer-travel ranking, fixed Program or layout search separate
+from the nightly agent. The shared dense reference supplies geometry for shapes
+without a custom layout; it is not a restriction on proposed custom designs. P1–P5 have separate programs, histories,
 memories and designs. Without the flag, the existing browser mode is unchanged.
 
 **No browser runs in this mode.** Layout admission and the geometry used for
@@ -97,15 +98,13 @@ context in day order from the committed training partitions.
 * Custom cases pass `family-check` at the applicable screen limit. Actual
   `family-paint` also checks source/target/banner/modal/commit linkage; arbitrary
   agent-provided source paths or flags cannot replace the native inventory.
-* Where a screen has no custom cases, the fixed-shell reference applies.
-  Missing viewport cases, duplicate cases, a customized screen's uncovered shape or an unwitnessed
-  custom shape refuse admission. There is no silent reference fallback for a
-  mismatched custom shape.
-* Reference screens with limits below 15 are checked with `family-check` over
-  layout-language trees that reproduce the exact Lean shell boxes and scroll
-  region. This is necessary because `program-check` uses the spec's limit and
-  its static capacity decision cannot express a smaller per-screen limit.
-  Neither the spec nor its default is modified.
+* Every shape without a custom case uses the shared
+  [dense reference](reference-layouts.md), in both arms. Lean checks it at all
+  three viewports and the unchanged per-screen limit. A refused dense case uses
+  a separately checked fixed-shell fallback at that same limit. Refusal of both
+  fails the gate. A custom case that matches the shape must pass; its refusal
+  does not silently select a reference. Missing viewports, duplicate cases and
+  unwitnessed custom shapes still refuse admission.
 
 Refusals retain Lean's findings (rule, node/peer, metric, actual, required and
 signed deficit where supplied) inside the existing screen-failure message.
@@ -155,8 +154,8 @@ source or target.
 
 Native `render-ui` supplies actual visited screens. Empty-family diagnostics
 retrieve their exact native erased shapes without repeated admission for value
-changes; they never count as an acceptance. `program-paint`
-paints reference trace states; `family-paint` paints custom cases. Standalone
+changes; they never count as an acceptance. `family-paint`
+paints dense, fallback and custom trace states. Standalone
 admission exports use `structural-paint` after `program-check`, the same shell
 box compiler. Admission checks all supplied custom viewport cases, while physical
 metrics use 1440×900. Geometry is reused only after comparing native erased
@@ -178,12 +177,12 @@ this mode adds no new spatial relearning model.
 
 Limitations inherited from the current physical metric include its viewport
 boundary reveal test (not a complete nested-clip visibility test). Navigation
-links have their own boxes; a tab selection is still measured at the tabs
-wrapper box, not at the individual tab. List contents in
+links and individual tab choices have their own target boxes. Tab events use
+their index to select the exact target center. List contents in
 safety text scroll independently; bounded interactive lists remain open. Exported
 variants and observed trace replay are finite evidence, not a proof that a
-custom family covers every reachable state. A new shape refuses rather than
-being counted as measured.
+custom family covers every reachable state. A new shape receives its own dense/fallback admission before it can be
+counted as measured; a previously admitted shape never admits another shape.
 
 ## Read-only gallery and timing
 
@@ -209,6 +208,18 @@ browser recording supplied with this task took 15–20 hours for ten days, almos
 all screen checks, with model calls taking about 2–4 minutes per persona/night.
 A short fake run is not a matched speed comparison to that recording.
 
+The manifest records `referenceGeneratorVersion`, per-day/persona
+`referenceUsage` (dense, checked fallback, custom and refused state counts), and
+bounded-cache `referenceStats` (uncached shape admissions, hits and admission
+milliseconds). Counts cover all geometry evaluations: agent, no-agent,
+canonical, training and validation. They count repeated event states, not just
+unique shapes. The generator source hash joins the Lean-only resume
+fingerprints. Shape admission/geometry is cached independently of patient text;
+the thousand-state regression requires only one family admission. Timing fields
+remain excluded from content digests. See the
+[default integration evidence](../audits/dense-reference-defaults.md) for the
+real P3 day, scripted/replay runs and throughput measurements.
+
 To test just the gallery (one worker, a bounded lock wait):
 
 ```sh
@@ -220,7 +231,7 @@ flock -w 120 "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright 
 
 The deployed path needs an interactive painter for real users; actual events
 sent to Lean `step`; focus, keyboard and ARIA wiring to the proved keyboard
-transitions; a Lean reference layout matching today's dense React screens;
+transitions; full visual fidelity to today's React screens;
 bounded interactive lists; and an explicit coverage strategy for structural
 state growth, including workspaces, panels, modalities and release changes.
 The current screen fidelity, browser rendering and assistive-technology

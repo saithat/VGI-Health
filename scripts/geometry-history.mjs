@@ -14,6 +14,11 @@ export async function archiveStaleGeometry(runDirectory, appSha256) {
     if(!entry.isFile()||!match)continue;
     const bytes=await readFile(join(directory,entry.name));
     let atlas;try{atlas=JSON.parse(bytes);}catch{atlas=null;}
+    // Chunked storage (version 2): the file is a pointer; the binding lives in
+    // the snapshot header it names.
+    if(atlas?.schemaVersion===2&&/^[a-f0-9]{64}$/.test(atlas.snapshot??'')){
+      try{atlas={...JSON.parse(await readFile(join(directory,'snapshots',atlas.snapshot,'index.json'),'utf8')).atlas};}catch{atlas=null;}
+    }
     const record={file:entry.name,sha256:createHash('sha256').update(bytes).digest('hex'),appSha256:atlas?.appSha256??null};
     inspected.push(record);
     if(atlas?.appSha256!==appSha256||atlas.programHash!==match[1]||

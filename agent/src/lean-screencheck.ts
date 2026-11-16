@@ -1,7 +1,10 @@
-import { createHash } from "node:crypto";
+import { BoundedMap } from './bounded-map.js';
+import { shapeFor } from "../../scripts/layout-reference/generator.mjs";
+import { LeanReference, referenceGeneratorVersion } from "./lean-reference.js";
+import { createHash, randomUUID } from "node:crypto";
 import { LeanLayoutRefusal } from "./lean-layout-refusal.js";
 import path from "node:path";
-import { mkdtemp, readFile, rm, appendFile, mkdir } from "node:fs/promises";
+import { mkdtemp, readFile, rm, appendFile, mkdir, rename } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { z } from "zod";
 import type { GeometryAtlas } from "../../app/src/metrics/geometry.js";
@@ -26,11 +29,10 @@ import {
 import {
   paintSchema,
   placedGeometry,
-  shellTree,
   occurrences,
 } from "./lean-layout-geometry.js";
 import { traceStates, type LeanScreenState } from "./lean-layout-states.js";
-import { REPO_ROOT, writeJson, errorMessage } from "./util.js";
+import { REPO_ROOT, writeJson, writeJsonCompactAtomic, errorMessage } from "./util.js";
 import { specSchema, type Spec } from "./schema.js";
 import type { ScreenCheckResult } from "../../app/src/dashboard/agent-evidence.js";
 function required<T>(value: T | undefined): T {
@@ -179,14 +181,30 @@ export class LeanScreenChecker implements ScreenChecker {
       )
     );
   }
-  private readonly inventories = new Map<string, string>();
-  private readonly checks = new Map<string, Promise<ScreenCheckResult>>();
+  private readonly inventories = new BoundedMap<string, string>(8);
+  private readonly checks = new BoundedMap<string, Promise<ScreenCheckResult>>(8);
   private readonly runner: LayoutRunner;
+  private readonly reference: LeanReference;
+  readonly referenceUsage: {
+    day: number;
+    persona: string;
+    dense: number;
+    fallback: number;
+    custom: number;
+    refused: number;
+  }[] = [];
+  get referenceStats() {
+    return {
+      ...this.reference.stats,
+      generatorVersion: referenceGeneratorVersion,
+    };
+  }
   constructor(
     private readonly ehr: EhrClient,
     private readonly opts: LeanCheckerOptions = {},
   ) {
     this.runner = opts.runner ?? layoutRunner;
+    this.reference = new LeanReference(this.runner);
   }
   private async spec(input: ScreenCheckInput) {
     return this.ehr.mode === "fake"
@@ -279,7 +297,8 @@ export class LeanScreenChecker implements ScreenChecker {
     const limitFor = (screen: string) =>
       limits[screen] ?? { limit: 15, source: "Lean default (15)" };
     const unique = new Map<string, LeanScreenState>();
-    for (const s of states) unique.set(stableStringify(s.ui), s);
+    for (const s of states)
+      unique.set(stableStringify([s.screen, shapeFor(s.ui)]), s);
     const observed = [...unique.values()];
     const shapeRows = await this.batch(
       observed.map((s) => ({
@@ -299,8 +318,8 @@ export class LeanScreenChecker implements ScreenChecker {
     for (const [i, s] of observed.entries()) {
       const shape = shapeRows[i]?.uncoveredShape;
       if (!shape) throw Error(`Native semantic shape unavailable: ${s.screen}`);
-      const key = stableStringify([s.screen, shape]);
-      stateShapes.set(stableStringify(s.ui), key);
+      const key = stableStringify([s.screen, shapeFor(s.ui)]);
+      stateShapes.set(stableStringify([s.screen, shapeFor(s.ui)]), key);
       if (!representatives.has(key))
         representatives.set(key, { state: s, shape });
     }
@@ -313,11 +332,6 @@ export class LeanScreenChecker implements ScreenChecker {
           stableStringify(c.shape) === stableStringify(shapes[i]),
       ),
     );
-    const uncovered = samples
-      .filter(
-        (s, i) => design.some((c) => c.screen === s.screen) && !selections[i],
-      )
-      .map((s) => s.screen);
     const unknown = input.result
       ? []
       : design.filter(
@@ -328,56 +342,48 @@ export class LeanScreenChecker implements ScreenChecker {
                 stableStringify(c.shape) === stableStringify(shapes[i]),
             ),
         );
-    const requests = samples.map((s, i) =>
-      selections[i]
-        ? {
-            op: "family-paint",
-            references: [{ screen: s.ui, layouts: selections[i]?.layouts }],
-            screen: s.ui,
-            viewport,
-            maxTargetsPerViewport: limitFor(s.screen).limit,
-          }
-        : s.render
-          ? { op: "program-paint", render: s.render, viewport }
-          : { op: "structural-paint", screen: s.ui, viewport },
-    );
-    const paints = await this.batch(requests);
+    const referenceResults: ("dense" | "fallback" | "custom" | "refused")[] =
+      [];
+    const paints: LayoutReply[] = [];
+    const families: unknown[] = [];
     const extra: { index: number; requests: unknown[] }[] = [];
     for (const [i, s] of samples.entries()) {
-      const selected = selections[i];
+      const selected = selections[i],
+        maxTargetsPerViewport = limitFor(s.screen).limit;
       if (selected) {
-        extra.push({
-          index: i,
-          requests: [
-            {
-              op: "family-check",
-              references: [{ screen: s.ui, layouts: selected.layouts }],
-              maxTargetsPerViewport: limitFor(s.screen).limit,
-            },
-          ],
-        });
-      } else if (limitFor(s.screen).limit < 15) {
-        const all = await this.batch(
-          viewports.map((v) =>
-            s.render
-              ? { op: "program-paint", render: s.render, viewport: v }
-              : { op: "structural-paint", screen: s.ui, viewport: v },
+        const references = [{ screen: s.ui, layouts: selected.layouts }];
+        families.push(references);
+        paints.push(
+          required(
+            (
+              await this.batch([
+                {
+                  op: "family-paint",
+                  references,
+                  screen: s.ui,
+                  viewport,
+                  maxTargetsPerViewport,
+                },
+              ])
+            )[0],
           ),
         );
-        const layouts = all.map((p, k) => ({
-          viewport: viewports[k],
-          tree: shellTree(paintSchema.parse(p)),
-        }));
+        referenceResults.push("custom");
         extra.push({
           index: i,
-          requests: [
-            {
-              op: "family-check",
-              references: [{ screen: s.ui, layouts }],
-              maxTargetsPerViewport: limitFor(s.screen).limit,
-            },
-          ],
+          requests: [{ op: "family-check", references, maxTargetsPerViewport }],
         });
+      } else {
+        const result = await this.reference.get(s.ui, maxTargetsPerViewport);
+        paints.push(result.paint);
+        families.push(result.references);
+        referenceResults.push(
+          result.dense
+            ? "dense"
+            : result.paint.accepted
+              ? "fallback"
+              : "refused",
+        );
       }
     }
     const extras = await this.batch(extra.flatMap((e) => e.requests));
@@ -425,8 +431,6 @@ export class LeanScreenChecker implements ScreenChecker {
       if (!p.accepted)
         fail(required(samples[required(extra[i]).index]).screen, p);
     });
-    for (const screen of uncovered)
-      fail(screen, { error: "uncovered custom screen shape" });
     for (const c of unknown)
       fail(c.screen, {
         error: "custom shape has no native screen witness in this coverage set",
@@ -470,7 +474,9 @@ export class LeanScreenChecker implements ScreenChecker {
     const key = this.coverageKey(input),
       painted = new Map(
         samples.map((s, i) => [
-          required(stateShapes.get(stableStringify(s.ui))),
+          required(
+            stateShapes.get(stableStringify([s.screen, shapeFor(s.ui)])),
+          ),
           { s, paint: required(paints[i]), shape: shapes[i] },
         ]),
       );
@@ -478,17 +484,50 @@ export class LeanScreenChecker implements ScreenChecker {
       0,
       12,
     );
+    const usage = {
+      day: input.schedule?.day ?? 0,
+      persona: input.program.id,
+      dense: 0,
+      fallback: 0,
+      custom: 0,
+      refused: 0,
+    };
+    const selectedByShape = new Map(
+      samples.map((s, i) => [
+        stableStringify([s.screen, shapeFor(s.ui)]),
+        referenceResults[i],
+      ]),
+    );
+    // Placement depends on the admitted shape and occurrence-to-control map,
+    // not patient text. Share immutable boxes within this call, while keeping
+    // each state's label and event aliases separate and in their original order.
+    const geometryByOccurrences = new Map<string, GeometryAtlas['states'][number]>();
+    const parsedPaints = new Map<LayoutReply, ReturnType<typeof paintSchema.parse>>();
     for (const s of states) {
+      const selected = selectedByShape.get(
+        stableStringify([s.screen, shapeFor(s.ui)]),
+      );
+      if (selected === "dense") usage.dense++;
+      else if (selected === "fallback") usage.fallback++;
+      else if (selected === "refused") usage.refused++;
+      else usage.custom++;
       const p = required(
-        painted.get(required(stateShapes.get(stableStringify(s.ui)))),
+        painted.get(
+          required(
+            stateShapes.get(stableStringify([s.screen, shapeFor(s.ui)])),
+          ),
+        ),
       );
       if (!p.paint.accepted) continue;
-      const state = placedGeometry(
-        paintSchema.parse(p.paint),
-        s.ui,
-        s.screen,
-        `${s.state}-${traceKey}`,
-      );
+      const geometryKey=stableStringify([s.screen,shapeFor(s.ui),occurrences(s.ui)]);
+      let template=geometryByOccurrences.get(geometryKey);
+      if(!template){
+        let paint=parsedPaints.get(p.paint);
+        if(!paint){paint=paintSchema.parse(p.paint);parsedPaints.set(p.paint,paint);}
+        template=placedGeometry(paint,s.ui,s.screen,'');
+        geometryByOccurrences.set(geometryKey,template);
+      }
+      const state={...template,state:`${s.state}-${traceKey}`,components:{...template.components}};
       if (s.sample) state.sample = s.sample;
       if (s.eventIndex !== undefined) {
         const target = `lean-event-${s.eventIndex}-${traceKey}`;
@@ -503,7 +542,13 @@ export class LeanScreenChecker implements ScreenChecker {
             ["comp", "alert"].includes(k),
           )?.[1];
           if (typeof id === "string") {
-            let box = state.components[id];
+            const tabIndex = Object.entries(payload).find(
+              ([k]) => k === "idx",
+            )?.[1];
+            let box =
+              state.components[
+                typeof tabIndex === "number" ? `${id}#tab:${tabIndex}` : id
+              ];
             if (!box) {
               const alert = expandProgram(input.program)
                 .screens.flatMap((sc) => sc.components)
@@ -526,6 +571,7 @@ export class LeanScreenChecker implements ScreenChecker {
       }
       atlas.states.push(state);
     }
+    if (input.result) this.referenceUsage.push(usage);
     if (this.opts.artifactsDir) {
       const directory = path.join(
         this.opts.artifactsDir,
@@ -541,24 +587,48 @@ export class LeanScreenChecker implements ScreenChecker {
         programHash: atlas.programHash,
         layoutsSha256: sha256(stableStringify(design)),
         limits: perScreen,
+        referenceGeneratorVersion,
+        referenceUsage: usage,
+        referenceStats: this.referenceStats,
         states: states.length,
         distinct: samples.length,
         traceReplay: Boolean(input.result),
         failures,
         rules,
       });
-      // One representative real patient per shape; no per-event paint duplication.
-      const saved = new Set<string>();
-      for (const [i, s] of (input.result ? [] : samples).entries()) {
-        const shapeKey = sha256(stableStringify([s.screen, shapes[i]]));
-        if (saved.has(shapeKey)) continue;
-        saved.add(shapeKey);
-        await writeJson(path.join(directory, `${i}.json`), {
-          screen: s.screen,
-          shape: shapes[i],
-          ui: s.ui,
-          paint: paints[i],
-        });
+      // The gallery paints boxes only. Admission diagnostics remain above;
+      // recursive native trees and the semantic UI duplicate the same text.
+      const gallery = path.join(this.opts.artifactsDir,input.program.owner,
+        `v${input.program.version}`,sha256(stableStringify([atlas.programHash,geometryComponentsHash(input.program)])),"gallery");
+      const {existsSync}=await import('node:fs');
+      if(!input.result&&!failures.length&&!existsSync(path.join(gallery,'coverage.json'))){
+        const staging=path.join(path.dirname(gallery),`gallery-${randomUUID()}.tmp`);
+        try{
+        const saved = new Set<string>(),savedScreens=new Set<string>();
+        for (const [i,s] of samples.entries()) {
+          // The review gallery displays one before/after view per screen.
+          // Retain custom shapes as well; every shape's gate evidence is kept.
+          if(savedScreens.has(s.screen)&&!selections[i])continue;
+          const shapeKey=sha256(stableStringify([s.screen,shapes[i]]));
+          if(saved.has(shapeKey))continue;
+          saved.add(shapeKey);
+          savedScreens.add(s.screen);
+          const [raw]=await this.batch([{op:"family-paint",references:families[i],screen:s.ui,viewport,maxTargetsPerViewport:limitFor(s.screen).limit}]);
+          const paint=z.record(z.string(),z.unknown()).parse(raw);
+          const tree=z.object({drawn:z.unknown()}).parse(paint['tree']);
+          await writeJsonCompactAtomic(path.join(staging,`${i}.json`),{
+            screen:s.screen,shape:shapes[i],ui:{},
+            paint:{accepted:paint['accepted'],viewport:paint['viewport'],tree:{drawn:tree.drawn,children:[]},boxes:paint['boxes'],lineWidths:[],findings:paint['findings']},
+          });
+        }
+        await writeJson(path.join(staging,'coverage.json'),{screenGate:'lean',browserCertified:false,reportFormatVersion:2,programHash:atlas.programHash,layoutsSha256:sha256(stableStringify(design)),failures:[]});
+        // The gallery reader indexes numeric files before reading coverage.
+        // Publish the whole directory together so it never sees a partial set.
+        try{await rename(staging,gallery);}catch(error){
+          const collision=error&&typeof error==='object'&&'code'in error&&['EEXIST','ENOTEMPTY'].includes(String(error.code));
+          if(!collision||!existsSync(path.join(gallery,'coverage.json')))throw error;
+        }
+        }finally{await rm(staging,{recursive:true,force:true});}
       }
     }
     return { atlas, failures, rules, pages: states.length, limits: perScreen };
@@ -664,6 +734,8 @@ export class LeanScreenChecker implements ScreenChecker {
   };
   /** The admission inventory has no validation or future trace payload. */
   async promptDesign(program: ScreenCheckInput["program"]): Promise<string> {
+    const key = this.coverageKey({program,specVersion:program.specVersion});
+    if(!this.inventories.has(key))this.checks.delete(key);
     const checked = await this.check({
       program,
       specVersion: program.specVersion,

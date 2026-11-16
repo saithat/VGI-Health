@@ -1,3 +1,7 @@
+import {
+  layoutFor,
+  shapeFor,
+} from "../../scripts/layout-reference/generator.mjs";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
@@ -147,7 +151,7 @@ const fixtureStates = async (): Promise<LeanScreenState[]> => [
 ];
 const limits = async () => ({ s: { limit: 2, source: "test vendor" } });
 describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () => {
-  it("admits reference shells under tighter per-screen limits, records provenance and binds an atlas", async () => {
+  it("admits dense references under tighter per-screen limits, records provenance and binds an atlas", async () => {
     const dir = await tmp("lean-gate"),
       checker = new LeanScreenChecker(createFakeEhr(), {
         states: fixtureStates,
@@ -174,7 +178,23 @@ describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () =
           path.join(REPO_ROOT, "lean/.lake/build/bin/ui-layout"),
         )),
     );
-    expect(atlas?.states[0]?.components["sign"]?.center.y).toBe(116);
+    expect(atlas?.states[0]?.components["sign"]?.center.y).toBe(872);
+    const { readdir } = await import("node:fs/promises");
+    const galleryFile = (await readdir(dir, { recursive: true })).find((file) =>
+      file.endsWith("/0.json"),
+    );
+    const gallery = z
+      .object({ paint: paintSchema })
+      .parse(
+        JSON.parse(
+          await readFile(path.join(dir, required(galleryFile)), "utf8"),
+        ),
+      );
+    expect(
+      gallery.paint.boxes.some((box) =>
+        box.original?.includes("Synthetic Gallery Patient"),
+      ),
+    ).toBe(true);
   });
   it("refuses excess density, missing sources, missing viewports and unlinked flags with Lean findings", async () => {
     const [shapeReply] = await layoutRunner([
@@ -453,7 +473,14 @@ it("runs two days through Lean providers with scripted/replay backends and no br
     screenGate: "lean",
     browserCertified: false,
     status: "completed",
+    referenceGeneratorVersion: "dense-reference-v7",
   });
+  expect(
+    manifest.referenceUsage.some(
+      (r: { day: number; dense: number; fallback: number }) =>
+        r.day === 1 && r.dense + r.fallback > 0,
+    ),
+  ).toBe(true);
   expect(recorded.timelines[0]?.nights.map((n) => n.outcome)).toEqual(
     replay.timelines[0]?.nights.map((n) => n.outcome),
   );
@@ -494,9 +521,11 @@ it("repairs Lean findings and ships a Program change with an independently store
     {
       screen: "home",
       shape: nativeShape,
-      layouts: paints.map((paint, i) => ({
+      layouts: paints.map((_paint, i) => ({
         viewport: required(viewports[i]),
-        tree: z.json().parse(shellTree(paintSchema.parse(paint))),
+        tree: z
+          .json()
+          .parse(layoutFor(shapeFor(state.ui), required(viewports[i]))),
       })),
     },
   ];
@@ -771,4 +800,61 @@ it("keeps admission evidence and clinical clocks in the digest while excluding t
   expect((await contentDigest(directory)).contentDigest).not.toBe(
     before.contentDigest,
   );
+});
+
+it("caches dense admission across a thousand value states and repeated geometry requests", async () => {
+  let families = 0;
+  const runner: typeof layoutRunner = async (requests) => {
+    families += requests.filter(
+      (r) => r && typeof r === "object" && "op" in r && r.op === "family-check",
+    ).length;
+    return layoutRunner(requests);
+  };
+  const checker = new LeanScreenChecker(createFakeEhr(), {
+    runner,
+    limits,
+    states: async () =>
+      Array.from({ length: 1000 }, (_, i) => ({
+        screen: "s",
+        state: `value-${i}`,
+        ui: { ...ui(), title: `Synthetic ${i}` },
+      })),
+  });
+  const program = withDesign(structuredClone(canonicalV1));
+  const checked = await checker.check({ program, specVersion: "v1" });
+  expect(checked.status, checked.message).toBe("pass");
+  expect(
+    (await checker.geometry({ program, specVersion: "v1" }))?.states,
+  ).toHaveLength(1000);
+  expect(families).toBe(1);
+  expect(checker.referenceStats.admissions).toBe(1);
+});
+
+it("uses dense reference for a shape absent from a partially customized screen", async () => {
+  const first = ui(),
+    second = ui();
+  second.workspace.push({
+    ...required(first.workspace[0]),
+    button: { ...required(first.workspace[0]).button, comp: "extra" },
+  });
+  const [native] = await layoutRunner([
+    { op: "family-check", references: [{ screen: first }] },
+  ]);
+  const shape = required(required(native?.shapes)[0]);
+  const program = withDesign(structuredClone(canonicalV1), [
+    { screen: "s", shape, layouts: freeLayouts(shape) },
+  ]);
+  const checker = new LeanScreenChecker(createFakeEhr(), {
+    states: async () => [
+      { ui: first, screen: "s", state: "custom" },
+      { ui: second, screen: "s", state: "dense" },
+    ],
+    limits: async () => ({}),
+  });
+  const result = await checker.check({ program, specVersion: "v1" });
+  expect(result.status, result.message).toBe("pass");
+  const atlas = await checker.geometry({ program, specVersion: "v1" });
+  expect(atlas?.states.map((s) => s.components["sign"]?.center.y)).toEqual([
+    858, 872,
+  ]);
 });

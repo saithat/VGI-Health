@@ -34,3 +34,14 @@ test('legacy or mismatched component bindings are preserved instead of merged',(
   assert.deepEqual(receipt.incompatible,[filename]);
   assert.equal(JSON.parse(await readFile(join(dir,receipt.archivedDirectory,filename),'utf8')).appSha256,current);
 }));
+test('chunked pointers are judged by the snapshot header they name',()=>workspace(async dir=>{
+  const snapshot='5'.repeat(64),filename=`${program}.${components}.json`;
+  await writeFile(join(dir,'geometry',filename),JSON.stringify({schemaVersion:2,programHash:program,componentsSha256:components,snapshot}));
+  await mkdir(join(dir,'geometry','snapshots',snapshot),{recursive:true});
+  const header=app=>JSON.stringify({atlas:{schemaVersion:1,programHash:program,componentsSha256:components,appSha256:app},chunks:0});
+  await writeFile(join(dir,'geometry','snapshots',snapshot,'index.json'),header(current));
+  assert.equal(await archiveStaleGeometry(dir,current),null);
+  await writeFile(join(dir,'geometry','snapshots',snapshot,'index.json'),header(previous));
+  const receipt=await archiveStaleGeometry(dir,current);assert.ok(receipt);
+  assert.deepEqual(receipt.incompatible,[filename]);
+}));

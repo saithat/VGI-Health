@@ -1,3 +1,5 @@
+import { createReferencePainter, referenceLimit } from "./reference";
+import { version as referenceGeneratorVersion } from "../../../scripts/layout-reference/generator.mjs";
 import { z } from "zod";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { createLiveSession } from "../core/liveSession";
@@ -65,6 +67,7 @@ async function main() {
     .parse(release);
   if (!interp.layout) throw new Error("Rebuild WASM: ehr_layout is required");
   const layout = interp.layout;
+  const referencePaint = createReferencePainter(layout);
   const directory: Bundle = {
     ...graph,
     entry: [
@@ -123,12 +126,38 @@ async function main() {
       throw new Error("Lean semantic screen/layout API is required");
     const viewport = { w: window.innerWidth * 64, h: window.innerHeight * 64 };
     const start = performance.now();
-    const encoded = snapshot.layout({
-      viewport,
-      ...(references === undefined ? {} : { references }),
-    });
-    if (!encoded) throw new Error("Missing Lean layout output");
-    const output: Output = JSON.parse(encoded);
+    let output: Output;
+    if (references === undefined) {
+      const selected = referencePaint(
+        snapshot.ui,
+        viewport,
+        referenceLimit(
+          String(content.program.specVersion),
+          persona,
+          snapshot.ui.screen ?? "",
+        ),
+      );
+      output = selected.output;
+      root.dataset.referenceLayout = selected.dense ? "dense" : "fixed-shell";
+      root.dataset.referenceGenerator = referenceGeneratorVersion;
+    } else {
+      const encoded = layout(
+        JSON.stringify({
+          op: "family-paint",
+          references,
+          screen: snapshot.ui,
+          viewport,
+          maxTargetsPerViewport: referenceLimit(
+            String(content.program.specVersion),
+            persona,
+            snapshot.ui.screen ?? "",
+          ),
+        }),
+      );
+      if (!encoded) throw Error("Missing Lean layout output");
+      output = JSON.parse(encoded);
+      root.dataset.referenceLayout = "custom";
+    }
     root.dataset.layoutMs = String(performance.now() - start);
     admitted = output.accepted;
     if (!output.accepted) {

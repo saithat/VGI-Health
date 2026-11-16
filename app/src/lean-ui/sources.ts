@@ -120,10 +120,12 @@ function leafParts(cx: Cx, node: UiNode): Leaf[] {
       ...(node.button.hotkey !== null ? [{ role: "hotkey" }] : []),
     ];
   if ("tabs" in node)
-    return node.tabs.labels.map(() => ({
+    // Indexed IDs select exact tab target boxes in the agent's geometry.
+    return node.tabs.labels.map((_, i) => ({
       role: "tab",
       target: true,
       comp: node.tabs.id,
+      ids: [`${node.tabs.id}#tab:${i}`],
     }));
   if ("stepper" in node)
     return node.stepper.steps.map(() => ({ role: "step" }));

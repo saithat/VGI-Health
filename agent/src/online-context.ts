@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs';
 import { readdir } from 'node:fs/promises';
 import type { NightInput, LoopDeps } from './night.js';
 import { geometryComponentsHash, geometryProgramHash, loadGeometry } from './geometry.js';
-import { localityDigest, type LocalityDigest } from './locality.js';
+import { createLocalityDigest, type LocalityDigest } from './locality.js';
 import { physicalSaving, measuredLedger, type MeasuredSavings } from './quality-context.js';
 import { isMeasurementDay, trainEstimateWindow } from './protocol.js';
 
@@ -22,18 +22,18 @@ export function assertTrain(input: Pick<NightInput,'train'|'night'|'persona'>): 
   if(JSON.stringify([...seen])!==JSON.stringify([...seen].sort((a,b)=>a-b)))throw Error('Train days must be ordered');
 }
 export async function trainLocality(input: Pick<NightInput,'train'|'programs'>, dir:string, real:boolean):Promise<LocalityDigest> {
-  const days=[];
+  const digest=createLocalityDigest();
   for(const day of input.train) {
     const program=input.programs.get(day.result.programVersion);
     if(!program)throw Error('Missing train program');
     const hash=geometryProgramHash(program),components=geometryComponentsHash(program);
     const file=path.join(dir,'geometry',`${hash}.${components}.json`);
     if(!existsSync(file)) {if(real)throw Error('Missing live train geometry');continue;}
-    const atlas=await loadGeometry(file),binding=day.result.geometry;
+    const atlas=await loadGeometry(file,day.result),binding=day.result.geometry;
     if(atlas.programHash!==hash||atlas.componentsSha256!==components||binding?.programHash!==hash||binding.componentsSha256!==components||binding.appSha256!==atlas.appSha256)throw Error('Train trace/atlas binding mismatch');
-    days.push({result:day.result,atlas:{...atlas,aliases:atlas.aliases??{}}});
+    digest.add(day.result,{...atlas,aliases:atlas.aliases??{}});
   }
-  return localityDigest(days);
+  return digest.finish();
 }
 export async function onlineQuality(deps:LoopDeps,input:NightInput) {
   assertTrain(input);

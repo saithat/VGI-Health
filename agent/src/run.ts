@@ -1,3 +1,5 @@
+import { GEOMETRY_STORAGE_VERSION } from './geometry-store.js';
+import {referenceGeneratorVersion,summarizeReferenceUsage} from './lean-reference.js';
 import {LeanScreenChecker,type LeanCheckerOptions} from './lean-screencheck.js';
 import {leanLayoutPrompt,leanTrainingLog} from './lean-layout-prompt.js';
 import { releaseScoringSchema, RELEASE_SCORING_POLICY } from './release-scoring.js';
@@ -46,7 +48,6 @@ import { createEhr, type EhrClient } from './ehr.js';
 import { runMigration, runSurfaceFeature } from './modes.js';
 import { daySeed, deployVersion, makeHoldout, replayDay, runNight, type LoopDeps, type NightResult } from './night.js';
 import { createScreenChecker, type ScreenChecker } from './screencheck.js';
-import type { TrainDay } from './observe.js';
 import { sha256,stableStringify,personalize } from './program.js';
 import type { HistoryItem, PersonaView } from './prompts.js';
 import { loadRelease, releaseForPersona, type Release } from './releases.js';
@@ -211,10 +212,12 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed, incompletePenalty:scoring.incompletePenalty,
   };
-  const fingerprints = {...(leanMode?{layoutExecutable:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(REPO_ROOT,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-screen-density.json'))}:{}),...await runFingerprints(ehr, world.dir,REPO_ROOT,leanMode?'lean':'browser'),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
+  const fingerprints = {...(leanMode?{referenceGenerator:await fileHash(path.join(REPO_ROOT,'scripts/layout-reference/generator.mjs')),layoutExecutable:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(REPO_ROOT,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-screen-density.json'))}:{}),...await runFingerprints(ehr, world.dir,REPO_ROOT,leanMode?'lean':'browser'),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
     screenGate:z.string().optional(),
+    referenceUsage:z.array(z.custom<LeanScreenChecker['referenceUsage'][number]>()).optional(),
+    referenceStats:z.array(z.custom<LeanScreenChecker['referenceStats']>()).optional(),
     scoring:z.unknown().optional(),
     simulationModes:simulationModesSchema.optional(),
     nightlyDiscovery:z.unknown().optional(),
@@ -247,7 +250,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
-    ...(leanMode?{screenGate:'lean',browserCertified:false,geometrySource:'Lean fixed-shell reference or custom family',leanFixtureOverrides:Boolean(opts.leanOptions),layoutExecutableSha256:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout'))}:{}),
+    geometryStorageVersion:GEOMETRY_STORAGE_VERSION,screenReportStorageVersion:2,
+    ...(leanMode?{screenGate:'lean',browserCertified:false,geometrySource:'Lean dense reference, admitted fixed-shell fallback or custom family',referenceGeneratorVersion,referenceUsage:previous?.referenceUsage??z.array(z.custom<LeanScreenChecker['referenceUsage'][number]>()).parse([]),referenceStats:previous?.referenceStats??z.array(z.custom<LeanScreenChecker['referenceStats']>()).parse([]),leanFixtureOverrides:Boolean(opts.leanOptions),layoutExecutableSha256:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout'))}:{}),
     protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', scoring, releasePolicy, nightlyDiscovery, simulationModes,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
     replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
@@ -295,6 +299,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   }
 
 
+  const collectReferenceTelemetry=()=>{if(leanMode){const checkers=[screens,...[...workerDeps.values()].map(d=>d.screens)].filter((c):c is LeanScreenChecker=>c instanceof LeanScreenChecker);manifestData.referenceUsage=summarizeReferenceUsage([...(previous?.referenceUsage??[]),...checkers.flatMap(c=>c.referenceUsage)]);manifestData.referenceStats=[...(previous?.referenceStats??[]),...checkers.map(c=>c.referenceStats)];}};
+
   const releases = new Map<string, Release>();
   const release = async (id: string) => {
     const hit = releases.get(id);
@@ -328,9 +334,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   // Day-1 programs: the canonical program personalized per user (version 0), deployed with a certificate.
   const views = new Map<string, PersonaView>();
   const programs = new Map<string, Map<number, Program>>();
-  const train = new Map<string, TrainDay[]>();
+  const trainDays = new Map<string, number[]>();
+  const trainMemory = new Map<string, import('./schema.js').UserMemory>();
   const history = new Map<string, HistoryItem[]>();
-  const records: DecisionRecord[] = [];
+  const recordKeys: {night:number;persona:string}[] = [];
   const timelines = new Map<string, PersonaTimeline>();
   await personaPhase(personaIds,opts.parallel??false,async id=>context(id,null,null,async()=>{
     const deps=workerDeps.get(id);if(!deps)throw new Error(`Missing worker ${id}`);
@@ -356,7 +363,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (!dep.ok) throw new InfrastructureError(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
       programs.set(id, new Map([[0, v0]]));
     }
-    train.set(id, []);
+    trainDays.set(id, []);
     history.set(id, []);
     timelines.set(id, { persona: id, days: [], nights: [] });
   }),personaWorkerLimit);
@@ -387,10 +394,11 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (!isMeasurementDay(day)) {
         const trainingSchedule = calibrationPartition(schedule, 'train');
         const trainingFile = path.join(dir,'training',`day-${day}`,`${id}.json`);
-        const trainingMemory = train.get(id)?.at(-1)?.result.memory;
+        const trainingMemory = trainMemory.get(id);
         const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(trainingMemory ? {memory:trainingMemory} : {}) });
         if (!existsSync(trainingFile)) await writeJson(trainingFile, trainingResult);
-        train.get(id)?.push({ result: trainingResult, schedule: trainingSchedule });
+        if(trainingResult.memory)trainMemory.set(id,trainingResult.memory);else trainMemory.delete(id);
+        trainDays.get(id)?.push(day);
         const boundedFile=path.join(dir,'bounded-training',`day-${day}`,`${id}.json`);
         const bounded=existsSync(boundedFile)?await readJson(boundedFile,dayResultSchema):await ehr.simulate({
           specVersion:inForce.specVersion,program:resultProgram,persona:view.params,policy:'bounded',schedule:trainingSchedule,
@@ -437,7 +445,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const nightInput = {
         declaredWorkload,
         night: day, persona: view, release: await releaseForPersona(inForce, id), current,
-        train: [...(train.get(id) ?? [])], programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
+        train: store.training(id,trainDays.get(id)??[],world.dir), programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
         holdout: makeHoldout(deps, view, await validationSchedules(day,d=>world.schedule(d,id)),boundedTrainMemory.get(id)),
       };
       let res: NightResult;
@@ -472,7 +480,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         ...(opts.switchCost ? { switchCost: opts.switchCost } : {}),
       } } : {structure});
       const r = res.record;
-      records.push(r);
+      recordKeys.push({night:r.night,persona:r.persona});
       const streak = r.outcome === 'llm-error' ? (failures.get(id) ?? 0) + 1 : 0;
       failures.set(id, streak);
       if (streak >= 3) throw new Error(`ABORT ${id}: 3 consecutive LLM failures`);
@@ -488,7 +496,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (nextRelease) inForce = nextRelease;
   }
 
-  records.sort((a,b)=>a.night-b.night||personaIds.indexOf(a.persona)-personaIds.indexOf(b.persona));
+  recordKeys.sort((a,b)=>a.night-b.night||personaIds.indexOf(a.persona)-personaIds.indexOf(b.persona));
+  const records=store.decisions(recordKeys);
   for(const state of states){for(const kind of state.rejected)seedState.rejected.add(kind);seedState.injected+=state.injected;}
   // Blind tests use recorded actual even-day measurements and their active-release canonicals.
   for (const r of records) {
@@ -524,6 +533,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     llmErrors: records.flatMap((r) => r.flags.filter((flag) => flag.startsWith('llm-error')).map((message) => ({ persona: r.persona, night: r.night, message }))),
   };
   if(llm instanceof ReplayLlm)manifestData.driftedCallIds=[...new Set([...manifestData.driftedCallIds,...llm.driftedCallIds])].sort();
+  collectReferenceTelemetry();
   await writeJson(path.join(dir, 'summary.json'), summary);
   await writeJson(manifestFile, { ...manifestData, status: summary.infrastructureErrors.length ? 'infrastructure-error' : summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', nightDeploys: records.filter(r=>r.deployed).length, infrastructureErrors:summary.infrastructureErrors, llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
   const digest=await contentDigest(dir);
@@ -531,6 +541,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   return summary;
   } catch (error) {
     if(llm instanceof ReplayLlm)manifestData.driftedCallIds=[...new Set([...manifestData.driftedCallIds,...llm.driftedCallIds])].sort();
+    collectReferenceTelemetry();
     if(JSON.parse(await readFile(manifestFile,'utf8')).status!=='blocked')await writeJson(manifestFile, { ...manifestData, status: error instanceof InfrastructureError ? 'infrastructure-error' : 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });
     throw error;
   }
