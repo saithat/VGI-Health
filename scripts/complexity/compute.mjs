@@ -1,3 +1,5 @@
+import {readStoredGeometry} from '../../agent/src/geometry-format.mjs';
+import {readGeometryJson} from '../../agent/src/geometry-json.mjs';
 import {boundedSearch,unavailable,coverage,aggregate} from './search.mjs';
 import {pointerTravel} from '../../app/src/metrics/geometry.ts';
 import { archivedReleaseId, releaseLabel } from '../historical-releases.mjs';
@@ -116,7 +118,7 @@ export async function compute({ root = defaultRoot, runDir, files: committedFile
           let geometry=null;if(geometryFile&&await exists(geometryFile)){
             const componentsFile=path.resolve(root,sourcePath).replace(/\.json$/,'.components.json'),components=await exists(componentsFile)?await read(componentsFile):[];
             const componentHash=hash(JSON.stringify(stable(components))),variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`);
-            geometry=await read(await exists(variant)?variant:geometryFile);if(geometry.componentsSha256&&geometry.componentsSha256!==componentHash)geometry=null;
+            geometry=await readStoredGeometry(await exists(variant)?variant:geometryFile,readGeometryJson,{day});if(geometry.componentsSha256&&geometry.componentsSha256!==componentHash)geometry=null;
           }
           const costs=geometry&&measured.geometryTrace?Object.values(pointerTravel(measured.geometryTrace,geometry)):[];
           measured={...measured,metrics:{...measured.metrics,scrolls:costs.length?costs.reduce((n,c)=>n+c.scrolls,0):null,mouseTravelPx:costs.length&&costs.every(c=>typeof c.mouseTravelPx==='number')?costs.reduce((n,c)=>n+c.mouseTravelPx,0):null,scrollPx:costs.length&&costs.every(c=>typeof c.scrollPx==='number')?costs.reduce((n,c)=>n+c.scrollPx,0):null},floor:{...measured.floor,scrolls:null,mouseTravelPx:null,scrollPx:null}};

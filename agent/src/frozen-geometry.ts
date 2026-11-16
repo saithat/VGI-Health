@@ -2,7 +2,7 @@
  * Missing/mismatched inputs fail closed; never fabricate or rescale geometry. */
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { geometryComponentsHash,geometryProgramHash,loadGeometry,type GeometryProvider } from './geometry.js';
+import { geometryComponentsHash,geometryProgramHash,loadGeometry,loadGeometryDay,type GeometryProvider } from './geometry.js';
 import type { GeometryAtlas } from '../../app/src/metrics/geometry.js';
 export async function frozenGeometry(directory:string,appSha256:string):Promise<GeometryProvider>{
   const files=new Map<string,string[]>();
@@ -19,7 +19,7 @@ export async function frozenGeometry(directory:string,appSha256:string):Promise<
     const candidates=files.get(`${programHash}.${componentsSha256}.json`)??[];
     const states:GeometryAtlas['states']=[];let found=false;
     for(const file of candidates){
-      const atlas=await loadGeometry(file);
+      const atlas=input.schedule?await loadGeometryDay(file,input.schedule.day):await loadGeometry(file);
       if(atlas.programHash!==programHash||atlas.componentsSha256!==componentsSha256||atlas.appSha256!==appSha256||atlas.source!=='chromium')continue;
       found=true;
       for(const state of atlas.states){

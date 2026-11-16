@@ -2,6 +2,11 @@ import {designOf,withDesign,layoutDesignSchema} from './layout-design.js';
 import { readBinding } from './binding-pointer.js';
 import { presentationBundleSchema } from '../../app/src/ehr/ui/presentation-types.js';
 import { existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
+import { diskArray } from './disk-array.js';
+import { dayScheduleSchema } from './schema.js';
+import { calibrationPartition } from './protocol.js';
+import type { TrainDay } from './observe.js';
 import { expandProgram } from './composites.js';
 import { compilePresentations } from './presentation-compiler.js';
 import { REPO_ROOT } from './util.js';
@@ -163,6 +168,17 @@ export class RunStore {
 
   readDecision(night: number, persona: string): Promise<DecisionRecord> {
     return readJson(this.decisionPath(night, persona), decisionRecordSchema);
+  }
+
+  decisions(keys:readonly {night:number;persona:string}[]):readonly DecisionRecord[]{
+    return diskArray(keys,key=>decisionRecordSchema.parse(JSON.parse(readFileSync(this.decisionPath(key.night,key.persona),'utf8'))));
+  }
+
+  training(persona:string,days:readonly number[],worldDir:string):readonly TrainDay[]{
+    return diskArray(days,day=>({
+      result:dayResultSchema.parse(JSON.parse(readFileSync(path.join(this.dir,'training',`day-${day}`,`${persona}.json`),'utf8'))),
+      schedule:calibrationPartition(dayScheduleSchema.parse(JSON.parse(readFileSync(path.join(worldDir,'schedules',`day-${pad2(day)}`,`${persona}.json`),'utf8'))),'train'),
+    }));
   }
 
   async writeDay(result: DayResult): Promise<void> {

@@ -85,19 +85,24 @@ it('captures different calibration partitions independently even on the same day
  expect(captures).toBe(2);
 });
 
-it('reloads persisted geometry coverage when simulation resumes in a new process',async()=>{
+it('reloads each exact call when simulation resumes without merging earlier days',async()=>{
  const {geometryEhr,geometryProgramHash,geometryComponentsHash,loadGeometry}=await import('../src/geometry.js');
  const {createFakeEhr}=await import('../src/fake/ehr-fake.js');const {fakeCanonical}=await import('../src/fake/fixtures.js');
  const {fakeWorld,tmp}=await import('./helpers.js');const {loadWorld}=await import('../src/world.js');const path=await import('node:path');
  const world=await loadWorld(await fakeWorld(2)),dir=await tmp('geometry-resume'),program=fakeCanonical('v1');
  const params=world.personas.get('P1');if(!params)throw new Error('Missing fixture persona');
  const provider:import('../src/geometry.js').GeometryProvider=async input=>({...atlas,programHash:geometryProgramHash(input.program),states:atlas.states.map(state=>({...state,state:`fixture-day-${input.schedule?.day}`}))});
+ const results=[];
  for(const day of [1,2]){
   const schedule=await world.schedule(day,'P1');if(!schedule)throw new Error('Missing fixture schedule');
-  await geometryEhr(createFakeEhr(),provider,dir).simulate({specVersion:'v1',program,persona:params,schedule,worldDir:world.dir,seed:day});
+  results.push(await geometryEhr(createFakeEhr(),provider,dir).simulate({specVersion:'v1',program,persona:params,schedule,worldDir:world.dir,seed:day}));
  }
  const recorded=await loadGeometry(path.join(dir,'geometry',`${geometryProgramHash(program)}.${geometryComponentsHash(program)}.json`));
- expect(recorded.states.map(state=>state.state)).toEqual(['fixture-day-1','fixture-day-2']);
+ expect(recorded.states.map(state=>state.state)).toEqual(['fixture-day-2']);
+ for(const result of results){
+  const exact=await loadGeometry(path.join(dir,'geometry',`${geometryProgramHash(program)}.${geometryComponentsHash(program)}.json`),result);
+  expect(exact.states.map(state=>state.state)).toEqual([`fixture-day-${result.day}`]);
+ }
 });
 
 it('accounts for bounded misses at an explicit measured-slot proxy without changing the clinical trace',async()=>{
