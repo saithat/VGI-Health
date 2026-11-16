@@ -36,7 +36,8 @@ modal/urgent regions. The original `screenShape` and fixed-shell theorem domain
 are unchanged. Existing theorem statements are unchanged; the display
 completeness and structural-induction proofs were extended for new parts.
 
-The shared generator is `dense-reference-v9`. Its dedicated widget placement
+The shared generator is `dense-reference-v10` (v9 plus paged lists and table
+grids, [bounded lists](ui-library.md#bounded-lists)). Its dedicated widget placement
 function keeps these presentations separate from generic info/table/row-action
 placement. Content-free admission preserves numeric/date validity and series
 identity because those facts determine which plot parts exist. Lean remains

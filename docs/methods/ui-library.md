@@ -332,6 +332,8 @@ parts begin with its position ("Records 21–40 of 705"), the flagged count of
 other pages and four targets: previous page, next page, a page selector whose
 options are every page, and the next page holding a flagged record
 (`Display.pagerParts`). A target that cannot move is shown but not enabled.
+Rich presentations over a paged list (a trend plot, a time grid, cards) read
+the records of the page shown, like its cells.
 
 *View state and events.* The page is view state in `State.tabSel`, where the
 selected tab already lives, and is selected by the same `selectTab` event:
@@ -346,7 +348,7 @@ is an abnormal result flag (critical, high, low) or a state with the red tone
 | Contract | Lean |
 |---|---|
 | A page holds at most its size of records | `Window.pageRows_length`, `windowNode_info` |
-| The screen's inventory is at most the structure (pageable lists emptied) plus `7 + 2·(50·W)` occurrences per info node, `W` the widest record, whatever the record counts | `WindowProofs.window_inventory_bound` (`node_bound`) |
+| The windowed inventory does not grow with the records: windows naming the same lists give the same inventory size, so a list of `n` records and one of `n + m` records (more than a page) have the same windowed inventory size; a paged list adds six window parts and the cells of one page | `WindowProofs.windows_inventory` (`windows_length`, `windowParts_count`), `list_inventory_independent`, `infoParts_length_le` |
 | Record `i` is on page `i / k` at position `i % k`, on no other page; the pages in order are the list | `Window.pageRows_get`, `page_unique`, `record_off_page`, `pages_cover` |
 | When the view state asks for a record's page, the windowed inventory has every cell of the record with its complete value | `Window.record_shown`, `WindowProofs.window_record_shown` |
 | The fixed shell paints the windowed screen of every renderer output and shows every part completely (the windowed `render_parts_shown`) | `WindowProofs.render_window_parts_shown` |

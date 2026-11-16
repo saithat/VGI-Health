@@ -24,7 +24,7 @@ control (beside it when the field has the whole row to itself), with its unit,
 code and required marker on the control's row when they fit and its hint,
 source, confirmation and human-entry markers on a line below; fields and
 buttons pack into wrapping rows of up to five and eight cells. A table is its
-caption, then (for a paged list, `dense-reference-v9`) one row with its
+caption, then (for a paged list, `dense-reference-v10`) one row with its
 position, flagged count and four pager targets, then, when two or more records
 share their captions, one header row
 of captions and the value cells in equal column tracks, with each record's
