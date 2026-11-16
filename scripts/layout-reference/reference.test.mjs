@@ -118,3 +118,10 @@ test('runtime urgent sources remain fixed above the banner without changing sema
     assert.ok(urgent.box.rect.y+urgent.box.rect.h<=banner.box.rect.y);
   }
 });
+test('navigation and heading scroll with the vendor body while banner and commit stay fixed',()=>{
+  const s=screen(),c=new ReferenceLayouts(),r=c.get(s),out=c.paint(r,s);
+  assert.equal(r.denseAccepted,true);
+  for(const path of ['1','2'])assert.equal(out.boxes.find(d=>d.box.info.source?.join('.')===path).box.clips[0][0],'reference-body');
+  assert.deepEqual(out.boxes.find(d=>d.box.info.banner).box.clips,[]);
+  assert.deepEqual(out.boxes.find(d=>d.box.info.commit).box.clips,[]);
+});

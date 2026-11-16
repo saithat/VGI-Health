@@ -10,8 +10,9 @@ clinical rules, certified app hash, Lean definitions or proofs.
 The generator follows the current compact shell: a 96px patient-banner reserve,
 horizontal navigation, heading, optional 158px summary pane with an 8px gutter,
 compact safety-text cards, wrapping control rows and width-dependent columns.
-The summary and content columns share one vertical scrolling body, matching
-the vendor document's coupled scrolling rather than introducing independent panes.
+Navigation, the heading, summary and content columns share one vertical
+scrolling body, matching the vendor document's coupled scrolling rather than
+introducing independent panes or a fixed navigation row.
 In dense layouts, runtime urgent-strip slots stay fixed above the banner, with a structural
 height reserve shifting the banner, navigation, heading and modal down.
 Collapse controls share their section's heading row; choice wrappers occupy

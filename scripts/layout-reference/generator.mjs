@@ -1,6 +1,6 @@
 // Untrusted, content-independent vendor reference geometry. All sizes are 1/64px.
 export const viewports = [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}];
-export const version = 'dense-reference-v4';
+export const version = 'dense-reference-v5';
 const px = n => Math.round(n * 64);
 const key = path => path.join('.');
 export function occurrences(screen) {
@@ -84,6 +84,7 @@ export function layoutFor(shape,viewport) {
   const side=ordinary.filter(s=>s.region==='side'), body=ordinary.filter(s=>s.region==='body');
   const hasSide=side.length>0, mainX=hasSide?174:8, mainW=w-mainX-8;
   const bodyTop=((hints['2']?.navItems??0)>10?204:180)+urgentHeight;
+  const scrollTop=104+urgentHeight,bodyOffset=bodyTop-scrollTop,scrollChrome=[];
   const children=[];
   const urgentWidth=(w-24-6*(Math.min(urgent.length,urgentColumns)-1))/Math.max(1,Math.min(urgent.length,urgentColumns));
   urgent.forEach((slot,i)=>children.push(card(slot,12+(i%urgentColumns)*(urgentWidth+6),8+Math.floor(i/urgentColumns)*40,urgentWidth,34,
@@ -91,8 +92,8 @@ export function layoutFor(shape,viewport) {
   const banner=slots.find(s=>s.region==='banner');
   if(banner) children.push(card(banner,8,4+urgentHeight,w-16,96,{z:30,lines:4,bg:'slate-100'}));
   const nav=byPath.get('2');
-  if(nav) children.push(card(nav,8,104+urgentHeight,w-16,bodyTop-urgentHeight-140,{lines:2,bg:'slate-100'}));
-  for(const title of slots.filter(s=>s.region==='title')) children.push(card(title,mainX,bodyTop-32,mainW,24,{font:3,fontSize:14}));
+  if(nav) scrollChrome.push(card(nav,0,0,w-16,bodyTop-urgentHeight-140,{lines:2,bg:'slate-100'}));
+  for(const title of slots.filter(s=>s.region==='title')) scrollChrome.push(card(title,mainX-8,bodyOffset-32,mainW,24,{font:3,fontSize:14}));
   function arrange(list,width) {
     const output=[], member=new Set(list.map(s=>key(s.path)));
     const roots=list.filter(s=>!member.has(key(s.path.slice(0,-1))));
@@ -137,10 +138,11 @@ export function layoutFor(shape,viewport) {
     // G8 checks reading order after flattening, including multi-column rows.
     return output.sort((a,b)=>a.position.y-b.position.y || a.position.x-b.position.x);
   }
-  const content=arrange(body,mainW).map(node=>({...node,position:{...node.position,x:node.position.x+px(mainX-8)}}));
-  if(hasSide)content.push(...arrange(side,158));
+  const content=arrange(body,mainW).map(node=>({...node,position:{x:node.position.x+px(mainX-8),y:node.position.y+px(bodyOffset)}}));
+  if(hasSide)content.push(...arrange(side,158).map(node=>({...node,position:{...node.position,y:node.position.y+px(bodyOffset)}})));
+  content.push(...scrollChrome);
   content.sort((a,b)=>a.position.y-b.position.y || a.position.x-b.position.x);
-  children.push(scroller('reference-body',8,bodyTop,w-16,Math.max(24,h-bodyTop-52),content));
+  children.push(scroller('reference-body',8,scrollTop,w-16,Math.max(24,h-scrollTop-52),content));
   for(const footer of slots.filter(s=>s.region==='footer')) children.push(card(footer,mainX,h-44,mainW,32,{z:20,bg:'blue-700',fg:'white'}));
   slots.filter(s=>s.region==='modal').forEach((slot,i)=>children.push(card(slot,mainX,160+urgentHeight+i*60,mainW,54,{z:100,lines:3,bg:'slate-100'})));
   return absolute('reference-root',0,0,w,h,children);
