@@ -411,9 +411,9 @@ describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () =
     const input = { system: "default", prompt: "training evidence" };
     const output = leanLayoutPrompt(input, "{}");
     expect(input).toEqual({ system: "default", prompt: "training evidence" });
-    expect(output.system).toContain("G10");
+    expect(output.prompt).toContain("G10");
     expect(output.system).toContain("fewer clicks and scrolls");
-    expect(output.system).toContain("/layouts");
+    expect(output.prompt).toContain("/layouts");
   });
 });
 /** Fake traces and semantic screen fixtures are explicitly synthetic. Native

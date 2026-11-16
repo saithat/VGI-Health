@@ -293,7 +293,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     const agent=leanMode&&workerScreens instanceof LeanScreenChecker?{
       name:deps.agent.name,model:deps.agent.model,
       proposeCandidates:async (ctx:Parameters<typeof deps.agent.proposeCandidates>[0])=>deps.agent.proposeCandidates({...ctx,parts:leanLayoutPrompt(ctx.parts,await workerScreens.promptDesign((await store.login(id)).program),await leanTrainingLog(dir,id,Number(/^night-(\d+)/.exec(ctx.callId)?.[1]??0)))}),
-      chooseCandidates:async (ctx:Parameters<typeof deps.agent.chooseCandidates>[0])=>deps.agent.chooseCandidates({...ctx,parts:leanLayoutPrompt(ctx.parts,await workerScreens.promptDesign((await store.login(id)).program))}),
+      chooseCandidates:async (ctx:Parameters<typeof deps.agent.chooseCandidates>[0])=>deps.agent.chooseCandidates({...ctx,parts:leanLayoutPrompt(ctx.parts,await workerScreens.promptDesign((await store.login(id)).program),await leanTrainingLog(dir,id,Number(/^night-(\d+)/.exec(ctx.callId)?.[1]??0)))}),
     }:deps.agent;
     workerDeps.set(id,{...deps,agent,ehr:workerEhr,screens:workerScreens,seedState:state});
   }

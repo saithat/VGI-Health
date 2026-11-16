@@ -37,7 +37,7 @@ export type EvaluatedCandidate=z.infer<typeof evaluatedCandidateSchema>;
 export type DecisionRecord=z.infer<typeof decisionRecordSchema>;
 export type LlmCandidate=z.infer<typeof llmCandidateSchema>;
 export type LlmProposal=z.infer<typeof llmProposalSchema>;
-export function toCandidate(raw:LlmCandidate,source:Candidate['source']):Candidate {
+export function toCandidate(raw:Omit<LlmCandidate,'moveType'> & {moveType:Candidate['moveType']},source:Candidate['source']):Candidate {
   return candidateSchema.parse({...baseToCandidate(raw,source),...(raw.portfolio?{portfolio:raw.portfolio}:{})});
 }
 

@@ -24,7 +24,7 @@ export function eventTarget(event: unknown): string | null {
   return null;
 }
 /** One pointer starts at viewport center per day trace; screen scroll positions persist until navigation. */
-function attributePixels(
+export function attributePixels(
   trace: readonly PointerEvent[],
   atlas: GeometryAtlas,
   day?: number,

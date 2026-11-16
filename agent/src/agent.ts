@@ -8,7 +8,7 @@ import type { JsonRequest } from './backends/types.js';
 import type { RepairContext } from './prompts.js';
 import type { PromptParts } from './prompts.js';
 import {
-  LLM_CHOICE_JSON_SCHEMA, LLM_PROPOSAL_JSON_SCHEMA, llmChoiceSchema, llmProposalSchema, toCandidate,
+  LLM_CHOICE_JSON_SCHEMA, LLM_PROPOSAL_JSON_SCHEMA, llmChoiceSchema, llmProposalSchema, llmCandidateSchema, moveTypeSchema, toCandidate,
   type Candidate, type LlmCallRef, type LlmChoice,
 } from '../../app/src/dashboard/agent-evidence.js';
 import { errorMessage } from './util.js';
@@ -62,10 +62,14 @@ export class LlmAgent implements AgentBackend {
           properties:{...LLM_PROPOSAL_JSON_SCHEMA.properties.candidates.items.properties,portfolio:{type:'object',additionalProperties:false,
             required:['scale','hotspotId'],properties:{scale:{type:'string',enum:['small','medium','radical']},hotspotId:{type:'string'}}}},
         }}},
+      } : ctx.parts.leanLayouts ? {
+        ...LLM_PROPOSAL_JSON_SCHEMA, properties:{...LLM_PROPOSAL_JSON_SCHEMA.properties,candidates:{type:'array',items:{
+          ...LLM_PROPOSAL_JSON_SCHEMA.properties.candidates.items,properties:{...LLM_PROPOSAL_JSON_SCHEMA.properties.candidates.items.properties,
+            moveType:{type:'string',enum:[...LLM_PROPOSAL_JSON_SCHEMA.properties.candidates.items.properties.moveType.enum,'layout']}}}}},
       } : LLM_PROPOSAL_JSON_SCHEMA,
     };
     const res = await this.llm.complete(req);
-    return { ...decodeProposalResponse(res.json, ctx.source, ctx.callId), call: this.llm.ref(req, res) };
+    return { ...decodeProposalResponse(res.json, ctx.source, ctx.callId, ctx.parts.leanLayouts), call: this.llm.ref(req, res) };
   }
 
   async chooseCandidates(ctx: ChooseContext): Promise<Choice> {
@@ -82,8 +86,9 @@ export class LlmAgent implements AgentBackend {
 }
 
 /** Shared decoding policy for live nights and frozen recorded-prompt comparisons. */
-export function decodeProposalResponse(json: unknown, source: Candidate['source'], callId: string): Omit<Proposal, 'call'> {
-  const parsed = llmProposalSchema.safeParse(json);
+export function decodeProposalResponse(json: unknown, source: Candidate['source'], callId: string, leanLayouts = false): Omit<Proposal, 'call'> {
+  const parsed = llmProposalSchema.extend({candidates:llmCandidateSchema.extend({moveType:moveTypeSchema}).array()}).safeParse(json);
+  if(!leanLayouts && parsed.success && parsed.data.candidates.some(c=>c.moveType==='layout')) throw Error(`${callId}: layout move requires --screens lean`);
   if (!parsed.success) throw new Error(`${callId}: proposal does not match schema: ${parsed.error.issues[0]?.message ?? ''}`);
   const seen = new Set<string>();
   const candidates: Candidate[] = [];
@@ -93,6 +98,7 @@ export function decodeProposalResponse(json: unknown, source: Candidate['source'
     while (seen.has(id)) id = `${id}'`;
     seen.add(id);
     try {
+      if(raw.moveType==='layout' && !raw.patch.some(op=>op.path==='/layouts'||op.path.startsWith('/layouts/'))) throw Error('layout move must patch /layouts');
       candidates.push(toCandidate({ ...raw, id }, source));
     } catch (e) {
       undecodable.push({ id, summary: raw.summary, error: errorMessage(e) });
