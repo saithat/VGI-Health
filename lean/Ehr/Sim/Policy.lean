@@ -291,6 +291,13 @@ Synthetic Hospital (2026) supplies text, not either coefficient. -/
 def textReadMs (characters : Nat) : Nat := characters * 50
 def textPages (characters : Nat) : Nat := (characters - 1) / 1800
 
+/-- New specification for owner review: the layout's window configuration the
+simulated clinician follows: the default, or the page size it was given. -/
+def pageConfig (config : Resumption.InterruptionConfig) : Layout.Window.Config :=
+  match config.pageSize? with
+  | some size => { size }
+  | none => {}
+
 def readSection (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : EpisodeResult := Id.run do
   if r.resumption.config.legacyModel || !r.resumption.config.lengthCosts then return r
   let mut out := r
@@ -303,7 +310,7 @@ def readSection (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : 
   -- page of the notes list is reached by paging to it (one activation each).
   let notesPaging := match notesComp with
     | some c => if r.resumption.config.pagedLists then
-        Layout.Window.pagingOf {} (Render.renderUi ctx.sp ctx.prog ctx.facts (r.resumption.config.chartDisplay task)
+        Layout.Window.pagingOf (pageConfig r.resumption.config) (Render.renderUi ctx.sp ctx.prog ctx.facts (r.resumption.config.chartDisplay task)
           ctx.user r.state) c.id |>.map (c.id, ·) else none
     | none => none
   if visibleNotes then
@@ -361,7 +368,7 @@ def readNeed (ctx : Context) (task : Task) (r : EpisodeResult) (n : Information.
   -- page of its list (`Layout.Window.pagingOf`). The clinician selects that page
   -- (one activation: the next or previous page target, or the page selector,
   -- which takes two pointings) and scrolls only within the page.
-  match (if r.resumption.config.pagedLists then Layout.Window.pagingOf {} ui comp else none) with
+  match (if r.resumption.config.pagedLists then Layout.Window.pagingOf (pageConfig r.resumption.config) ui comp else none) with
   | some (k, current) =>
     let page := (depth - 1) / k
     if page != current then

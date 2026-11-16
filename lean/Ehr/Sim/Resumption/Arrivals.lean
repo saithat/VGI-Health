@@ -18,6 +18,9 @@ structure InterruptionConfig where
   page at a time (`Ehr.Layout.Window`); the clinician pages to the records it
   reads. Off by default: the stock painter shows every record. -/
   pagedLists : Bool := false
+  /-- New specification for owner review: the page size the layout uses, when
+  not its default (a sensitivity setting; the layout must use the same). -/
+  pageSize? : Option Nat := none
   chartDisplay : Task → Render.Display := fun _ => Render.Display.empty
   /-- Opt-in experimental choice latency, milliseconds per mental operator.
   Zero retains the uncalibrated KLM policy; never a novice multiplier. -/
