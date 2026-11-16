@@ -1,6 +1,7 @@
+import {widgetParts,placeWidgetParts,numeric,dated} from "./widgets.mjs";
 // Untrusted, content-independent vendor reference geometry. All sizes are 1/64px.
 export const viewports = [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}];
-export const version = 'dense-reference-v8';
+export const version = 'dense-reference-v9';
 const px = n => Math.round(n * 64);
 const key = path => path.join('.');
 const button=(comp,label,role)=>({button:{comp,label,role,enabled:true,blockedReason:null,hotkey:null}});
@@ -41,8 +42,11 @@ function leafParts(cx,kind,v) {
         ...v.rows.flatMap((row,r)=>row.map(([k],c)=>({role:cellRole(k),row:r,col:c})))]:
       v.rows.flatMap((row,r)=>row.flatMap(([k],c)=>[{role:'cellLabel',row:r,col:c},{role:cellRole(k),row:r,col:c}]));
   }
+  if(kind==='presentation')return widgetParts(v.kind,v.children,cx.references);
+  if(kind==='timeline')return [{role:'item',widget:'timeAxis'}];
+  if(kind==='alert')return [{role:'item',widget:'severityIcon'}];
   if(kind==='board') return v.urgent.map(()=>({role:'alert'}));
-  if(kind==='datedTimeline') return [...v.dated,...v.undated].map(()=>({role:'item'}));
+  if(kind==='datedTimeline') return [...v.dated,...v.undated].map(()=>({role:'item'})).concat([{role:'item',widget:'timeAxis'}]);
   if(kind==='chartReferences') return v.references.map(()=>({role:'item'}));
   if(kind==='patientPane') return (v.metadata.urgent??[]).map(a=>'alert' in a?{role:'alert',comp:a.alert.comp}:
     {role:'button',target:true,comp:a.button.comp});
@@ -71,21 +75,24 @@ export function occurrences(screen) {
   const result=[],body=[...screen.workspace,...screen.side,...(screen.modal?[screen.modal]:[]),...(screen.urgent??[])];
   const push=(path,part,extra={})=>result.push({path,role:part.role,target:part.target??false,commit:part.commit??false,
     comp:part.comp??'',ids:part.ids??[],...(part.narrative?{narrative:true}:{}),...(part.row!==undefined?{row:part.row}:{}),
-    ...(part.col!==undefined?{col:part.col}:{}),...extra});
-  function visit(node,path,cx,chrome=false) {
+    ...(part.col!==undefined?{col:part.col}:{}),...(part.widget?{widget:part.widget}:{}),...extra});
+  function visit(node,path,cx,chrome=false,scope={}) {
     const [kind,value]=Object.entries(node)[0];
-    push(path,ownPart(kind,value,chrome),{kind,value});
+    push(path,ownPart(kind,value,chrome),{kind,value,...scope});
     const leaves=leafParts(cx,kind,value);
-    leaves.forEach((leaf,i)=>push([...path,i],leaf,{leaf:true,of:kind}));
+    leaves.forEach((leaf,i)=>push([...path,i],leaf,{leaf:true,of:kind,...scope,...(["board","patientPane"].includes(kind)?{nestedRegion:"urgent"}:{})}));
     let inner=cx;
+    if(kind==='chartReferences')inner={...cx,references:value.references};
     if(kind==='valueSet') inner={...cx,options:value.options.map(o=>[o.code,o.label])};
-    if(kind==='patientPane') inner={...cx,fieldChoices:value.metadata.fieldChoices,entryHints:value.metadata.entryHints};
-    childNodes(kind,value).forEach((child,i)=>visit(child,[...path,leaves.length+i],inner,chrome));
+    if(kind==='patientPane') inner={...cx,fieldChoices:value.metadata.fieldChoices,entryHints:value.metadata.entryHints,confirms:new Set([...value.children,...value.modal].flatMap(confirmComps))};
+    childNodes(kind,value).forEach((child,i)=>visit(child,[...path,leaves.length+i],inner,chrome,
+      kind==='patientPane'?{patient:value.patient,...(i>=value.children.length?{nestedRegion:'modal'}:{})}:scope));
   }
   const cx={options:[],fieldChoices:screen.fieldChoices??[],entryHints:screen.entryHints??[],confirms:new Set(body.flatMap(confirmComps))};
   push([0],{role:'banner'});push([1],{role:'title'});
   visit(navNode(screen.nav),[2],cx,true);
   body.forEach((node,i)=>visit(node,[i+3],cx));
+  for(const e of result)if(e.patient)e.ids=e.ids.map(id=>`${e.patient}::${id}`);
   return result;
 }
 // This mirrors screenShape for authoring only; family-check independently derives
@@ -95,16 +102,16 @@ export function shapeFor(screen) {
   const commit=entries.find(e=>e.commit);
   const sideStart=3+screen.workspace.length,modalRoot=sideStart+screen.side.length,urgentRoot=modalRoot+Number(Boolean(screen.modal));
   const slots=entries.map(e=>({path:e.path,target:e.target,
-    region:key(e.path)==='0'?'banner':key(e.path)==='1'?'title':e.path[0]>=urgentRoot?'urgent':e===commit?'footer':
+    region:key(e.path)==='0'?'banner':key(e.path)==='1'?'title':e.path[0]>=urgentRoot?'urgent':e.nestedRegion??(e===commit?'footer':
       screen.modal && e.path[0]===modalRoot?'modal':e.path[0]===2 ||
-      (e.path[0]>=sideStart && e.path[0]<modalRoot)?'side':'body',
+      (e.path[0]>=sideStart && e.path[0]<modalRoot)?'side':'body'),
     lines:['control','button','alert'].includes(e.role)?2:1}));
   const hints=Object.fromEntries(entries.map(e=>[key(e.path),{role:e.role,
     ...(e.leaf?{leaf:true,placement:placementRules[e.role]??'line'}:{kind:e.kind,placement:placementRules[e.kind]??'line'}),
     ...(e.path[0]>=urgentRoot?{urgent:true}:{}),
     ...(e.kind==='button'?{buttonRole:e.value.role}:{}),
     ...(e.narrative?{narrative:true}:{}),
-    ...(e.row!==undefined?{row:e.row}:{}),...(e.col!==undefined?{col:e.col}:{}),
+    ...(e.row!==undefined?{row:e.row}:{}),...(e.col!==undefined?{col:e.col}:{}),...(e.widget?{widget:e.widget}:{}),...(e.patient?{patient:e.patient}:{}),
     ...(e.kind==='info'&&e.value.rows.length?{uniform:uniformRows(e.value.rows),cols:e.value.rows[0].length}:{})}]));
   hints['2'].navItems=screen.nav.reduce((n,[,items])=>n+items.length,0);
   return {slots,hints};
@@ -119,11 +126,11 @@ export function eraseContent(screen) {
   const entries=occurrences(result).filter(e=>e.path[0]>=3&&!e.leaf);
   for(const {kind,value} of entries) {
     for(const field of ['label','title','s']) if(typeof value[field]==='string') value[field]='';
-    if(kind==='info') value.rows=value.rows.map(row=>row.map(([k])=>[k,'']));
+    if(kind==='info') value.rows=value.rows.map(row=>row.map(([k,v])=>[k,numeric(v)?'0':/^(Test|Measure|Unit)$/.test(k)?v:dated(v)?'1970-01-01T00:00:00Z':'']));
     if(kind==='field') {if(!['code','coded'].includes(kindBase(value.kind)))value.value=blank(value.value);value.unit=blank(value.unit);value.provenance=blank(value.provenance);}
     if(kind==='button') {value.blockedReason=blank(value.blockedReason);value.hotkey=blank(value.hotkey);}
     if(kind==='valueSet') value.options=value.options.map(o=>({...o,label:''}));
-    if(kind==='chartReferences') value.references=value.references.map(r=>({...r,measure:'',unit:'',percentile:'',source:'',population:'',points:[]}));
+    if(kind==='chartReferences') value.references=value.references.map(r=>({...r,percentile:'',source:'',population:'',points:r.points.map(()=>[0,0])}));
     if(kind==='tabs') value.labels=value.labels.map(()=>'');
     if(kind==='stepper') value.steps=value.steps.map(([id])=>[id,'']);
     if(kind==='datedTimeline') {value.dated=value.dated.map(d=>({...d,source:{...d.source,resource:'',timestamp:''}}));value.undated=value.undated.map(u=>({...u,resource:'',timestamp:''}));}
@@ -299,7 +306,11 @@ export function layoutFor(shape,viewport) {
       const leaves=kids.filter(isLeaf),children=kids.filter(k=>!isLeaf(k));
       if(h.leaf) return lines([node],x,y,w)-2;
       let bottom=y;
-      switch(h.placement) {
+      const icon=leaves.find(l=>hint(l).widget==='severityIcon');
+      if(icon){add(node,x+28,y,w-28,28);add(icon,x,y,24,24);return y+28;}
+      const rich=placeWidgetParts(leaves,hint,add,x,y+(h.role==='heading'?24:0),w);
+      if(rich!==null){if(h.role==='heading')add(node,x,y,w,20,{bg:'slate-100'});else wrapperBox(node,y);bottom=rich;}
+      else switch(h.placement) {
         case 'field': bottom=field(node,leaves,x,y,w);break;
         case 'button': bottom=buttonCell(node,leaves,x,y,w);break;
         case 'table': bottom=table(node,leaves,x,y,w);break;
@@ -315,7 +326,7 @@ export function layoutFor(shape,viewport) {
         default: wrapperBox(node,y);bottom=lines(leaves,x,y,w)-2;
       }
       if(!children.length) return Math.max(bottom,y);
-      if(h.kind==='columns') {
+      if(h.kind==='board' || h.kind==='columns') {
         const columns=Math.min(children.length,w>=1200?3:w>=768?2:1),cw=(w-6*(columns-1))/columns;
         let cursor=y;
         for(let i=0;i<children.length;i+=columns) {

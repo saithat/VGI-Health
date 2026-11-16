@@ -370,9 +370,9 @@ test("a button is named by its own text and described by its reason and hotkey p
   expect(sign?.getAttribute("aria-describedby")).toBe(
     "lean-box-why lean-box-key",
   );
-  expect(root.querySelector<HTMLElement>('[data-box="sign"]')?.dataset).toMatchObject(
-    { role: "button", kind: "primary", disabled: "true" },
-  );
+  expect(
+    root.querySelector<HTMLElement>('[data-box="sign"]')?.dataset,
+  ).toMatchObject({ role: "button", kind: "primary", disabled: "true" });
   sign?.click();
   expect(dispatch).not.toHaveBeenCalled();
 });
@@ -659,7 +659,8 @@ test("patient-pane controls remain disabled until a patient-scoped dispatch host
     ),
   );
   expect(
-    root.querySelector<HTMLTextAreaElement>('[data-box="a"] textarea')?.disabled,
+    root.querySelector<HTMLTextAreaElement>('[data-box="a"] textarea')
+      ?.disabled,
   ).toBe(true);
   expect(
     root.querySelector<HTMLTextAreaElement>('[data-box="free"] textarea')
@@ -669,7 +670,12 @@ test("patient-pane controls remain disabled until a patient-scoped dispatch host
 
 test("the TypeScript mirror lists Lean's occurrences: parts of a node before its children", () => {
   const tabs: UiNode = {
-    tabs: { id: "panel", labels: ["Vitals", "Labs"], selected: 1, body: [field] },
+    tabs: {
+      id: "panel",
+      labels: ["Vitals", "Labs"],
+      selected: 1,
+      body: [field],
+    },
   };
   const coded: UiNode = {
     valueSet: {
@@ -781,4 +787,176 @@ test("the TypeScript mirror lists Lean's occurrences: parts of a node before its
     ["5", ["meds"]],
     ["6", ["sign"]],
   ]);
+});
+
+test("patient-scoped controls retain identity across reordering and modal ownership", () => {
+  const root = document.createElement("div");
+  document.body.append(root);
+  const dispatch = vi.fn(),
+    dispatchPatient = vi.fn();
+  const painter = createPainter(root, {
+    dispatch,
+    dispatchPatient,
+    keyboard: (_p, _r, _c, s) => s,
+  });
+  const view = (modal = false, reverse = false) => {
+    const patients = reverse ? ["B", "A"] : ["A", "B"];
+    const boxes: Drawn[] = [],
+      parts: Part[] = [];
+    patients.forEach((patient, i) => {
+      boxes.push(
+        drawn(`pane-${patient}`, [3 + i], i * 20000, { target: false }),
+      );
+      parts.push({
+        role: "heading",
+        kind: "patientPane",
+        comp: patient,
+        text: patient,
+      });
+      boxes.push(
+        drawn(`control-${patient}`, [3 + i, 0], i * 20000 + 3584, {
+          modal: modal && patient === "A",
+        }),
+      );
+      parts.push(action("same", "ack"));
+    });
+    return output(boxes, parts);
+  };
+  painter.patch(screen([]), view());
+  const first = root.querySelector<HTMLButtonElement>(
+    '[data-patient="A"] button',
+  );
+  first?.click();
+  expect(dispatchPatient).toHaveBeenLastCalledWith("A", {
+    ack: { alert: "same" },
+  });
+  painter.patch(screen([]), view(false, true));
+  expect(root.querySelector('[data-patient="A"] button')).toBe(first);
+  painter.patch(screen([]), view(true));
+  expect(
+    root.querySelector<HTMLButtonElement>('[data-patient="B"] button')
+      ?.disabled,
+  ).toBe(true);
+  expect(
+    root.querySelector<HTMLButtonElement>('[data-patient="A"] button')
+      ?.disabled,
+  ).toBe(false);
+  expect(dispatch).not.toHaveBeenCalled();
+  painter.destroy();
+  root.remove();
+});
+
+test("hotkeys activate exactly one enabled Lean button and spare editors", () => {
+  const { root, painter, dispatch } = setup();
+  painter.patch(
+    screen([]),
+    output(
+      [
+        drawn("action", [3], 0),
+        drawn("key", [3, 0], 4000, { target: false }),
+        drawn("editor", [4, 0], 8000),
+      ],
+      [
+        action("save", "primary"),
+        { role: "hotkey", text: "Ctrl+S" },
+        control(),
+      ],
+    ),
+  );
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key: "s",
+      ctrlKey: true,
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+  expect(dispatch).toHaveBeenCalledWith({ click: { comp: "save" } });
+  dispatch.mockClear();
+  root.querySelector("textarea")?.focus();
+  document.dispatchEvent(
+    new KeyboardEvent("keydown", { key: "s", ctrlKey: true, bubbles: true }),
+  );
+  expect(dispatch).not.toHaveBeenCalled();
+  painter.destroy();
+  root.remove();
+});
+
+test("plot paths, points, card states and banner runs use Lean's supplied geometry", () => {
+  const { root, painter } = setup();
+  const plot = drawn("plot", [3], 0, { target: false, lines: [] });
+  plot.box.info.mark = {
+    plot: {
+      paths: [
+        [
+          { x: 64, y: 128 },
+          { x: 1024, y: 2048 },
+        ],
+      ],
+      dots: [{ x: 320, y: 640 }],
+      stroke: 128,
+    },
+  };
+  const banner = drawn("banner", [0], 5000, { target: false, lines: ["ABC"] });
+  painter.patch(
+    screen([]),
+    output(
+      [plot, banner],
+      [
+        { role: "item", text: "", kind: "plot" },
+        {
+          role: "banner",
+          text: "ABC",
+          runs: [
+            { role: "name", text: "A" },
+            { role: "identity", text: "B" },
+            { role: "clinician", text: "C" },
+          ],
+          cells: [1, 1, 1],
+        },
+      ],
+    ),
+  );
+  expect(root.querySelector("polyline")?.getAttribute("points")).toBe(
+    "64,128 1024,2048",
+  );
+  expect(root.querySelector("polyline")?.getAttribute("stroke-width")).toBe(
+    "128",
+  );
+  expect(root.querySelector("ellipse")?.getAttribute("cx")).toBe("320");
+  expect(
+    [...root.querySelectorAll("[data-run]")].map((e) =>
+      e.getAttribute("data-run"),
+    ),
+  ).toEqual(["name", "identity", "clinician"]);
+  painter.destroy();
+  root.remove();
+});
+
+test("an empty pane binding never falls through to ambient patient dispatch", () => {
+  const root = document.createElement("main");
+  document.body.append(root);
+  const dispatch = vi.fn(),
+    dispatchPatient = vi.fn();
+  const painter = createPainter(root, {
+    dispatch,
+    dispatchPatient,
+    keyboard: (_p, _r, _c, s) => s,
+  });
+  painter.patch(
+    screen([]),
+    output(
+      [drawn("pane", [3], 0, { target: false }), drawn("button", [3, 0], 4000)],
+      [
+        { role: "heading", text: "", kind: "patientPane", comp: "" },
+        action("review", "secondary"),
+      ],
+    ),
+  );
+  expect(root.querySelector<HTMLButtonElement>("button")?.disabled).toBe(true);
+  root.querySelector<HTMLButtonElement>("button")?.click();
+  expect(dispatch).not.toHaveBeenCalled();
+  expect(dispatchPatient).not.toHaveBeenCalled();
+  painter.destroy();
+  root.remove();
 });

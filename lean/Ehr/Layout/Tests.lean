@@ -133,12 +133,12 @@ private def portAll (screen : Ehr.Render.UiScreen) : Bool := viewports.all fun v
   let ps := boxes v n
   checkAll 15 e (urgentPaths (screenShape screen)) v ps && decide (Linked (screenShape screen) ps)
 -- The family reference layout pins the strip above the review scroller and the modal layer.
-#guard (urgentPaths (screenShape (urgentScreen 2 true))).length == 3
+#guard (urgentPaths (screenShape (urgentScreen 2 true))).length == 5
 #guard portAll (urgentScreen 2 false)
 #guard portAll (urgentScreen 2 true)
 #guard portAll (urgentScreen 0 true)
 #guard ((boxes desk (portScreen desk (urgentScreen 2 true)).1).filter (·.info.urgent)).all
-  fun p => p.clips.isEmpty && p.rect.y ≥ 11264 && p.rect.bottom ≤ 11264 + 3*2048
+  fun p => p.clips.isEmpty && p.rect.y ≥ 11264 && p.rect.bottom ≤ 11264 + 5*2048
 
 /-! Navigation links, tabs and the signed-in clinician in the semantic
 inventory; new specification for owner review. -/
@@ -215,7 +215,7 @@ private def route : UiNode := .field "route" "Route" "code" (some "PO") none non
 #guard (part (.button "sign" "Sign" "primary" false none none) []).map (fun p => (p.target,p.commit,p.enabled,p.kind)) ==
   some (true,true,false,"primary")
 -- An alert: its label; the severity is kind and tone, not text.
-#guard view (.alert "a" "allergy" "Penicillin allergy" "interruptive") == [([],.alert,"Penicillin allergy")]
+#guard view (.alert "a" "allergy" "Penicillin allergy" "interruptive") == [([],.alert,"Penicillin allergy"),([0],.item,"")]
 #guard (part (.alert "a" "allergy" "Penicillin allergy" "interruptive") []).map (fun p => (p.kind,p.tone)) ==
   some ("interruptive","red")
 #guard view (.section "g" "Vitals" [.text "x"]) == [([],.heading,"Vitals"),([0],.text,"x")]
@@ -276,7 +276,7 @@ private def bannerSample : Part := bannerPart
 #guard view (.datedTimeline "Timeline" [⟨⟨"Observation/1","effectiveDateTime","2026-11-15T10:00:00Z"⟩,1794736800,0⟩]
     [⟨"Observation/2","issued","2026-11-15"⟩] []) ==
   [([],.heading,"Timeline"),([0],.item,"2026-11-15 10:00:00 UTC · Observation/1 · effectiveDateTime · 2026-11-15T10:00:00Z"),
-   ([1],.item,"Time or offset unavailable · Observation/2 · issued · 2026-11-15")]
+   ([1],.item,"Time or offset unavailable · Observation/2 · issued · 2026-11-15"),([2],.item,"")]
 #guard view (.board [⟨"p1",[("Patient","Ada"),("MRN","123")],"sepsis","Sepsis alert","interruptive"⟩] []) ==
   [([],.wrapper,""),([0],.alert,"Ada · MRN 123 · Sepsis alert")]
 #guard (semanticNodes cx (.rowAction "meds" 1 [.button "stop" "Stop" "secondary" true none none])).map
@@ -300,4 +300,7 @@ private def partsScreen : UiScreen :=
 #guard (sourcePart partsScreen [3,5]).map (fun p => (p.target,p.text)) == some (false,"Confirmation pending")
 #guard ((screenShape partsScreen).filter (·.target)).map (·.path) == [[2,0,0],[2,0,1],[3,0],[4]]
 end Parts
+
+-- New plot paths use the unchanged G6 graphical contrast rule.
+#guard !decide (G6 [inkBox { mark := .plot [[⟨0,0⟩,⟨640,640⟩]] [⟨320,320⟩] 128 } ⟨160,160,160⟩])
 end Ehr.Layout.Tests

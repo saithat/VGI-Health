@@ -99,6 +99,29 @@ export function paintShape(d: Drawn): SVGSVGElement | undefined {
     height: "100%",
     pointerEvents: "none",
   });
+  if (typeof mark === "object" && "plot" in mark) {
+    svg.setAttribute("preserveAspectRatio", "none");
+    for (const [i, points] of mark.plot.paths.entries()) {
+      const path = document.createElementNS(svg.namespaceURI, "polyline");
+      path.setAttribute("points", points.map((p) => `${p.x},${p.y}`).join(" "));
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", rgb(d.box.style.fg));
+      path.setAttribute("stroke-width", String(mark.plot.stroke));
+      if (i > 0 && i < mark.plot.paths.length - 1)
+        path.setAttribute("stroke-dasharray", "384 256");
+      svg.append(path);
+    }
+    for (const point of mark.plot.dots) {
+      const dot = document.createElementNS(svg.namespaceURI, "ellipse");
+      dot.setAttribute("cx", String(point.x));
+      dot.setAttribute("cy", String(point.y));
+      dot.setAttribute("rx", "256");
+      dot.setAttribute("ry", "256");
+      dot.setAttribute("fill", rgb(d.box.style.fg));
+      svg.append(dot);
+    }
+    return svg;
+  }
   const shape = document.createElementNS(
     svg.namespaceURI,
     mark === "circle" ? "ellipse" : "polyline" in mark ? "polyline" : "path",

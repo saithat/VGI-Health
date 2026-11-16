@@ -22,6 +22,7 @@ function Shape({drawn}:{drawn:Drawn}) {
   const common={fill:rgb(drawn.box.style.fg)};
   if(mark==='circle') return <svg viewBox={`0 0 ${w} ${h}`} aria-hidden="true"><ellipse cx={w/2} cy={h/2} rx={w/2} ry={h/2} {...common}/></svg>;
   if('polyline' in mark) return <svg viewBox={`0 0 ${w} ${h}`} aria-hidden="true"><polyline points={mark.polyline.points.map(p=>`${p.x},${p.y}`).join(' ')} fill="none" stroke={rgb(drawn.box.style.fg)} strokeWidth={mark.polyline.stroke}/></svg>;
+  if('plot' in mark) return <svg viewBox={`0 0 ${w} ${h}`} aria-hidden="true">{mark.plot.paths.map((ps,i)=><polyline key={i} points={ps.map(p=>`${p.x},${p.y}`).join(' ')} fill="none" stroke={rgb(drawn.box.style.fg)} strokeWidth={mark.plot.stroke}/>)}{mark.plot.dots.map((p,i)=><circle key={i} cx={p.x} cy={p.y} r={256} {...common}/>)}</svg>;
   const {startNum,sweepNum,denominator}=mark.wedge;
   if(denominator<=0) return null;
   if(sweepNum>=denominator) return <svg viewBox={`0 0 ${w} ${h}`} aria-hidden="true"><ellipse cx={w/2} cy={h/2} rx={w/2} ry={h/2} {...common}/></svg>;
