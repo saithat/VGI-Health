@@ -1,3 +1,4 @@
+import {designOf} from './layout-design.js';
 import { BOUNDED_POINT_ASSUMPTION, pointingTrace, projectBoundedPoints } from '../../app/src/dashboard/bounded-pointing.js';
 import {z} from 'zod';
 import {existsSync} from 'node:fs';
@@ -14,24 +15,33 @@ const point=z.object({x:z.number().finite(),y:z.number().finite()});
 export const screenGeometrySchema=z.object({screen:z.string(),state:z.string(),sample:z.string().exactOptional(),viewport:z.object({width:z.number(),height:z.number()}),components:z.record(z.string(),z.object({center:point,reveal:point,chain:z.array(z.string()),offsets:z.record(z.string(),point)})),scrollers:z.record(z.string(),z.object({maxX:z.number(),maxY:z.number(),width:z.number(),height:z.number()}))});
 export const geometryAtlasSchema=z.object({schemaVersion:z.literal(1),programHash:z.string(),componentsSha256:z.string().exactOptional(),appSha256:z.string(),viewport:z.object({width:z.literal(1440),height:z.literal(900)}),states:z.array(screenGeometrySchema),aliases:z.record(z.string(),z.array(z.string())).optional(),source:z.enum(['chromium','recorded-fixture'])});
 export const geometryProgramHash=(program:Program)=>sha256(stableStringify(expandProgram(program)));
-export const geometryComponentsHash=(program:Program)=>sha256(stableStringify(compilePresentations(program)??[]));
+export const geometryComponentsHash=(program:Program)=>sha256(stableStringify(designOf(program)?.length?{components:compilePresentations(program)??[],layouts:designOf(program)}:compilePresentations(program)??[]));
 export const geometryCacheKey=(program:Program)=>`${geometryProgramHash(program)}:${geometryComponentsHash(program)}`;
-export type GeometryProvider=(input:Pick<CheckInput,'specVersion'|'program'> & Partial<Pick<SimulateInput,'schedule'|'worldDir'>>)=>Promise<GeometryAtlas|null>;
+export type GeometryProvider=(input:Pick<CheckInput,'specVersion'|'program'> & Partial<Pick<SimulateInput,'schedule'|'worldDir'>> & {result?:DayResult})=>Promise<GeometryAtlas|null>;
 export function attachGeometry(result:DayResult,atlas:GeometryAtlas):DayResult{
- const trace=pointingTrace(result.trace,atlas,result);
- const projected=trace.some((row,index)=>row.event!==result.trace[index]?.event);
+ const metadata=z.object({traceTargets:z.record(z.string(),z.string()).optional()}).parse(atlas);
+ const projectedTrace=pointingTrace(result.trace,atlas,result);
+ const projected=projectedTrace.some((row,index)=>row.event!==result.trace[index]?.event);
+ const trace=metadata.traceTargets?projectedTrace.map((row,index)=>{
+  const target=metadata.traceTargets?.[String(index)];if(!target||row.event!==result.trace[index]?.event)return row;
+  const event=z.record(z.string(),z.unknown()).parse(row.event);
+  return {...row,event:Object.fromEntries(Object.entries(event).map(([kind,payload])=>{
+   const parsed=z.record(z.string(),z.unknown()).safeParse(payload);
+   return [kind,parsed.success?Object.fromEntries(Object.entries(parsed.data).map(([key,value])=>[key,['comp','alert'].includes(key)?target:value])):payload];
+  }))};
+ }):projectedTrace;
  const costs=pointerTravel(trace,atlas,result.day);
  return {...result,...(projected ? {complaints:[...new Set([...result.complaints,BOUNDED_POINT_ASSUMPTION])]}:{}),geometry:{programHash:atlas.programHash,...(atlas.componentsSha256?{componentsSha256:atlas.componentsSha256}:{}),appSha256:atlas.appSha256,source:atlas.source,viewport:atlas.viewport,missingTargets:Object.values(costs).flatMap(c=>c.missingTargets)},tasks:result.tasks.map(t=>{
   const cost=costs[t.task];return {...t,rawScrolls:t.rawScrolls??t.scrolls,mouseTravelPx:cost?.mouseTravelPx??null,scrollPx:cost?.scrollPx??null,...(cost?{scrolls:cost.scrolls}:{})};
  })};
 }
 /** Native transcripts remain in the command journal; enriched results name their geometry atlas. */
-export function geometryEhr(inner:EhrClient,provider:GeometryProvider,dir:string):EhrClient{
+export function geometryEhr(inner:EhrClient,provider:GeometryProvider,dir:string,traceAware=false):EhrClient{
  const cache=new Map<string,Promise<GeometryAtlas|null>>();
  const collected=new Map<string,GeometryAtlas>();
  return {mode:inner.mode,binary:inner.binary,check:i=>inner.check(i),deploy:i=>inner.deploy(i),renderScreens:i=>inner.renderScreens(i),minClicks:i=>inner.minClicks(i),runBatch:i=>inner.runBatch(i),specExport:i=>inner.specExport(i),async simulate(input){
   const result=await inner.simulate(input),hash=geometryProgramHash(input.program);
-  const key=geometryCacheKey(input.program)+`:${input.worldDir}:${sha256(stableStringify(input.schedule))}`;let pending=cache.get(key);if(!pending){pending=provider(input);cache.set(key,pending);}
+  const key=geometryCacheKey(input.program)+`:${input.worldDir}:${sha256(stableStringify(input.schedule))}${traceAware?`:${sha256(stableStringify(result.trace))}`:''}`;let pending=cache.get(key);if(!pending){pending=provider({...input,...(traceAware?{result}:{})});cache.set(key,pending);}
   const captured=await pending;if(!captured)return result;
   const aliases:Record<string,string[]>={};
   for(const screen of expandProgram(input.program).screens)for(const component of screen.components){

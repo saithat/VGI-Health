@@ -79,7 +79,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     args: argv,
     options: {
       'clock-mode':{type:'string'},'sim-model':{type:'string'},'text-cost':{type:'string'},'interruptions':{type:'string'},
-      'incomplete-penalty':{type:'string'},'minimum-effect':{type:'string'},'novelty-weight':{type:'string'},'hotspots':{type:'string'},'offline-archive':{type:'string'},'historical-nightly':{type:'boolean',default:false},
+      'incomplete-penalty':{type:'string'},'minimum-effect':{type:'string'},'novelty-weight':{type:'string'},'hotspots':{type:'string'},'offline-archive':{type:'string'},'historical-nightly':{type:'boolean',default:false},screens:{type:'string'},
       'generator-only':{type:'boolean',default:false}, 'discovery-nights':{type:'string'}, 'bounded-costs':{type:'boolean',default:false}, 'tailoring-sessions':{type:'boolean',default:false},
       protocol: { type: 'string' }, cadence: { type: 'string' }, departments: { type: 'string' },
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false},
@@ -97,7 +97,8 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   });
   const offlineArchive=values['offline-archive']?await readJson(resolveUserPath(values['offline-archive']),z.object({programs:z.array(programSchema)})):undefined;
   const simulationModes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork',simModel:values['sim-model']??'wave3',textCost:values['text-cost']??'length'});
-  const summary = await runDays({ simulationModes,structurePolicy,...(values['incomplete-penalty']!==undefined?{incompletePenalty:Number(values['incomplete-penalty'])}:{}),...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
+  if(values.screens&&!['lean','browser'].includes(values.screens))throw Error('--screens must be lean or browser');
+  const summary = await runDays({ ...(values.screens?{screenMode:z.enum(['lean','browser']).parse(values.screens)}:{}),simulationModes,structurePolicy,...(values['incomplete-penalty']!==undefined?{incompletePenalty:Number(values['incomplete-penalty'])}:{}),...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
     ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
     ...(values['generator-only'] ? {generatorOnly:true}:{}),
     ...(values['discovery-nights'] ? {discoveryNights:intArg(values['discovery-nights'],'discovery-nights',3)}:{}),

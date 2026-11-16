@@ -1,3 +1,4 @@
+import {designOf,withDesign,layoutDesignSchema} from './layout-design.js';
 import { expandProgram } from './composites.js';
 /** Helpers over UI programs: patching, personalization, stability, hashing. */
 import { createHash } from 'node:crypto';
@@ -28,7 +29,11 @@ export function applyToProgram(
   patch: readonly JsonPatchOp[],
   next: { version: number; specVersion?: string },
 ): { program: Program; resolved: JsonPatchOp[] } {
-  const { doc, resolved } = applyPatch(program, patch);
+  const design=designOf(program);
+  if(design===undefined && patch.some(op=>op.path==='/layouts'||op.path.startsWith('/layouts/'))) throw new Error('Custom layouts require --screens lean');
+  const { doc, resolved } = applyPatch(design===undefined?program:{...program,layouts:design}, patch);
+  let nextDesign=design;
+  if(design!==undefined && isRecord(doc)) {nextDesign=layoutDesignSchema.parse(doc['layouts']??[]);delete doc['layouts'];}
   const parsed = programSchema.safeParse(doc);
   if (!parsed.success) {
     const first = parsed.error.issues[0];
@@ -39,6 +44,7 @@ export function applyToProgram(
   }
   const out: Program = { ...parsed.data, version: next.version };
   if (next.specVersion !== undefined) out.specVersion = next.specVersion;
+  if(nextDesign!==undefined)withDesign(out,nextDesign);
   return { program: out, resolved };
 }
 

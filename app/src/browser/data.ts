@@ -281,3 +281,17 @@ export async function recheckRecordedRevision(
     throw new Error(z.object({ error: z.string() }).parse(body).error);
   return revisionCheckSchema.parse(body);
 }
+
+/** Constrained read-only JSON from the loopback layout-research server. */
+export async function loadDiscoveryRun() {
+  const { discoveryRun } = await import('./discovery/types');
+  const response = await fetch('/api/run');
+  if (!response.ok) throw new Error('Discovery run unavailable');
+  return discoveryRun.parse(await response.json());
+}
+export async function loadDiscoveryPreview(persona: string, id: string) {
+  const { discoveryPreview } = await import('./discovery/types');
+  const response = await fetch(`/api/design?persona=${encodeURIComponent(persona)}&id=${encodeURIComponent(id)}`);
+  if (!response.ok) throw new Error('Discovery preview unavailable');
+  return discoveryPreview.parse(await response.json());
+}
