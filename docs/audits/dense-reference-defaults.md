@@ -91,6 +91,28 @@ them. None of the 84 retained no-agent Programs equals today's release export
 byte for byte (later vendor fixes); the limits are those of the recorded vendor
 layouts.
 
+**Lean-mode initialization.** A one-day replayed run (`run-days --screens
+lean --backend replay --days 1 --personas P1,P5 --seed-policy none`, no model
+call) initializes **P1** (all 375 exported screen states admitted under Lean
+G1–G11 in 141 s, the limit and its source recorded per screen, the frozen file
+and the window mirror fingerprinted in the manifest). **P5 does not
+initialize**: on `w2Result` and `w6Consult`, the states showing the three
+interruptive alerts (interaction on order or refill) need 21 and 31 targets in
+view in the dense layout, above the frozen limits 20 and 25, and the fixed
+shell then fails G11 (the alerts and their severity marks are more urgent
+occurrences than its pinned strip holds; the same with lists unbounded). The retained no-agent recordings never
+show those alert states on those screens, so the rule's baseline does not cover
+them. Changing the rule's state set or the strip is an owner decision.
+
+**Verification (v10, once after the merge).** `lake build` of the libraries,
+`ehr`, `ui-layout`, `ui-port-audit` and `gents` (generated types unchanged);
+`#print axioms` on the 62 new or edited theorems shows only `propext`,
+`Classical.choice` and `Quot.sound`; `make wasm` and `make wasm-check` pass;
+layout-reference 39/39 and ui-library 42/42 node tests; app typecheck, lint,
+350 unit tests (32 existing skips), build and the Lean bundle audit; agent
+typecheck, lint and 312 tests (80 existing skips); the lean-ui browser
+workflows 5/5 (one worker, disposable Postgres).
+
 Throughput: 18,866 distinct shape admissions (all three viewports plus a dense
 paint each) took 10,346 s of native time over ten worker processes, 1.8 per
 second; 109,000 states reused a cached admission.
