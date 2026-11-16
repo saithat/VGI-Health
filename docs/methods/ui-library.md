@@ -324,7 +324,12 @@ or patient pane, and has more records than its page size (`pageable`,
 caption, the pager row, the header and twenty 20 px rows fill about 470 px,
 which the dense layout's first viewport holds at 1440×900); a layout may set a
 list's own size, kept within 5–50 (`Config.sizeOf`). Records keep the
-renderer's order: the window never reorders (`pages_cover`). The renderer is
+renderer's order: the window never reorders (`pages_cover`). That order is
+each list's renderer sort key (`newestFirst`/`oldestFirst`, stable, ties in
+bundle order): newest first by date for results, notes, reports, vitals,
+immunizations, procedures, encounters (start), problems (onset), medications
+and tasks (authored) and allergies (recorded); oldest first by time for
+schedules, administrations, observations and boards (arrival). The renderer is
 unchanged and still emits every record, so D2 and T11 still speak of the whole
 list; `windowScreen` cuts each paged list of the workspace and side to the page
 asked for and records its window (`UiScreen.windows?`). A paged list's display
