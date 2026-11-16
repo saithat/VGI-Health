@@ -4,6 +4,7 @@ import {resolve,join} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {layoutFor,fixedShellFor,shapeFor,eraseContent,viewports,version} from './generator.mjs';
+import {windowOnce} from './window.mjs';
 export const digest=value=>createHash('sha256').update(typeof value==='string'||Buffer.isBuffer(value)?value:JSON.stringify(value)).digest('hex');
 export function native(input,binary=resolve('lean/.lake/build/bin/ui-layout')) {
   const p=spawnSync(binary,[],{input:JSON.stringify(input)+'\n',encoding:'utf8',maxBuffer:512*1024*1024,timeout:Number(process.env.REFERENCE_NATIVE_TIMEOUT_MS??60000),
@@ -23,8 +24,11 @@ export class ReferenceLayouts {
     this.memory.delete(key);this.memory.set(key,receipt);
     while(this.memory.size>this.maxMemoryEntries)this.memory.delete(this.memory.keys().next().value);
   }
-  get(screen,{maxTargetsPerViewport=15,allowRefused=false}={}) {
+  get(screen,{maxTargetsPerViewport=15,allowRefused=false,window}={}) {
     if(!Number.isSafeInteger(maxTargetsPerViewport) || maxTargetsPerViewport<0) throw Error('Invalid target limit');
+    // The layout shows bounded lists one page at a time (Layout.Window); Lean
+    // keeps a screen that already carries its windows.
+    screen=windowOnce(screen,window);
     const shape=shapeFor(screen),quickKey=digest({shape,maxTargetsPerViewport});
     // Only the built-in pure generator takes the fast path. Injected authoring
     // functions still bind their actual generated trees on every call.
@@ -95,7 +99,7 @@ export class ReferenceLayouts {
     return paints;
   }
   paint(result,screen,viewport=viewports[0]) {
-    return this.runner({op:'family-paint',references:[{screen:eraseContent(result.screen),layouts:result.layouts}],screen,viewport,
+    return this.runner({op:'family-paint',references:[{screen:eraseContent(result.screen),layouts:result.layouts}],screen:windowOnce(screen),viewport,
       maxTargetsPerViewport:result.maxTargetsPerViewport});
   }
 }
