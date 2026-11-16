@@ -7,7 +7,7 @@ import {spawnSync} from 'node:child_process';
 import {pointerTravel} from '../../app/src/metrics/geometry.ts';
 import {ReferenceLayouts,native,digest,limitFor,recordedLimits} from './admission.mjs';
 import {eraseContent,viewports} from './generator.mjs';
-import {geometryFor} from './geometry.mjs';
+import {geometryFor,targetTrace} from './geometry.mjs';
 import {read,write,args} from './cli.mjs';
 import {register} from '../../agent/node_modules/tsx/dist/esm/api/index.mjs';
 register();
@@ -18,9 +18,9 @@ mkdirSync(output,{recursive:true});
 const sourceRoot=resolve(opts['recordings-root']??'/home/saithat/Projects/VGI-Health');
 const runs=(opts.runs??'core-10day,rules3-10day-invalid-simloop').split(',');
 const cache=new ReferenceLayouts({cacheDir:join(output,'cache')});
-const density=read('docs/audits/r5-per-screen.json');
+const density=read('docs/audits/r5-per-screen.json');density.measurements=read('docs/methods/lean-screen-density.json').measurements;
 density.recorded=runs.flatMap(name=>recordedLimits(join(sourceRoot,'runs',name)));
-const limits={},samples=[],coverage=[],days=[],shapes=new Map(),geometryCache=new Map();
+const densityCounts=[],limits={},samples=[],coverage=[],days=[],shapes=new Map(),geometryCache=new Map();
 const fhir=resolve('fixtures/synthea/Abdul_Sauer_d0fe99e5.json');
 async function exported(programPath,{world,schedule,specFile}={}) {
   const program=read(programPath),spec=specFile??resolve(`releases/${program.specVersion}/spec.json`);
@@ -43,7 +43,7 @@ async function exported(programPath,{world,schedule,specFile}={}) {
 function admitted(program,screen) {
   const limit=limitFor(density,program.owner,program.specVersion,screen.screen);
   limits[`${program.specVersion}/${program.owner}/${screen.screen}`]=limit;
-  return cache.get(screen,{maxTargetsPerViewport:limit.limit});
+  return cache.get(screen,{maxTargetsPerViewport:limit.limit,allowRefused:true});
 }
 function paintGeometry(program,screen,{state,sample}={}) {
   const r=admitted(program,screen),key=digest({key:r.key,viewport:viewports[0]});
@@ -51,11 +51,8 @@ function paintGeometry(program,screen,{state,sample}={}) {
   if(!geometry) {
     // Admission is content-universal; empty payloads avoid repeating clinical
     // string wrapping when measuring geometry. Bind actual values for screenshots.
-    const cleared=eraseContent(screen);
-    const dense=cache.paint(r,cleared);
-    const fixed=native({op:'structural-paint',screen:cleared,viewport:viewports[0]});
-    if(!dense.accepted || !fixed.accepted) throw Error('Native painting refused');
-    geometry={dense,fixed};
+    geometry=cache.geometryPaints(r);
+    if(!geometry.dense.boxes||!geometry.fixed.boxes)throw Error('Missing native geometry');
     geometryCache.set(key,geometry);
     if(geometryCache.size>256)geometryCache.delete(geometryCache.keys().next().value);
   }
@@ -70,9 +67,10 @@ function total(costs) {
 // FHIR sample. These finite probes are distinct from recorded-day coverage.
 for(const release of ['v1','v2','v3']) for(const persona of ['P1','P2','P3','P4','P5']) {
   const {program,dir,files}=await exported(resolve(`releases/${release}/personas/${persona}.json`));
-  let admittedCount=0;const rules={};
+  let admittedCount=0,noAdmittedLayout=0;const rules={};
   for(const file of files) {
-    const screen=read(join(dir,file)),r=admitted(program,screen);admittedCount+=Number(r.denseAccepted);
+    const screen=read(join(dir,file)),r=admitted(program,screen);admittedCount+=Number(r.denseAccepted);noAdmittedLayout+=Number(!r.fallbackAccepted);
+    densityCounts.push({release,persona,screen:screen.screen,state:file,limit:r.maxTargetsPerViewport,denseAccepted:r.denseAccepted,fallbackAccepted:r.fallbackAccepted,...r.density});
     for(const rule of new Set(r.findings.map(f=>f.rule))) rules[rule]=(rules[rule]??0)+1;
     const preferred={P1:['w1Hpi','w1Orders','w1Rooming'],P2:['w3Orders','w3Sign','w3Triage'],P3:['w4Admin','w4Mar','w4Handoff'],P4:['w5Note','w5Orders','w5Rooming'],P5:['w6Orders','w6PreOp','w6Sign']};
     if(release==='v1' && file===`${screen.screen}.json` && !screen.modal && preferred[persona].includes(screen.screen)) {
@@ -80,7 +78,7 @@ for(const release of ['v1','v2','v3']) for(const persona of ['P1','P2','P3','P4'
       write(join(sampleDir,'screen.json'),screen);write(join(sampleDir,'layout.json'),cache.paint(r,screen));samples.push({persona,screen:screen.screen,dir:sampleDir,denseAccepted:r.denseAccepted});
     }
   }
-  coverage.push({release,persona,states:files.length,denseAdmitted:admittedCount,refused:files.length-admittedCount,rules});
+  coverage.push({release,persona,states:files.length,denseAdmitted:admittedCount,noAdmittedLayout,refused:files.length-admittedCount,rules});
   console.log(`${release}/${persona}: ${admittedCount}/${files.length} dense representative states`);
 }
 for(const runName of runs) {
@@ -119,15 +117,15 @@ for(const runName of runs) {
     const browser={scrolls:recorded.tasks.reduce((n,t)=>n+t.scrolls,0),scrollPx:recorded.tasks.some(t=>t.scrollPx==null)?null:Math.round(recorded.tasks.reduce((n,t)=>n+t.scrollPx,0)),
       mouseTravelPx:recorded.tasks.some(t=>t.mouseTravelPx==null)?null:Math.round(recorded.tasks.reduce((n,t)=>n+t.mouseTravelPx,0))};
     const row={run:runName,day,persona,release:program.specVersion,representativeStates:selected.size,denseAdmitted:admittedStates,rules,shapes:distinct.size,
-      missingStates:[...new Set(missingStates)],fixed:total(pointerTravel(recorded.trace,fixedAtlas,day)),dense:total(pointerTravel(recorded.trace,denseAtlas,day)),browser};
+      missingStates:[...new Set(missingStates)],fixed:total(pointerTravel(targetTrace(recorded.trace),fixedAtlas,day)),dense:total(pointerTravel(targetTrace(recorded.trace),denseAtlas,day)),browser};
     days.push(row);console.log(`${runName}/${date}/${persona}: ${selected.size} mapped states; ${row.missingStates.length} missing`);
     write(join(output,'progress.json'),{coverage,days});
   }
 }
 const report={schemaVersion:1,scope:'Current native representative variants, selected with recorded browser atlas target matching; not exact historical state replay',
-  sourceRoot,runs,coverage,days,shapesPerPersona:Object.fromEntries([...shapes].map(([k,s])=>[k,s.size])),limits,samples,
+  sourceRoot,runs,coverage,days,densityCounts,shapesPerPersona:Object.fromEntries([...shapes].map(([k,s])=>[k,s.size])),limits,samples,
   admission:{...cache.stats,layoutsPerSecond:cache.stats.misses/(cache.stats.admissionMs/1000)},
-  geometryProxies:['All navigation buttons share the semantic nav slot','All tab choices share one semantic tabs slot','Fields and tables are safety-text cards','Historical browser atlas and current native exports differ in content/build']};
+  geometryProxies:['Fields and tables are safety-text cards','Historical browser atlas and current native exports differ in content/build']};
 write(join(output,'report.json'),report);
 const fmt=c=>`${c.scrolls} / ${c.scrollPx??'missing'} / ${c.mouseTravelPx??'missing'}`;
 writeFileSync(join(output,'days.md'),['| Recording | Persona | Day | Shapes | Dense states | Fixed: scrolls / px / travel px | Dense: scrolls / px / travel px | Stored browser: scrolls / px / travel px | Missing states |',

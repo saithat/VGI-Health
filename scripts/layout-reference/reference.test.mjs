@@ -33,12 +33,12 @@ test('refused dense geometry records findings and independently admits fixed-she
 test('persistent cache binds geometry, threshold and native binary; corruption misses',()=>{
   const dir=mkdtempSync('/home/saithat/Projects/run-tmp/reference-test-');let calls=0;const runner=input=>{calls++;return native(input);};
   try {
-    const cache=new ReferenceLayouts({cacheDir:dir,runner});cache.get(screen());assert.equal(calls,1);
-    const s=screen();s.banner[0][1]='Changed';assert.equal(cache.get(s).cacheHit,true);assert.equal(calls,1);
-    assert.equal(new ReferenceLayouts({cacheDir:dir,runner}).get(s).cacheHit,true);assert.equal(calls,1);
-    cache.get(s,{maxTargetsPerViewport:16});assert.equal(calls,2);
+    const cache=new ReferenceLayouts({cacheDir:dir,runner});cache.get(screen());assert.equal(calls,2);
+    const s=screen();s.banner[0][1]='Changed';assert.equal(cache.get(s).cacheHit,true);assert.equal(calls,2);
+    assert.equal(new ReferenceLayouts({cacheDir:dir,runner}).get(s).cacheHit,true);assert.equal(calls,2);
+    cache.get(s,{maxTargetsPerViewport:16});assert.equal(calls,4);
     for(const file of readdirSync(dir)) writeFileSync(join(dir,file),readFileSync(join(dir,file),'utf8').replace('denseAccepted":true','denseAccepted":false'));
-    assert.equal(new ReferenceLayouts({cacheDir:dir,runner}).get(s).cacheHit,false);assert.equal(calls,3);
+    assert.equal(new ReferenceLayouts({cacheDir:dir,runner}).get(s).cacheHit,false);assert.equal(calls,6);
   } finally {rmSync(dir,{recursive:true,force:true});}
 });
 test('density uses exact persona/release screen measurement or unchanged Lean default',()=>{
@@ -58,7 +58,7 @@ test('G10 refusal falls back without raising the policy; an impossible lower lim
 test('tabs retain selected body occurrences and native authoritative shape',()=>{
   const s=screen();s.workspace=[{tabs:{id:'tabs',labels:['A','B'],selected:1,body:s.workspace}}];
   assert.deepEqual(native({op:'family-check',references:[{screen:s}]}).shapes[0],shapeFor(s).slots);
-  assert.ok(shapeFor(s).slots.some(s=>s.path.join('.')==='3.0.0.0'));
+  assert.ok(shapeFor(s).slots.some(s=>s.path.join('.')==='3.2.0.0'));
 });
 test('family manifest keeps row-count variants individually selectable under one native shape',()=>{
   const a=screen(),b=screen();b.workspace[0].columns.children[1].section.children[0].info.rows=[[['Value','Synthetic']]];
@@ -67,10 +67,10 @@ test('family manifest keeps row-count variants individually selectable under one
   assert.ok(result.file.families[0].variants.every(v=>native({op:'family-check',references:v.references}).accepted));
   assert.throws(()=>familyFile(program,[{...a,screen:'absent'}]),/Program/);
 });
-test('geometry is derived from native clips and exposes navigation/tab proxies',()=>{
+test('geometry is derived from native clips and uses individual navigation/tab targets',()=>{
   const s=screen();s.nav=[['Activity',[['navId','Go']]]];const c=new ReferenceLayouts(),r=c.get(s),out=c.paint(r,s);
   const geometry=geometryFor(s,out);assert.ok(geometry.components.dose);assert.ok(geometry.components.sign);assert.ok(geometry.components.navId);
-  assert.deepEqual(geometry.components.sign.chain,[]);assert.ok(geometry.approximations.some(p=>p.id==='navId'));assert.ok(geometry.scrollers['reference-body']);
+  assert.deepEqual(geometry.components.sign.chain,[]);assert.deepEqual(geometry.approximations,[]);assert.ok(geometry.scrollers['reference-body']);
 });
 test('recorded vendor density references supplement empty-workspace measurements',()=>{
   const report={programs:[{group:'vendor',id:'v1/P1',screens:[{screen:'home',maximum:6}]}],recorded:[
@@ -114,7 +114,7 @@ test('runtime urgent sources remain fixed above the banner without changing sema
   const c=new ReferenceLayouts(),r=c.get(s);assert.equal(r.denseAccepted,true);
   for(const viewport of viewports) {
     const out=c.paint(r,s,viewport),urgent=out.boxes.find(d=>d.original?.includes('Review before signing')),banner=out.boxes.find(d=>d.box.info.banner);
-    assert.equal(out.accepted,true);assert.deepEqual(urgent.box.clips,[]);assert.equal(urgent.box.info.interruptive,false);
+    assert.equal(out.accepted,true);assert.deepEqual(urgent.box.clips,[]);assert.equal(urgent.box.info.interruptive,false);assert.equal(urgent.box.info.urgent,true);
     assert.ok(urgent.box.rect.y+urgent.box.rect.h<=banner.box.rect.y);
   }
 });
@@ -124,4 +124,53 @@ test('navigation and heading scroll with the vendor body while banner and commit
   for(const path of ['1','2'])assert.equal(out.boxes.find(d=>d.box.info.source?.join('.')===path).box.clips[0][0],'reference-body');
   assert.deepEqual(out.boxes.find(d=>d.box.info.banner).box.clips,[]);
   assert.deepEqual(out.boxes.find(d=>d.box.info.commit).box.clips,[]);
+});
+
+test('navigation and tab targets have separate boxes; urgent targets stay pinned beside a modal',()=>{
+  const s=screen();s.nav=[['Chart',[['orders','Orders'],['notes','Notes']]]];
+  s.workspace.unshift({tabs:{id:'panel',labels:['A','B'],selected:0,body:[{text:{s:'Selected body'}}]}});
+  s.urgent=[{alert:{comp:'urgent',alertId:'policy',label:'Urgent',severity:'interruptive'}},{button:{comp:'ack',label:'Acknowledge',role:'ack',enabled:true,blockedReason:null,hotkey:null}}];
+  s.modal={section:{id:'modal',title:'Review',children:[{button:{comp:'modalAck',label:'Continue',role:'ack',enabled:true,blockedReason:null,hotkey:null}}]}};
+  const c=new ReferenceLayouts(),r=c.get(s),painted=c.paint(r,s),g=geometryFor(s,painted);
+  assert.equal(r.denseAccepted,true);assert.equal(painted.accepted,true);
+  assert.notDeepEqual(g.components.orders.center,g.components.notes.center);
+  assert.notDeepEqual(g.components['panel#tab:0'].center,g.components['panel#tab:1'].center);
+  assert.deepEqual(g.approximations,[]);
+  assert.equal(painted.boxes.filter(d=>d.box.info.urgent).length,2);
+  assert.deepEqual(r.density,{firstViewport:2,scrollWindow:2,fixed:2});
+});
+
+test('retained snapshot rechecks require checksummed bytes and the entire recorded event sequence',async()=>{
+  const {frozenIndex,frozenRecords}=await import('./frozen.mjs');
+  const dir=mkdtempSync('/home/saithat/Projects/run-tmp/reference-frozen-');
+  try{
+    const ev={task:'synthetic',screen:'review',event:{click:{comp:'sign'}},ops:['click'],result:'ok'};
+    const bytes=gzipSync(JSON.stringify({kind:'screen',ev,screen:screen()})+'\n');
+    writeFileSync(join(dir,'fixture.jsonl.gz'),bytes);
+    writeFileSync(join(dir,'fixture.json'),JSON.stringify({key:'fixture',records:1,sha256:digest(bytes)}));
+    const index=await frozenIndex(dir,dir),rows=[];
+    for await(const r of frozenRecords(index,{trace:[ev]}))rows.push(r);
+    assert.equal(rows.length,1);
+    await assert.rejects(async()=>{for await(const r of frozenRecords(index,{trace:[{...ev,task:'changed'}]}))void r;},/complete recorded day trace/);
+    const duplicate=gzipSync(JSON.stringify({kind:'screen',ev,screen:{...screen(),title:'Different retained payload'}})+'\n');
+    writeFileSync(join(dir,'duplicate.jsonl.gz'),duplicate);
+    writeFileSync(join(dir,'duplicate.json'),JSON.stringify({key:'duplicate',records:1,sha256:digest(duplicate)}));
+    await assert.rejects(()=>frozenIndex(dir,dir),/Ambiguous/);
+    rmSync(join(dir,'duplicate.jsonl.gz'));rmSync(join(dir,'duplicate.json'));
+    writeFileSync(join(dir,'fixture.jsonl.gz'),gzipSync('tampered\n'));
+    await assert.rejects(()=>frozenIndex(dir,dir),/Corrupt/);
+  }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+
+test('content-free geometry receipts are reused and corrupt geometry is regenerated',()=>{
+  const dir=mkdtempSync('/home/saithat/Projects/run-tmp/reference-geometry-');let calls=0;
+  const c=new ReferenceLayouts({cacheDir:dir,runner:input=>{calls++;return native(input);}});
+  try{
+    const r=c.get(screen()),first=c.geometryPaints(r),initial=calls;
+    assert.equal(first.dense.accepted,true);assert.equal(first.fixed.accepted,true);
+    assert.deepEqual(c.geometryPaints(r),first);assert.equal(calls,initial);
+    writeFileSync(join(dir,'paints',`${r.key}.json`),'{}');
+    assert.deepEqual(c.geometryPaints(r),first);assert.equal(calls,initial+2);
+  }finally{rmSync(dir,{recursive:true,force:true});}
 });

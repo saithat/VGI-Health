@@ -28,14 +28,9 @@ export function geometryFor(screen,painted,{state='',sample}={}) {
   }
   for(const entry of occurrences(screen)) {
     const id=entry.value?.comp??entry.value?.id;
-    if(typeof id==='string') {const box=at(entry.path);if(box) components[id]=box;}
+    if(typeof id==='string') {const box=at(entry.path);if(box) components[entry.value?.role==='tab'?`${id}#tab:${entry.path.at(-1)}`:id]=box;}
     if(entry.kind==='alert' && entry.value.alertId) components[entry.value.alertId]=at(entry.path);
-    if(entry.kind==='tabs') approximations.push({kind:'tabs-as-one-slot',id});
-  }
-  // Semantic.nav is a single noninteractive text source. Mapping navigation
-  // to this slot is explicitly exposed as a proxy, never a separate target count.
-  for(const [,items] of screen.nav) for(const [id] of items) {
-    components[id]=at([2]);approximations.push({kind:'navigation-as-one-slot',id});
+    if(entry.kind==='tabs') {const index=entry.value.selected;components[id]=at([...entry.path,index]);}
   }
   return {screen:screen.screen??'',state,...(sample?{sample}:{}),viewport:{width:painted.viewport.w/64,height:painted.viewport.h/64},components,scrollers,clipRects,approximations};
 }
@@ -52,7 +47,8 @@ export class GeometryMeter {
       const entry=Object.entries(geometry.scrollers).find(([,s])=>s.maxY>0);
       if(entry) {const [id,s]=entry;scroll({[id]:{x:0,y:Math.min(s.maxY,(this.offsets[id]?.y??0)+s.height)}});}return;
     }
-    const id=Object.entries(ev.event).filter(([kind])=>kind!=='hotkey').map(([,payload])=>payload?.comp??payload?.alert).find(Boolean);
+    let id=Object.entries(ev.event).filter(([kind])=>kind!=='hotkey').map(([,payload])=>payload?.comp??payload?.alert).find(Boolean);
+    if(ev.event.selectTab && id)id=`${id}#tab:${ev.event.selectTab.idx}`;
     if(!id || (!ev.ops.some(op=>['point','click'].includes(op)) && !ev.event.enter && !ev.event.confirm)) return;
     if(geometry.approximations.some(p=>p.id===id)) this.proxiedEvents++;
     const b=geometry.components[id];
@@ -69,3 +65,5 @@ export class GeometryMeter {
   result() {return {scrolls:this.scrolls,scrollPx:this.missingTargets.size?null:Math.round(this.scrollPx),mouseTravelPx:this.missingTargets.size?null:Math.round(this.mouseTravelPx),
     measuredScrollPx:Math.round(this.scrollPx),measuredTravelPx:Math.round(this.mouseTravelPx),missingTargets:[...this.missingTargets],events:this.events,proxiedEvents:this.proxiedEvents};}
 }
+
+export const targetTrace=trace=>trace.map(ev=>ev.event.selectTab?{...ev,event:{selectTab:{...ev.event.selectTab,comp:`${ev.event.selectTab.comp}#tab:${ev.event.selectTab.idx}`}}}:ev);

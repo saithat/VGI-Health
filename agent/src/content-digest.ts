@@ -12,6 +12,7 @@ export const VOLATILE_FILES = [/^\.cache\//, /(^|\/)digest\.json$/, /\.tmp$/, /\
 export const VOLATILE_FIELDS = [
  {file:/^(lean-timings\.jsonl|reports\/lean-screens\/admissions\.jsonl)$/,keys:['elapsedMs']},
  {file:/.*/,keys:['createdAt','startedAt','resumes']},
+ {file:/^(manifest\.json|reports\/lean-screens\/.*)$/,keys:['admissionMs']},
  {file:/(^|\/)manifest\.json$/,keys:['runId','parallel','personaWorkers','screenWorkersPerPersona','contentDigest','infrastructureRetries']},
  {file:/^(rebind|recovery)\//,keys:['timestamp']},
  {file:/^decisions\//,keys:['runId']},

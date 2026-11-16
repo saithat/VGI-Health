@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import {frozenIndex,frozenRecords} from './frozen.mjs';
 // Existing native context extraction + native render/step. No clinical rules in JS.
 import {existsSync,readdirSync,mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
@@ -13,16 +14,17 @@ const out=resolve(opts.out??join(process.env.TMPDIR??'/home/saithat/Projects/run
 const runNames=(opts.runs??'core-10day,rules3-10day-invalid-simloop').split(',');
 const binary=join(root,'lean/.lake/build/bin/ehr'),cache=new ReferenceLayouts({cacheDir:join(out,'cache')}),paintCache=new Map();
 const contextBinding={binary:digest(readFileSync(binary)),extractor:digest(readFileSync('scripts/trajectories/Contexts.lean'))};
-const analysisBinding=digest(['visited','recording','generator','geometry','admission'].map(name=>readFileSync(`scripts/layout-reference/${name}.mjs`,'utf8')));
-const density=read('docs/audits/r5-per-screen.json');density.recorded=runNames.flatMap(r=>recordedLimits(join(sourceRoot,'runs',r)));
-const days=[],absentDays=[],limits={},personaShapes=new Map(),personaNativeShapes=new Map();
+const analysisBinding=digest(['visited','recording','generator','geometry','admission','density','frozen'].map(name=>readFileSync(`scripts/layout-reference/${name}.mjs`,'utf8')));
+const density=read('docs/audits/r5-per-screen.json');density.measurements=read('docs/methods/lean-screen-density.json').measurements;density.recorded=runNames.flatMap(r=>recordedLimits(join(sourceRoot,'runs',r)));
+const densityCounts={},days=[],absentDays=[],limits={},personaShapes=new Map(),personaNativeShapes=new Map();
+const frozen=opts['frozen-snapshots']?await frozenIndex(resolve(opts['frozen-snapshots']),out):null;
 mkdirSync(join(out,'contexts'),{recursive:true});
 mkdirSync(join(out,'visited-cases'),{recursive:true});
 function geometry(screen,limit) {
-  const r=cache.get(screen,{maxTargetsPerViewport:limit});let paints=paintCache.get(r.key);
+  const r=cache.get(screen,{maxTargetsPerViewport:limit,allowRefused:true});let paints=paintCache.get(r.key);
   if(!paints) {
-    const cleared=eraseContent(screen),dense=cache.paint(r,cleared),fixed=native({op:'structural-paint',screen:cleared,viewport:viewports[0]});
-    if(!dense.accepted||!fixed.accepted) throw Error('Native paint refused');paints={dense,fixed};paintCache.set(r.key,paints);
+    paints=cache.geometryPaints(r);
+    if(!paints.dense.boxes||!paints.fixed.boxes)throw Error('Missing native geometry');paintCache.set(r.key,paints);
     if(paintCache.size>256)paintCache.delete(paintCache.keys().next().value);
   }
   return {r,dense:geometryFor(screen,paints.dense),fixed:geometryFor(screen,paints.fixed)};
@@ -38,7 +40,7 @@ function geometry(screen,limit) {
       const scheduleFile=join(manifest.world,'schedules',folder,`${persona}.json`),schedule=read(scheduleFile);
       const inputs={day:digest(recorded),program:digest(program),spec:digest(spec),schedule:digest(schedule),...contextBinding,world:manifest.fingerprints?.world,fixtures:manifest.fingerprints?.fixtures};
       const policy=Object.fromEntries(program.screens.map(s=>[s.id,limitFor(density,persona,program.specVersion,s.id).limit]));
-      const caseKey=digest({inputs,analysisBinding,policy,layoutBinary:cache.binding}),caseFile=join(out,'visited-cases',`${caseKey}.json`);
+      const caseKey=digest({inputs,analysisBinding,policy,layoutBinary:cache.binding,frozen:frozen?.get(digest(recorded.trace))?.receipt}),caseFile=join(out,'visited-cases',`${caseKey}.json`);
       if(existsSync(caseFile)) {
         const saved=read(caseFile),group=`${runName}/${persona}`;
         if(saved.key!==caseKey || saved.checksum!==digest(saved.payload)) throw Error('Corrupt visited-day checkpoint');
@@ -46,31 +48,32 @@ function geometry(screen,limit) {
         personaShapes.set(group,new Set([...(personaShapes.get(group)??[]),...saved.payload.shapes]));
         personaNativeShapes.set(group,new Set([...(personaNativeShapes.get(group)??[]),...saved.payload.nativeShapes]));
         Object.assign(limits,saved.payload.limits);
+        Object.assign(densityCounts,saved.payload.densityCounts);
         console.log(`${runName}/${folder}/${persona}: reused verified checkpoint`);continue;
       }
       const fixedMeter=new GeometryMeter(),denseMeter=new GeometryMeter();
-      const shapeKeys=new Set(),nativeKeys=new Set(),rules={},mismatches=[],renderStates=new Set();let states=0,denseStates=0;
+      const caseDensity={},shapeKeys=new Set(),nativeKeys=new Set(),rules={},mismatches=[],renderStates=new Set();let states=0,denseStates=0,noAdmittedLayout=0;
       const group=`${runName}/${persona}`,all=personaShapes.get(group)??new Set(),allNative=personaNativeShapes.get(group)??new Set();
-      for await(const record of screenRecords({root,out,runName,folder,persona,recorded,program,spec,schedule,inputs,world:manifest.world,scheduleFile,specFile,programFile,dayFile,binary,verbose:opts.verbose})) {
+      for await(const record of (frozen?frozenRecords(frozen,recorded):screenRecords({root,out,runName,folder,persona,recorded,program,spec,schedule,inputs,world:manifest.world,scheduleFile,specFile,programFile,dayFile,binary,verbose:opts.verbose}))) {
         if(record.mismatch&&mismatches.length<20)mismatches.push(record.mismatch);
         if(record.kind!=='screen')continue;
         const {ev,screen}=record,limit=limitFor(density,persona,program.specVersion,screen.screen);
         limits[`${program.specVersion}/${persona}/${screen.screen}`]=limit;
-        const g=geometry(screen,limit.limit);states++;denseStates+=Number(g.r.denseAccepted);renderStates.add(record.stateKey);
+        const g=geometry(screen,limit.limit);const densityKey=`${program.specVersion}/${persona}/${screen.screen}/${g.r.key}`;caseDensity[densityKey]=densityCounts[densityKey]={release:program.specVersion,persona,screen:screen.screen,limit:limit.limit,denseAccepted:g.r.denseAccepted,fallbackAccepted:g.r.fallbackAccepted,...g.r.density};states++;denseStates+=Number(g.r.denseAccepted);noAdmittedLayout+=Number(!g.r.fallbackAccepted);renderStates.add(record.stateKey);
         shapeKeys.add(digest(g.r.shape));nativeKeys.add(digest(g.r.shape.slots));all.add(digest(g.r.shape));allNative.add(digest(g.r.shape.slots));
         for(const rule of new Set(g.r.findings.map(f=>f.rule)))rules[rule]=(rules[rule]??0)+1;
         fixedMeter.event(ev,g.fixed);denseMeter.event(ev,g.dense);
       }
       personaShapes.set(group,all);personaNativeShapes.set(group,allNative);
-      const row={run:runName,persona,day,release:program.specVersion,states,expectedStates:recorded.trace.length,unrenderedStates:recorded.trace.length-states,denseAdmitted:denseStates,distinctStates:renderStates.size,shapes:shapeKeys.size,nativeShapes:nativeKeys.size,rules,mismatches,
+      const row={run:runName,persona,day,release:program.specVersion,states,expectedStates:recorded.trace.length,unrenderedStates:recorded.trace.length-states,denseAdmitted:denseStates,noAdmittedLayout,distinctStates:renderStates.size,shapes:shapeKeys.size,nativeShapes:nativeKeys.size,rules,mismatches,
         fixed:fixedMeter.result(),dense:denseMeter.result(),browser:{scrolls:recorded.tasks.reduce((n,t)=>n+t.scrolls,0),scrollPx:Math.round(recorded.tasks.reduce((n,t)=>n+(t.scrollPx??0),0)),mouseTravelPx:Math.round(recorded.tasks.reduce((n,t)=>n+(t.mouseTravelPx??0),0)),missing:recorded.geometry.missingTargets}};
       days.push(row);write(join(out,'visited-progress.json'),{days});
       const caseLimits=Object.fromEntries(Object.entries(limits).filter(([key])=>key.startsWith(`${program.specVersion}/${persona}/`)));
-      const payload={row,shapes:[...shapeKeys],nativeShapes:[...nativeKeys],limits:caseLimits};write(caseFile,{key:caseKey,checksum:digest(payload),payload});
+      const payload={row,shapes:[...shapeKeys],nativeShapes:[...nativeKeys],limits:caseLimits,densityCounts:caseDensity};write(caseFile,{key:caseKey,checksum:digest(payload),payload});
       console.log(`${runName}/${folder}/${persona}: ${denseStates}/${states} dense, ${shapeKeys.size} shapes, ${mismatches.length} mismatches, ${row.dense.missingTargets.length} missing targets`);
     }
   }
-  const result={schemaVersion:1,scope:'Actual no-agent day event pre-states reconstructed and rendered with native Lean, including repeated states',days,absentDays,limits,
+  const result={schemaVersion:1,scope:frozen?'Retained native no-agent event-prestate UiScreens, checksummed and matched to every recorded event; current layout admission, no fresh clinical replay':'Actual no-agent day event pre-states reconstructed and rendered with native Lean, including repeated states',retainedSnapshots:opts['frozen-snapshots']??null,days,absentDays,limits,densityCounts:Object.values(densityCounts),
     shapesPerPersona:Object.fromEntries([...personaShapes].map(([key,set])=>[key,set.size])),nativeShapesPerPersona:Object.fromEntries([...personaNativeShapes].map(([key,set])=>[key,set.size])),
     admission:{...cache.stats,layoutsPerSecond:cache.stats.misses/(cache.stats.admissionMs/1000)}};
   write(join(out,'visited.json'),result);

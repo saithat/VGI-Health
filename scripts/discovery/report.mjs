@@ -88,6 +88,9 @@ export async function report(root) {
     status: manifest.status,
     backend: manifest.backend,
     browserCertified: false,
+    referenceGeneratorVersion:manifest.referenceGeneratorVersion,
+    referenceUsage:manifest.referenceUsage,
+    referenceStats:manifest.referenceStats,
     gate: {
       admissionChecks: admissions.length,
       uniqueDesigns: new Set(

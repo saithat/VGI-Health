@@ -1,16 +1,20 @@
 // Untrusted, content-independent vendor reference geometry. All sizes are 1/64px.
 export const viewports = [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}];
-export const version = 'dense-reference-v5';
+export const version = 'dense-reference-v7';
 const px = n => Math.round(n * 64);
 const key = path => path.join('.');
+const button=(comp,label,role)=>({button:{comp,label,role,enabled:true,blockedReason:null,hotkey:null}});
+export const navNode=nav=>({section:{id:'navigation',title:'Navigation',children:nav.map(([title,items])=>({section:{id:title,title,children:items.map(([id,label])=>button(id,label,'nav'))}}))}});
+// Extend widget/role placement here when the semantic inventory grows.
+export const placementRules={field:'field',columns:'columns',presentation:'wrapper',section:'section',tabs:'tabs',info:'table','button:nav':'strip','button:tab':'strip'};
 export function occurrences(screen) {
-  const roots = [{text:{s:''}},{text:{s:''}},{text:{s:''}},...screen.workspace,...screen.side,
+  const roots = [{text:{s:''}},{text:{s:''}},navNode(screen.nav),...screen.workspace,...screen.side,
     ...(screen.modal ? [screen.modal] : []),...(screen.urgent ?? [])];
   const result = [];
   function visit(node,path) {
     const [kind,value] = Object.entries(node)[0];
     result.push({path,kind,value});
-    const children = value?.children ?? value?.body ?? [];
+    const children = kind==='tabs' ? [...value.labels.map(label=>button(value.id,label,'tab')),...value.body] : value?.children ?? [];
     const modal = kind === 'patientPane' ? value.modal : [];
     [...children,...modal].forEach((child,i)=>visit(child,[...path,i]));
   }
@@ -24,11 +28,11 @@ export function shapeFor(screen) {
   const commit = entries.find(e=>e.kind==='button' && e.value.role==='primary');
   const sideStart = 3 + screen.workspace.length, modalRoot = sideStart + screen.side.length;
   const slots = entries.map(e=>({path:e.path,target:['button','field'].includes(e.kind),
-    region:key(e.path)==='0'?'banner':key(e.path)==='1'?'title':e===commit?'footer':
+    region:key(e.path)==='0'?'banner':key(e.path)==='1'?'title':e.path[0]>=modalRoot+Number(Boolean(screen.modal))?'urgent':e===commit?'footer':
       screen.modal && e.path[0]===modalRoot?'modal':e.path[0]===2 ||
       (e.path[0]>=sideStart && e.path[0]<modalRoot)?'side':'body',
     lines:['section','columns','presentation','text','tabs'].includes(e.kind)?1:e.kind==='info'?3:2}));
-  const hints = Object.fromEntries(entries.map(e=>[key(e.path),{kind:e.kind,
+  const hints = Object.fromEntries(entries.map(e=>[key(e.path),{kind:e.kind,placement:placementRules[`${e.kind}:${e.value?.role}`]??placementRules[e.kind]??'card',
     ...(e.path[0]>=modalRoot+Number(Boolean(screen.modal))?{urgent:true}:{}),
     ...(e.kind==='info'?{rows:e.value.rows.length}:{}),
     ...(e.kind==='button'?{role:e.value.role}:{}),
@@ -37,7 +41,7 @@ export function shapeFor(screen) {
   return {slots,hints};
 }
 export function eraseContent(screen) {
-  const result=structuredClone(screen);result.banner=[];result.title='';result.nav=[];
+  const result=structuredClone(screen);result.banner=[];result.title='';result.viewer=null;result.nav=result.nav.map(([,items])=>['',items.map(([id])=>[id,''])]);
   const entries=occurrences(result).filter(e=>e.path[0]>=3);
   for(const {kind,value} of entries) {
     for(const field of ['label','title','s']) if(typeof value[field]==='string') value[field]='';
@@ -46,7 +50,7 @@ export function eraseContent(screen) {
     if(kind==='button') value.blockedReason=null;
     if(kind==='valueSet') value.options=[];
     if(kind==='chartReferences') value.references=[];
-    if(kind==='tabs') {value.labels=[];value.selected=0;}
+    if(kind==='tabs') {value.labels=value.labels.map(()=>'');value.selected=0;}
     if(kind==='stepper') {value.steps=[];value.current=0;}
     if(kind==='datedTimeline') {value.dated=[];value.undated=[];}
     if(kind==='board') value.urgent=[];
@@ -63,7 +67,7 @@ function validate(shape,viewport) {
 }
 function card(slot,x,y,w,h,{z=0,font=0,fontSize=12,lines=1,bg='white',fg='slate-900'}={}) {
   return {type:slot.target?'Button':'Text',id:`source-${key(slot.path)}`,source:slot.path,
-    target:slot.target,banner:slot.region==='banner',commit:slot.region==='footer',interruptive:slot.region==='modal',
+    target:slot.target,banner:slot.region==='banner',commit:slot.region==='footer',interruptive:slot.region==='modal',urgent:slot.region==='urgent',
     position:{x:px(x),y:px(y)},width:px(w),height:px(h),z,bg,fg,
     text:{key:`source-${key(slot.path)}`,safety:true,overflow:'scroll',maxLines:lines,
       font,fontSize:px(fontSize),lineHeight:px(fontSize===14?22:18)}};
@@ -78,12 +82,14 @@ function scroller(id,x,y,w,h,children) {
 export function layoutFor(shape,viewport) {
   const slots=validate(shape,viewport), hints=shape.hints??{}, w=viewport.w/64,h=viewport.h/64;
   const byPath=new Map(slots.map(s=>[key(s.path),s]));
-  const urgent=slots.filter(s=>hints[key(s.path)]?.urgent);
+  const urgent=slots.filter(s=>s.region==='urgent');
   const urgentColumns=Math.max(1,Math.floor((w-18)/266)),urgentHeight=urgent.length?Math.ceil(urgent.length/urgentColumns)*40+12:0;
-  const ordinary=slots.filter(s=>['body','side'].includes(s.region) && key(s.path)!=='2' && !hints[key(s.path)]?.urgent);
+  const ordinary=slots.filter(s=>['body','side'].includes(s.region) && s.path[0]!==2);
   const side=ordinary.filter(s=>s.region==='side'), body=ordinary.filter(s=>s.region==='body');
   const hasSide=side.length>0, mainX=hasSide?174:8, mainW=w-mainX-8;
-  const bodyTop=((hints['2']?.navItems??0)>10?204:180)+urgentHeight;
+  const navSlots=slots.filter(s=>s.path[0]===2), navColumns=Math.max(1,Math.floor((w-16)/155));
+  const navRows=navSlots.filter(s=>s.path.length===2).reduce((n,g)=>n+1+Math.ceil(navSlots.filter(s=>s.path.length===3 && s.path[1]===g.path[1]).length/navColumns),1);
+  const bodyTop=104+urgentHeight+navRows*28+40;
   const scrollTop=104+urgentHeight,bodyOffset=bodyTop-scrollTop,scrollChrome=[];
   const children=[];
   const urgentWidth=(w-24-6*(Math.min(urgent.length,urgentColumns)-1))/Math.max(1,Math.min(urgent.length,urgentColumns));
@@ -91,8 +97,15 @@ export function layoutFor(shape,viewport) {
     {z:40,bg:{r:255,g:241,b:240},fg:{r:118,g:27,b:24}})));
   const banner=slots.find(s=>s.region==='banner');
   if(banner) children.push(card(banner,8,4+urgentHeight,w-16,96,{z:30,lines:4,bg:'slate-100'}));
-  const nav=byPath.get('2');
-  if(nav) scrollChrome.push(card(nav,0,0,w-16,bodyTop-urgentHeight-140,{lines:2,bg:'slate-100'}));
+  let navY=0;
+  if(byPath.has('2'))scrollChrome.push(card(byPath.get('2'),0,navY,w-16,18,{bg:'slate-100'}));
+  navY+=28;
+  for(const group of navSlots.filter(s=>s.path.length===2)) {
+    scrollChrome.push(card(group,0,navY,w-16,18,{bg:'slate-100'}));navY+=28;
+    const links=navSlots.filter(s=>s.path.length===3 && s.path[1]===group.path[1]),cw=(w-16-4*(navColumns-1))/navColumns;
+    links.forEach((s,i)=>scrollChrome.push(card(s,(i%navColumns)*(cw+4),navY+Math.floor(i/navColumns)*28,cw,24,{bg:'slate-100'})));
+    navY+=Math.ceil(links.length/navColumns)*28;
+  }
   for(const title of slots.filter(s=>s.region==='title')) scrollChrome.push(card(title,mainX-8,bodyOffset-32,mainW,24,{font:3,fontSize:14}));
   function arrange(list,width) {
     const output=[], member=new Set(list.map(s=>key(s.path)));
@@ -101,14 +114,19 @@ export function layoutFor(shape,viewport) {
       const hint=hints[key(slot.path)]??{};
       let kids=list.filter(s=>s.path.length===slot.path.length+1 && key(s.path.slice(0,-1))===key(slot.path));
       let height=slot.target?28:slot.lines===3?Math.max(36,22+24*(hint.rows??3)):18;
-      if(hint.kind==='field') height=hint.narrative?72:36;
-      if(hint.kind==='columns' || hint.kind==='presentation') height=18;
+      if(hint.placement==='field') height=hint.narrative?72:36;
+      if(['columns','wrapper'].includes(hint.placement)) height=18;
       const toggle=hint.kind==='section' && hints[key(kids[0]?.path??[])]?.role==='toggle'?kids.shift():null;
       if(toggle) height=24;
       output.push(card(slot,x,y,toggle?Math.max(24,width-104):width,height,{lines:Math.max(1,Math.floor(height/18)),
         bg:hint.kind==='section'?'slate-100':'white'}));
       if(toggle) output.push(card(toggle,x+width-100,y,100,24));
       let cursor=y+height+4;
+      if(hint.placement==='tabs') {
+        const tabs=kids.filter(s=>hints[key(s.path)]?.role==='tab'),count=Math.max(1,Math.floor(width/155)),cw=(width-4*(count-1))/count;
+        tabs.forEach((s,i)=>output.push(card(s,x+(i%count)*(cw+4),cursor+Math.floor(i/count)*28,cw,24)));
+        cursor+=Math.ceil(tabs.length/count)*28;kids=kids.filter(s=>!tabs.includes(s));
+      }
       if(kids.length) {
         const columns=hint.kind==='columns'?Math.min(kids.length,width>=1200?3:width>=768?2:1):1;
         if(columns>1) {
@@ -151,10 +169,11 @@ export function layoutFor(shape,viewport) {
 // fallback descriptors can also be independently family-checked and painted.
 export function fixedShellFor(shape,viewport) {
   const slots=validate(shape,viewport),w=viewport.w/64,h=viewport.h/64;
-  const children=[],body=slots.filter(s=>!['banner','footer','modal'].includes(s.region));
+  const children=[],body=slots.filter(s=>!['banner','footer','modal','urgent'].includes(s.region)).sort((a,b)=>Number(a.path[0]===2)-Number(b.path[0]===2));
   for(const s of slots.filter(s=>s.region==='banner')) children.push(card(s,16,8,w-32,96,{z:30,fontSize:14,lines:4}));
-  children.push(scroller('fixed-body',16,128,w-32,h-144,body.map((s,i)=>card(s,0,i*56,w-32,48,{fontSize:14,lines:2}))));
+  children.push(scroller('fixed-body',16,272,w-32,h-288,body.map((s,i)=>card(s,0,i*56,w-32,48,{fontSize:14,lines:2}))));
   for(const s of slots.filter(s=>s.region==='footer')) children.push(card(s,16,104,w-32,24,{z:20,fontSize:14}));
-  slots.filter(s=>s.region==='modal').forEach((s,i)=>children.push(card(s,16,128+i*56,w-32,48,{z:100,fontSize:14,lines:2})));
+  slots.filter(s=>s.region==='modal').forEach((s,i)=>children.push(card(s,16,272+i*56,w-32,48,{z:100,fontSize:14,lines:2})));
+  slots.filter(s=>s.region==='urgent').forEach((s,i)=>children.push(card(s,16,128+i*24,w-32,24,{z:40,fontSize:14})));
   return absolute('fixed-root',0,0,w,h,children);
 }

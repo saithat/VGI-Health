@@ -2,10 +2,12 @@
 
 [Overview](../../README.md) · [Layout language](ui-library.md) · [Screen validation](screen-validation.md)
 
-`scripts/layout-reference/` generates untrusted vendor reference layouts for the
-research painter. Native `ui-layout family-check` admits each structural case at
-1440×900, 1280×800 and 1920×1080. This does not change the deployed painter,
-clinical rules, certified app hash, Lean definitions or proofs.
+`scripts/layout-reference/generator.mjs` is the shared, untrusted, plain JavaScript
+reference generator for Node reports, `--screens lean` and `/lean.html`.
+Native/WASM Lean admits each structural case at 1440×900, 1280×800 and
+1920×1080. The default browser nightly mode retains its existing painter and
+screen gate. This integration changes application and agent certified hashes;
+it changes no Lean definitions, rules or proofs.
 
 The generator follows the current compact shell: a 96px patient-banner reserve,
 horizontal navigation, heading, optional 158px summary pane with an 8px gutter,
@@ -46,7 +48,12 @@ and table row counts to the native slots. It never retains labels, patient
 values or control IDs. Every semantic occurrence, including section, column and
 tab-body wrappers, gets exactly one linked source. Leaf order is sorted by the
 resulting row and column positions for G8. Lean independently derives the
-authoritative semantic shape and checks flags, completeness and G1–G10.
+authoritative semantic shape and checks flags, completeness and G1–G11.
+Navigation has a wrapper, one heading per group and separate target buttons in
+wrapping bars. Each tab label has its own target before the selected body.
+`placementRules` centralizes the widget/role-to-placement mapping. Urgent
+occurrences use region `urgent` and the `urgent` flag, clear of the banner,
+scroller, footer and modal at every supported viewport.
 
 The native semantic shape erases table row counts. The augmented reference
 shape includes them, so different row counts can receive different geometry.
@@ -62,13 +69,16 @@ is unchanged, and actual content is bound only for painting. Receipts contain
 no reference patient payload. Writes are atomic and checksummed; incomplete or
 corrupt receipts miss. Accepted and refused dense proposals are both retained.
 In-memory admission and painting caches are bounded to 256 entries; persistent
-receipts retain shapes evicted from memory.
-On a dense refusal, `family-paint` supplies G1–G9 findings in addition to G10;
+receipts retain shapes evicted from memory. Reports also checksum and persist
+content-free dense/fixed geometry by receipt key, so later days do not repaint
+evicted shapes merely to recompute the same coordinates.
+On a dense refusal, `family-paint` supplies G1–G11 findings;
 semantic linkage failures are recorded separately. Transport failures never
 become admission or fallback success.
 
 A refused dense case uses the serialized `fixed-shell-v2` geometry: 48px rows
-on a 56px pitch, a fixed banner and commit, and fixed modal occurrences. The
+on a 56px pitch in the body starting at 272px, a fixed banner and commit,
+fixed modal occurrences, and 24px urgent rows starting at 128px. The
 fallback also goes through `family-check` with the **same** screen limit. The
 universal fixed-shell density theorem guarantees capacity 15; it does not
 guarantee arbitrary limits below 15. If a supplied lower measured limit refuses
@@ -77,22 +87,20 @@ under `cache/refusals`, and returns no layout. No limit is raised automatically.
 
 ## Density references
 
-`limitFor` selects the exact persona/release/screen measurement in
-`docs/audits/r5-per-screen.json`, supplemented by the vendor-reference limits in
-recorded `screen-policy.json` files when supplied. It takes the maximum across
-those vendor measurements for the same persona, release and screen, as the
-screen policy takes a maximum across reference states. It never takes a
-candidate's measured count as its limit. Each report retains the limit and its
-source paths. Screens without any measurement use Lean's unchanged **15**,
-not the deployed painter's absent-id fallback of 57.
+The reports, agent and page use the exact persona/release/screen snapshot in
+`docs/methods/lean-screen-density.json`. Existing vendor audit measurements
+supply screens absent from the snapshot; absent measurements keep **15**.
+No limit or rule is raised. Each report includes its limit and provenance.
+Navigation and tabs count individually. `densityCounts` records desktop
+first-viewport targets and the maximum scroll-window count **including fixed
+targets**, independently of admission. The measurement mirror never admits a
+layout; Lean remains the gate.
 
-The recorded references matter for populated workspaces. For example, the
-three-bundle P1 `home` measurement is 6, while recorded vendor workspaces contain
-additional patient controls. Applying that empty-workspace measurement to a
-populated workspace can refuse even the fixed shell. The report includes
-workspace reference measurements instead of borrowing density from another
-screen or changing G10. These aggregate historical measurements are a practical
-reference, not a fresh measurement on every exact replayed payload.
+Limits below 15 can refuse both layouts. Default admission throws in that case;
+report-only `allowRefused` retains explicit refusal evidence and diagnostic
+geometry. `noAdmittedLayout` marks those states. Their table costs describe
+refused geometry and are not deployable results. The live page blocks interaction
+and the nightly gate fails if neither family is admitted.
 
 ## Family-file interface
 
@@ -126,6 +134,7 @@ node --test scripts/layout-reference/reference.test.mjs scripts/ui-library/famil
 node scripts/layout-reference/report.mjs --out "$TMPDIR/reference-layouts"
 node scripts/layout-reference/benchmark.mjs --out "$TMPDIR/reference-layouts" --count 100
 node scripts/layout-reference/visited.mjs --out "$TMPDIR/reference-layouts"
+node scripts/layout-reference/summary.mjs --out "$TMPDIR/reference-layouts"
 ```
 
 The read-only recording root defaults to `/home/saithat/Projects/VGI-Health`;
@@ -155,6 +164,14 @@ share, and distinct augmented/native shape counts are reported separately.
 Absent persona-day files in a partial archive are listed in `absentDays`;
 they contribute no inferred states or measurements.
 
+For an unchanged recorded-state corpus, pass
+`visited.mjs --frozen-snapshots <previous-output>/native-screens`. Each compressed
+snapshot is checksummed, and its complete ordered event sequence must match the
+recorded day before use. This rechecks retained UiScreens with the current Lean
+layout checker; it does **not** claim a fresh clinical replay. Without the flag,
+the existing native replay remains available. The same recorded-state corpus
+therefore remains comparable after changes to the semantic layout inventory.
+
 Both reports record admission cache hits/misses, time spent on uncached
 admission and layouts per second. That throughput includes process startup,
 all three viewport checks, diagnostics and fallback admission when required;
@@ -180,9 +197,11 @@ node scripts/layout-reference/screenshots.mjs \
 ```
 
 `visual/<persona>-<screen>/vendor.png` and `dense.png` show exactly the same
-UiScreen at 1440×900, with original content bound for painting. The screenshots
-use the current stock React painter and the isolated research painter, one
-browser page at a time. `screenshots.json` records the selections and page
+UiScreen at 1440×900, with original content bound for painting. The script compares the stock renderer with the research text-card viewer.
+For actual `/lean.html` comparisons, set `DENSE_LAYOUT_SHOTS` on the targeted
+`workflows.pw.ts` command documented in [Lean painter](lean-painter.md). It saves
+five dense/vendor pairs with the exact same UiScreen and viewport, plus evidence
+and screen JSON under the supplied directory. `screenshots.json` records the selections and page
 errors. The full WCAG/screen audit pair and full Playwright suites are not
 needed for this isolated research generator.
 
@@ -192,14 +211,6 @@ Admission establishes the unchanged layout predicates; it does not establish
 visual equivalence or that a text card is a working clinical widget. The
 following adapter/language gaps prevent full vendor fidelity without Lean work:
 
-- Navigation is one noninteractive semantic text slot. Individual navigation
-  button identities, labels and action targets are absent from the inventory.
-- Runtime urgent-strip entries have ordinary body classification in the native
-  shape. Authoring hints pin their geometry while preserving those flags; the
-  library's modal G2 classification does not itself classify the urgent strip.
-- A tabs node exposes the combined tab caption and selected body, not each tab
-  choice as a target. The geometry reports explicitly mark navigation and tab
-  centers as proxies; their missing targets are not silently invented for G10.
 - A field is one target/text slot. Input, unit, source, confirmation button,
   checkbox and code-choice targets are not separately represented. Disabled
   fields/buttons still have `semanticTarget = true`, unlike enabled DOM counts.
@@ -234,3 +245,11 @@ scroll decisions. Original scroll events are retained even when a denser layout
 would allow a new simulator policy to omit them. No savings from these tables
 should be attributed to a layout agent until these residual differences are
 accounted for.
+
+## Default integration evidence
+
+[Coverage, density, costs, timing and verification](../audits/dense-reference-defaults.md)
+records the current native admission results and actual clinical-page screenshot
+pairs. CI excludes `scripts/layout-reference/*` from the JavaScript-only job,
+then builds `ui-layout` and runs these tests in the Lean job. No binary-presence
+skip hides the layout tests.

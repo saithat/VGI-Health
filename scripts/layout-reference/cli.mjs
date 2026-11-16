@@ -5,7 +5,8 @@ import {pathToFileURL} from 'node:url';
 import {ReferenceLayouts,limitFor,digest,recordedLimits} from './admission.mjs';
 export const read=path=>JSON.parse(readFileSync(path,'utf8'));
 export function write(path,value) {mkdirSync(dirname(path),{recursive:true});writeFileSync(path,JSON.stringify(value,null,2)+'\n');}
-export function familyFile(program,states,{cacheDir,density=read('docs/audits/r5-per-screen.json'),cache=new ReferenceLayouts({cacheDir})}={}) {
+export const densityPolicy=()=>({...read('docs/audits/r5-per-screen.json'),measurements:read('docs/methods/lean-screen-density.json').measurements});
+export function familyFile(program,states,{cacheDir,density=densityPolicy(),cache=new ReferenceLayouts({cacheDir})}={}) {
   const groups=new Map(),results=[];
   for(const screen of states) {
     if(!screen.screen || !program.screens.some(s=>s.id===screen.screen)) throw Error('State must name a screen in the supplied Program');
@@ -30,7 +31,7 @@ export function main(argv) {
   let states;
   try {states=read(statePath);} catch(e) {if(e.code!=='EISDIR') throw e;states=readdirSync(statePath).filter(f=>f.endsWith('.json')).sort().map(f=>read(join(statePath,f)));}
   if(!Array.isArray(states)) states=[states];
-  const density=read('docs/audits/r5-per-screen.json');
+  const density=densityPolicy();
   if(opts['density-run']) density.recorded=recordedLimits(resolve(opts['density-run']));
   const result=familyFile(read(opts.program),states,{cacheDir:opts.cache,density});write(opts.out,result.file);
   console.log(JSON.stringify({states:states.length,families:result.file.families.length,...result.stats}));
