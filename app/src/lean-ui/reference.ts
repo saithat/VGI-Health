@@ -8,6 +8,7 @@ import {
 } from "../../../scripts/layout-reference/generator.mjs";
 import density from "../../../docs/methods/lean-screen-density.json";
 import audit from "../../../docs/audits/r5-per-screen.json";
+import paged from "../../../docs/methods/lean-paged-density.json";
 import type { UiScreen } from "../ehr/ui/types";
 import type { Output } from "./layout";
 /** Same vendor snapshots as the nightly gate; absent screens keep limit 15. */
@@ -16,6 +17,12 @@ export function referenceLimit(
   persona: string,
   screen: string,
 ): number {
+  // Bounded lists: the frozen vendor baseline (the larger of the measured
+  // vendor limit and the vendor Program's own dense layout over the retained
+  // recorded states) when it covers the screen.
+  const frozen: Record<string, { limit: number }> = paged.limits;
+  const baseline = frozen[`${release}/${persona}/${screen}`];
+  if (baseline !== undefined) return baseline.limit;
   const measurements: Record<string, { limits: Record<string, number> }> =
     density.measurements;
   const recorded = measurements[`${release}/${persona}`]?.limits[screen];
