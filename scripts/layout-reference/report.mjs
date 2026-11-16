@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import {readStoredGeometry} from '../../agent/src/geometry-format.mjs';
+import {readGeometryJson} from '../../agent/src/geometry-json.mjs';
 // Read-only recording comparison. Exports current native representative variants;
 // does not rewrite or claim a strict replay of historical interpreter states.
 import {existsSync,readdirSync,mkdirSync,writeFileSync} from 'node:fs';
@@ -92,7 +94,8 @@ for(const runName of runs) {
     const specFile=readdirSync(certDir).sort().map(v=>join(certDir,v,'spec.json')).find(p=>existsSync(p)&&read(p).version===prog.specVersion);
     if(!specFile) throw Error(`Missing recorded spec for ${runName}/${persona}/${prog.specVersion}`);
     const {program,dir,files}=await exported(programPath,{world:manifest.world,schedule,specFile});
-    const originalAtlas=read(join(run,'geometry',`${recorded.geometry.programHash}.json`));
+    const geometryFile=join(run,'geometry',`${recorded.geometry.programHash}${recorded.geometry.componentsSha256?'.'+recorded.geometry.componentsSha256:''}.json`);
+    const originalAtlas=await readStoredGeometry(geometryFile,readGeometryJson,{result:recorded});
     const selected=new Map(),missingStates=[];
     // Use the same target-sensitive representative-state choice as pointerTravel.
     for(const ev of recorded.trace) {

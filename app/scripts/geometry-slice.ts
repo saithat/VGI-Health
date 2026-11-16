@@ -1,9 +1,13 @@
+import {readGeometryJson} from '../../agent/src/geometry-json.mjs';
+import {readStoredGeometry} from '../../agent/src/geometry-format.mjs';
+import {dayResultSchema} from '../src/dashboard/agent-evidence';
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, rename, stat, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   replayGeometrySchema,
   trajectorySchema,
+  trajectoryIndexSchema,
 } from "../src/dashboard/trajectories-data";
 import type { GeometryAtlas } from "../src/metrics/geometry";
 import type { Trajectory } from "../src/dashboard/trajectory-replay";
@@ -83,22 +87,28 @@ export async function geometrySliceFile(
     } catch {
       /* Create the derived slice. */
     }
-    const atlasKey = `${atlasPath}:${atlasStamp}`;
+    const read=async (file:string):Promise<unknown>=>JSON.parse(await readFile(file,'utf8'));
+    const task=trajectorySchema.parse(await read(taskPath));
+    const pointer=await read(atlasPath);
+    let selection:import('../../agent/src/geometry-format.mjs').GeometrySelection|undefined;
+    let selectionKey='legacy';
+    if(pointer&&typeof pointer==='object'&&'schemaVersion' in pointer&&pointer.schemaVersion===2){
+      const index=trajectoryIndexSchema.parse(await read(join(runRoot,'trajectories/index.json')));
+      const entry=index.tasks.flatMap(row=>[row,...(row.baseline?[row.baseline]:[])]).find(row=>row.file===taskFile);
+      if(!entry)throw Error('Missing trajectory geometry context');
+      selectionKey=`${entry.day}:${entry.persona}:${entry.programVersion}`;
+      const recorded=dayResultSchema.parse(await read(join(runRoot,'days',`day-${String(entry.day).padStart(2,'0')}`,`${entry.persona}.json`)));
+      selection=recorded.geometry?.programHash===atlasName.split('.')[0]?{result:recorded}:{day:entry.day};
+    }
+    const atlasKey = `${atlasPath}:${atlasStamp}:${selectionKey}`;
     if (atlasCache?.key !== atlasKey) {
-      const value = readFile(atlasPath, "utf8").then((raw) =>
-        replayGeometrySchema.parse(JSON.parse(raw)),
-      );
+      const value = readStoredGeometry(atlasPath,readGeometryJson,selection).then(atlas=>replayGeometrySchema.parse(atlas));
       atlasCache = { key: atlasKey, value };
       void value.catch(() => {
         if (atlasCache?.value === value) atlasCache = undefined;
       });
     }
-    const [atlas, task] = await Promise.all([
-      atlasCache.value,
-      readFile(taskPath, "utf8").then((raw) =>
-        trajectorySchema.parse(JSON.parse(raw)),
-      ),
-    ]);
+    const atlas=await atlasCache.value;
     const [programHash, componentsHash] = atlasName.split(".");
     if (
       atlas.programHash !== programHash ||
