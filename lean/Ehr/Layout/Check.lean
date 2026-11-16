@@ -1,5 +1,6 @@
 import Ehr.Layout.Engine
 import Ehr.Layout.Contrast
+import Ehr.Specs.PhysicalBounds
 namespace Ehr.Layout
 open Lean
 
@@ -68,11 +69,18 @@ def G3 (ps : List Placed) : Prop :=
 def activePaint (ps : List Placed) (p : Placed) : Bool :=
   !(ps.any (·.info.interruptive)) || p.info.interruptive || p.info.banner
 
+/-- New specification for owner review: the smallest admitted font size, in
+1/64 CSS px (12 CSS px = 768 units, `PhysicalBounds.minFontPx`). -/
+def minFontUnits : Nat := 64 * Ehr.Specs.PhysicalBounds.minFontPx
+
 /-- G4 checks declared capacity, vertical reserve, safety policy and parent
 scroll clipping. Pixel glyph containment additionally trusts the pinned font
-metrics; wrap completeness is proved independently by `wrap_complete`. -/
+metrics; wrap completeness is proved independently by `wrap_complete`.
+
+New specification for owner review: the font size is at least `minFontUnits`
+(12 CSS px). The rule previously required only a positive size. -/
 def textFits (p : Placed) (t : TextSlot) : Prop :=
-  t.font < Fonts.tables.size ∧ 0 < t.fontSize ∧
+  t.font < Fonts.tables.size ∧ minFontUnits ≤ t.fontSize ∧
   (t.fontSize * Fonts.lineExtent[t.font]?.getD 2000 + 999)/1000 ≤ t.lineHeight ∧
   0 < capacity t p.rect.w ∧ 0 < t.maxLines ∧
   t.maxLines*t.lineHeight ≤ p.rect.h ∧
@@ -270,6 +278,12 @@ def check (expected : List (List Nat)) (v : Size) (ps : List Placed) : Bool := d
 theorem layoutAccepted_rules (expected v ps) (h : check expected v ps = true) : Rules expected v ps := by
   exact of_decide_eq_true h
 
+/-- New specification for owner review: every text slot of an accepted layout
+is drawn at 12 CSS px (768 units) or larger. -/
+theorem layoutAccepted_minFont (e v ps) (h : check e v ps = true)
+    (p : Placed) (hp : p ∈ ps) (t : TextSlot) (ht : t ∈ p.info.text) : 768 ≤ t.fontSize :=
+  ((layoutAccepted_rules e v ps h).2.2.2.1.2.1 p hp t ht).2.1
+
 /-- New specification for owner review: G1–G9 plus G10 with a density limit. -/
 def checkDensity (limit : Nat) (expected : List (List Nat)) (v : Size) (ps : List Placed) : Bool :=
   check expected v ps && decide (G10 limit v ps)
@@ -388,6 +402,8 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
         if n < 1792 then
           out := out ++ [{ rule := "G3", node := p.info.id, metric := name, actual := n, required := 1536, deficit := (1536 : Int)-n, warning := n ≥ 1536 }]
     for t in p.info.text.toList do
+      if t.fontSize < minFontUnits then
+        out := out ++ [{ rule := "G4", node := p.info.id, metric := "font-size", actual := t.fontSize, required := minFontUnits, deficit := (minFontUnits : Int)-t.fontSize }]
       if t.safety && t.overflow != .scroll then
         out := out ++ [{ rule := "G4", node := p.info.id, metric := "unbounded-safety-requires-vertical-wrap" }]
       if t.safety && !escapeReady t then
@@ -462,6 +478,7 @@ def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
 #print axioms layoutAccepted_textPixels
 #print axioms layoutAccepted_safety
 #print axioms layoutAccepted_rules
+#print axioms layoutAccepted_minFont
 #print axioms layoutAccepted_geometry
 #print axioms layoutAccepted_allViewports
 #print axioms layoutAccepted_textComplete

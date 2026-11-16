@@ -58,7 +58,7 @@ private theorem ordinary_text (v : Size) (hv : v ∈ viewports) (p : List Nat ×
   have maximum : Fonts.maxAdvance[0]?.getD 0 = 1544 := by decide_cbv
   have units : Fonts.unitsPerEm[0]?.getD 1000 = 1000 := by decide_cbv
   have ready : escapeReady slotText = true := by decide_cbv
-  change 0 < Fonts.tables.size ∧ 0 < slotText.fontSize ∧ _
+  change 0 < Fonts.tables.size ∧ minFontUnits ≤ slotText.fontSize ∧ _
   refine ⟨by decide_cbv, by decide, ?_, ?_, by decide, by change 2816 ≤ 3072; decide, ?_, ?_⟩
   · simp only [slotText,metrics]; decide
   · simp only [ordinary,capacity,cell,slotText,maximum,units]

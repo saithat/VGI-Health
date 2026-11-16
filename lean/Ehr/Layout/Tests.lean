@@ -24,6 +24,14 @@ private def overflow : Node := .box .absolute
 #guard !(contrastPass ⟨240,240,240⟩ ⟨255,255,255⟩ 6)
 #guard !(textFits ⟨⟨0,0,6400,1280⟩,{}, { text := some { safety := true, overflow := .ellipsis } },none,false,[],[]⟩
   { safety := true, overflow := .ellipsis } |> decide)
+/-! Minimum font size (G4); new specification for owner review. -/
+private def fontBox (size : Nat) : Placed :=
+  ⟨⟨0,0,6400,1536⟩,{}, { text := some { maxLength := 4, fontSize := size, lineHeight := 1408 } },none,false,[],[]⟩
+#guard minFontUnits == 768
+#guard decide (textFits (fontBox 768) { maxLength := 4, fontSize := 768, lineHeight := 1408 })
+#guard !decide (textFits (fontBox 767) { maxLength := 4, fontSize := 767, lineHeight := 1408 })
+#guard !decide (G4 ⟨92160,57600⟩ [fontBox 704])
+#guard (findings [] ⟨92160,57600⟩ [fontBox 704]).any fun f => f.rule == "G4" && f.metric == "font-size" && f.deficit == 64
 private def hugging : Node := .box .frame { width := .hug, height := .hug }
   { id := "hug", paint := false } [label]
 #guard ((boxes ⟨20000,10000⟩ hugging).head!).rect.w == 6400

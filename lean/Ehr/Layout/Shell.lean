@@ -239,7 +239,7 @@ private theorem modal_fits (v : Size) (hv : v ∈ viewports) (entry i) :
   have maximum : Fonts.maxAdvance[0]?.getD 0 = 1544 := by decide_cbv
   have units : Fonts.unitsPerEm[0]?.getD 1000 = 1000 := by decide_cbv
   have ready : escapeReady Structural.slotText = true := by decide_cbv
-  change 0 < Fonts.tables.size ∧ 0 < Structural.slotText.fontSize ∧ _
+  change 0 < Fonts.tables.size ∧ minFontUnits ≤ Structural.slotText.fontSize ∧ _
   refine ⟨by decide_cbv,by decide,?_,?_,by decide,by change 2816 ≤ 3072; decide,?_,?_⟩
   · simp only [Structural.slotText,metrics]; decide
   · simp only [modal,capacity,cell,Structural.slotText,maximum,units]
