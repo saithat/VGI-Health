@@ -349,6 +349,15 @@ private theorem info_plain (infoId display : String) (rows : List (List (String 
 private theorem atom_plain (atom : UiStripAtom) : (stripAtomPart atom).commit = false := by
   cases atom <;> rfl
 
+/-- No part of a bounded list's window is the commit. -/
+private theorem window_plain (cx : DisplayCx) (comp : String) : Plain (windowParts cx comp) := by
+  unfold windowParts
+  split
+  · intro p member
+    simp only [pagerParts,List.mem_cons,List.not_mem_nil,or_false] at member
+    rcases member with rfl | rfl | rfl | rfl | rfl | rfl <;> rfl
+  · exact plain_nil
+
 /-- No display part after a node's own part is the commit. -/
 private theorem leaf_plain (cx : DisplayCx) (node : UiNode) : Plain (leafParts cx node) := by
   cases node with
@@ -358,7 +367,7 @@ private theorem leaf_plain (cx : DisplayCx) (node : UiNode) : Plain (leafParts c
     exact plain_append (plain_option _ _ (plain_single _ rfl)) (plain_some _ _ fun _ => rfl)
   | tabs id labels selected body => exact plain_map _ _ fun _ => rfl
   | stepper steps current => exact plain_map _ _ fun _ => rfl
-  | info comp label infoId display rows => exact info_plain infoId display rows
+  | info comp label infoId display rows => exact plain_append (window_plain cx comp) (info_plain infoId display rows)
   | board urgent children => exact plain_map _ _ fun _ => rfl
   | datedTimeline title dated undated children =>
     exact plain_append (plain_map _ _ fun _ => rfl) (plain_map _ _ fun _ => rfl)
@@ -690,6 +699,15 @@ theorem render_small (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
     SmallModal (runRenderUi ⟨sp,program,facts,display,user,state⟩) :=
   fun node member => render_small_always sp program facts display user state node member _
 
+/-- New specification for owner review: the renderer's modal is small under
+every display context, so a layout that changes only the context of the
+screen's parts (the windows of bounded lists) keeps it small. -/
+theorem render_modal_small (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
+    (display : Display) (user : Ehr.User) (state : Ehr.State) :
+    ∀ node ∈ (runRenderUi ⟨sp,program,facts,display,user,state⟩).modal, ∀ cx : DisplayCx,
+      (semanticNodes cx node).length ≤ 2 :=
+  render_small_always sp program facts display user state
+
 /-- Sound range over-approximation for every program, including malformed
 programs: clinical admission remains the independent existing checker. -/
 theorem renderer_range (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
@@ -878,6 +896,8 @@ theorem layoutAccepted_program (sp : Ehr.Spec) (program : Ehr.Program)
 #print axioms strip_small
 #print axioms render_small_always
 #print axioms render_small
+#print axioms render_modal_small
+#print axioms window_plain
 #print axioms strip_range
 #print axioms renderer_range
 #print axioms uncheckedPaint_bound

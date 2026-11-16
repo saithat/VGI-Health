@@ -75,9 +75,7 @@ theorem selectTabCore_safe (sp : Spec) (prog : Program) (facts : Facts) (s : Sta
     (cid : CompId) (idx : Nat) : MacroSafe sp s (selectTabCore sp prog facts s cid idx).1 := by
   unfold selectTabCore
   split
-  · split
-    · exact MacroSafe.of_eq rfl rfl rfl rfl
-    · exact MacroSafe.refl _ _
+  · split <;> first | exact MacroSafe.of_eq rfl rfl rfl rfl | exact MacroSafe.refl _ _
   · exact MacroSafe.refl _ _
 
 /-- One macro event (without running macros) is safe. -/

@@ -680,6 +680,24 @@ def stripAtom? : UiNode → Option UiStripAtom
   | .button comp label role enabled reason key => some (.button comp label role enabled reason key)
   | _ => none
 
+/-- New specification for owner review: the window a bounded list shows.
+The layout decides it (`Ehr.Layout.Window.windowScreen`), never the renderer:
+the list shows page `page` of `pages`, at most `size` of its `total` records,
+in its rendered order. `flagged` counts its flagged records (an abnormal
+result flag or an urgent state), `flaggedElsewhere` those on other pages, and
+`nextFlagged?` is the next page after this one, cyclically, holding a flagged
+record that is not on this page. -/
+structure UiWindow where
+  comp : CompId
+  page : Nat
+  pages : Nat
+  size : Nat
+  total : Nat
+  flagged : Nat
+  flaggedElsewhere : Nat
+  nextFlagged? : Option Nat := none
+  deriving Repr, Inhabited, DecidableEq
+
 /-- A semantic screen. The banner is the first and sole banner landmark. -/
 structure UiScreen where
   /-- Stable view identity for scroll/focus lifecycle; never a visible label. -/
@@ -705,6 +723,12 @@ structure UiScreen where
   side : List UiNode
   modal : Option UiNode
   urgent? : Option (List UiNode) := none
+  /-- New specification for owner review: the page selected for a list
+  component (view state `State.tabSel`); a list not listed is on page 0. -/
+  pages? : Option (List (CompId × Nat)) := none
+  /-- New specification for owner review: the windows of the bounded lists,
+  written by the layout's window (`Ehr.Layout.Window`), never by the renderer. -/
+  windows? : Option (List UiWindow) := none
   deriving Repr, Inhabited
 
 /-! ## API records -/

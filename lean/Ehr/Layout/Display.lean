@@ -68,6 +68,16 @@ inductive PartRole
   /-- One record of a list a node carries beside its children (a dated source,
   a reference curve, a quick-pick option list). -/
   | item
+  /-- New specification for owner review: where the window of a bounded list
+  is, "Records a–b of n". -/
+  | position
+  /-- New specification for owner review: a pager target of a bounded list (the
+  previous page, the next page, the page selector, the next page with a flagged
+  record). `comp` is the list and `col` the page it selects. -/
+  | pager
+  /-- New specification for owner review: how many flagged records of a
+  bounded list are on other pages. -/
+  | flagged
   deriving Repr, DecidableEq, Inhabited, ToJson, FromJson
 
 /-- New specification for owner review: the role of a run inside the banner. -/
@@ -163,6 +173,9 @@ structure DisplayCx where
   activeNav : Option String := none
   /-- Components with an explicit confirmation button on the screen. -/
   confirms : List String := []
+  /-- New specification for owner review: the windows of the screen's bounded
+  lists (`UiScreen.windows?`). -/
+  windows : List UiWindow := []
   deriving Inhabited
 
 /-! ## Fields -/
@@ -352,6 +365,56 @@ def infoParts (infoId display : String) (rows : List (List (String × String))) 
     rows.zipIdx.flatMap fun (row,r) => row.zipIdx.flatMap fun (cell,c) =>
       [labelCell r c cell.1, valueCell infoId row r c cell]
 
+/-! ## Bounded lists
+
+New specifications for owner review. A list the layout bounds
+(`Ehr.Layout.Window`) shows one page of its records; these parts say where the
+page is and reach the others. They come before the list's cells. -/
+
+/-- The first record (counting from 1) of page `p`. -/
+def windowFirst (w : UiWindow) (p : Nat) : Nat := p * w.size + 1
+
+/-- The last record (counting from 1) of page `p`. -/
+def windowLast (w : UiWindow) (p : Nat) : Nat := min w.total ((p+1) * w.size)
+
+/-- The records of page `p`, as the page selector names it. -/
+def pageOption (w : UiWindow) (p : Nat) : String :=
+  "Page " ++ toString (p+1) ++ ": records " ++ toString (windowFirst w p) ++ "–" ++ toString (windowLast w p)
+
+/-- "Records a–b of n". -/
+def positionText (w : UiWindow) : String :=
+  "Records " ++ toString (windowFirst w w.page) ++ "–" ++ toString (windowLast w w.page) ++ " of " ++ toString w.total
+
+/-- How many flagged records are on other pages; it says so when none are. -/
+def flaggedText (n : Nat) : String :=
+  if n == 0 then "No flagged records on other pages"
+  else if n == 1 then "1 flagged record on another page"
+  else toString n ++ " flagged records on other pages"
+
+/-- The parts of a window, in reading order: the position, the flagged count,
+then four targets: the previous page, the next page, the page selector (a
+select whose options are every page) and the next page with a flagged record.
+A target that cannot move is shown but not enabled. -/
+def pagerParts (w : UiWindow) : List Part :=
+  [{ role := .position, text := positionText w, comp := w.comp, kind := "position", col := some w.page },
+   { role := .flagged, text := flaggedText w.flaggedElsewhere, comp := w.comp, kind := "flagged",
+     tone := if w.flaggedElsewhere == 0 then "" else "red" },
+   { role := .pager, text := "Previous page", target := true, comp := w.comp, kind := "previous",
+     col := some (w.page - 1), enabled := decide (0 < w.page) },
+   { role := .pager, text := "Next page", target := true, comp := w.comp, kind := "next",
+     col := some (w.page + 1), enabled := decide (w.page + 1 < w.pages) },
+   { role := .pager, text := "Page " ++ toString (w.page+1) ++ " of " ++ toString w.pages, target := true,
+     comp := w.comp, kind := "page", col := some w.page, selected := true,
+     options := (List.range w.pages).map fun q => (toString q, pageOption w q) },
+   { role := .pager, text := "Next flagged", target := true, comp := w.comp, kind := "nextFlagged",
+     col := some (w.nextFlagged?.getD w.page), enabled := w.nextFlagged?.isSome }]
+
+/-- The window parts of a list component, if the layout bounds it. -/
+def windowParts (cx : DisplayCx) (comp : String) : List Part :=
+  match cx.windows.find? (·.comp == comp) with
+  | some w => pagerParts w
+  | none => []
+
 /-! ## Banner -/
 
 /-- New specification for owner review: the role of a banner field by its
@@ -479,7 +542,7 @@ def leafParts (cx : DisplayCx) : UiNode → List Part
   | .button _ _ _ enabled reason hotkey => buttonParts enabled reason hotkey
   | .tabs id labels selected _ => tabParts id labels selected
   | .stepper steps current => stepParts steps current
-  | .info _ _ infoId display rows => infoParts infoId display rows
+  | .info comp _ infoId display rows => windowParts cx comp ++ infoParts infoId display rows
   | .board urgent _ => urgent.map demandPart
   | .datedTimeline _ dated undated _ => dated.map datedPart ++ undated.map undatedPart
   | .chartReferences references _ => references.map referencePart
@@ -626,14 +689,20 @@ theorem info_complete (cx : DisplayCx) (comp label infoId display : String) (row
     cases rows with
     | nil => simp at hr
     | cons => rfl
+  have lift : ∀ p, p ∈ infoParts infoId display rows → p ∈ leafParts cx (.info comp label infoId display rows) :=
+    fun p member => List.mem_append_right _ member
   refine ⟨rfl,rfl,?_,?_⟩
-  · refine ⟨valueCell infoId row r c cell,?_,rfl,rfl,rfl,rfl,rfl⟩
-    simp only [leafParts,infoParts,nonempty,Bool.false_eq_true,↓reduceIte]
+  · refine ⟨valueCell infoId row r c cell,lift _ ?_,rfl,rfl,rfl,rfl,rfl⟩
+    simp only [infoParts,nonempty,Bool.false_eq_true,↓reduceIte]
     split
     · exact List.mem_append_right _ (List.mem_flatMap.mpr ⟨(row,r),rowMember,
         List.mem_map.mpr ⟨(cell,c),cellMember,rfl⟩⟩)
     · exact List.mem_flatMap.mpr ⟨(row,r),rowMember,List.mem_flatMap.mpr ⟨(cell,c),cellMember,by simp⟩⟩
-  · simp only [leafParts,infoParts,nonempty,Bool.false_eq_true,↓reduceIte]
+  · suffices h : ∃ p ∈ infoParts infoId display rows, p.role = .cellLabel ∧ p.col = some c ∧ p.raw = cell.1 ∧
+        p.text = Format.columnCaption cell.1 ∧ (p.row = some r ∨ p.row = some 0) by
+      obtain ⟨p,member,rest⟩ := h
+      exact ⟨p,lift p member,rest⟩
+    simp only [infoParts,nonempty,Bool.false_eq_true,↓reduceIte]
     split
     next uniform =>
       -- The header row is the first row's captions; a uniform table has the same captions in every row.
@@ -662,7 +731,8 @@ theorem info_complete (cx : DisplayCx) (comp label infoId display : String) (row
 (a status line has only its caption). -/
 theorem info_empty (cx : DisplayCx) (comp label infoId display : String) (shown : display ≠ "status") :
     ∃ p ∈ leafParts cx (.info comp label infoId display []), p.role = .empty ∧ p.text = Format.emptyInfo infoId := by
-  exact ⟨{ role := .empty, text := Format.emptyInfo infoId },by simp [leafParts,infoParts,optionList,shown],rfl,rfl⟩
+  exact ⟨{ role := .empty, text := Format.emptyInfo infoId },
+    List.mem_append_right _ (by simp [infoParts,optionList,shown]),rfl,rfl⟩
 
 private theorem bannerRunRole_cases (key : String) :
     bannerRunRole key = .name ∨ bannerRunRole key = .identity ∨ bannerRunRole key = .badge ∨

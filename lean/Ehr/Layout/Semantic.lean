@@ -56,7 +56,8 @@ def screenCx (screen : UiScreen) : DisplayCx :=
   { fieldChoices := screen.fieldChoices?.getD [], fieldSources := screen.fieldSources?.getD [],
     sourceLabels := screen.sourceLabels?.getD [], entryHints := screen.entryHints?.getD [],
     activeNav := screen.activeNav?,
-    confirms := (screen.workspace ++ screen.side ++ screen.modal.toList ++ screen.urgent?.getD []).flatMap confirmComps }
+    confirms := (screen.workspace ++ screen.side ++ screen.modal.toList ++ screen.urgent?.getD []).flatMap confirmComps,
+    windows := screen.windows?.getD [] }
 
 /-- New specification for owner review: the first two roots are the banner
 (one part: patient fields and the signed-in clinician as runs, so that rule G1
