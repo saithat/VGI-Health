@@ -314,6 +314,12 @@ candidate's own layout never sets a limit. `limitFor`, the agent's
 `vendorDensityLimits` and the painter's `referenceLimit` read it first and
 report which limit applied; Lean-mode run manifests fingerprint it.
 
+The current file covers all 84 retained persona-days (132,843 states, 218
+release/persona/screen keys). 101 keys take the vendor layout's larger value,
+most of them by a few targets; the largest steps are the result review
+(`w2Result`, 11 → 23) and the ED track board (15 → 25). Screens it does not
+cover keep the measured limit.
+
 ## Default integration evidence
 
 [Coverage, density, costs, timing and verification](../audits/dense-reference-defaults.md)
