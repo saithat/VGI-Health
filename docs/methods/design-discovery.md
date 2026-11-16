@@ -2,11 +2,12 @@
 
 [Overview](../../README.md) · [UI language and G1–G11](ui-library.md) ·
 [Agent loop](agent-loop.md) · [Simulated clinicians](simulation.md) ·
-[First local result and verification](../audits/lean-nightly-first-result.md)
+[First local result and verification](../audits/lean-nightly-first-result.md) ·
+[Layout-rule and prompt measurements](../audits/layout-rules-discovery.md)
 
 `run-days --screens lean` is an opt-in research mode of the existing nightly
 loop. The agent reads one simulated persona's training evidence and proposes
-Program edits and optional free layouts together. The objective is clicks plus
+Program edits and optional layout rules or literal layouts together. The objective is clicks plus
 scrolls saved on that persona's traces. Completion, clinical admission,
 learnability and physical-interaction validation still gate each release.
 There is no pointer-travel ranking, fixed Program or layout search separate
@@ -55,6 +56,10 @@ node scripts/discovery/smoke.mjs runs/lean-smoke
 node scripts/discovery/report.mjs runs/lean-smoke/recorded
 node scripts/discovery/report.mjs runs/lean-smoke/replay
 node scripts/discovery/gate-benchmark.mjs runs/lean-gate-benchmark
+node scripts/discovery/rules-smoke.mjs runs/layout-rules-smoke
+node scripts/discovery/rules-benchmark.mjs runs/layout-rules-benchmark
+node scripts/discovery/prompt-measure.mjs /path/to/lean-10day-stopped-day3 \
+  runs/layout-rules-prompt-measure
 pnpm --filter agent test --maxWorkers 2
 pnpm --filter agent typecheck
 ```
@@ -68,34 +73,95 @@ human usability gains.
 The Lean Program schema is unchanged. In this mode the candidate's existing
 RFC 6902 patch also accepts `/layouts`, a separate array initially equal to
 `[]`. The patch handler removes it before parsing or serializing the Program.
-Each entry has:
+Two compatible entry forms are supported. Existing literal cases still use:
 
 ```text
-{ screen: screenId,
-  shape: nativeSlotShapeArray,
-  layouts: [ {viewport: {w, h}, tree: Node, components?: definitions}, ... ] }
+{ screen: screenId, shape: nativeSlotShapeArray,
+  layouts: [{viewport: {w, h}, tree: Node, components?: definitions}, ...] }
 ```
 
-The prompt supplies every native shape and occurrence path in a lossless
-dictionary encoding (shared rows, component IDs and region names). This avoids
-repeating large per-state JSON and fits the measured persona requests below
-Codex’s transport character limit without filtering the design space. Each case must supply
-1440×900, 1280×800 and 1920×1080 in integer 1/64-pixel units. Nodes support
-frames, stacks, wrapping rows, weighted/fixed grids, absolute positions, scroll
-viewports, component expansion and arbitrary opaque colors and marks. G1–G11
-are the only layout restrictions. Existing clinical rules still constrain
-Program semantics. The prompt explains every rule and tells the agent to work
-from this persona's logs/traces to reduce clicks and scrolls. Training-only
-target frequencies, navigation transitions and recent trace events accompany the
-ordinary nightly evidence and decision history. Validation and even-day traces never enter the prompt. Admission and prompt
-exports use the most recent committed odd-day training schedule for the shared
-workspace, so patient-selection and selected-chart shapes are available to the
-designer; screen caches include that workspace context. Resume rebuilds this
-context in day order from the committed training partitions.
+Rules avoid writing a tree for every shape and viewport:
+
+```json
+[{"screen":"w1Orders","rules":[
+  {"kind":"firstViewport","target":{"id":"w1Orders.orderSearch"}},
+  {"kind":"beside","target":{"id":"w1Orders.orderSearch"},"anchor":{"id":"w1Orders.orderList"}}
+]}]
+```
+
+The example IDs must exist as native occurrences; consult the actual persona's
+Program and traces. `screen` is an ID or `"*"`; optional `screens: [ids]`
+restricts an entry to several named screens. Selectors combine `id`, native
+`kind` and native `role` by AND. Entries and rules run in array order.
+
+| Rule | Meaning |
+|---|---|
+| `firstViewport {target}` | Lift the selected subtree to the start of the body scroll, before navigation. |
+| `region {target, region: "body" \| "side"}` | Lift a subtree into the body or the 158-pixel side column. |
+| `columns {target, count, tracks?}` | Arrange a group's visible child subtrees in rows of `count` columns, optionally with positive relative track weights. |
+| `order {targets: [selectors]}` | Put selected siblings first in the requested order; retain all remaining siblings. |
+| `beside {target, anchor}` | Merge two disjoint subtrees into a two-column row at the anchor. |
+| `pin {target}` | Reserve a fixed row above the commit bar, shortening the body viewport accordingly. |
+
+Every transform starts with `layoutFor(shapeFor(nativeUI), viewport)` from the
+shared dense generator. It preserves cards, sources, flags and safety text;
+reflows complete occurrence subtrees; and sorts reading order deterministically.
+This transform is **untrusted**. Native `family-check` checks every expanded
+family at 1440×900, 1280×800 and 1920×1080 and the unchanged vendor limit.
+Unknown targets, unsupported fixed/safety targets, conflicting literal/rule
+cases, malformed tracks and unwitnessed screen scopes refuse explicitly.
+A missing target in any applicable shape refuses that shape, so use appropriate
+screen scopes. Unknown rule fields also refuse. A refused rule expansion retains
+independently checked reference geometry, but its findings fail the candidate
+and reach the repair loop; fallback never makes a refused proposal eligible.
+Geometry replay expands and admits through this same screen gate.
+
+Use `moveType: "layout"` only in this mode, with a patch to `/layouts`; a
+candidate may include Program edits in the same patch. Collapsing a group stays
+a Program edit because it changes semantics. Separate label/control placement
+is not represented: the current native model exposes one field occurrence.
+No Lean change is made to add that finer representation. Literal layouts retain
+the existing Node/component language and exact native source/flag contract.
+Removing sidecar entries restores reference geometry. Literal cases cannot share
+a selected shape with rules, and must still include all three viewports.
+
+### Evidence-first prompts
+
+Only the opt-in wrapper changes prompt construction. It orders material as:
+
+1. This persona's committed odd-day logs, target frequencies, recent traces and
+   per-screen clicks, scroll counts/pixels and pointer travel, then train summary.
+2. Current Program fragments for visited screens, current sidecar rules/cases,
+   and one compact dense outline per visited screen: regions, column starts,
+   first-viewport items and scroll containers. Other shapes still get their own
+   independent transformation and admission.
+3. The rule language and G1–G11 in plain words.
+4. A screen/spec index, relevant hospital requirements, semantic/patch vocabulary,
+   representative native shapes, and decision/repair context.
+
+Repeated Program components are losslessly interned after substituting the local
+screen prefix; declared default fields and template indexes expand back to the
+original fragments. This reduces repetition without hiding patch targets.
+Unvisited screens remain in a compact index. The full Program, full native
+inventory, manual prose and recorded examples are not repeated by default.
+Representative native paths support optional literal cases; they are examples,
+not a design catalogue or a bound on which rules may be proposed. G1–G11 are the
+only geometry admission rules; existing clinical and release rules govern
+Program behavior. Both kinds of edits are explicitly in scope, aiming at fewer
+clicks and scrolls for this persona.
+
+Cost attribution uses the existing continuous pointer state machine and original
+task-local scroll lookahead. Geometry is bound to the exact committed trace;
+legacy flat Lean atlases are filtered by trace hash and their event aliases
+rebuilt before attribution. Missing bound geometry produces explicit null pixels.
+Validation, other personas and even-day traces never enter this prompt. The
+most recent committed odd-day schedule supplies shared-workspace shapes, and
+screen cache identity includes that workspace context. Default browser prompt
+builders and their golden propose/choose/repair bytes are unchanged.
 
 * Reference layouts first pass `program-check`, retaining the universal
   fixed-shell certificate and unchanged spec density default.
-* Custom cases pass `family-check` at the applicable screen limit. Actual
+* Literal cases and expanded rule cases pass `family-check` at the applicable screen limit. Actual
   `family-paint` also checks source/target/banner/modal/commit linkage; arbitrary
   agent-provided source paths or flags cannot replace the native inventory.
 * Every shape without a custom case uses the shared

@@ -1,4 +1,5 @@
 import { BoundedMap } from './bounded-map.js';
+import { applyLayoutRules, LayoutRuleRefusal, denseOutline } from "./layout-rules.js";
 import { shapeFor } from "../../scripts/layout-reference/generator.mjs";
 import { LeanReference, referenceGeneratorVersion } from "./lean-reference.js";
 import { createHash, randomUUID } from "node:crypto";
@@ -16,7 +17,7 @@ import {
   geometryComponentsHash,
   geometryCacheKey,
 } from "./geometry.js";
-import { designOf, withDesign, type LayoutDesign } from "./layout-design.js";
+import { designOf, withDesign, ruleCase, appliesTo, type LayoutDesign } from "./layout-design.js";
 import { expandProgram } from "./composites.js";
 import { stableStringify, sha256 } from "./program.js";
 import {
@@ -328,7 +329,7 @@ export class LeanScreenChecker implements ScreenChecker {
     const selections = samples.map((s, i) =>
       design.find(
         (c) =>
-          c.screen === s.screen &&
+          !ruleCase(c) && c.screen === s.screen &&
           stableStringify(c.shape) === stableStringify(shapes[i]),
       ),
     );
@@ -336,20 +337,44 @@ export class LeanScreenChecker implements ScreenChecker {
       ? []
       : design.filter(
           (c) =>
-            !samples.some(
+            !ruleCase(c) && !samples.some(
               (s, i) =>
                 s.screen === c.screen &&
                 stableStringify(c.shape) === stableStringify(shapes[i]),
             ),
         );
+    const ruleFailures: {screen:string; findings: unknown[]}[] = [];
+    if (!input.result) for (const c of design.filter(ruleCase)) {
+      if (!samples.some(s => appliesTo(c,s.screen))) ruleFailures.push({screen:c.screen,findings:[{rule:'layout-rule',metric:'rule screen has no native witness'}]});
+    }
     const referenceResults: ("dense" | "fallback" | "custom" | "refused")[] =
       [];
     const paints: LayoutReply[] = [];
     const families: unknown[] = [];
     const extra: { index: number; requests: unknown[] }[] = [];
     for (const [i, s] of samples.entries()) {
-      const selected = selections[i],
-        maxTargetsPerViewport = limitFor(s.screen).limit;
+      let selected = selections[i];
+      const maxTargetsPerViewport = limitFor(s.screen).limit;
+      const entries = design.filter(ruleCase).filter(c => appliesTo(c,s.screen));
+      if (entries.length) {
+        if (selected) ruleFailures.push({screen:s.screen,findings:[{rule:'layout-rule',metric:'literal case and rules both select this shape; remove one'}]});
+        else try {
+          const rules=entries.flatMap(c=>c.rules);
+          const layouts=viewports.map(viewport=>({viewport,tree:z.json().parse(applyLayoutRules(s.ui,viewport,rules))}));
+          const references=[{screen:s.ui,layouts}];
+          const [admission]=await this.batch([{op:'family-check',references,maxTargetsPerViewport}]);
+          if(admission?.error)throw new LayoutRuleRefusal(`native family refusal: ${admission.error}`);
+          if(!admission || typeof admission.accepted!=='boolean')throw Error('Missing rule family verdict');
+          if(admission.accepted) selected={screen:s.screen,shape:required(shapes[i]),layouts};
+          else {
+            const diagnoses=await this.batch(viewports.map(viewport=>({op:'family-paint',references,screen:s.ui,viewport,maxTargetsPerViewport})));
+            ruleFailures.push({screen:s.screen,findings:[{rule:'layout-rule',metric:'expanded rules refused; reference fallback retained',kinds:rules.map(r=>r.kind)},...[...new Map([...(admission.findings??[]),...diagnoses.flatMap(d=>d.findings??[])].filter(f=>!f.warning).map(f=>[stableStringify(f),f])).values()]]});
+          }
+        } catch(error) {
+          if(!(error instanceof LayoutRuleRefusal))throw error;
+          ruleFailures.push({screen:s.screen,findings:[{rule:'layout-rule',metric:error.message}]});
+        }
+      }
       if (selected) {
         const references = [{ screen: s.ui, layouts: selected.layouts }];
         families.push(references);
@@ -387,8 +412,12 @@ export class LeanScreenChecker implements ScreenChecker {
       }
     }
     const extras = await this.batch(extra.flatMap((e) => e.requests));
-    const failures: { screen: string; findings: unknown[] }[] = [];
+    const failures: { screen: string; findings: unknown[] }[] = [...ruleFailures];
     const rules: Record<string, number> = {};
+    for (const failure of ruleFailures) for (const f of failure.findings) {
+      const name=z.object({rule:z.string()}).parse(f).rule;
+      rules[name]=(rules[name]??0)+1;
+    }
     const fail = (screen: string, reply: LayoutReply) => {
       const findings = (reply.findings ?? []).filter((f) => !f.warning);
       if (reply.error) findings.push({ rule: "layout", metric: reply.error });
@@ -405,6 +434,7 @@ export class LeanScreenChecker implements ScreenChecker {
     };
     const declared = new Set<string>();
     for (const c of design) {
+      if (ruleCase(c)) continue;
       const shapeKey = stableStringify([c.screen, c.shape]);
       if (declared.has(shapeKey))
         fail(c.screen, { error: "duplicate custom screen shape" });
@@ -467,6 +497,7 @@ export class LeanScreenChecker implements ScreenChecker {
             screen: s.screen,
             shape: shapes[i],
             occurrences: occurrences(s.ui),
+            denseOutline: denseOutline(s.ui,viewport),
           })),
           limits: perScreen,
         }),

@@ -19,7 +19,7 @@ export const MOVE_TYPES = [
   'composeTaskView', 'copyToToolbar', 'reorder', 'merge', 'bringInfoForward', 'prefillWithProvenance',
   'useReceipt', 'macro', 'defaultConfirm', 'shortcut', 'collapseOptional', 'surfaceFeature', 'migrate',
 ] as const;
-export const moveTypeSchema = z.enum(MOVE_TYPES);
+export const moveTypeSchema = z.enum([...MOVE_TYPES, 'layout']);
 
 /**
  * RFC 6902 JSON Patch over Program JSON. Paths are RFC 6901 pointers, with one
@@ -77,7 +77,7 @@ export const llmPatchOpSchema = z.object({
 export const llmCandidateSchema = z.object({
   id: str,
   summary: str,
-  moveType: moveTypeSchema,
+  moveType: z.enum(MOVE_TYPES),
   rationale: str,
   targets: z.array(str),
   patch: z.array(llmPatchOpSchema),
@@ -400,7 +400,7 @@ export type ScreenCheckResult = z.infer<typeof screenCheckResultSchema>;
 export type DecisionRecord = z.infer<typeof decisionRecordSchema>;
 
 /** Decode an LLM wire candidate into a validated Candidate (throws with a readable message). */
-export function toCandidate(raw: LlmCandidate, source: Candidate['source']): Candidate {
+export function toCandidate(raw: Omit<LlmCandidate, 'moveType'> & {moveType: MoveType}, source: Candidate['source']): Candidate {
   const patch = raw.patch.map((op, i) => {
     const decoded: Record<string, unknown> = { op: op.op, path: op.path };
     if (op.op === 'move' || op.op === 'copy') decoded['from'] = op.from;
