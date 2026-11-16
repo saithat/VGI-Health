@@ -65,11 +65,23 @@ private def dense (n : Nat) : Node := .box (.stack .row)
 #guard decide (G10 20 desk (boxes desk (dense 20)))
 #guard decide (G10 15 desk (boxes desk (dense 15)))
 #guard decide (G10 0 ⟨81920,51200⟩ (boxes ⟨81920,51200⟩ (dense 20)))
-#guard (densityFindings 15 desk (boxes desk (dense 20))).map (·.metric) == ["first-viewport-targets"]
+#guard (densityFindings 15 desk (boxes desk (dense 20))).map (·.metric) == ["first-viewport-targets","fixed-targets"]
 /-- Twenty targets stacked in a 300px scroller: each window shows at most six. -/
 private def scrolled : Node := .box .scroll { width := .fixed 19200, height := .fixed 19200 } { id := "list", paint := false }
   [.box (.stack .column) { width := .fill, height := .hug, gap := 1536 } { paint := false } ((List.range 20).map button)]
 #guard (densityCounts desk (boxes desk scrolled)).2 == 6
 #guard decide (G10 6 desk (boxes desk scrolled))
 #guard !decide (G10 5 desk (boxes desk scrolled))
+/-- The same scroller beside two fixed targets: every window now shows eight. -/
+private def fixedBeside (n : Nat) : Node := .box .absolute { width := .fill, height := .fill } { paint := false }
+  (scrolled :: (List.range n).map fun i => .box .frame
+    { position := ⟨(32000 + i*4096 : Nat),0⟩, width := .fixed 2048, height := .fixed 2048 } { id := s!"f{i}", target := true } [])
+#guard (fixedTargets (boxes desk (fixedBeside 2))).length == 2
+#guard densityCounts desk (boxes desk (fixedBeside 2)) == (8,8)
+#guard decide (G10 8 desk (boxes desk (fixedBeside 2)))
+#guard !decide (G10 7 desk (boxes desk (fixedBeside 2)))
+#guard (densityFindings 7 desk (boxes desk (fixedBeside 2))).map (fun f => (f.metric,f.actual)) ==
+  [("first-viewport-targets",8),("scroll-window-targets",8)]
+#guard !decide (G10 1 desk (boxes desk (fixedBeside 2)))
+#guard (densityFindings 1 desk (boxes desk (fixedBeside 2))).any (·.metric == "fixed-targets")
 end Ehr.Layout.Tests

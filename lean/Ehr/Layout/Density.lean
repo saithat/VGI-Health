@@ -18,9 +18,9 @@ namespace Ehr.Layout.Density
 open Lean Ehr.Render
 
 /-- New specification for owner review: the largest number of active targets
-the fixed shell can show at once at 1440×900. The body scroller is 756 px tall
-with 48 px rows on a 56 px pitch, so a window meets at most 15 rows; the first
-viewport shows 14 rows plus the fixed commit. -/
+the fixed shell can show at once at 1440×900, counting the fixed commit with
+every scroll window. The body scroller is 736 px tall with 48 px rows on a
+56 px pitch, so a window meets at most 14 rows; the fixed commit makes 15. -/
 def shellCapacity : Nat := 15
 
 private theorem sorted_window : ∀ (l : List Nat) (b k : Nat), l.Pairwise (· < ·) →
@@ -88,7 +88,8 @@ private theorem count_split (v : Size) (first : List Nat) (body : Shell.Body)
   omega
 
 /-- New specification for owner review: the fixed shell meets G10 at its
-capacity for arbitrary bodies, paths and target masks (at most two modals). -/
+capacity for arbitrary bodies, paths and target masks (at most two modals).
+Each scroll window is counted together with the fixed commit. -/
 theorem shell_density (v : Size) (first : List Nat) (body : Shell.Body)
     (commit : Option (List Nat)) (ms : Shell.Body) (limited : ms.length ≤ 2) :
     G10 shellCapacity v (Shell.placements v first body commit ms) := by
@@ -97,20 +98,77 @@ theorem shell_density (v : Size) (first : List Nat) (body : Shell.Body)
   generalize hps : Shell.placements desk first body commit ms = ps
   have one : (commit.toList.map (Shell.footer desk)).length ≤ 1 := by cases commit <;> simp
   have count : (Shell.modalBoxes desk ms).length = ms.length := by simp [Shell.modalBoxes]
-  constructor
-  · -- First viewport: 14 body rows plus the commit, or only the modals.
-    unfold firstViewportTargets
-    have split := count_split desk first body commit ms
-      (fun p => activeTarget ps p && decide (AtRest desk p))
-      (by simp [activeTarget, Structural.scroller]) (by simp [activeTarget, Structural.banner])
-    rw [hps] at split
-    rw [split]
-    have modalsLe := List.length_filter_le (fun p => activeTarget ps p && decide (AtRest desk p))
-      (Shell.modalBoxes desk ms)
-    have footerLe := List.length_filter_le (fun p => activeTarget ps p && decide (AtRest desk p))
-      (commit.toList.map (Shell.footer desk))
-    by_cases empty : ms = []
-    · subst empty
+  -- Any count over the shell splits into body rows, the commit and the modals.
+  have split : ∀ P : Placed → Bool, P (Structural.scroller desk) = false →
+      P (Structural.banner desk first) = false →
+      (ps.filter P).length = ((rowsOf desk body).filter P).length +
+        ((commit.toList.map (Shell.footer desk)).filter P).length +
+        ((Shell.modalBoxes desk ms).filter P).length := by
+    intro P hs hb
+    rw [← hps]
+    exact count_split desk first body commit ms P hs hb
+  have noScroller : ∀ P : Placed → Bool, (activeTarget ps (Structural.scroller desk) && P (Structural.scroller desk)) = false := by
+    intro P; simp [activeTarget, Structural.scroller]
+  have noBanner : ∀ P : Placed → Bool, (activeTarget ps (Structural.banner desk first) && P (Structural.banner desk first)) = false := by
+    intro P; simp [activeTarget, Structural.banner]
+  have active := fun (P : Placed → Bool) => split (fun p => activeTarget ps p && P p) (noScroller P) (noBanner P)
+  -- Body rows scroll, so none of them is a fixed target.
+  have fixedRows : ((rowsOf desk body).filter (fun p => activeTarget ps p && p.clips.isEmpty)).length = 0 :=
+    filter_nil_of _ _ (by
+      intro x hx
+      obtain ⟨⟨e,i⟩, _, rfl⟩ := List.mem_map.mp hx
+      simp [Structural.ordinary])
+  -- The commit and the modals are outside every scroll viewport.
+  have windowFooter : ∀ c o, ((commit.toList.map (Shell.footer desk)).filter
+      (fun p => activeTarget ps p && (scrollRegion p == some c && decide (InWindow c.2 o p)))).length = 0 := by
+    intro c o
+    exact filter_nil_of _ _ (by
+      intro x hx
+      obtain ⟨path, _, rfl⟩ := List.mem_map.mp hx
+      simp [scrollRegion, Shell.footer])
+  have windowModals : ∀ c o, ((Shell.modalBoxes desk ms).filter
+      (fun p => activeTarget ps p && (scrollRegion p == some c && decide (InWindow c.2 o p)))).length = 0 := by
+    intro c o
+    exact filter_nil_of _ _ (by
+      intro x hx
+      obtain ⟨⟨e,i⟩, _, rfl⟩ := List.mem_map.mp hx
+      simp [scrollRegion, Shell.modal])
+  have windowEq : ∀ c o, windowTargets ps c o =
+      ps.filter (fun p => activeTarget ps p && (scrollRegion p == some c && decide (InWindow c.2 o p))) := by
+    intro c o
+    unfold windowTargets
+    congr 1
+    funext p
+    rw [Bool.and_assoc]
+  have fixedEq : fixedTargets ps = ps.filter (fun p => activeTarget ps p && p.clips.isEmpty) := rfl
+  have firstEq : firstViewportTargets desk ps =
+      ps.filter (fun p => activeTarget ps p && decide (AtRest desk p)) := rfl
+  -- It suffices to bound the first viewport, the fixed targets, and every window with them.
+  suffices bounds : (firstViewportTargets desk ps).length ≤ shellCapacity ∧
+      (fixedTargets ps).length ≤ shellCapacity ∧
+      ∀ c o, (fixedTargets ps).length + (windowTargets ps c o).length ≤ shellCapacity by
+    refine ⟨bounds.1, bounds.2.1, ?_⟩
+    intro n hn
+    obtain ⟨q, _, hq⟩ := List.mem_filterMap.mp hn
+    cases hr : scrollRegion q with
+    | none => simp [hr] at hq
+    | some c =>
+      simp only [hr, Option.map_some, Option.some.injEq] at hq
+      rw [← hq]
+      exact bounds.2.2 c _
+  by_cases empty : ms = []
+  · -- No modal: 14 body rows in any window, plus the commit.
+    subst empty
+    have noModal : ∀ P : Placed → Bool, ((Shell.modalBoxes desk ([] : Shell.Body)).filter P).length = 0 := by
+      intro P; simp [Shell.modalBoxes]
+    have footerLe := fun (P : Placed → Bool) =>
+      Nat.le_trans (List.length_filter_le P (commit.toList.map (Shell.footer desk))) one
+    have fixed : (fixedTargets ps).length ≤ 1 := by
+      rw [fixedEq, active, fixedRows, noModal]
+      have := footerLe (fun p => activeTarget ps p && p.clips.isEmpty)
+      omega
+    refine ⟨?_, by simp only [shellCapacity]; omega, ?_⟩
+    · rw [firstEq, active, noModal]
       have rows : ((rowsOf desk body).filter (fun p => activeTarget ps p && decide (AtRest desk p))).length ≤ 14 :=
         rows_window body (fun (e,i) => Structural.ordinary desk e.1 e.2 i)
         (fun p => activeTarget ps p && decide (AtRest desk p)) 0 14 (by
@@ -119,67 +177,60 @@ theorem shell_density (v : Size) (first : List Nat) (body : Shell.Body)
           have meets := hx.2.2 ("0", Structural.clipRect desk) (by simp [Structural.ordinary])
           simp [Meets, Structural.ordinary, Structural.clipRect, Rect.bottom] at meets
           omega)
-      have zero : (Shell.modalBoxes desk ([] : Shell.Body)).length = 0 := by simp [Shell.modalBoxes]
+      have := footerLe (fun p => activeTarget ps p && decide (AtRest desk p))
       simp only [shellCapacity]
       omega
-    · have modal : ps.any (·.info.interruptive) = true := by
-        rw [← hps]; exact modal_present desk first body commit ms empty
-      have rows : ((rowsOf desk body).filter (fun p => activeTarget ps p && decide (AtRest desk p))).length = 0 :=
-        filter_nil_of _ _ (by
-          intro x hx
-          obtain ⟨⟨e,i⟩, _, rfl⟩ := List.mem_map.mp hx
-          simp [inactive_ordinary ps (Structural.ordinary desk e.1 e.2 i) modal rfl])
-      have footer : ((commit.toList.map (Shell.footer desk)).filter
-          (fun p => activeTarget ps p && decide (AtRest desk p))).length = 0 :=
-        filter_nil_of _ _ (by
-          intro x hx
-          obtain ⟨path, _, rfl⟩ := List.mem_map.mp hx
-          simp [inactive_ordinary ps (Shell.footer desk path) modal rfl])
-      simp only [shellCapacity]
-      omega
-  · -- Every scroll window of the body scroller meets at most 15 rows.
-    have window : ∀ c o, (windowTargets ps c o).length ≤ shellCapacity := by
-      intro c o
-      unfold windowTargets
-      have split := count_split desk first body commit ms
-        (fun p => activeTarget ps p && scrollRegion p == some c && decide (InWindow c.2 o p))
-        (by simp [activeTarget, Structural.scroller]) (by simp [activeTarget, Structural.banner])
-      rw [hps] at split
-      rw [split]
+    · intro c o
+      rw [windowEq, active, noModal, windowFooter]
       have rows : ((rowsOf desk body).filter
-          (fun p => activeTarget ps p && scrollRegion p == some c && decide (InWindow c.2 o p))).length ≤ 15 :=
+          (fun p => activeTarget ps p && (scrollRegion p == some c && decide (InWindow c.2 o p)))).length ≤ 14 :=
         rows_window body (fun (e,i) => Structural.ordinary desk e.1 e.2 i)
-        (fun p => activeTarget ps p && scrollRegion p == some c && decide (InWindow c.2 o p))
-        ((o - 3072) / 3584 + 1).toNat 15 (by
+        (fun p => activeTarget ps p && (scrollRegion p == some c && decide (InWindow c.2 o p)))
+        ((o - 3072) / 3584 + 1).toNat 14 (by
           intro x _ hx
           simp only [Bool.and_eq_true, beq_iff_eq, decide_eq_true_eq] at hx
-          obtain ⟨⟨_, region⟩, inWindow⟩ := hx
+          obtain ⟨_, region, inWindow⟩ := hx
           simp only [scrollRegion, Structural.ordinary, List.head?_cons, Option.some.injEq] at region
           subst region
           simp [InWindow, Structural.ordinary, Structural.clipRect, Rect.bottom, Rect.right] at inWindow
           omega)
-      have footer : ((commit.toList.map (Shell.footer desk)).filter
-          (fun p => activeTarget ps p && scrollRegion p == some c && decide (InWindow c.2 o p))).length = 0 :=
-        filter_nil_of _ _ (by
-          intro x hx
-          obtain ⟨path, _, rfl⟩ := List.mem_map.mp hx
-          simp [scrollRegion, Shell.footer])
-      have modals : ((Shell.modalBoxes desk ms).filter
-          (fun p => activeTarget ps p && scrollRegion p == some c && decide (InWindow c.2 o p))).length = 0 :=
-        filter_nil_of _ _ (by
-          intro x hx
-          obtain ⟨⟨e,i⟩, _, rfl⟩ := List.mem_map.mp hx
-          simp [scrollRegion, Shell.modal])
       simp only [shellCapacity]
       omega
-    intro n hn
-    obtain ⟨q, _, hq⟩ := List.mem_filterMap.mp hn
-    cases hr : scrollRegion q with
-    | none => simp [hr] at hq
-    | some c =>
-      simp only [hr, Option.map_some, Option.some.injEq] at hq
-      rw [← hq]
-      exact window c _
+  · -- A modal is open: only its targets are active.
+    have modal : ps.any (·.info.interruptive) = true := by
+      rw [← hps]; exact modal_present desk first body commit ms empty
+    have rowsOff : ∀ P : Placed → Bool,
+        ((rowsOf desk body).filter (fun p => activeTarget ps p && P p)).length = 0 := by
+      intro P
+      exact filter_nil_of _ _ (by
+        intro x hx
+        obtain ⟨⟨e,i⟩, _, rfl⟩ := List.mem_map.mp hx
+        simp [inactive_ordinary ps (Structural.ordinary desk e.1 e.2 i) modal rfl])
+    have footerOff : ∀ P : Placed → Bool,
+        ((commit.toList.map (Shell.footer desk)).filter (fun p => activeTarget ps p && P p)).length = 0 := by
+      intro P
+      exact filter_nil_of _ _ (by
+        intro x hx
+        obtain ⟨path, _, rfl⟩ := List.mem_map.mp hx
+        simp [inactive_ordinary ps (Shell.footer desk path) modal rfl])
+    have total : ∀ P : Placed → Bool, (ps.filter (fun p => activeTarget ps p && P p)).length ≤ 2 := by
+      intro P
+      rw [active, rowsOff, footerOff]
+      have := List.length_filter_le (fun p => activeTarget ps p && P p) (Shell.modalBoxes desk ms)
+      omega
+    have fixed : (fixedTargets ps).length ≤ 2 := total (fun p => p.clips.isEmpty)
+    have window : ∀ c o, (windowTargets ps c o).length = 0 := by
+      intro c o
+      rw [windowEq, active, rowsOff, footerOff, windowModals]
+    refine ⟨?_, by simp only [shellCapacity]; omega, ?_⟩
+    · have := total (fun p => decide (AtRest desk p))
+      rw [firstEq]
+      simp only [shellCapacity]
+      omega
+    · intro c o
+      rw [window]
+      simp only [shellCapacity]
+      omega
 
 /-- Every shape the fixed shell accepts meets G10 at its capacity. -/
 theorem class_density (shape : ScreenShape) (accepted : Shell.accepts shape = true) (v : Size) :

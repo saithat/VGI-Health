@@ -191,16 +191,29 @@ def windowTargets (ps : List Placed) (c : String × Rect) (o : Int) : List Place
 of a region is always one of these (`G10_window`). -/
 def windowAt (c : String × Rect) (q : Placed) : Int := q.rect.bottom - 1 - c.2.y
 
-/-- Target counts of the finitely many candidate scroll windows. -/
-def windowCounts (ps : List Placed) : List Nat :=
-  ps.filterMap fun q => (scrollRegion q).map fun c => (windowTargets ps c (windowAt c q)).length
+/-- New specification for owner review: active targets outside every scroll
+viewport. They do not move, so they are in view at every scroll position of
+every scroll viewport. -/
+def fixedTargets (ps : List Placed) : List Placed :=
+  ps.filter fun p => activeTarget ps p && p.clips.isEmpty
 
-/-- G10 (R5), new specification for owner review: at 1440×900 the first
-viewport, and every scroll position of each scroll viewport, contain at most
-`limit` active targets. Other sizes impose no density constraint. -/
+/-- New specification for owner review: target counts of the finitely many
+candidate scroll windows, each counted together with the fixed targets (the
+browser density check counted `fixed + visible in window` the same way). -/
+def windowCounts (ps : List Placed) : List Nat :=
+  ps.filterMap fun q => (scrollRegion q).map fun c =>
+    (fixedTargets ps).length + (windowTargets ps c (windowAt c q)).length
+
+/-- G10 (R5), new specification for owner review: at 1440×900 at most `limit`
+active targets are in the first viewport, at most `limit` are fixed, and at
+every scroll position of each scroll viewport the fixed targets together with
+the targets in that window number at most `limit`. Other sizes impose no
+density constraint. The rule previously counted a scroll window without the
+fixed targets. -/
 def G10 (limit : Nat) (v : Size) (ps : List Placed) : Prop :=
   v = ⟨92160,57600⟩ →
-    (firstViewportTargets v ps).length ≤ limit ∧ ∀ n ∈ windowCounts ps, n ≤ limit
+    (firstViewportTargets v ps).length ≤ limit ∧ (fixedTargets ps).length ≤ limit ∧
+    ∀ n ∈ windowCounts ps, n ≤ limit
 instance (limit v ps) : Decidable (G10 limit v ps) := by unfold G10; infer_instance
 
 private theorem filter_length_mono (l : List α) (p q : α → Bool)
@@ -233,21 +246,23 @@ private theorem lowest_bottom (l : List Placed) (ne : l ≠ []) :
         · omega
         · exact low p hp
 
-/-- New specification for owner review: every scroll offset of every scroll
-viewport, not only the finitely many checked candidates, satisfies the bound. -/
+/-- New specification for owner review: at every scroll offset of every scroll
+viewport, not only the finitely many checked candidates, the fixed targets
+together with the targets in the window satisfy the bound. -/
 theorem G10_window (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
     (hv : v = ⟨92160,57600⟩) (c : String × Rect) (o : Int) :
-    (windowTargets ps c o).length ≤ limit := by
+    (fixedTargets ps).length + (windowTargets ps c o).length ≤ limit := by
   by_cases empty : windowTargets ps c o = []
-  · simp [empty]
+  · simpa [empty] using (h hv).2.1
   obtain ⟨q, hq, low⟩ := lowest_bottom _ empty
   have qmem := List.mem_filter.mp hq
   simp only [Bool.and_eq_true, beq_iff_eq, decide_eq_true_eq] at qmem
   obtain ⟨qps, ⟨⟨_, qregion⟩, qwin⟩⟩ := qmem
-  have counted : (windowTargets ps c (windowAt c q)).length ∈ windowCounts ps := by
+  have counted : (fixedTargets ps).length + (windowTargets ps c (windowAt c q)).length ∈
+      windowCounts ps := by
     unfold windowCounts
     exact List.mem_filterMap.mpr ⟨q, qps, by simp [qregion]⟩
-  refine Nat.le_trans ?_ ((h hv).2 _ counted)
+  refine Nat.le_trans (Nat.add_le_add_left ?_ _) ((h hv).2.2 _ counted)
   unfold windowTargets
   apply filter_length_mono
   intro p _ hp
@@ -266,11 +281,23 @@ theorem G10_window (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v 
 theorem G10_first (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
     (hv : v = ⟨92160,57600⟩) : (firstViewportTargets v ps).length ≤ limit := (h hv).1
 
+/-- New specification for owner review: the fixed targets alone are within
+the limit (they are in view whether or not anything scrolls). -/
+theorem G10_fixed (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
+    (hv : v = ⟨92160,57600⟩) : (fixedTargets ps).length ≤ limit := (h hv).2.1
+
+/-- The earlier, weaker statement of `G10_window`: a scroll window alone. -/
+theorem G10_scrollWindow (limit : Nat) (v : Size) (ps : List Placed) (h : G10 limit v ps)
+    (hv : v = ⟨92160,57600⟩) (c : String × Rect) (o : Int) :
+    (windowTargets ps c o).length ≤ limit :=
+  Nat.le_trans (Nat.le_add_left _ _) (G10_window limit v ps h hv c o)
+
 /-- A larger limit never refuses an accepted layout. -/
 theorem G10_mono {small large : Nat} (le : small ≤ large) (v : Size) (ps : List Placed)
     (h : G10 small v ps) : G10 large v ps := by
   intro hv
-  exact ⟨Nat.le_trans (h hv).1 le, fun n hn => Nat.le_trans ((h hv).2 n hn) le⟩
+  exact ⟨Nat.le_trans (h hv).1 le, Nat.le_trans (h hv).2.1 le,
+    fun n hn => Nat.le_trans ((h hv).2.2 n hn) le⟩
 
 instance (v ps) : Decidable (G1 v ps) := by unfold G1; infer_instance
 instance (v ps) : Decidable (G2 v ps) := by unfold G2; infer_instance
@@ -484,18 +511,22 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
   return out
 
 /-- New specification for owner review: G10 diagnostics with counts. A region
-reports its densest candidate window; `deficit` is the excess over the limit. -/
+reports its densest candidate window, counted with the fixed targets;
+`deficit` is the excess over the limit. -/
 def densityFindings (limit : Nat) (v : Size) (ps : List Placed) : List Finding :=
   if v != ⟨92160,57600⟩ then [] else
   let first := (firstViewportTargets v ps).length
-  let firstOut : List Finding := if limit < first then
+  let fixed := (fixedTargets ps).length
+  let firstOut : List Finding := (if limit < first then
     [{ rule := "G10", metric := "first-viewport-targets", actual := first, required := limit,
-       deficit := (first : Int) - limit }] else []
+       deficit := (first : Int) - limit }] else []) ++ (if limit < fixed then
+    [{ rule := "G10", metric := "fixed-targets", actual := fixed, required := limit,
+       deficit := (fixed : Int) - limit }] else [])
   let worst := ps.foldl (fun (acc : List (String × String × Nat)) q =>
     match scrollRegion q with
     | none => acc
     | some c =>
-      let n := (windowTargets ps c (windowAt c q)).length
+      let n := fixed + (windowTargets ps c (windowAt c q)).length
       match acc.find? (·.1 == c.1) with
       | some (_, _, m) => if m < n then (c.1, q.info.id, n) :: acc.filter (·.1 != c.1) else acc
       | none => (c.1, q.info.id, n) :: acc) []
@@ -505,9 +536,10 @@ def densityFindings (limit : Nat) (v : Size) (ps : List Placed) : List Finding :
              actual := n, required := limit, deficit := (n : Int) - limit }
     else none)
 
-/-- Largest first-viewport and scroll-window active-target counts (measurement). -/
+/-- Largest first-viewport count, and largest count of fixed targets together
+with one scroll window (measurement). -/
 def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
-  ((firstViewportTargets v ps).length, (windowCounts ps).foldl max 0)
+  ((firstViewportTargets v ps).length, (windowCounts ps).foldl max (fixedTargets ps).length)
 
 #print axioms G9_exempt
 #print axioms apart_pixels
@@ -526,6 +558,8 @@ def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
 #print axioms modal_blocks
 #print axioms G10_window
 #print axioms G10_first
+#print axioms G10_fixed
+#print axioms G10_scrollWindow
 #print axioms G10_mono
 #print axioms layoutAccepted_density
 end Ehr.Layout

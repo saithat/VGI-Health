@@ -118,8 +118,9 @@ existing information-needs simulator (lookup detours, memory carry) to R2's repl
 measures the remaining cost.
 
 **R5. Screen action density** (*new specification*, geometry rule G10). At
-1440×900, the number of active targets in the first viewport and in each scroll
-viewport is at most `spec.design.maxTargetsPerViewport`. Set the default from the
+1440×900, the number of active targets in the first viewport, and at each scroll
+position the fixed targets together with the targets in the scroll window, is at
+most `spec.design.maxTargetsPerViewport`. Set the default from the
 largest count in the current release programs. This Lean fixed-shell default stays
 15. The deployed React gate separately uses each screen's vendor-reference maximum
 (no-agent arm or release layout) on identical data, with 57 only for absent screen ids. Partly closes V2 with R1 and R2.
@@ -192,16 +193,18 @@ below.
 
 - At 1440×900, G10 counts **active targets** (modal-aware, as in G3). The first
   viewport is every target with area inside the page and every enclosing scroll
-  viewport at zero scroll. Each scroll viewport is checked at every scroll offset:
-  `G10_window` proves that the finitely many checked windows (each starting on a
-  target's last row) bound all offsets.
-- The layout checker refuses with rule `G10`, metric `first-viewport-targets` or
-  `scroll-window-targets`, the count, the limit and the excess. This applies to
+  viewport at zero scroll. Each scroll viewport is checked at every scroll offset,
+  and its window is counted together with the fixed targets outside every
+  scroll viewport, as the browser check does: `G10_window` proves that the
+  finitely many checked windows (each starting on a target's last row) bound
+  all offsets.
+- The layout checker refuses with rule `G10`, metric `first-viewport-targets`,
+  `fixed-targets` or `scroll-window-targets`, the count, the limit and the excess. This applies to
   layout requests, ported screens, custom families (`acceptFamilyDensity`) and
   `program-check` (`checkProgramDensity`).
 - The fixed shell that paints every renderer output has a proved capacity of 15
-  (`shell_density`): its 756 px body scroller meets at most 15 rows of 48 px on a
-  56 px pitch, and the first viewport shows 14 rows plus the commit.
+  (`shell_density`): its 736 px body scroller meets at most 14 rows of 48 px on a
+  56 px pitch, and the fixed commit is counted with every window.
   `checkProgramDensity_sound` gives G10 at the spec's limit, with `Realizes`, for
   every patient, display, user and state.
 - Bad layout: the native test adds 20 buttons to the reference template; it is
@@ -212,12 +215,15 @@ Measured counts on the fixed shell at 1440×900 (`ui-port-audit --all-screens
 --all-variants`: every screen with initial, expanded-group, tab and alert-probe
 states; one synthetic patient):
 
-| Programs | First viewport | Densest scroll window |
+| Programs | First viewport | Densest scroll window with fixed targets |
 |---|---|---|
-| Release personas v1–v3 | 10–11 | 13–15 (P1 and P5 `w1Rooming`) |
+| Release personas v1–v3 | 10–11 | 13–15 (P5 `w6ConsultClose`, `w6Sign`: 14 rows and the commit) |
 | Release canonical v1–v3 | 10 | 15 |
 | `runs/core-10day` shipped revisions | 8–11 | 13–15 (P5 `w6Schedule`) |
 | W1 research port (`w1Sign`) | ≤ 10 | ≤ 10 |
+
+The persona row was measured again after scroll windows began to include fixed
+targets; the other rows are the earlier window-only measurements.
 
 The default is 15, the largest release count. **Finding:** 15 equals the fixed
 shell's capacity, so no program can fail G10 at the default. Density on that

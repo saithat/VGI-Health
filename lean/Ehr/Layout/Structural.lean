@@ -8,7 +8,9 @@ set_option maxHeartbeats 4000000
 namespace Ehr.Layout.Structural
 open Lean Ehr.Render
 
-def clipRect (v : Size) : Rect := ⟨1024,8192,v.w-2048,v.h-9216⟩
+/-- The body scroll viewport. At 1440×900 it is 736 px tall, so any scroll
+position meets at most 14 of the 48 px rows on their 56 px pitch. -/
+def clipRect (v : Size) : Rect := ⟨1024,8192,v.w-2048,v.h-10496⟩
 def slotText : TextSlot := { safety := true, overflow := .scroll, maxLines := 2, lineHeight := 1408 }
 def ordinary (v : Size) (path : List Nat) (target : Bool) (i : Nat) : Placed :=
   { rect := ⟨1024,8192+i*3584,v.w-2048,3072⟩,
