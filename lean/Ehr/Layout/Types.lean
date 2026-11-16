@@ -1,4 +1,4 @@
-import Lean
+import Lean.Data.Json
 import Ehr.Render.Types
 
 /-! Research layout protocol. Units are 1/64 CSS px; no floating point geometry.

@@ -51,6 +51,7 @@ export function createSession(
     // The semantic painter uses `ui`. Generate legacy HTML and the inspector's
     // detailed view only when a consumer asks for them. Capture this snapshot's
     // inputs so reading an old snapshot after a click still returns its tree.
+    const layoutRender = interp.layoutRender;
     return {
       get page(): Html {
         return (page ??= JSON.parse(
@@ -63,6 +64,12 @@ export function createSession(
         ));
       },
       ui,
+      layout: layoutRender
+        ? (options: {
+            viewport: { w: number; h: number };
+            references?: unknown;
+          }) => layoutRender(...snapshotArgs, snapshotState, options)
+        : undefined,
       state,
       result,
     };
@@ -92,6 +99,7 @@ export function createSession(
               return previous.view;
             },
             ui: previous.ui,
+            layout: previous.layout,
             state: previous.state,
             result: response.result,
           }

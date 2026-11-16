@@ -53,8 +53,8 @@ function liveUser(me: MarUser): LiveUser {
   };
 }
 let restoring: Promise<LiveUser | undefined> | undefined;
-export function restoreUser() {
-  restoring ??= restoreMar()
+export function restoreUser(redirectUri?: string) {
+  restoring ??= restoreMar(redirectUri)
     .then((me) => {
       identity = me ? liveUser(me) : undefined;
       return identity;
