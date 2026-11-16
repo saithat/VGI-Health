@@ -206,8 +206,15 @@ following adapter/language gaps prevent full vendor fidelity without Lean work:
   reading through the complete contents of every local text scroller.
 - The language can position rectangles and grids, but the semantic bridge does
   not expose the vendor's icons, chart glyphs, labels/values in separate cells,
-  CSS masonry groups, content-measured sticky header heights, or widget keyboard
+  content-measured sticky header heights, or widget keyboard
   dispatch. Adding nonsemantic decorative shapes cannot repair those omissions.
+
+Absolute placement can express static icons and masonry arrangements. This
+generator does not yet reproduce those decorations or the vendor's balanced
+read-only card columns; those are authoring omissions. The separate semantic
+binding gaps above, and content-measured row/parent heights under an otherwise
+content-independent geometry contract, require adapter or language work for
+full fidelity across arbitrary payloads.
 
 Pointer travel starts at viewport center once per day. Scroll positions reset
 on screen navigation; explicit scroll events page down the first available
