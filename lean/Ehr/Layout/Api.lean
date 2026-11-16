@@ -1,4 +1,5 @@
 import Ehr.Layout.FamilyJson
+import Ehr.Layout.BoardScreen
 
 namespace Ehr.Layout
 open Lean
@@ -16,6 +17,11 @@ def dispatch (json : Json) : Except String Json := do
       | "alert-dialog" => Keyboard.alertDialog (rows*cols) state key
       | "listbox" => Keyboard.listbox (rows*cols) state key
       | _ => Keyboard.grid rows cols state key))
+  else if (json.getObjValAs? String "op").toOption.getD "" == "board-screen" then
+    let panes ← json.getObjValAs? (List PatientScreen) "panes"
+    if panes.any (fun p => p.patient == "") || !(decide ((panes.map (·.patient)).Nodup)) then
+      throw "Unique patient sessions required"
+    pure (toJson (boardScreen panes))
   else if (json.getObjValAs? String "op").toOption.getD "" == "program-check" then
     let spec ← json.getObjValAs? Ehr.Spec "spec"
     let program ← json.getObjValAs? Ehr.Program "program"
@@ -118,7 +124,7 @@ def dispatch (json : Json) : Except String Json := do
     let screen : Ehr.Render.UiScreen ← match json.getObjVal? "render" with
       | .ok r => do pure (Ehr.Render.runRenderUi (← fromJson? r))
       | .error _ => json.getObjValAs? Ehr.Render.UiScreen "screen"
-    pure (Json.mkObj [("inventory",inventoryJson screen),("shape",toJson (screenShape screen))])
+    pure (Json.mkObj [("inventory",inventoryJson screen),("shape",toJson (widgetShape screen))])
   else
     let r ← fromJson? json
     runRequest r

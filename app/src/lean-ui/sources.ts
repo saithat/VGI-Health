@@ -13,6 +13,8 @@ export interface Occurrence {
   comp: string;
   /** Components whose click point is this occurrence (the agent's geometry). */
   ids: string[];
+  /** Patient namespace supplied by an enclosing pane. */
+  patient?: string;
 }
 /** The same occurrences, in the same order and with the same paths, as
  * Layout.Semantic.screenNodes: a node's own part, then its display parts
@@ -20,11 +22,14 @@ export interface Occurrence {
  * target per tab; one part per step, table cell or listed record), then its
  * child nodes. The single mirror lives in the shared reference generator. */
 export function screenOccurrences(screen: UiScreen): Occurrence[] {
-  return occurrences(screen).map(({ path, role, target, comp, ids }) => ({
-    path,
-    role,
-    target,
-    comp,
-    ids,
-  }));
+  return occurrences(screen).map(
+    ({ path, role, target, comp, ids, patient }) => ({
+      path,
+      role,
+      target,
+      comp,
+      ids,
+      ...(patient ? { patient } : {}),
+    }),
+  );
 }

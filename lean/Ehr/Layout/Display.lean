@@ -1,4 +1,4 @@
-import Ehr.Layout.Format
+import Ehr.Layout.Widgets
 import Ehr.Render.Json
 
 /-! # Display parts
@@ -121,6 +121,8 @@ structure Part where
   unit : String := ""
   /-- What an empty control shows. -/
   placeholder : String := ""
+  /-- New specification for owner review: normalized Lean chart geometry. -/
+  plot : Option Widgets.Plot := none
   deriving Repr, DecidableEq, Inhabited
 
 /-- Only fields that differ from their defaults are written. -/
@@ -141,7 +143,8 @@ instance : ToJson Part where
     (if p.options.isEmpty then [] else [("options",toJson p.options)]) ++
     (if p.entry == "" then [] else [("entry",toJson p.entry)]) ++
     (if p.unit == "" then [] else [("unit",toJson p.unit)]) ++
-    (if p.placeholder == "" then [] else [("placeholder",toJson p.placeholder)]))
+    (if p.placeholder == "" then [] else [("placeholder",toJson p.placeholder)]) ++
+    (p.plot.map fun plot => ("plot",toJson plot)).toList)
 
 /-- New specification for owner review: the lines a part reserves in the
 reference layouts: two for a control, a button and an alert, one otherwise. -/
@@ -163,6 +166,8 @@ structure DisplayCx where
   activeNav : Option String := none
   /-- Components with an explicit confirmation button on the screen. -/
   confirms : List String := []
+  /-- New specification for owner review: enclosing published growth curves. -/
+  references : List UiChartReference := []
   deriving Inhabited
 
 /-! ## Fields -/
@@ -435,6 +440,12 @@ def stripAtomPart : UiStripAtom → Part
   | .button comp label role enabled _ _ =>
     { role := .button, text := Format.controlCaption label, raw := label, target := true, comp, kind := role, enabled }
 
+/-- New specification for owner review: a rich part is still a semantic source.
+Its text and mark data are produced before layout; tables remain complete. -/
+def widgetPart (item : Widgets.Item) : Part :=
+  {role := .item, text := item.text, kind := item.kind, row := some item.row,
+   col := some item.col, plot := item.plot}
+
 /-! ## Every node -/
 
 /-- New specification for owner review: what a node's own occurrence shows.
@@ -471,6 +482,11 @@ def ownPart (cx : DisplayCx) : UiNode → Part
       commit := role == "primary", comp, kind := role, enabled,
       selected := role == "nav" && cx.activeNav == some comp }
 
+/-- New specification for owner review: the alert's geometric severity symbol. -/
+def severityPlot : Widgets.Plot :=
+  { paths := [[⟨5000,800⟩,⟨9400,9200⟩,⟨600,9200⟩,⟨5000,800⟩],[⟨5000,3500⟩,⟨5000,6200⟩]],
+    dots := [⟨5000,7900⟩] }
+
 /-- New specification for owner review: the further parts of a node, in
 reading order, before its child nodes. -/
 def leafParts (cx : DisplayCx) : UiNode → List Part
@@ -480,10 +496,14 @@ def leafParts (cx : DisplayCx) : UiNode → List Part
   | .tabs id labels selected _ => tabParts id labels selected
   | .stepper steps current => stepParts steps current
   | .info _ _ infoId display rows => infoParts infoId display rows
+  | .alert _ _ _ _ => [{role := .item, kind := "severityIcon", plot := some severityPlot}]
   | .board urgent _ => urgent.map demandPart
-  | .datedTimeline _ dated undated _ => dated.map datedPart ++ undated.map undatedPart
+  | .datedTimeline _ dated undated _ => dated.map datedPart ++ undated.map undatedPart ++
+      [{role := .item, kind := "timeAxis", plot := some (Widgets.datedPlot dated)}]
   | .chartReferences references _ => references.map referencePart
   | .patientPane _ _ metadata _ _ => (metadata.urgent?.getD []).map stripAtomPart
+  | .presentation kind cs => (Widgets.presentation kind cs cx.references).map widgetPart
+  | .timeline _ cs => [{role := .item, kind := "timeAxis", plot := some (Widgets.plot [] (cs.zipIdx.map fun (_,i) => ⟨i,0,""⟩))}]
   | _ => []
 
 /-- The text of a node's own occurrence. It does not depend on the context. -/
@@ -726,8 +746,8 @@ theorem lists_complete (cx : DisplayCx) :
   · intro urgent children d member
     exact List.mem_map.mpr ⟨d,member,rfl⟩
   · intro title dated undated children
-    exact ⟨fun item member => List.mem_append_left _ (List.mem_map.mpr ⟨item,member,rfl⟩),
-      fun source member => List.mem_append_right _ (List.mem_map.mpr ⟨source,member,rfl⟩)⟩
+    exact ⟨fun item member => List.mem_append_left _ (List.mem_append_left _ (List.mem_map.mpr ⟨item,member,rfl⟩)),
+      fun source member => List.mem_append_left _ (List.mem_append_right _ (List.mem_map.mpr ⟨source,member,rfl⟩))⟩
   · intro references children ref member
     exact List.mem_map.mpr ⟨ref,member,rfl⟩
   · intro patient banner metadata children modal atom member

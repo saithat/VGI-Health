@@ -4,7 +4,7 @@ export interface Shape {slots:Slot[];hints:Record<string,{kind:string;role?:stri
 export const version:string;
 export const viewports:Viewport[];
 export interface Occurrence {path:number[];role:string;target:boolean;commit:boolean;comp:string;ids:string[];
-  kind?:string;value?:Record<string,unknown>;leaf?:boolean;of?:string;row?:number;col?:number;narrative?:boolean}
+  kind?:string;value?:Record<string,unknown>;leaf?:boolean;of?:string;row?:number;col?:number;narrative?:boolean;patient?:string;widget?:string;nestedRegion?:string}
 export function occurrences(screen:unknown):Occurrence[];
 export function shapeFor(screen:unknown):Shape;
 export function layoutFor(shape:Shape|Slot[],viewport:Viewport):unknown;

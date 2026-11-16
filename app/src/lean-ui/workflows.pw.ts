@@ -1,5 +1,5 @@
 import { test, expect, type Page, type Locator } from "@playwright/test";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { startPainterService } from "../../tests/lean-painter-support";
 import type { Output } from "./layout";
 import type {} from "../core/buttonAudit";
@@ -198,6 +198,7 @@ async function differential(page: Page, label: string) {
     let boxWorst = 0,
       lineWorst = 0,
       glyphWorst = 0,
+      vectorWorst = 0,
       boxes = 0,
       lines = 0,
       glyphs = 0;
@@ -225,6 +226,23 @@ async function differential(page: Page, label: string) {
         Math.abs(rect.height - expected.h / 64),
       );
       boxes++;
+      const svg = element.querySelector("svg");
+      const mark = d.box.info.mark;
+      if (svg && typeof mark === "object" && "plot" in mark) {
+        const matrix = svg.getScreenCTM();
+        for (const line of svg.querySelectorAll("polyline")) {
+          vectorWorst = Math.max(
+            vectorWorst,
+            Math.abs(
+              Number(line.getAttribute("stroke-width")) - mark.plot.stroke,
+            ) / 64,
+            Math.abs(
+              (matrix?.a ?? 0) * Number(line.getAttribute("stroke-width")) -
+                mark.plot.stroke / 64,
+            ),
+          );
+        }
+      }
       element
         .querySelectorAll<HTMLElement>(":scope > .lean-lines > [data-line]")
         .forEach((line, j) => {
@@ -259,13 +277,21 @@ async function differential(page: Page, label: string) {
       boxWorst,
       lineWorst,
       glyphWorst,
+      vectorWorst,
       layoutMs: Number(document.getElementById("root")?.dataset.layoutMs),
     };
   });
   expect(result.boxWorst, label).toBeLessThanOrEqual(1 / 64);
   expect(result.lineWorst, label).toBeLessThanOrEqual(1 / 64);
   expect(result.glyphWorst, label).toBeLessThanOrEqual(1 / 64);
+  expect(result.vectorWorst, label).toBeLessThanOrEqual(1 / 64);
   metrics.push({ label, ...result });
+  const evidence = process.env.TMPDIR + "/painter-parity/measurements";
+  mkdirSync(evidence, { recursive: true });
+  writeFileSync(
+    `${evidence}/${label.replace(/[^a-zA-Z0-9_-]/g, "-")}.json`,
+    JSON.stringify({ label, ...result }, null, 2),
+  );
   const shots = process.env.DENSE_LAYOUT_SHOTS;
   if (
     shots &&
@@ -523,3 +549,331 @@ for (const persona of ["P1", "P3"])
       );
     }
   });
+
+test("rich widgets: WASM geometry and text agree with DOM at every desktop viewport", async ({
+  page,
+}) => {
+  const fixtures = z
+    .record(z.string(), z.unknown())
+    .parse(
+      JSON.parse(
+        readFileSync(
+          new URL("../../tests/data/lean-widgets.json", import.meta.url),
+          "utf8",
+        ),
+      ),
+    );
+  const { uiScreenSchema } = await import("../ehr/ui/types");
+  const directory = process.env.TMPDIR + "/painter-parity";
+  mkdirSync(directory, { recursive: true });
+  await page.goto("/tests/lean-widget-preview.html");
+  await page.waitForFunction(
+    () => typeof window.paintLeanWidget === "function",
+  );
+  for (const [kind, raw] of Object.entries(fixtures)) {
+    const screen = uiScreenSchema.parse(raw);
+    for (const viewport of [
+      { width: 1440, height: 900 },
+      { width: 1280, height: 800 },
+      { width: 1920, height: 1080 },
+    ]) {
+      await page.setViewportSize(viewport);
+      const accepted = await page.evaluate(
+        (screen) => window.paintLeanWidget?.(screen).accepted,
+        screen,
+      );
+      expect(accepted, kind).toBe(true);
+      await expect(page.locator("#root")).toHaveAttribute(
+        "data-reference-layout",
+        "dense",
+      );
+      await differential(page, `${kind}/${viewport.width}`);
+      if (viewport.width === 1440)
+        await page.screenshot({ path: `${directory}/${kind}.png` });
+    }
+  }
+  writeFileSync(
+    `${directory}/layout-metrics.json`,
+    JSON.stringify(metrics, null, 2),
+  );
+});
+
+async function connectService(
+  page: Page,
+  persona: string,
+  base: string,
+  token: string,
+) {
+  await page.addInitScript(() => {
+    const target = new URL(location.href);
+    target.searchParams.delete("code");
+    target.searchParams.delete("state");
+    sessionStorage.setItem(
+      "vgi.mar.login",
+      JSON.stringify({
+        verifier: "synthetic-painter",
+        state: "painter",
+        returnTo: target.pathname + target.search,
+      }),
+    );
+    document.addEventListener(
+      "lean-paint",
+      (event) => {
+        if (event instanceof CustomEvent) window.__leanPaint = event.detail;
+      },
+      true,
+    );
+  });
+  await page.route("**/protocol/openid-connect/token", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({
+        access_token: token,
+        refresh_token: `synthetic-${persona}`,
+        expires_in: 1800,
+      }),
+    }),
+  );
+  await page.route("**/commit/**", async (route) => {
+    const url = new URL(route.request().url());
+    // SSE is independent notification transport; the MAR session also refreshes
+    // immediately after its accepted command. Do not buffer an endless stream.
+    if (url.pathname.endsWith("/events") && route.request().method() === "GET")
+      return route.fulfill({
+        status: 200,
+        contentType: "text/event-stream",
+        body: ": test connection\n\n",
+      });
+    // eslint-disable-next-line boundary/single-data-module
+    const response = await page.request.fetch(
+      base + url.pathname.replace(/^\/commit/, "") + url.search,
+      {
+        method: route.request().method(),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        ...(route.request().postData()
+          ? { data: route.request().postData() ?? "" }
+          : {}),
+      },
+    );
+    await route.fulfill({ response });
+  });
+}
+
+test("P2 board: complete a note in one patient pane and preserve the other patient", async ({
+  page,
+}) => {
+  const service = await startPainterService("P2");
+  try {
+    await connectService(page, "P2", service.base, service.tokens.P2 ?? "");
+    await page.goto(
+      "/lean.html?persona=P2&audit=buttons&date=2026-11-15&patients=painter-patient,painter-second&code=painter&state=painter",
+    );
+    await expect(page.locator("#root")).toHaveAttribute(
+      "data-accepted",
+      "true",
+    );
+    const scoped = (comp: string, event = "click") =>
+      page.locator(
+        `[data-patient="painter-patient"] [data-comp-id="${comp}"][data-event="${event}"]`,
+      );
+    const act = async (comp: string) => {
+      const target = scoped(comp);
+      await reveal(page, target);
+      await target.click();
+      await idle(page);
+    };
+    const fill = async (comp: string, value: string) => {
+      const target = scoped(comp, "enter");
+      await reveal(page, target);
+      const tag = await target.evaluate((e) => e.tagName);
+      if (tag === "SELECT") await target.selectOption(value);
+      else {
+        await target.fill(value);
+        await target.press("Tab");
+      }
+      await idle(page);
+    };
+    await act("workspace.lookup");
+    await fill("workspace.search", "Alex");
+    const open = page
+      .locator(
+        '[data-patient="painter-patient"] [data-comp-id^="workspace.open|painter-patient|"]',
+      )
+      .first();
+    await reveal(page, open);
+    await open.click();
+    await idle(page);
+    const other = (comp: string, event = "click") =>
+      page.locator(
+        `[data-patient="painter-second"] [data-comp-id="${comp}"][data-event="${event}"]`,
+      );
+    await reveal(page, other("workspace.lookup"));
+    await other("workspace.lookup").click();
+    await idle(page);
+    await reveal(page, other("workspace.search", "enter"));
+    await other("workspace.search", "enter").fill("Blair");
+    await other("workspace.search", "enter").press("Tab");
+    await idle(page);
+    const openOther = page
+      .locator(
+        '[data-patient="painter-second"] [data-comp-id^="workspace.open|painter-second|"]',
+      )
+      .first();
+    await reveal(page, openOther);
+    await openOther.click();
+    await idle(page);
+    if (await scoped("chartSummary.patientCare.w3Triage").count())
+      await act("chartSummary.patientCare.w3Triage");
+    else {
+      if (await scoped("home.work.w3TrackBoard").count())
+        await act("home.work.w3TrackBoard");
+      await act("w3TrackBoard.nav.w3Triage");
+    }
+    for (const [id, value] of Object.entries({
+      chiefComplaint: "Headache",
+      triageAcuity: "3",
+      arrivalMode: "walk-in",
+      weight: "80",
+      bpSystolic: "120",
+      bpDiastolic: "80",
+      heartRate: "72",
+      respRate: "16",
+      temperature: "37",
+      spo2: "98",
+      painScore: "2",
+      isolationScreen: "false",
+    }))
+      await fill(`w3Triage.${id}`, value);
+    if (await scoped("w3Triage.review.allergyList").count())
+      await act("w3Triage.review.allergyList");
+    await act("w3Triage.next");
+    for (const [id, value] of Object.entries({
+      hpi: "Mild headache, no red flags.",
+      ros: "Otherwise negative.",
+      exam: "Alert with normal neurologic examination.",
+      assessmentPlan: "Supportive care and return precautions.",
+      medRecDecision: "continue",
+      claimDiagnosis: "R51.9",
+      levelOfService: "99213",
+    }))
+      await fill(`w3Provider.${id}`, value);
+    await act("w3Provider.nav.w3Disposition");
+    await act("w3Disposition.dischargeGroup");
+    for (const [id, value] of Object.entries({
+      visitDiagnosis: "R51.9",
+      patientInstructions: "Return for worsening headache or new symptoms.",
+      followUp: "Primary care in one week",
+    }))
+      await fill(`w3Disposition.${id}`, value);
+    await act("w3Disposition.nav.w3Provider");
+    await differential(page, "P2/board-note");
+    await expect(scoped("w3Provider.commit.signNote")).toBeEnabled();
+    const saved = page.waitForResponse(
+      (r) =>
+        r.url().endsWith("/commit/commands") && r.request().method() === "POST",
+    );
+    await act("w3Provider.commit.signNote");
+    const response = await saved;
+    expect(response.status(), await response.text()).toBe(201);
+    expect(await response.text()).toContain("DocumentReference/");
+    await expect(other("chartSummary.patientCare.w3Triage")).toBeEnabled();
+    const untouched = await page.request.get(
+      service.base + "/patients/painter-second",
+      { headers: { Authorization: `Bearer ${service.tokens.P2}` } },
+    );
+    expect(untouched.status()).toBe(200);
+    expect((await untouched.json()).version).toBe(1);
+    const unchanged = await page.request.get(
+      service.base + "/patients/painter-second",
+      { headers: { Authorization: `Bearer ${service.tokens.P2}` } },
+    );
+    expect(unchanged.status()).toBe(200);
+    expect((await unchanged.json()).version).toBe(1);
+    const directory = process.env.TMPDIR + "/painter-parity";
+    mkdirSync(directory, { recursive: true });
+    await page.screenshot({ path: directory + "/board-live.png" });
+  } finally {
+    await service.close();
+  }
+});
+
+test("P3: administer one scheduled medication through the time-grid action and shared dose service", async ({
+  page,
+}) => {
+  const service = await startPainterService("P3");
+  try {
+    await connectService(page, "P3", service.base, service.tokens.P3 ?? "");
+    await page.goto(
+      "/lean.html?persona=P3&audit=buttons&marPatient=painter-patient&marRelease=mar&marWorkflow=dose&code=painter&state=painter",
+    );
+    await expect(page.locator("#root")).toHaveAttribute(
+      "data-accepted",
+      "true",
+    );
+    await navigate(page, "w4Worklist");
+    await click(page, "w4Worklist.review.allergyList");
+    await click(page, "w4Worklist.toMar");
+    await expect(page.locator('[data-kind="gridCell"]').first()).toBeAttached();
+    await differential(page, "P3/time-grid");
+    const directory = process.env.TMPDIR + "/painter-parity";
+    mkdirSync(directory, { recursive: true });
+    await page.screenshot({ path: directory + "/timeGrid-live.png" });
+    await click(page, "w4Mar.openDue");
+    await enter(page, "w4Admin.wristbandScan", "painter-patient");
+    await enter(page, "w4Admin.medScan", "amoxicillin");
+    await enter(page, "w4Admin.adminStatus", "given");
+    await enter(
+      page,
+      "w4Admin.adminReason",
+      "Scheduled medication administered",
+    );
+    const saved = page.waitForResponse(
+      (r) =>
+        r.url().endsWith("/commit/commands") && r.request().method() === "POST",
+    );
+    await click(page, "w4Admin.commit.administerMed");
+    const response = await saved;
+    expect(response.status(), await response.text()).toBe(201);
+    const persisted = z
+      .object({
+        outcome: z.literal("persisted"),
+        mar: z.array(z.record(z.string(), z.unknown())),
+      })
+      .parse(await response.json());
+    expect(persisted.mar.some((event) => "administered" in event)).toBe(true);
+    const refreshed = await page.request.get(
+      service.base + "/patients/painter-patient",
+      { headers: { Authorization: `Bearer ${service.tokens.P3}` } },
+    );
+    expect(refreshed.status()).toBe(200);
+    const chart = z
+      .object({
+        snapshot: z.object({
+          bundle: z.object({
+            entry: z.array(
+              z.object({
+                resource: z
+                  .object({
+                    resourceType: z.string(),
+                    status: z.string().optional(),
+                  })
+                  .passthrough(),
+              }),
+            ),
+          }),
+        }),
+      })
+      .parse(await refreshed.json());
+    expect(
+      chart.snapshot.bundle.entry.filter(
+        (e) => e.resource.resourceType === "MedicationAdministration",
+      ),
+    ).toHaveLength(1);
+  } finally {
+    await service.close();
+  }
+});

@@ -12,6 +12,7 @@ import {
 } from "../data/liveStore";
 import { loginMar, marRequest } from "../data/commitService";
 import { readArtifact } from "../browser/data";
+import { createBoardTransport } from "./board";
 import { createPainter } from "./painter";
 import type { KeyboardState, Output } from "./layout";
 import "./painter.css";
@@ -36,7 +37,8 @@ async function main() {
     const login = document.createElement("button");
     login.textContent = `Sign in as ${query.get("persona") ?? "P1"}`;
     login.onclick = () => {
-      const target = new URL("lean.html", location.href);
+      const target = new URL(location.href);
+      target.hash = "";
       void loginMar(
         query.get("persona")?.toLowerCase() ?? "p1",
         target.href,
@@ -85,7 +87,40 @@ async function main() {
     user,
     undefined,
     date,
+    query.get("marPatient")
+      ? {
+          patient: query.get("marPatient") ?? "",
+          release: query.get("marRelease") ?? "mar",
+          workflow: query.get("marWorkflow") ?? "dose",
+          onUpdate: report,
+        }
+      : undefined,
   );
+  const patientIds = query.get("patients")?.split(",").filter(Boolean) ?? [];
+  if (new Set(patientIds).size !== patientIds.length)
+    throw Error("Duplicate patient panes");
+  const boardSessions = new Map(
+    await Promise.all(
+      patientIds.map(
+        async (patient) =>
+          [
+            patient,
+            await createLiveSession(
+              interp,
+              content.spec,
+              { ...content.program, patientSelection: true },
+              directory,
+              user,
+              undefined,
+              date,
+            ),
+          ] as const,
+      ),
+    ),
+  );
+  const board = boardSessions.size
+    ? createBoardTransport(boardSessions)
+    : undefined;
   let queue = Promise.resolve();
   let pending = 0;
   let admitted = false;
@@ -97,31 +132,71 @@ async function main() {
         ),
       );
     },
-    dispatch(event) {
-      pending++;
-      root.setAttribute("aria-busy", "true");
-      queue = queue
-        .then(async () => {
-          if (!admitted)
-            throw new Error(
-              "Choose a supported viewport and admitted layout before continuing.",
-            );
-          const result = await session.dispatch(event);
-          const refused = session.getSnapshot().result;
-          status.textContent =
-            result?.message ??
-            (refused && typeof refused === "object" && "blocked" in refused
-              ? refused.blocked.reason
-              : "");
-        })
-        .catch(report)
-        .finally(() => {
-          if (--pending === 0) root.removeAttribute("aria-busy");
-        });
-    },
+    dispatch: (event) => dispatch(event),
+    ...(board
+      ? {
+          dispatchPatient: (
+            patient: string,
+            event: Parameters<typeof session.dispatch>[0],
+          ) => dispatch(event, patient),
+        }
+      : {}),
   });
+  function dispatch(
+    event: Parameters<typeof session.dispatch>[0],
+    patient?: string,
+  ) {
+    const target = patient ? boardSessions.get(patient) : session;
+    const generation =
+      target && "getGeneration" in target ? target.getGeneration() : undefined;
+    pending++;
+    root.setAttribute("aria-busy", "true");
+    queue = queue
+      .then(async () => {
+        if (!admitted)
+          throw new Error(
+            "Choose a supported viewport and admitted layout before continuing.",
+          );
+        if (
+          target &&
+          "getGeneration" in target &&
+          target.getGeneration() !== generation
+        )
+          throw Error(
+            "The chart refreshed. Review the current dose and repeat the action.",
+          );
+        const result =
+          patient && board
+            ? await board.dispatch(patient, event)
+            : await session.dispatch(event);
+        const refused = (
+          patient ? boardSessions.get(patient) : session
+        )?.getSnapshot().result;
+        status.textContent =
+          (result && typeof result === "object" && "message" in result
+            ? String(result.message)
+            : undefined) ??
+          (refused && typeof refused === "object" && "blocked" in refused
+            ? refused.blocked.reason
+            : "");
+      })
+      .catch(report)
+      .finally(() => {
+        if (--pending === 0) root.removeAttribute("aria-busy");
+      });
+  }
   function paintCurrent() {
-    const snapshot = session.getSnapshot();
+    const ordinary = session.getSnapshot();
+    const snapshot = board
+      ? {
+          ...ordinary,
+          ui: JSON.parse(
+            layout(
+              JSON.stringify({ op: "board-screen", panes: board.panes() }),
+            ),
+          ),
+        }
+      : ordinary;
     if (!snapshot.ui || !snapshot.layout)
       throw new Error("Lean semantic screen/layout API is required");
     const viewport = { w: window.innerWidth * 64, h: window.innerHeight * 64 };
@@ -169,7 +244,8 @@ async function main() {
     }
     root.inert = false;
     painter.patch(snapshot.ui, output);
-    session.onPaint(snapshot.ui);
+    if (board) board.onPaint();
+    else session.onPaint(snapshot.ui);
     // Read-only browser evidence; no state/dispatch hook is exposed here.
     root.dispatchEvent(new CustomEvent("lean-paint", { detail: output }));
     status.textContent = "";
@@ -184,13 +260,14 @@ async function main() {
       throw error;
     }
   }
-  session.subscribe(() => {
-    try {
-      paint();
-    } catch (error) {
-      report(error);
-    }
-  });
+  for (const current of board ? boardSessions.values() : [session])
+    current.subscribe(() => {
+      try {
+        paint();
+      } catch (error) {
+        report(error);
+      }
+    });
   window.addEventListener("resize", () => {
     try {
       paint();

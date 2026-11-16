@@ -1,0 +1,761 @@
+{
+  "timeGrid": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "presentation": {
+          "kind": "timeGrid",
+          "children": [
+            {
+              "info": {
+                "comp": "timeGrid",
+                "label": "timeGrid",
+                "infoId": "timeGrid",
+                "display": "table",
+                "rows": [
+                  [
+                    [
+                      "Medication",
+                      "Acetaminophen"
+                    ],
+                    [
+                      "Dose",
+                      "500 mg"
+                    ],
+                    [
+                      "Route",
+                      "oral"
+                    ],
+                    [
+                      "2026-11-15T08:00:00Z",
+                      "Scheduled \u00b7 08:00"
+                    ],
+                    [
+                      "2026-11-15T09:00:00Z",
+                      "Given \u00b7 09:15"
+                    ]
+                  ],
+                  [
+                    [
+                      "Medication",
+                      "Lisinopril"
+                    ],
+                    [
+                      "Dose",
+                      "10 mg"
+                    ],
+                    [
+                      "Route",
+                      "oral"
+                    ],
+                    [
+                      "2026-11-15T08:00:00Z",
+                      "Scheduled \u00b7 08:30"
+                    ],
+                    [
+                      "2026-11-15T09:00:00Z",
+                      "Held \u00b7 low blood pressure"
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "button": {
+          "comp": "openDue",
+          "label": "Open due dose",
+          "role": "secondary",
+          "enabled": true,
+          "blockedReason": null,
+          "hotkey": null
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "notes": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "presentation": {
+          "kind": "notes",
+          "children": [
+            {
+              "info": {
+                "comp": "notes",
+                "label": "notes",
+                "infoId": "notes",
+                "display": "table",
+                "rows": [
+                  [
+                    [
+                      "Title",
+                      "Progress note"
+                    ],
+                    [
+                      "Author",
+                      "Clinician P1"
+                    ],
+                    [
+                      "Recorded",
+                      "2026-11-15T08:00:00Z"
+                    ],
+                    [
+                      "Text",
+                      "Patient is comfortable. Reviewed symptoms and current treatment. Continue monitoring."
+                    ]
+                  ],
+                  [
+                    [
+                      "Title",
+                      "Nursing note"
+                    ],
+                    [
+                      "Author",
+                      "Clinician P3"
+                    ],
+                    [
+                      "Text",
+                      "Vital signs stable. Patient understands the plan."
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "folderList": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "presentation": {
+          "kind": "folderList",
+          "children": [
+            {
+              "info": {
+                "comp": "folderList",
+                "label": "folderList",
+                "infoId": "folderList",
+                "display": "table",
+                "rows": [
+                  [
+                    [
+                      "Folder",
+                      "Results"
+                    ],
+                    [
+                      "Count",
+                      "3"
+                    ],
+                    [
+                      "Unread",
+                      "1"
+                    ],
+                    [
+                      "Details",
+                      "Laboratory and imaging"
+                    ]
+                  ],
+                  [
+                    [
+                      "Folder",
+                      "Patient messages"
+                    ],
+                    [
+                      "Count",
+                      "7"
+                    ],
+                    [
+                      "Unread",
+                      "2"
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "trend": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "presentation": {
+          "kind": "trend",
+          "children": [
+            {
+              "info": {
+                "comp": "trend",
+                "label": "trend",
+                "infoId": "trend",
+                "display": "table",
+                "rows": [
+                  [
+                    [
+                      "Test",
+                      "Potassium"
+                    ],
+                    [
+                      "Value",
+                      "4.1"
+                    ],
+                    [
+                      "Unit",
+                      "mmol/L"
+                    ],
+                    [
+                      "Recorded",
+                      "2026-11-13T08:00:00Z"
+                    ]
+                  ],
+                  [
+                    [
+                      "Test",
+                      "Potassium"
+                    ],
+                    [
+                      "Value",
+                      "4.6"
+                    ],
+                    [
+                      "Unit",
+                      "mmol/L"
+                    ],
+                    [
+                      "Recorded",
+                      "2026-11-14T12:00:00Z"
+                    ]
+                  ],
+                  [
+                    [
+                      "Test",
+                      "Potassium"
+                    ],
+                    [
+                      "Value",
+                      "4.3"
+                    ],
+                    [
+                      "Unit",
+                      "mmol/L"
+                    ],
+                    [
+                      "Recorded",
+                      "2026-11-15T08:00:00Z"
+                    ]
+                  ],
+                  [
+                    [
+                      "Test",
+                      "Potassium"
+                    ],
+                    [
+                      "Value",
+                      "<5"
+                    ],
+                    [
+                      "Unit",
+                      "mmol/L"
+                    ],
+                    [
+                      "Recorded",
+                      "unknown"
+                    ]
+                  ]
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "growth": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "chartReferences": {
+          "references": [
+            {
+              "measure": "Weight",
+              "unit": "kg",
+              "percentile": "50",
+              "source": "Synthetic reference",
+              "population": "Synthetic illustration",
+              "points": [
+                [
+                  0,
+                  320
+                ],
+                [
+                  60,
+                  740
+                ],
+                [
+                  120,
+                  940
+                ],
+                [
+                  180,
+                  1100
+                ]
+              ]
+            }
+          ],
+          "children": [
+            {
+              "presentation": {
+                "kind": "growth",
+                "children": [
+                  {
+                    "info": {
+                      "comp": "growth",
+                      "label": "growth",
+                      "infoId": "growth",
+                      "display": "table",
+                      "rows": [
+                        [
+                          [
+                            "Age (months)",
+                            "0"
+                          ],
+                          [
+                            "Weight (kg)",
+                            "3.4"
+                          ],
+                          [
+                            "Date",
+                            "2026-01-01"
+                          ]
+                        ],
+                        [
+                          [
+                            "Age (months)",
+                            "6"
+                          ],
+                          [
+                            "Weight (kg)",
+                            "7.8"
+                          ],
+                          [
+                            "Date",
+                            "2026-07-01"
+                          ]
+                        ],
+                        [
+                          [
+                            "Age (months)",
+                            "12"
+                          ],
+                          [
+                            "Weight (kg)",
+                            "10.1"
+                          ],
+                          [
+                            "Date",
+                            "2027-01-01"
+                          ]
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "timeline": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "timeline": {
+          "title": "Clinical chronology \u00b7 source order",
+          "children": [
+            {
+              "text": {
+                "s": "Admission \u00b7 assessed and plan documented"
+              }
+            },
+            {
+              "text": {
+                "s": "Reassessment \u00b7 symptoms improving"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "datedTimeline": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "datedTimeline": {
+          "title": "Clinical chronology \u00b7 UTC",
+          "dated": [
+            {
+              "source": {
+                "resource": "Observation/a",
+                "field": "effectiveDateTime",
+                "timestamp": "2026-11-13T08:00:00Z"
+              },
+              "utcSecond": 1794556800,
+              "nanosecond": 0
+            },
+            {
+              "source": {
+                "resource": "Observation/b",
+                "field": "effectiveDateTime",
+                "timestamp": "2026-11-15T08:00:00Z"
+              },
+              "utcSecond": 1794729600,
+              "nanosecond": 0
+            }
+          ],
+          "undated": [
+            {
+              "resource": "Observation/c",
+              "field": "issued",
+              "timestamp": "2026-11-15"
+            }
+          ],
+          "children": [
+            {
+              "text": {
+                "s": "Complete clinical history remains available."
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "board": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "Allergies",
+        "No known allergy"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "board": {
+          "urgent": [],
+          "children": [
+            {
+              "patientPane": {
+                "patient": "A",
+                "banner": [
+                  [
+                    "Patient",
+                    "Alex Painter"
+                  ],
+                  [
+                    "MRN",
+                    "A"
+                  ]
+                ],
+                "metadata": {
+                  "fieldChoices": [],
+                  "fieldSources": [],
+                  "sourceLabels": [],
+                  "entryHints": []
+                },
+                "children": [
+                  {
+                    "button": {
+                      "comp": "review",
+                      "label": "Review",
+                      "role": "review",
+                      "enabled": true,
+                      "blockedReason": null,
+                      "hotkey": "Ctrl+R"
+                    }
+                  }
+                ],
+                "modal": []
+              }
+            },
+            {
+              "patientPane": {
+                "patient": "B",
+                "banner": [
+                  [
+                    "Patient",
+                    "Blair Painter"
+                  ],
+                  [
+                    "MRN",
+                    "B"
+                  ]
+                ],
+                "metadata": {
+                  "fieldChoices": [],
+                  "fieldSources": [],
+                  "sourceLabels": [],
+                  "entryHints": []
+                },
+                "children": [
+                  {
+                    "button": {
+                      "comp": "review",
+                      "label": "Review",
+                      "role": "review",
+                      "enabled": true,
+                      "blockedReason": null,
+                      "hotkey": "Ctrl+R"
+                    }
+                  }
+                ],
+                "modal": []
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  },
+  "alert": {
+    "screen": "widgets",
+    "banner": [
+      [
+        "Patient",
+        "Alex Painter"
+      ],
+      [
+        "DOB",
+        "1968-01-01"
+      ],
+      [
+        "MRN",
+        "PAINTER-001"
+      ],
+      [
+        "Allergies",
+        "Penicillin"
+      ],
+      [
+        "Weight",
+        "80 kg"
+      ],
+      [
+        "Language",
+        "English"
+      ]
+    ],
+    "viewer": "Clinician P1",
+    "nav": [],
+    "title": "Clinical display",
+    "workspace": [
+      {
+        "alert": {
+          "comp": "notice",
+          "alertId": "notice",
+          "label": "Review recorded allergy information before proceeding.",
+          "severity": "warning"
+        }
+      },
+      {
+        "button": {
+          "comp": "review",
+          "label": "Review",
+          "role": "review",
+          "enabled": true,
+          "blockedReason": null,
+          "hotkey": "Ctrl+R"
+        }
+      }
+    ],
+    "side": [],
+    "modal": null
+  }
+}

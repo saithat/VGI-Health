@@ -20,14 +20,15 @@ interface Entry {
   drawn: Drawn;
   /** Lean's display part of this box: role, state and control data. */
   part?: Part | undefined;
-  /** Inside a patient pane: no patient-scoped dispatch host exists yet. */
-  pane: boolean;
+  /** The enclosing Lean patient pane, never an ambient selected patient. */
+  patient?: string | undefined;
   control?: Control | undefined;
   controlKind?: string;
   textKey?: string;
 }
 export interface PainterOptions {
   dispatch(event: Event): void;
+  dispatchPatient?(patient: string, event: Event): void;
   keyboard: KeyboardTransition;
 }
 const sourceKey = (drawn: Drawn) => drawn.box.info.source?.join(".");
@@ -50,7 +51,13 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
   let screenId: string | undefined;
   let modalInvoker: HTMLElement | undefined;
   let modalOpen = false;
-  const emit = (event: Event) => options.dispatch(event);
+  let modalToken = "";
+  const emit = (entry: Entry, event: Event) => {
+    if (entry.control?.disabled || entry.element.inert) return;
+    if (entry.patient !== undefined)
+      options.dispatchPatient?.(entry.patient, event);
+    else options.dispatch(event);
+  };
   root.style.position = "relative";
   function place(entry: Entry) {
     const { box } = entry.drawn,
@@ -122,7 +129,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     if (control instanceof HTMLButtonElement) control.type = "button";
     const sendValue = () => {
       const part = entry.part;
-      if (part?.role !== "control" || entry.pane) return;
+      if (part?.role !== "control") return;
       let raw: string | boolean =
         control instanceof HTMLInputElement && control.type === "checkbox"
           ? control.checked
@@ -136,7 +143,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         unit: part.unit ?? null,
       };
       const event = entryEvent(field, raw);
-      if (event) emit(event);
+      if (event) emit(entry, event);
     };
     control.oninput = (event) => {
       if (
@@ -157,14 +164,15 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     };
     control.onclick = () => {
       const part = entry.part;
-      if (!part || entry.pane) return; // Board dispatch needs a patient-scoped host.
+      if (!part) return;
       const comp = part.comp ?? "";
-      if (part.role === "pending") emit({ confirm: { comp } });
+      if (part.role === "pending") emit(entry, { confirm: { comp } });
       else if (part.role === "tab")
         // Each tab is its own Lean target box; Lean gives its index.
-        emit({ selectTab: { comp, idx: part.col ?? 0 } });
+        emit(entry, { selectTab: { comp, idx: part.col ?? 0 } });
       else if (part.role === "button")
         emit(
+          entry,
           part.kind === "ack"
             ? { ack: { alert: comp } }
             : part.kind === "confirm"
@@ -176,7 +184,10 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       const key = keyboardKey(event),
         part = entry.part;
       if (!key || !part) return;
-      if (part.role === "tab" && ["left", "right", "home", "end"].includes(key)) {
+      if (
+        part.role === "tab" &&
+        ["left", "right", "home", "end"].includes(key)
+      ) {
         // Manual activation: arrows move focus among the sibling tab boxes
         // through the Lean tabs profile; Enter/Space click the focused tab.
         event.preventDefault();
@@ -264,7 +275,8 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     control.disabled =
       !entry.drawn.box.info.paint ||
       blocked ||
-      entry.pane ||
+      (entry.patient !== undefined &&
+        (!entry.patient || !options.dispatchPatient)) ||
       part.enabled === false;
     control.dataset.compId = part.comp ?? "";
     control.dataset.event =
@@ -398,7 +410,53 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     event.preventDefault();
     controls[next.focus]?.focus({ preventScroll: true });
   };
+  const hotkeys = (event: KeyboardEvent) => {
+    if (event.defaultPrevented || event.repeat || event.isComposing) return;
+    const active = document.activeElement;
+    if (
+      active instanceof HTMLInputElement ||
+      active instanceof HTMLTextAreaElement ||
+      active instanceof HTMLSelectElement ||
+      (active instanceof HTMLElement && active.isContentEditable)
+    )
+      return;
+    const matches = (text: string) => {
+      const keys = text
+        .toLowerCase()
+        .split("+")
+        .map((s) => s.trim());
+      return (
+        keys.at(-1) === event.key.toLowerCase() &&
+        event.ctrlKey === keys.some((k) => k === "ctrl" || k === "control") &&
+        event.metaKey === keys.some((k) => k === "meta" || k === "cmd") &&
+        event.altKey === keys.includes("alt") &&
+        event.shiftKey === keys.includes("shift")
+      );
+    };
+    const focusedPatient =
+      active instanceof HTMLElement
+        ? active.closest<HTMLElement>("[data-patient]")?.dataset.patient
+        : undefined;
+    const candidates = [...entries.values()].filter(
+      (e) =>
+        e.part?.role === "button" &&
+        e.control?.isConnected &&
+        !e.control.disabled &&
+        (!focusedPatient || focusedPatient === e.patient) &&
+        [...entries.values()].some(
+          (k) =>
+            k.part?.role === "hotkey" &&
+            parentKey(k.drawn) === sourceKey(e.drawn) &&
+            matches(k.part.text),
+        ),
+    );
+    // Repeated commands in two panes require a focused patient namespace.
+    if (candidates.length !== 1) return;
+    event.preventDefault();
+    candidates[0]?.control?.click();
+  };
   root.addEventListener("keydown", dialogKeys);
+  document.addEventListener("keydown", hotkeys);
   return {
     patch(screen: UiScreen, output: Output) {
       if (!output.accepted) throw new Error("Lean refused the layout");
@@ -411,25 +469,48 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       // Occurrences under a patient pane's caption belong to that pane.
       const panes = output.boxes.flatMap((d, i) =>
         parts[i]?.kind === "patientPane" && d.box.info.source
-          ? [`${d.box.info.source.join(".")}.`]
+          ? [
+              {
+                prefix: `${d.box.info.source.join(".")}.`,
+                patient: parts[i]?.comp ?? "",
+              },
+            ]
           : [],
       );
       const modal = output.boxes.some((d) => d.box.info.interruptive);
+      const ownerPath = output.boxes
+        .find((d) => d.box.info.interruptive)
+        ?.box.info.source?.join(".");
+      const modalPatient =
+        ownerPath === undefined
+          ? undefined
+          : panes.find((p) => ownerPath.startsWith(p.prefix))?.patient;
+      const blockedByModal = (entry: Entry) =>
+        modal &&
+        ((modalPatient !== undefined && entry.patient !== modalPatient) ||
+          (!entry.drawn.box.info.interruptive && !entry.drawn.box.info.urgent));
       const active =
         document.activeElement instanceof HTMLElement
           ? document.activeElement
           : undefined;
-      if (modal && !modalOpen) modalInvoker = active;
+      const token = modal ? `${modalPatient ?? ""}:${ownerPath ?? ""}` : "";
+      const modalChanged = modal && token !== modalToken;
+      if (modalChanged && !modalOpen) modalInvoker = active;
       const retained = new Set<string>(),
         counts = new Map<string, number>();
       const fresh: Entry[] = [];
       let cursor: ChildNode | null = root.firstChild;
+      let dialogAssigned = false;
       output.boxes.forEach((drawn, index) => {
         const part = parts[index] ?? undefined;
         const path = sourceKey(drawn);
+        const patient =
+          path === undefined
+            ? ""
+            : (panes.find((p) => path.startsWith(p.prefix))?.patient ?? "");
         const identity =
           part?.target && part.comp !== undefined
-            ? `${part.role}:${part.comp}:${part.kind ?? ""}:${part.role === "tab" ? (part.col ?? 0) : ""}`
+            ? `${patient}:${part.role}:${part.comp}:${part.kind ?? ""}:${part.role === "tab" ? (part.col ?? 0) : ""}`
             : (path ?? `box:${drawn.box.info.id}`);
         const occurrence = counts.get(identity) ?? 0;
         counts.set(identity, occurrence + 1);
@@ -438,7 +519,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         let entry = entries.get(key);
         if (!entry) {
           const element = document.createElement("div");
-          entry = { element, drawn, part, pane: false };
+          entry = { element, drawn, part };
           entries.set(key, entry);
           const current = entry;
           element.onscroll = () => {
@@ -470,7 +551,12 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         }
         entry.drawn = drawn;
         entry.part = part;
-        entry.pane = path !== undefined && panes.some((p) => path.startsWith(p));
+        entry.patient =
+          path === undefined
+            ? undefined
+            : panes.find((p) => path.startsWith(p.prefix))?.patient;
+        if (entry.patient) entry.element.dataset.patient = entry.patient;
+        else delete entry.element.dataset.patient;
         fresh.push(entry);
         const { element } = entry;
         element.dataset.box = drawn.box.info.id;
@@ -488,8 +574,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           col: part?.col === undefined ? undefined : String(part.col),
         };
         for (const [name, value] of Object.entries(state))
-          if (value === undefined || value === "")
-            delete element.dataset[name];
+          if (value === undefined || value === "") delete element.dataset[name];
           else element.dataset[name] = value;
         element.setAttribute("aria-label", drawn.original ?? drawn.box.info.id);
         if (part?.raw !== undefined && part.raw !== part.text)
@@ -501,7 +586,9 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
             ? "banner"
             : part?.role === "alert"
               ? "alert"
-              : drawn.box.info.interruptive && !drawn.box.info.target
+              : drawn.box.info.interruptive &&
+                  !drawn.box.info.target &&
+                  !dialogAssigned
                 ? "dialog"
                 : "");
         if (role) element.setAttribute("role", role);
@@ -510,13 +597,13 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           element.setAttribute("aria-current", "step");
         else element.removeAttribute("aria-current");
         if (role === "dialog") {
+          dialogAssigned = true;
           element.setAttribute("aria-modal", "true");
           element.tabIndex = -1;
         }
         // The pinned urgent strip stays operable beside a modal
         // (Lean: stripDispatchable, strip_dispatches).
-        const blocked =
-          modal && !drawn.box.info.interruptive && !drawn.box.info.urgent;
+        const blocked = blockedByModal(entry);
         element.inert = blocked;
         place(entry);
         const textKey = JSON.stringify([
@@ -537,7 +624,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           if (drawn.box.info.paint) {
             const shape = paintShape(drawn);
             if (shape) element.append(shape);
-            if (drawn.lines.length) {
+            if (drawn.lines.some((line) => line.length > 0)) {
               const lines = paintText(drawn, part);
               element.append(lines);
               lines.scrollTop = scroll;
@@ -579,11 +666,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       // Controls refer to the boxes of their sibling parts, so they are
       // updated once every box of this paint exists.
       for (const entry of fresh) {
-        const { drawn } = entry;
-        updateControl(
-          entry,
-          modal && !drawn.box.info.interruptive && !drawn.box.info.urgent,
-        );
+        updateControl(entry, blockedByModal(entry));
         entry.element.dataset.interactive = String(Boolean(entry.control));
       }
       Object.assign(root.style, {
@@ -598,7 +681,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         !active.closest("[inert]")
       )
         active.focus({ preventScroll: true });
-      if (modal && !modalOpen) {
+      if (modalChanged) {
         const focus = [...entries.values()].find(
           (e) =>
             e.drawn.box.info.interruptive && e.control && !e.control.disabled,
@@ -622,9 +705,11 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           );
       }
       modalOpen = modal;
+      modalToken = token;
     },
     destroy() {
       root.removeEventListener("keydown", dialogKeys);
+      document.removeEventListener("keydown", hotkeys);
       root.replaceChildren();
       entries.clear();
       offsets.clear();
