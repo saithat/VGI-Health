@@ -158,3 +158,54 @@ current tests bound evidence retention, while peak semantic screens, native
 child buffers, clinical memory and allocator high-water marks depend on the
 actual workload. The full browser audit is a separate renderer check; it does
 not measure multi-day browser recording memory.
+
+## Verification
+
+Baseline source was `da9156c2`. Commands ran with
+`TMPDIR=/home/saithat/Projects/run-tmp`; the source archive, runs, logs and
+analysis scripts are under `$TMPDIR/run-leak`, outside git.
+
+```sh
+pnpm --config.verify-deps-before-run=false --filter agent test --maxWorkers=2
+pnpm --config.verify-deps-before-run=false --filter agent typecheck
+pnpm --config.verify-deps-before-run=false --filter agent lint
+```
+
+Results: 300 tests passed, 64 data-dependent tests skipped; typecheck and lint
+passed. The focused `vitest run test/recording-growth.test.ts --maxWorkers=1`
+also passed all six tests. The unavailable archive-dependent tests were not
+replaced with weaker fixtures.
+
+The final committed-core replay commands were:
+
+```sh
+node --expose-gc --max-old-space-size=1024 --import ./agent/node_modules/tsx/dist/loader.mjs agent/test/recording-memory-harness.ts --out "$TMPDIR/run-leak/final-commit-replay-lean" --mode lean --days 8 --replay-from "$TMPDIR/run-leak/final-before-lean/run"
+node --expose-gc --max-old-space-size=1024 --import ./agent/node_modules/tsx/dist/loader.mjs agent/test/recording-memory-harness.ts --out "$TMPDIR/run-leak/final-commit-replay-browser" --mode browser --days 8 --replay-from "$TMPDIR/run-leak/final-before-browser/run"
+python "$TMPDIR/run-leak/compare-commit.py"
+```
+
+Both completed with zero drift and no clinical artifact differences. The
+comparison JSON is `$TMPDIR/run-leak/comparison-commit.json`. The atomic gallery
+publication follow-up changes directory visibility, not paint or result bytes.
+
+The required full browser pair ran serially, with four workers:
+
+```sh
+EHR_SCREEN_WORKERS=4 node scripts/audit-alert-policy.mjs "$TMPDIR/run-leak/audit-templates"
+EHR_SCREEN_WORKERS=4 node scripts/audit-alert-policy.mjs "$TMPDIR/run-leak/audit-personas" --personas
+```
+
+Templates: 1,956 states, 18,774 measurements, zero findings (1,810 s).
+Personas: 1,394 states, 13,428 measurements, zero findings (891 s). Audit
+subprocesses used a local `pnpm` wrapper that adds
+`--config.verify-deps-before-run=false`; dependencies and app sources were not
+changed. An existing app build was prepared with
+`pnpm --config.verify-deps-before-run=false --filter app build` because this
+worktree initially had no `app/dist/build.json`.
+
+A staged-only compatibility check passed schema-1 loading, exact schema-2
+lookup, concurrent dashboard-slice coalescing and pointer/scroll parity. Those
+four consumer files are still unchanged in the worktree. The browser audits
+check the renderer; they do not establish format-2 integration in those readers.
+No Lean source was changed, no model backend was called, and no recorded run
+or certificate was rewritten. Snapshots created for this analysis were deleted.

@@ -1,10 +1,10 @@
 import { BoundedMap } from './bounded-map.js';
 import { shapeFor } from "../../scripts/layout-reference/generator.mjs";
 import { LeanReference, referenceGeneratorVersion } from "./lean-reference.js";
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { LeanLayoutRefusal } from "./lean-layout-refusal.js";
 import path from "node:path";
-import { mkdtemp, readFile, rm, appendFile, mkdir } from "node:fs/promises";
+import { mkdtemp, readFile, rm, appendFile, mkdir, rename } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { z } from "zod";
 import type { GeometryAtlas } from "../../app/src/metrics/geometry.js";
@@ -602,6 +602,8 @@ export class LeanScreenChecker implements ScreenChecker {
         `v${input.program.version}`,sha256(stableStringify([atlas.programHash,geometryComponentsHash(input.program)])),"gallery");
       const {existsSync}=await import('node:fs');
       if(!input.result&&!failures.length&&!existsSync(path.join(gallery,'coverage.json'))){
+        const staging=path.join(path.dirname(gallery),`gallery-${randomUUID()}.tmp`);
+        try{
         const saved = new Set<string>(),savedScreens=new Set<string>();
         for (const [i,s] of samples.entries()) {
           // The review gallery displays one before/after view per screen.
@@ -614,13 +616,19 @@ export class LeanScreenChecker implements ScreenChecker {
           const [raw]=await this.batch([{op:"family-paint",references:families[i],screen:s.ui,viewport,maxTargetsPerViewport:limitFor(s.screen).limit}]);
           const paint=z.record(z.string(),z.unknown()).parse(raw);
           const tree=z.object({drawn:z.unknown()}).parse(paint['tree']);
-          await writeJsonCompactAtomic(path.join(gallery,`${i}.json`),{
+          await writeJsonCompactAtomic(path.join(staging,`${i}.json`),{
             screen:s.screen,shape:shapes[i],ui:{},
             paint:{accepted:paint['accepted'],viewport:paint['viewport'],tree:{drawn:tree.drawn,children:[]},boxes:paint['boxes'],lineWidths:[],findings:paint['findings']},
           });
         }
-        // This file is also the publication fence: a partial gallery is never indexed.
-        await writeJson(path.join(gallery,'coverage.json'),{screenGate:'lean',browserCertified:false,reportFormatVersion:2,programHash:atlas.programHash,layoutsSha256:sha256(stableStringify(design)),failures:[]});
+        await writeJson(path.join(staging,'coverage.json'),{screenGate:'lean',browserCertified:false,reportFormatVersion:2,programHash:atlas.programHash,layoutsSha256:sha256(stableStringify(design)),failures:[]});
+        // The gallery reader indexes numeric files before reading coverage.
+        // Publish the whole directory together so it never sees a partial set.
+        try{await rename(staging,gallery);}catch(error){
+          const collision=error&&typeof error==='object'&&'code'in error&&['EEXIST','ENOTEMPTY'].includes(String(error.code));
+          if(!collision||!existsSync(path.join(gallery,'coverage.json')))throw error;
+        }
+        }finally{await rm(staging,{recursive:true,force:true});}
       }
     }
     return { atlas, failures, rules, pages: states.length, limits: perScreen };
