@@ -1,3 +1,5 @@
+import {LeanScreenChecker,type LeanCheckerOptions} from './lean-screencheck.js';
+import {leanLayoutPrompt,leanTrainingLog} from './lean-layout-prompt.js';
 import { releaseScoringSchema, RELEASE_SCORING_POLICY } from './release-scoring.js';
 import {simulationModesSchema,resolvedSimulationModes,realWorkModes,legacyModes,withSimulationModes,type SimulationModes} from './simulation-modes.js';
 import { structurePolicySchema, STRUCTURE_POLICY, type StructurePolicy } from './structure-policy.js';
@@ -55,6 +57,8 @@ import { loadWorld } from './world.js';
 import { REPO_ROOT, readJson, writeJson } from './util.js';
 
 export interface RunOptions {
+  screenMode?:'browser'|'lean';
+  leanOptions?:LeanCheckerOptions;
   simulationModes?: SimulationModes;
   structurePolicy?: Partial<StructurePolicy> | false;
   offlineArchive?: readonly Program[];
@@ -149,11 +153,14 @@ export async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(
 }
 
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
+  const leanMode=opts.screenMode==='lean';
+  if(leanMode&&(opts.screens||opts.geometry||opts.protocol===CADENCE_PROTOCOL||opts.generatorOnly))throw Error('Lean mode owns its screen/geometry providers and uses the core nightly loop');
   const scoring={policy:RELEASE_SCORING_POLICY,...releaseScoringSchema.parse({incompletePenalty:opts.incompletePenalty})};
   const llm=opts.generatorOnly ? generatorOnlyBackend : opts.llm;
+  if(leanMode&&opts.leanOptions&&['codex','claude','openai-compat'].includes(llm.name))throw Error('Live Lean runs require the native runner, native states and recorded vendor limits');
   const archiveMode = opts.protocol === CADENCE_PROTOCOL;
-  const structure=opts.structurePolicy===false?false:structurePolicySchema.parse(opts.structurePolicy??{});
-  if(structure===false&&!['scripted','replay'].includes(llm.name))throw Error('Historical discovery is restricted to scripted/replay verification');
+  const structure=leanMode||opts.structurePolicy===false?false:structurePolicySchema.parse(opts.structurePolicy??{});
+  if(!leanMode&&structure===false&&!['scripted','replay'].includes(llm.name))throw Error('Historical discovery is restricted to scripted/replay verification');
   if(opts.offlineArchive&&!archiveMode)throw Error('Offline archive release requires cadence protocol');
   const nightlyDiscovery=structure===false?null:{policy:STRUCTURE_POLICY,...structure,offlineArchiveSha256:sha256(stableStringify(opts.offlineArchive??[]))};
   if (!archiveMode && (opts.cadence || opts.departments || opts.reviewGate || opts.switchCost || opts.switchCostModel || opts.generatorOnly || opts.discoveryNights !== undefined || opts.boundedCosts || opts.tailoringSessions || opts.frictionFlags))
@@ -182,8 +189,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   // Real parallel runs queue personas onto at most four concurrent workers.
   const personaWorkerLimit=opts.parallel&&underlyingEhr.mode==='real'?PERSONA_WORKER_LIMIT:Infinity;
   const concurrentPersonas=opts.parallel?Math.min(personaIds.length,personaWorkerLimit):1;
-  const screenWorkers=Number(process.env['EHR_SCREEN_WORKERS']??(opts.parallel?Math.max(1,Math.floor(4/concurrentPersonas)):4));
-  if(underlyingEhr.mode==='real'){
+  const screenWorkers=leanMode?0:Number(process.env['EHR_SCREEN_WORKERS']??(opts.parallel?Math.max(1,Math.floor(4/concurrentPersonas)):4));
+  if(!leanMode&&underlyingEhr.mode==='real'){
     const requested=screenWorkers;
     const maximum=opts.parallel?Math.max(1,Math.floor(6/concurrentPersonas)):6;
     if(!Number.isSafeInteger(requested)||requested<1||requested>maximum)throw new Error(`EHR_SCREEN_WORKERS must be between 1 and ${maximum} for this run`);
@@ -193,20 +200,21 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });
   const nativeEhr = underlyingEhr.mode === 'real' ? retryEhr(recordingEhr(underlyingEhr, path.join(dir, 'ehr/run'), 'run')) : retryEhr(underlyingEhr);
-  const store = new RunStore(dir,opts.verificationRelease || opts.generatorOnly ? path.join(dir,'custom'):undefined);
+  const store = new RunStore(dir,leanMode||opts.verificationRelease || opts.generatorOnly ? path.join(dir,'custom'):undefined,leanMode);
   const recorder = new RecordingLlm(llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
-  const screens = opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), referenceProgram:noAgentReference(dir), artifactsDir: path.join(dir, 'reports/screens'), workers: screenWorkers });
+  const screens = leanMode ? new LeanScreenChecker(nativeEhr,{artifactsDir:path.join(dir,'reports/lean-screens'),...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),...opts.leanOptions}) : opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), referenceProgram:noAgentReference(dir), artifactsDir: path.join(dir, 'reports/screens'), workers: screenWorkers });
   const rawProvider=opts.geometry??screens.geometry;
-  const provider=rawProvider?((input:Parameters<typeof rawProvider>[0])=>retryInfrastructure('geometry',()=>rawProvider(input),true)):undefined;
-  const ehr=provider?geometryEhr(nativeEhr,provider,dir):nativeEhr;
+  const provider=rawProvider?((input:Parameters<typeof rawProvider>[0])=>retryInfrastructure('geometry',()=>rawProvider(input),!leanMode)):undefined;
+  const ehr=provider?geometryEhr(nativeEhr,provider,dir,leanMode):nativeEhr;
   const deps: LoopDeps = {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed, incompletePenalty:scoring.incompletePenalty,
   };
-  const fingerprints = {...await runFingerprints(ehr, world.dir),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
+  const fingerprints = {...(leanMode?{layoutExecutable:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(REPO_ROOT,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-screen-density.json'))}:{}),...await runFingerprints(ehr, world.dir,REPO_ROOT,leanMode?'lean':'browser'),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    screenGate:z.string().optional(),
     scoring:z.unknown().optional(),
     simulationModes:simulationModesSchema.optional(),
     nightlyDiscovery:z.unknown().optional(),
@@ -223,6 +231,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if((previous.screenGate??'browser')!==(leanMode?'lean':'browser'))throw Error('Resume screen gate must match');
     if(stableStringify(previous.scoring)!==stableStringify(scoring))throw Error('Resume release scoring policy must match');
     if(stableStringify(previous.nightlyDiscovery??null)!==stableStringify(nightlyDiscovery))throw Error('Resume nightly exploration policy/archive must match');
     if (stableStringify(previous.releasePolicy ?? null) !== stableStringify(releasePolicy)) throw Error('Resume release cadence/department/review/switch-cost policy must match');
@@ -238,22 +247,23 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
+    ...(leanMode?{screenGate:'lean',browserCertified:false,geometrySource:'Lean fixed-shell reference or custom family',leanFixtureOverrides:Boolean(opts.leanOptions),layoutExecutableSha256:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout'))}:{}),
     protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', scoring, releasePolicy, nightlyDiscovery, simulationModes,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
     replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
-    interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'R1/R2 validation constraint; release score uses penalized clicks plus scrolls'},
+    interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:leanMode?'Native scroll events page down one Lean viewport; off-screen targets use Lean clip-chain offsets':'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'R1/R2 validation constraint; release score uses penalized clicks plus scrolls'},
     completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:concurrentPersonas,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
     mode: opts.generatorOnly ? 'OFFLINE' : llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
-    buildBindingRequired: ehr.mode === 'real',
+    buildBindingRequired: !leanMode&&ehr.mode === 'real',
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
     resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
     worldIsFake: world.manifest.fake ?? false, backend: llm.name, model: llm.model, ehr: { mode: ehr.mode, binary: ehr.binary },
     seedPolicy: deps.seedPolicy, releaseDays,
-    warning: ehr.mode === 'fake' ? 'EHR_FAKE=1: checker and simulator are fakes; nothing in this run is certified' : null,
+    warning: leanMode ? `Lean research geometry; no rendered-screen/browser certification; deployed app still uses React${ehr.mode==='fake'?'; fake checker/simulator: nothing in this run is clinically certified':''}` : ehr.mode === 'fake' ? 'EHR_FAKE=1: checker and simulator are fakes; nothing in this run is certified' : null,
   };
   await writeJson(manifestFile, manifestData);
   let retryWrites=Promise.resolve();
@@ -262,21 +272,26 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     retryWrites=retryWrites.then(async()=>writeJson(manifestFile,{...JSON.parse(await readFile(manifestFile,'utf8')),infrastructureRetries:manifestData.infrastructureRetries}));
     await retryWrites;
   };
-  const context=<T>(persona:string|null,day:number|null,night:number|null,work:()=>Promise<T>)=>infrastructureContext({dir,persona,day,night,record:recordRetry,drift:async callId=>{
+  const context=async <T>(persona:string|null,day:number|null,night:number|null,work:()=>Promise<T>)=>{const started=performance.now();try{return await infrastructureContext({dir,persona,day,night,record:recordRetry,drift:async callId=>{
     manifestData.driftedCallIds=[...new Set([...manifestData.driftedCallIds,callId])].sort();
     retryWrites=retryWrites.then(async()=>writeJson(manifestFile,{...JSON.parse(await readFile(manifestFile,'utf8')),driftedCallIds:manifestData.driftedCallIds}));await retryWrites;
-  }},work);
+  }},work);}finally{if(leanMode){const {appendFile}=await import('node:fs/promises');await appendFile(path.join(dir,'lean-timings.jsonl'),JSON.stringify({persona,day,night,elapsedMs:performance.now()-started})+'\n');}}};
   const workerDeps=new Map<string,LoopDeps>();
   const states:SeedState[]=[];
   for(const id of personaIds){
 
     const workerNative=underlyingEhr.mode==='real'?retryEhr(recordingEhr(underlyingEhr,path.join(dir,'ehr',id),id)):retryEhr(underlyingEhr);
-    const workerScreens=opts.screens??createScreenChecker(workerNative,{...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),referenceProgram:noAgentReference(dir),artifactsDir:path.join(dir,'reports/screens'),workers:screenWorkers});
+    const workerScreens=leanMode?new LeanScreenChecker(workerNative,{artifactsDir:path.join(dir,'reports/lean-screens'),...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),...opts.leanOptions}):opts.screens??createScreenChecker(workerNative,{...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),referenceProgram:noAgentReference(dir),artifactsDir:path.join(dir,'reports/screens'),workers:screenWorkers});
     const rawGeometry=opts.geometry??workerScreens.geometry;
-    const geometry=rawGeometry?((input:Parameters<typeof rawGeometry>[0])=>retryInfrastructure('geometry',()=>rawGeometry(input),true)):undefined;
-    const workerEhr=geometry?geometryEhr(workerNative,geometry,dir):workerNative;
+    const geometry=rawGeometry?((input:Parameters<typeof rawGeometry>[0])=>retryInfrastructure('geometry',()=>rawGeometry(input),!leanMode)):undefined;
+    const workerEhr=geometry?geometryEhr(workerNative,geometry,dir,leanMode):workerNative;
     const state:SeedState={rejected:new Set(),injected:0};states.push(state);
-    workerDeps.set(id,{...deps,ehr:workerEhr,screens:workerScreens,seedState:state});
+    const agent=leanMode&&workerScreens instanceof LeanScreenChecker?{
+      name:deps.agent.name,model:deps.agent.model,
+      proposeCandidates:async (ctx:Parameters<typeof deps.agent.proposeCandidates>[0])=>deps.agent.proposeCandidates({...ctx,parts:leanLayoutPrompt(ctx.parts,await workerScreens.promptDesign((await store.login(id)).program),await leanTrainingLog(dir,id,Number(/^night-(\d+)/.exec(ctx.callId)?.[1]??0)))}),
+      chooseCandidates:async (ctx:Parameters<typeof deps.agent.chooseCandidates>[0])=>deps.agent.chooseCandidates({...ctx,parts:leanLayoutPrompt(ctx.parts,await workerScreens.promptDesign((await store.login(id)).program))}),
+    }:deps.agent;
+    workerDeps.set(id,{...deps,agent,ehr:workerEhr,screens:workerScreens,seedState:state});
   }
 
 
@@ -385,6 +400,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         if(bounded.policy!=='bounded'||!bounded.memory||bounded.memory.actor!==resultProgram.owner)throw Error('Missing bounded train-only memory');
         if(!existsSync(boundedFile))await writeJson(boundedFile,bounded);
         boundedTrainMemory.set(id,bounded.memory);
+        if(deps.screens instanceof LeanScreenChecker)deps.screens.setTrainingWorkspace(trainingSchedule,world.dir);
       }
       const baselineFile = path.join(dir, 'baselines', `day-${String(day).padStart(2,'0')}`, `${id}.json`);
       if (!existsSync(baselineFile)) {

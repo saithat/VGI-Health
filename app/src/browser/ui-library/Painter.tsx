@@ -64,7 +64,7 @@ export function Painter({boxes}:{boxes:Drawn[]}) {
       </div>}
     </>;
     const props={id:`scroll-${info.id}`,'data-box':info.id,'data-scroll':box.scroll?'true':undefined,'data-source':info.source?.join('.'),role:info.role||undefined,style:css,'aria-label':drawn.original??info.id,'aria-modal':info.role==='dialog'?true:undefined,onScroll:box.scroll?(event:UIEvent<HTMLElement>)=>{const amount=Math.round(event.currentTarget.scrollTop*64)/64;setOffsets(old=>({...old,[info.id]:amount}));}:undefined,onWheel:box.clips[0]&&t?.overflow!=='scroll'?(event:WheelEvent)=>{const id=box.clips[0]?.[0];if(id)scrollBy(event,id);}:undefined};
-    if(info.target) return <button key={info.id} {...props} disabled={blocked&&!info.interruptive}>{children}</button>;
+    if(info.target) return <button key={info.id} {...props} disabled={blocked&&!info.interruptive&&!info.urgent}>{children}</button>;
     return <div key={info.id} {...props}>{children}</div>;
   })}</>;
 }

@@ -101,7 +101,7 @@ def parseNode (components slots : Json) : Nat → List Nat → Json → Except S
       | "Wedge" => do pure <| .wedge (← field j "start" 0) (← field j "sweep" 1) (← field j "denominator" 1)
       | "Line" | "Polyline" => do pure <| .polyline (← field j "points" []) (← field j "stroke" 64)
       | _ => pure .rect
-    let info : Meta := { id := ← field j "id" ("node-" ++ toString path),       source := ← field j "source" none, text := ← textSlot j,       target := ← field j "target" (tag == "Button"), banner := ← field j "banner" false,       interruptive := ← field j "interruptive" false, commit := ← field j "commit" false,       paint := ← field j "paint" (tag != "Absolute" && tag != "Stack" && tag != "Grid" && tag != "Scroll"),       role := ← field j "role" role, mark }
+    let info : Meta := { id := ← field j "id" ("node-" ++ toString path),       source := ← field j "source" none, text := ← textSlot j,       target := ← field j "target" (tag == "Button"), banner := ← field j "banner" false,       interruptive := ← field j "interruptive" false, commit := ← field j "commit" false,       urgent := ← field j "urgent" false,       paint := ← field j "paint" (tag != "Absolute" && tag != "Stack" && tag != "Grid" && tag != "Scroll"),       role := ← field j "role" role, mark }
     let children ← field j "children" ([] : List Json)
     let kids ← children.zipIdx |>.mapM fun (child,i) => parseNode components slots fuel (path++[i]) child
     return .box kind (← style j) info kids
@@ -115,10 +115,14 @@ structure Request where
   /-- G10 (R5) limit; new specification for owner review. The default matches
   `DesignRules.maxTargetsPerViewport`. -/
   maxTargetsPerViewport : Nat := 15
+  /-- New specification for owner review: occurrence paths of the urgent strip,
+  the `urgent` argument of G11 (JSON key `urgentPaths`). Boxes flagged `urgent`
+  must be pinned whether or not their path is listed. -/
+  urgent : List (List Nat) := []
 
 instance : FromJson Request where
   fromJson? j := do
-    return { tree := ← j.getObjVal? "tree", components := ← field j "components" (Json.mkObj []),       content := ← field j "content" [], expected := ← field j "expected" [],       viewport := ← field j "viewport" ⟨92160,57600⟩, maxTargetsPerViewport := ← field j "maxTargetsPerViewport" 15 }
+    return { tree := ← j.getObjVal? "tree", components := ← field j "components" (Json.mkObj []),       content := ← field j "content" [], expected := ← field j "expected" [],       viewport := ← field j "viewport" ⟨92160,57600⟩, maxTargetsPerViewport := ← field j "maxTargetsPerViewport" 15,       urgent := ← field j "urgentPaths" [] }
 
 /-- Runtime content failures are separate from universal slot-capacity checks;
 never clip an out-of-contract value while claiming successful painting. -/
@@ -163,11 +167,11 @@ def runRequest (r : Request) : Except String Json := do
   let n ← parseNode r.components (Json.mkObj []) 256 [] r.tree
   let ps := boxes r.viewport n
   let errors := contentErrors r.content ps
-  return Json.mkObj [("accepted",toJson (checkDensity r.maxTargetsPerViewport r.expected r.viewport ps && errors.isEmpty)),
+  return Json.mkObj [("accepted",toJson (checkAll r.maxTargetsPerViewport r.expected r.urgent r.viewport ps && errors.isEmpty)),
     ("tree",paintTree r.content (layout ⟨{},r.viewport⟩ n)),
     ("viewport",toJson r.viewport), ("boxes",toJson (ps.map (bind r.content))),
     ("lineWidths",toJson (ps.map (lineWidths r.content))),
     ("findings",toJson (findings r.expected r.viewport ps ++ densityFindings r.maxTargetsPerViewport r.viewport ps ++
-      errors ++ realizationWarnings (ps.map (bind r.content))))]
+      urgentFindings r.viewport r.urgent ps ++ errors ++ realizationWarnings (ps.map (bind r.content))))]
 #print axioms safety_contentErrors_empty
 end Ehr.Layout

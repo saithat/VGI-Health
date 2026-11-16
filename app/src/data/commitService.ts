@@ -55,7 +55,7 @@ const b64 = (bytes: Uint8Array) =>
 
 /** Authorization Code + S256 PKCE; credentials stay on Keycloak's login page.
  * The verifier/state survive only the redirect. Tokens remain in memory. */
-export async function loginMar(username?: string) {
+export async function loginMar(username?: string, redirectUri = callback()) {
   const verifier = b64(crypto.getRandomValues(new Uint8Array(32)));
   const state = b64(crypto.getRandomValues(new Uint8Array(32)));
   sessionStorage.setItem(
@@ -64,6 +64,7 @@ export async function loginMar(username?: string) {
       verifier,
       state,
       returnTo: location.pathname + location.search,
+      redirectUri,
     }),
   );
   const challenge = b64(
@@ -75,7 +76,7 @@ export async function loginMar(username?: string) {
     `${issuer}/protocol/openid-connect/auth?${new URLSearchParams({
       client_id: clientId,
       ...(username ? { login_hint: username } : {}),
-      redirect_uri: callback(),
+      redirect_uri: redirectUri,
       response_type: "code",
       scope: "openid profile",
       state,
@@ -94,7 +95,9 @@ async function tokenRequest(params: Record<string, string>) {
   tokens = tokenSchema.parse(await res.json());
   expiresAt = Date.now() + tokens.expires_in * 1000;
 }
-export async function restoreMar(): Promise<MarUser | undefined> {
+export async function restoreMar(
+  redirectUri = callback(),
+): Promise<MarUser | undefined> {
   const query = new URLSearchParams(location.search);
   if (query.has("error"))
     throw new Error(`Keycloak login: ${query.get("error")}`);
@@ -104,6 +107,7 @@ export async function restoreMar(): Promise<MarUser | undefined> {
         verifier: z.string(),
         state: z.string(),
         returnTo: z.string().optional(),
+        redirectUri: z.string().optional(),
       })
       .parse(JSON.parse(sessionStorage.getItem("vgi.mar.login") ?? "null"));
     sessionStorage.removeItem("vgi.mar.login");
@@ -120,12 +124,12 @@ export async function restoreMar(): Promise<MarUser | undefined> {
     await tokenRequest({
       grant_type: "authorization_code",
       code,
-      redirect_uri: callback(),
+      redirect_uri: pending.redirectUri ?? callback(),
       code_verifier: pending.verifier,
     });
   }
   if (!tokens && sessionStorage.getItem("vgi.oidc.session") === "1") {
-    await loginMar();
+    await loginMar(undefined, redirectUri);
     return undefined;
   }
   if (tokens) sessionStorage.setItem("vgi.oidc.session", "1");

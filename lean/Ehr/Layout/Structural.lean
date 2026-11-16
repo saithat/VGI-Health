@@ -8,10 +8,15 @@ set_option maxHeartbeats 4000000
 namespace Ehr.Layout.Structural
 open Lean Ehr.Render
 
-def clipRect (v : Size) : Rect := ⟨1024,8192,v.w-2048,v.h-9216⟩
+/-- New specification for owner review: the body scroll viewport is shorter
+than before. It starts at 272 px, below the banner, the
+commit row and the band the fixed shell reserves for the pinned urgent strip
+(128–272 px). At 1440×900 it is 612 px tall, so any scroll position meets at
+most 12 of the 48 px rows on their 56 px pitch. -/
+def clipRect (v : Size) : Rect := ⟨1024,17408,v.w-2048,v.h-18432⟩
 def slotText : TextSlot := { safety := true, overflow := .scroll, maxLines := 2, lineHeight := 1408 }
 def ordinary (v : Size) (path : List Nat) (target : Bool) (i : Nat) : Placed :=
-  { rect := ⟨1024,8192+i*3584,v.w-2048,3072⟩,
+  { rect := ⟨1024,17408+i*3584,v.w-2048,3072⟩,
     style := { fg := ⟨15,23,42⟩ },
     info := { id := Nat.repr (i+2), source := some path, text := some slotText, target },
     clip := some (clipRect v), clips := [("0",clipRect v)] }
@@ -58,7 +63,7 @@ private theorem ordinary_text (v : Size) (hv : v ∈ viewports) (p : List Nat ×
   have maximum : Fonts.maxAdvance[0]?.getD 0 = 1544 := by decide_cbv
   have units : Fonts.unitsPerEm[0]?.getD 1000 = 1000 := by decide_cbv
   have ready : escapeReady slotText = true := by decide_cbv
-  change 0 < Fonts.tables.size ∧ 0 < slotText.fontSize ∧ _
+  change 0 < Fonts.tables.size ∧ minFontUnits ≤ slotText.fontSize ∧ _
   refine ⟨by decide_cbv, by decide, ?_, ?_, by decide, by change 2816 ≤ 3072; decide, ?_, ?_⟩
   · simp only [slotText,metrics]; decide
   · simp only [ordinary,capacity,cell,slotText,maximum,units]
@@ -189,8 +194,8 @@ private theorem horizontal (v : Size) (hv : v ∈ viewports) (first : List Nat)
 
 private theorem contrast (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
     G6 (placements v first xs) := by
-  have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 9 = true := by decide_cbv
-  have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 6 = true := by decide_cbv
+  have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ textTwiceRatio = true := by decide_cbv
+  have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ nonTextTwiceRatio = true := by decide_cbv
   intro p hp
   rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
   · simp [scroller]
@@ -338,7 +343,7 @@ theorem class_linked (shape : ScreenShape) (accepted : accepts shape = true) (v 
     rcases hp with rfl | rfl | hp
     · simp [SourceLinked,scroller]
     · simp only [SourceLinked,banner]
-      refine ⟨b,by simp,rfl,?_,?_,?_,?_,{slotText with maxLines := 4},by simp,rfl⟩
+      refine ⟨b,by simp,rfl,?_,?_,?_,?_,?_,{slotText with maxLines := 4},by simp,rfl⟩
       all_goals simp [bannerRegion,bannerTarget]
     · obtain ⟨⟨a,i⟩,ha,rfl⟩ := List.mem_map.mp hp
       have member : a ∈ rest.map (fun s => (s.path,s.target)) := by
@@ -346,7 +351,7 @@ theorem class_linked (shape : ScreenShape) (accepted : accepts shape = true) (v 
       obtain ⟨s,hs,rfl⟩ := List.mem_map.mp member
       obtain ⟨nb,nf,nm⟩ := ordinaryRegions s hs
       simp only [SourceLinked,ordinary]
-      exact ⟨s,by simp [hs],rfl,rfl,by simp [nb],by simp [nf],by simp [nm],slotText,by simp,rfl⟩
+      exact ⟨s,by simp [hs],rfl,rfl,by simp [nb],by simp [nf],by simp [nm],by simp,slotText,by simp,rfl⟩
 
 /-- A single kernel-checked certificate for every member of this structural
 class, including unbounded numbers of independently actionable ordinary slots.
@@ -370,7 +375,7 @@ theorem certifiedClass_allScreens (screen : UiScreen)
     have hl := linked p hpMem
     unfold SourceLinked at hl
     rw [hs] at hl
-    obtain ⟨slot,_,_,_,_,_,_,t,ht,hsafe⟩ := hl
+    obtain ⟨slot,_,_,_,_,_,_,_,t,ht,hsafe⟩ := hl
     have htEq : p.info.text = some t := Option.mem_def.mp ht
     have painted := bindSemantic_original screen p path t hs htEq
     exact ⟨t,ht,hsafe,painted.1,painted.2,

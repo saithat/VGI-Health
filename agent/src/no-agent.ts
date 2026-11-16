@@ -12,7 +12,7 @@ import type {Release} from './releases.js';
 import type {PersonaView} from './prompts.js';
 import {pad2,readJson,writeJson} from './util.js';
 export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Release,schedule:DaySchedule,holdout:Holdout) {
- const armDir=path.join(deps.store.dir,'no-agent'), armStore=new RunStore(armDir,path.join(armDir,'custom'));
+ const armDir=path.join(deps.store.dir,'no-agent'), armStore=new RunStore(armDir,path.join(armDir,'custom'),deps.screens.mode==='lean');
  const day=schedule.day, file=path.join(armDir,'days',`day-${pad2(day)}`,`${persona.id}.json`);
  if(existsSync(file))return readJson(file,dayResultSchema);
  const previous=day===1?null:path.join(armDir,'days',`day-${pad2(day-1)}`,persona.id);

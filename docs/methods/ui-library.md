@@ -101,14 +101,15 @@ content environments for one fixed semantic template.
 |---|---|
 | G1 | Exactly one banner, outside scrolling and contained in the viewport; separated from every other painted mark. `layoutAccepted_bannerPixels` proves no shared pixel for any scroll offsets in the conservative clipping model. |
 | G2 | Every active interruptive mark is fixed, contained and has strictly greater global z than ordinary paint. `modal_blocks` proves ordinary targets cannot dispatch while an interruptive layer is present. |
-| G3 | Every declared target is at least 1536×1536 units (24×24 px); active target pairs are separated. Ordinary targets blocked by a modal are inactive. Shared scrollers use content coordinates; independent regions use conservative viewport envelopes. |
-| G4 | Painted footprints or their outer scroll viewport are contained. Text has valid pinned metrics, positive capacity/lines, sufficient vertical reserve, bounded non-safety wrap capacity, and unbounded vertical wrapping for safety text with a pinned escape alphabet. Active text cannot intersect higher paint or unrelated paint at the same z; ancestor backgrounds at the same z are exempt. `layoutAccepted_textPixels` proves separation for arbitrary scrolling. |
+| G3 | Every declared target is at least 1536×1536 units (24×24 px); active target pairs are separated. Ordinary targets blocked by a modal are inactive; targets of the pinned urgent strip stay active beside a modal (*new specification for owner review*), so they are separated from the modal's targets too. Shared scrollers use content coordinates; independent regions use conservative viewport envelopes. |
+| G4 | Painted footprints or their outer scroll viewport are contained. Text has valid pinned metrics, a font size of at least 12 px (768 units, `PhysicalBounds.minFontPx`; *new specification for owner review*, `layoutAccepted_minFont`), positive capacity/lines, sufficient vertical reserve, bounded non-safety wrap capacity, and unbounded vertical wrapping for safety text with a pinned escape alphabet. Active text cannot intersect higher paint or unrelated paint at the same z; ancestor backgrounds at the same z are exempt. `layoutAccepted_textPixels` proves separation for arbitrary scrolling. |
 | G5 | Every outer footprint has nonnegative x and right edge within viewport width; scroll content fits the nearest viewport horizontally. |
-| G6 | Foreground/background contrast is at least 4.5:1 for ordinary text, 3:1 for text ≥24px or ≥18⅔px at weights ≥700, and 3:1 for targets. Colors are opaque 8-bit sRGB. Outward-rounded rational luminance bounds have exact integer fifth-power certificates (`channel_certificates`); no floating point enters the check. |
+| G6 | *New specification for owner review.* Foreground/background contrast is at least 4.5:1 for all text at every size and weight (`PhysicalBounds.textContrastTenths`), and 3:1 for every target and every painted vector mark: circle, wedge, polyline (`PhysicalBounds.nontextContrastTenths`). `layoutAccepted_textContrast` and `layoutAccepted_nonTextContrast` state the consequences; `contrast_thresholds_exact` ties the thresholds to the policy constants. A plain rectangle has no ink of its own; only its text and target state are checked. Colors are opaque 8-bit sRGB. Outward-rounded rational luminance bounds have exact integer fifth-power certificates (`channel_certificates`); no floating point enters the check. |
 | G7 | Expected semantic occurrence paths and painted IDs are unique; each expected path is painted exactly once and no invented source path is painted. The W1 adapter derives the inventory from the actual `UiScreen`; the lower-level proposal API takes the expected inventory as an input. |
 | G8 | Document order is top-to-bottom, then left-to-right at equal y. Within a shared scroller use content positions; between regions use outer viewports. Distinct z layers are separate reading regions. This does not establish an assistive technology's traversal order. |
 | G9 | At 1440×900, **if any current-task commit target is present**, exactly one is fixed and fully contained without page scrolling. A screen with no current-task commit is exempt. Other sizes impose no extra commit constraint. Family admission links commit flags to the actual semantic source, preventing omission to claim an exemption. |
-| G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero, and at every scroll offset of each scroll viewport. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G9 conjunction; see "Action density" below. |
+| G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero; at most that many fixed targets (outside every scroll viewport); and, at every scroll offset of each scroll viewport, at most that many fixed targets and targets in the window together. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G9 conjunction; see "Action density" below. |
+| G11 | *New specification for owner review.* Every box flagged `urgent` (the pinned urgent strip) is painted, outside every scroll viewport, contained in the page viewport and separated from every other painted box, a modal included, whatever the stacking order; and every painted source box of an urgent occurrence of the semantic inventory carries the flag. It holds at every supported size. It is checked next to G1–G9 and G10 (`checkAll`, `layoutAccepted_all`); see "Pinned urgent strip" below. |
 
 The pixel model overapproximates nested clipping with the outermost viewport;
 inner clips can only remove pixels. Scroll ancestor identities distinguish
@@ -124,7 +125,15 @@ W3C APG [tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/),
 [dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) and
 [grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) profiles. Theorems cover
 entry/activation, focus/selection bounds, modal Tab containment/Escape restoration,
-and grid bounds/row boundaries. Optional deletion, popup menus, multiselection,
+and grid bounds/row boundaries. *New specification for owner review:*
+`alertDialog` is the profile of interruptive clinical alerts. It traps Tab like
+`dialog` and no key closes it: `alertDialog_stays_open`,
+`alertDialog_escape_ignored`, `alertDialog_never_closes`, `alertDialog_traps`,
+`alertDialog_agrees` (it differs from `dialog` on Escape only) and
+`interruptive_stays_open` (any key sequence). `dialogFor` selects the profile
+from a box's `interruptive` flag. `dialog` and `dialog_escape_restores` are
+unchanged and describe ordinary dismissible dialogs. The API profile name is
+`alert-dialog`. Optional deletion, popup menus, multiselection,
 type-ahead and editable cells are absent. The visual harness emits requested
 roles and blocks ordinary buttons beneath a modal; it does not yet connect DOM
 keyboard events or ARIA relationships to these proved transition functions.
@@ -144,7 +153,17 @@ clipping, paint and accessibility behavior; the differential validates samples,
 not those assumptions universally.
 
 `Semantic.portScreen` maps every `UiNode` occurrence, including wrappers, to a
-unique path and retains user-facing labels, values and rows in safety-classified text. W1 signing
+unique path and retains user-facing labels, values and rows in safety-classified text.
+*New specification for owner review:* the inventory (`screenNodes`) exposes
+every control the user can operate as an occurrence of its own. The navigation
+root (`navNode`) is a wrapper, one heading per group and one target per link;
+a tabs node lists one target per tab label (`tabNodes`) before its selected
+body; section toggles were already child buttons. Each is therefore a separate
+box under G3 (24×24 px, separated) and counts under G10. The banner occurrence
+(`bannerNode`) also carries the signed-in clinician (`viewer?`), which was
+missing from the inventory. The first three roots are still banner, title and
+navigation, so workspace paths start at `[3]` as before; the body of a tabs
+node now starts after its tab targets. W1 signing
 uses a persistent slate banner, blue commit control, fixed review scroller and
 interruptive layers. It is a semantic prototype: fields/review rows are text
 cards, not a close visual/interactive reproduction of today's EHR widgets.
@@ -256,22 +275,81 @@ regressions for the executable and are not the basis of the universal proof.
 
 **Fixed commit/modal class.**
 `Ehr.Layout.Shell` extends the unbounded body class with an optional current-task
-commit and zero, one or two fixed interruptive occurrences. `shell_rules`
-quantifies over arbitrary body lists, source paths and target masks, assuming
-only unique source paths and at most two modal occurrences. Its conjunction is
-the unchanged G1–G9. `Shell.certifiedClass_allScreens` has the same complete
+commit, zero, one or two fixed interruptive occurrences and up to six pinned
+urgent occurrences. `shell_rules` quantifies over arbitrary body lists, source
+paths and target masks, assuming only unique source paths, at most two modal
+occurrences and at most six pinned rows. Its conjunction is G1–G9. `Shell.certifiedClass_allScreens` has the same complete
 `Realizes` conclusion as the ordinary class, now including these fixed regions.
 `Shell.certified_currentCommit_visible` additionally identifies the actual
 current-task source and proves its target, commit and fixed visibility flags at
 1440×900, including under a modal. All strings remain unbounded scroll text.
 
-The commit is a fixed 24px row at y=104px, between the banner ending at 104px
-and the body scroller starting at 128px. It meets the unchanged 24px G3 minimum;
-it is independent of body length and scroll position. Modal occurrences use a
-higher fixed layer, and ordinary targets cannot dispatch while that layer is
-active. `structural-paint` selects `fixed-shell-v2`; malformed/oversized modal
-shapes still decline. This is a semantic text-card layout, not deployed widget
+The body lists the title, the workspace and any unpinned urgent occurrences
+first, then the navigation and side occurrences: with one row per link, the
+navigation follows the workspace instead of preceding it.
+The commit is a fixed 24px row at y=104px, below the banner ending at 104px.
+The band from 128px to 272px holds the pinned urgent strip: six fixed 24px
+rows. The body scroller starts at 272px. The commit meets the unchanged 24px
+G3 minimum; it is independent of body length and scroll position. Modal
+occurrences use a higher fixed layer over the body, and ordinary targets cannot
+dispatch while that layer is active. `structural-paint` selects
+`fixed-shell-v2`; malformed/oversized modal shapes still decline. This is a semantic text-card layout, not deployed widget
 fidelity. The font assets and script policy are shared with the ordinary class.
+
+**Pinned urgent strip (G11).** *New specification for owner review.* The
+semantic inventory gives every occurrence of `UiScreen.urgent?` the region
+`urgent`. `SourceLinked` lets only such an occurrence carry the `urgent` flag,
+and G11 requires each of them to carry it and to be pinned (`PinnedBox`):
+painted, outside every scroll viewport, inside the page viewport and separated
+from every other painted box. `G11_fixed` proves the box occupies the same
+pixels at every scroll position; `G11_pixels` proves no other painted box, a
+modal included, shares a pixel with it. G4 and G6 make its text at least 12 px
+and 4.5:1. A flagged target stays active beside a modal, so G3 and G10 apply to
+it there; `stripDispatchable` is the dispatch relation for a painter that draws
+the strip (`strip_dispatches`, `strip_modal_blocks`), and `dispatchable` and
+`modal_blocks` are unchanged. Stacking order is not constrained beyond G2: the
+strip is kept clear of the modal by separation, not by drawing it on top.
+
+The fixed shell pins the strip when it has at most six occurrences
+(`stripCapacity`) of which at most two are targets (`stripTargetCapacity`):
+`Shell.stripFits`. `shell_urgent`, `class_urgent` and `certifiedClass_urgent`
+prove G11 for every such shape; `Density.render_urgent` extends it to every
+output of the renderer. A strip that does not fit is painted as ordinary body
+rows, so G1–G9 and `renderer_range` still hold for it, and G11 fails:
+`structural-paint` and `program-paint` then answer `accepted: false` with a
+`G11` finding (`urgent-strip-capacity` or `urgent-strip-targets`, the count and
+the capacity). The decision is per state; `program-check` stays static. The
+family reference layout (`compileShape`) places urgent occurrences as fixed
+30px rows above its review scroller and modal layer; a shape without urgent
+occurrences keeps its earlier geometry. Custom families are checked with
+`acceptFamilyUrgent` (`layoutAccepted_familyUrgent`). Layout requests take
+`urgent` on a node and an optional `urgentPaths` inventory.
+
+`Ehr.Layout.Strip` connects this to the alert-urgency theorems.
+`Sem.StripLayout` was the assumption that every fact of the strip is in the
+viewport, legible and unoccluded at every view the user can reach.
+`layoutAccepted_stripLayout` proves it from acceptance alone:
+
+```lean
+layoutAccepted_stripLayout (v : Size) (ui : UiScreen) (painted : List Drawn)
+    (accepted : StripAccepted v ui painted) (offset : String → Int) :
+  StripLayout ui (stripEdge v ui.urgent?) (stripMoment v ui painted offset)
+```
+
+`StripAccepted` is `Realizes` with G11. `stripMoment` reads the three
+conditions off the placed boxes at scroll offsets `offset`: the strip node's
+box is fixed in the viewport; its text slot is at least 12 px and 4.5:1 and
+holds the node's complete text; no other painted box shares a pixel with it.
+`stripEdge` is any view change (scrolling, tabs, navigation, a dialog opening
+or closing) that leads to another accepted layout of a screen with the same
+strip. `shell_stripLayout` and `render_stripLayout` specialise this to the
+fixed shell and to the clinical screen with its strip, and
+`render_strip_continuous` composes it with `strip_continuous_perceivability`:
+for any spec, program, patient, user and state whose strip fits, every active
+approved-urgent alert is shown in the viewport, legible and unoccluded at
+every reachable view, with no layout premise. The strip content changes only
+with the interpreter state, which the alert-urgency theorems quantify
+separately. The module is built with `ui-port-audit`; the WASM does not link it.
 
 **Program-level certificate.** `Ehr.Layout.Range.renderer_range` proves that
 **every** output of the actual `runRenderUi` renderer fits `fixed-shell-v2`, for
@@ -329,17 +407,24 @@ no additional class widening is needed for those programs.
 targets (modal-aware, as in G3). The first viewport takes targets with area inside
 the page and inside every enclosing scroll viewport at zero scroll. A scroll
 viewport is the innermost clip; its window at offset `o` is the content band
-`[y + o, bottom + o)`. The check inspects one candidate window per target,
-starting on its last row; `G10_window` proves this bounds every offset.
+`[y + o, bottom + o)`. Fixed targets, those outside every scroll viewport, stay
+in view at every scroll position, so each window is counted together with them
+(`fixedTargets`), as the browser density check counted fixed plus visible in
+window. The check inspects one candidate window per target, starting on its
+last row; `G10_window` proves that fixed plus window targets stay within the
+limit at every offset, and `G10_fixed` bounds the fixed targets alone.
 `checkDensity` is `check` plus G10 (`layoutAccepted_density`). Findings use rule
-`G10` with metric `first-viewport-targets` or `scroll-window-targets` (node: the
-scroll viewport), the count, the limit and the excess.
+`G10` with metric `first-viewport-targets`, `fixed-targets` or
+`scroll-window-targets` (node: the scroll viewport; the count includes the
+fixed targets), the count, the limit and the excess.
 
 `Ehr.Layout.Density` proves that the fixed shell meets G10 at capacity
 `shellCapacity = 15` for arbitrary bodies, paths, target masks and at most two
-modals (`shell_density`). The body scroller is 756 px tall with 48 px rows on a
-56 px pitch, so any window meets at most 15 rows; the first viewport shows 14 rows
-plus the fixed commit. With a modal present only the modal targets are active.
+modals and at most two pinned strip targets (`shell_density`). The body
+scroller is 612 px tall with 48 px rows on a 56 px pitch, so any window meets
+at most 12 rows; with the fixed commit and two pinned strip targets that is
+15. The first viewport shows 11 rows. With a modal present only the modal
+targets and the strip targets are active.
 `render_density` extends this to every `runRenderUi` output.
 `checkProgramDensity sp program` decides `15 ≤ sp.design.maxTargetsPerViewport`, and
 
@@ -362,9 +447,15 @@ limit. `ui-port-audit` reports `firstViewportTargets` and `maxWindowTargets` per
 probed state, and `--all-variants` probes every screen with the group, tab and
 alert variants.
 
-The release programs reach 11 targets in the first viewport and 15 in a scroll
-window, so the default limit equals the shell's capacity and no fixed-shell program
-can fail it. Density on the fixed shell becomes scrolling. G10 constrains custom
+The release programs reach 11 targets in the first viewport and 14 at a scroll
+position (12 body rows, the fixed commit and a strip target), and the shell's
+proved capacity equals the default limit, so no fixed-shell program can fail it.
+Counting each navigation link and tab does not change that bound, because they
+are body rows. The two-pane family reference layout (`compileShape`) has no
+such bound: with its navigation pane beside the review pane it shows 16 to 20
+targets at once on three of six sampled release screens, so `family-paint`
+without explicit layouts refuses those screens at the default limit of 15 and
+needs the screen's own limit. Density on the fixed shell becomes scrolling. G10 constrains custom
 layouts and any lower limit. A limit below 15 refuses every program, since the
 program decision is static.
 
@@ -377,7 +468,13 @@ including G9. The original W1 port also remains 3,468/3,468; the two named bad
 clinical inputs remain refused. The [current range inventory](../audits/ui-certs-range-20261107.json)
 records every program alias and declared screen, program/spec/source hashes,
 exact theorem statements and verification commands. Those counts are backed by
-`renderer_range`, rather than inferred from the finite probes.
+`renderer_range`, rather than inferred from the finite probes. They were taken
+before rules G4, G6 and G10 were strengthened, G11 was added and navigation
+links and tabs became occurrences of their own. Afterwards the audit was
+repeated on the fifteen release persona programs: 4,314/4,314 class probes,
+279/279 W1 port checks and 279/279 shell geometry checks pass, and every
+probed urgent strip (up to four occurrences) is pinned. The recorded-run
+programs were not audited again.
 
 The [earlier ordinary-class inventory](../audits/ui-certs-20261107.json)
 records the narrower `repeat-body-v1` implementation. The current fixed-shell
@@ -400,8 +497,10 @@ premise. It is a semantic review/sign family with arbitrary banner fields,
 review-table rows and enabled/blocked reason; it is not a theorem that every
 state of the deployed EHR renderer has that exact shape.
 
-**Not proved / incomplete.** G10 is not part of `Realizes` or `Rules`; it is a
-separate conjunct of the density theorems. Close widget
+**Not proved / incomplete.** G10 and G11 are not part of `Realizes` or `Rules`;
+they are separate conjuncts of the density and urgent-strip theorems. G11 holds
+for the fixed shell only when the strip fits its six pinned rows; a state with
+more urgent occurrences is refused, not painted. Close widget
 fidelity, bounded-list authoring, complete DOM/APG integration,
 Comparator coverage and deployment integration remain open. Browser glyph and
 accessibility rendering remain trusted. Nothing here replaces existing clinical
@@ -422,13 +521,16 @@ pnpm --filter app lint
 flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright test --config src/browser/ui-library/playwright.config.ts
 ```
 
-Targeted checks passed 21 native regressions (19 layout/program tests and two
-font tests) and seven Playwright tests (one worker under the shared lock, after
-the refreshed port audit). The differential compared
-228 boxes, 153 text lines and 6,861 intrinsic glyph advances: all worst
-deviations were 0 CSS px. The named-declaration audit covers 186 theorems. Environment-wide inspection
-also checks generated helper lemmas: 1,143 theorem declarations, of which 592
-are axiom-free and 551 use only `propext`, `Classical.choice` and `Quot.sound`.
+Targeted checks pass 30 native regressions (28 layout/program tests and two
+font tests). The named-declaration audit covers 253 theorems in
+`lean/Ehr/Layout`; each uses at most `propext`, `Classical.choice` and
+`Quot.sound`. The following figures predate the strengthened rules G4, G6,
+G10 and G11 and the per-link inventory, and were not measured again: seven
+Playwright tests (one worker under the shared lock, after the refreshed port
+audit); a differential of 228 boxes, 153 text lines and 6,861 intrinsic glyph
+advances with all worst deviations 0 CSS px; and an environment-wide
+inspection of generated helper lemmas (1,143 theorem declarations, 592
+axiom-free and 551 using only `propext`, `Classical.choice` and `Quot.sound`).
 
 The targeted browser command also paints the audit's W1 sample when present
 and verifies vertical scrolling/preservation of a 70,000-character safety value

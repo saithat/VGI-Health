@@ -64,7 +64,39 @@ export function createWasmInterp(wasm: WasmEnvelopeInterp): Interp {
     const data = projection(facts);
     return `"spec":${spec},"program":${program},"facts":${data.facts},"user":${user}${render && data.display ? `,"display":${data.display}` : ""}`;
   }
+  const layoutCall = wasm.exports?.includes("ehr_layout")
+    ? wasm.call
+    : undefined;
   return {
+    ...(layoutCall
+      ? {
+          layout: (request: string) =>
+            checked(layoutCall("ehr_layout", request)),
+          layoutRender: (
+            spec: string,
+            program: string,
+            facts: string,
+            user: string,
+            state: string,
+            options: {
+              viewport: { w: number; h: number };
+              references?: unknown;
+            },
+          ) => {
+            const render = `{${context(spec, program, facts, user, true)},"state":${state}}`;
+            const custom =
+              options.references === undefined
+                ? ""
+                : `,"references":${JSON.stringify(options.references)},"maxTargetsPerViewport":${JSON.parse(spec).design?.maxTargetsPerViewport ?? 15}`;
+            return checked(
+              layoutCall(
+                "ehr_layout",
+                `{"op":"${options.references === undefined ? "program-paint" : "family-paint"}","render":${render},"viewport":${JSON.stringify(options.viewport)}${custom}}`,
+              ),
+            );
+          },
+        }
+      : {}),
     ...(wasm.screenCanonical ||
     (wasm.exports?.includes("ehr_screen_canonical") && wasm.call)
       ? {

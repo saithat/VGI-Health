@@ -53,6 +53,11 @@ test('APG transitions use native Lean semantics',()=>{
   assert.equal(run('tabs','enter',4).selected,4);
   assert.equal(run('dialog','shiftTab').focus,5);
   assert.equal(run('dialog','escape').isOpen,false);
+  // Clinical alert dialogs trap Tab like any dialog and never close on a key.
+  assert.equal(run('alert-dialog','shiftTab').focus,5);
+  assert.equal(run('alert-dialog','tab',5).focus,0);
+  for(const key of ['left','right','up','down','home','end','ctrlHome','ctrlEnd','enter','space','tab','shiftTab','escape']) assert.equal(run('alert-dialog',key).isOpen,true,key);
+  assert.deepEqual(run('alert-dialog','escape'),state);
   assert.equal(run('listbox','down').selected,1);
   assert.equal(run('grid','right',2).focus,2);
   assert.equal(run('grid','down',2).focus,5);
@@ -105,4 +110,45 @@ test('G10 refuses a dense first viewport at the default limit with counts',()=>{
   assert.ok(out.findings.some(f=>f.rule==='G10'&&f.metric==='scroll-window-targets'&&f.node==='review-scroll'));
   assert.ok(out.findings.filter(f=>!f.warning&&f.rule!=='G10').length===0,JSON.stringify(out.findings));
   r.maxTargetsPerViewport=40;assert.equal(native(r).accepted,true);
+});
+
+test('G11 pins urgent boxes: flagged, fixed, in view and clear of all other paint',()=>{
+  const text={key:'urgent',maxLength:0,maxLines:1,overflow:'scroll',safety:true,font:0,fontSize:896,lineHeight:1408};
+  const urgent=(extra={})=>({type:'Text',id:'urgent-alert',source:[2],urgent:true,z:12,position:{x:px(16),y:px(88)},width:px(600),height:px(24),text,...extra});
+  const base=()=>{const r=template();r.expected=[[0],[1],[2]];r.urgentPaths=[[2]];r.content.push(['urgent','Allergy: penicillin']);return r;};
+  const ok=base();ok.tree.children.push(urgent());
+  const accepted=native(ok);assert.equal(accepted.accepted,true,JSON.stringify(accepted.findings));
+  assert.equal(accepted.boxes.find(d=>d.box.info.id==='urgent-alert').box.info.urgent,true);
+  const unflagged=base();unflagged.tree.children.push(urgent({urgent:false}));
+  assert.deepEqual(native(unflagged).findings.filter(f=>f.rule==='G11').map(f=>f.metric),['urgent-not-pinned']);
+  const scrolling=base();scrolling.tree.children[1].children.unshift(urgent({position:undefined,width:'fill'}));
+  const scrolled=native(scrolling);assert.equal(scrolled.accepted,false);
+  assert.ok(scrolled.findings.some(f=>f.rule==='G11'&&f.metric==='urgent-scrolls'));
+  const covered=base();covered.tree.children.push(urgent(),{type:'Rect',id:'cover',position:{x:px(300),y:px(90)},width:px(100),height:px(10),z:5});
+  assert.ok(native(covered).findings.some(f=>f.rule==='G11'&&f.metric==='overlap-area'&&f.other==='cover'));
+  const dialog=base();dialog.tree.children.push(urgent(),{type:'Text',id:'dialog',interruptive:true,z:100,position:{x:px(16),y:px(84)},width:px(300),height:px(96),text:{...text,key:'alert',maxLines:3}});
+  dialog.content.push(['alert','Unrelated notice']);
+  assert.ok(native(dialog).findings.some(f=>f.rule==='G11'&&f.other==='dialog'));
+  const small=base();small.tree.children.push(urgent({text:{...text,fontSize:704}}));
+  assert.ok(native(small).findings.some(f=>f.rule==='G4'&&f.metric==='font-size'&&f.required===768));
+});
+test('strengthened contrast: large text needs 4.5:1 and vector marks need 3:1',()=>{
+  const r=template();
+  r.content.push(['large','Large grey heading']);
+  r.tree.children[1].children.push({type:'Text',id:'large',z:10,width:'fill',height:px(64),fg:{r:119,g:119,b:119},text:{key:'large',maxLength:32,maxLines:1,overflow:'wrap',safety:false,font:3,fontSize:px(24),lineHeight:px(40)}});
+  const out=native(r);assert.equal(out.accepted,false);
+  assert.ok(out.findings.some(f=>f.rule==='G6'&&f.node==='large'&&f.metric==='contrast-lower-millionths'&&f.required===4500000&&!f.warning));
+  const mark=template();mark.tree.children[1].children.push({type:'Circle',id:'faint',width:px(40),height:px(40),fg:{r:160,g:160,b:160}});
+  assert.ok(native(mark).findings.some(f=>f.rule==='G6'&&f.node==='faint'&&f.metric==='nontext-contrast-lower-millionths'&&f.required===3000000));
+});
+test('G10 counts fixed targets with every scroll window',()=>{
+  const r=template();
+  // Ten fixed buttons plus the fixed commit; the scroller alone stays far below the limit.
+  for(let i=0;i<10;i++) r.tree.children.push({type:'Button',id:`fixed-${i}`,z:10,position:{x:px(240+i*40),y:px(900-80)},width:px(32),height:px(32),fg:{r:255,g:255,b:255},bg:{r:29,g:78,b:216}});
+  r.tree.children[1].children.unshift({type:'Stack',id:'few',direction:'row',gap:px(8),children:Array.from({length:6},(_,i)=>({type:'Button',id:`few-${i}`,width:px(32),height:px(32),fg:{r:255,g:255,b:255},bg:{r:29,g:78,b:216}}))});
+  const out=native(r);assert.equal(out.accepted,false);
+  const window=out.findings.find(f=>f.rule==='G10'&&f.metric==='scroll-window-targets'&&f.node==='review-scroll');
+  assert.ok(window,JSON.stringify(out.findings));assert.equal(window.actual,17);
+  assert.equal(out.findings.some(f=>f.metric==='fixed-targets'),false);
+  r.maxTargetsPerViewport=17;assert.equal(native(r).accepted,true);
 });

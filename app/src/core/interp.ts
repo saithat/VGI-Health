@@ -21,6 +21,16 @@ import {
 /** Exact string-based seam for the forthcoming Lean WASM exports (§5). */
 export interface Interp {
   screenCanonical?(screenJson: string): string;
+  /** Layout/keyboard JSON API, with no host interpretation. */
+  layout?(request: string): string;
+  layoutRender?(
+    spec: string,
+    program: string,
+    facts: string,
+    user: string,
+    state: string,
+    options: { viewport: { w: number; h: number }; references?: unknown },
+  ): string;
   init(
     specJson: string,
     programJson: string,

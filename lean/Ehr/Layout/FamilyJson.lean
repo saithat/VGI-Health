@@ -26,6 +26,18 @@ def parseFamily (refs : List FamilyReference) : Except String Family := refs.map
     pure (r.viewport,tree)
   return ⟨shape,fun v => ((layouts.find? (fun p => p.1 == v)).map Prod.snd).getD invalidTree⟩
 
+/-- New specification for owner review: why the fixed shell does not pin the
+urgent strip of this shape (rule G11), with the counts and the capacities. -/
+def shellStripFindings (shape : ScreenShape) : List Finding :=
+  let n := (Shell.urgentSlots shape).length
+  let t := ((Shell.urgentSlots shape).filter (·.target)).length
+  (if Shell.stripCapacity < n then
+    [{ rule := "G11", metric := "urgent-strip-capacity", actual := n, required := Shell.stripCapacity,
+       deficit := (n : Int) - Shell.stripCapacity }] else []) ++
+  (if Shell.stripTargetCapacity < t then
+    [{ rule := "G11", metric := "urgent-strip-targets", actual := t, required := Shell.stripTargetCapacity,
+       deficit := (t : Int) - Shell.stripTargetCapacity }] else [])
+
 def familyOutput (family : Family) (screen : UiScreen) (v : Size) (limit : Nat := 15) : Json :=
   match selectCandidate family screen with
   | none => Json.mkObj [("accepted",toJson false),("uncoveredShape",toJson (screenShape screen)),
@@ -33,13 +45,14 @@ def familyOutput (family : Family) (screen : UiScreen) (v : Size) (limit : Nat :
   | some c =>
     let ps := boxes v (c.tree v)
     let data := ps.map (bindSemantic screen)
-    let layoutOk := checkDensity limit (shapeSources c.shape) v ps
-    Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family && viewports.contains v)),
+    let layoutOk := checkAll limit (shapeSources c.shape) (urgentPaths c.shape) v ps
+    Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family && family.all admitUrgent &&
+        viewports.contains v)),
       ("viewport",toJson v),("boxes",toJson data),
       ("tree",semanticPaintTree screen (layout ⟨{},v⟩ (c.tree v))),
       ("lineWidths",toJson (data.map drawnLineWidths)),
       ("findings",toJson (findings (shapeSources c.shape) v ps ++ densityFindings limit v ps ++
-        realizationWarnings data)),
+        urgentFindings v (urgentPaths c.shape) ps ++ realizationWarnings data)),
       ("layoutOk",toJson layoutOk),("linked",toJson (decide (Linked c.shape ps)))]
 /-- Research-only class painter: runtime checks structural membership and the
 viewport, not geometry, record lengths or glyph/string limits. -/
@@ -54,9 +67,12 @@ def structuralOutput (screen : UiScreen) (v : Size) : Json :=
       | [] => Json.null
       | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
           (rest.map fun d => Json.mkObj [("drawn",toJson d),("children",toJson ([] : List Json))]))]
-    Json.mkObj [("accepted",toJson (viewports.contains v)),("viewport",toJson v),
+    -- New specification for owner review: a screen whose urgent strip does not
+    -- fit the pinned band is refused (G11); `Shell.class_urgent` covers the rest.
+    Json.mkObj [("accepted",toJson (viewports.contains v && Shell.stripFits shape)),("viewport",toJson v),
       ("boxes",toJson data),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
-      ("findings",toJson (realizationWarnings data)),("structuralClass",toJson "fixed-shell-v2")]
+      ("findings",toJson (realizationWarnings data ++ shellStripFindings shape)),
+      ("urgentPinned",toJson (Shell.stripFits shape)),("structuralClass",toJson "fixed-shell-v2")]
 
 /-- Runtime path after a program/class certificate: bind the actual native
 render without repeating per-patient class/geometry/content admission. -/
@@ -69,13 +85,18 @@ def programOutput (input : RenderInput) (v : Size) : Json :=
       | [] => Json.null
       | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
           (rest.map fun d => Json.mkObj [("drawn",toJson d),("children",toJson ([] : List Json))]))]
+    -- New specification for owner review: the program certificates are static;
+    -- the urgent strip is decided per state (`Density.render_urgent`).
+    let shape := screenShape screen
     Json.mkObj [("accepted",toJson (Range.checkProgram input.spec input.program &&
-        Density.checkProgramDensity input.spec input.program)),("viewport",toJson v),
+        Density.checkProgramDensity input.spec input.program && Shell.stripFits shape)),("viewport",toJson v),
       ("boxes",toJson data),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
       ("structuralClass",toJson "fixed-shell-v2"),
       ("rangeTheorem",toJson "Ehr.Layout.Range.layoutAccepted_program"),
       ("densityTheorem",toJson "Ehr.Layout.Density.checkProgramDensity_sound"),
+      ("urgentTheorem",toJson "Ehr.Layout.Density.render_urgent"),
+      ("urgentPinned",toJson (Shell.stripFits shape)),
       ("findings",toJson (realizationWarnings data ++ densityFindings input.spec.design.maxTargetsPerViewport v
-        (data.map Drawn.box)))]
+        (data.map Drawn.box) ++ shellStripFindings shape))]
 
 end Ehr.Layout

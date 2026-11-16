@@ -7,13 +7,25 @@ open Lean Ehr.Render
 def prefixChildren (children : List (List (List Nat × UiNode))) : List (List Nat × UiNode) :=
   children.zipIdx.flatMap fun (es,i) => es.map fun (path,node) => (i::path,node)
 
-/-- Every UiNode occurrence, including wrappers and selected-tab bodies. Paths
+/-- New specification for owner review: one target occurrence per tab label,
+so each tab has its own box under G3 and counts under G10. The occurrence is
+a button with role `tab` carrying the tabs' component id; its position among
+the children is the tab index. -/
+def tabNodes (id : String) (labels : List String) : List UiNode :=
+  labels.map fun label => .button id label "tab" true none none
+
+/-- New specification for owner review: the children of a tabs node are its
+tab targets (`tabNodes`) followed by the selected body.
+
+Every UiNode occurrence, including wrappers and selected-tab bodies. Paths
 identify occurrences even when two nodes have identical component IDs/text. -/
 def semanticNodes (node : UiNode) : List (List Nat × UiNode) :=
   ([],node) :: (match node with
   | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs
   | .valueSet _ _ cs | .chartReferences _ cs | .rowAction _ _ cs
-  | .section _ _ cs | .columns cs | .tabs _ _ _ cs => prefixChildren (cs.map semanticNodes)
+  | .section _ _ cs | .columns cs => prefixChildren (cs.map semanticNodes)
+  | .tabs id labels _ cs =>
+    prefixChildren ((tabNodes id labels).map (fun tab => [([],tab)]) ++ cs.map semanticNodes)
   | .patientPane _ _ _ cs modal =>
     prefixChildren (cs.map semanticNodes ++ modal.map semanticNodes)
   | _ => [])
@@ -51,15 +63,37 @@ def semanticCommit : UiNode → Bool
   | .button _ _ "primary" _ _ _ => true
   | _ => false
 
+/-- New specification for owner review: the banner occurrence carries the
+signed-in clinician (`viewer?`) after the patient fields, as the application's
+banner does. `viewer?` was missing from the inventory. -/
+def bannerNode (screen : UiScreen) : UiNode :=
+  .text (String.intercalate "  " ((screen.banner.map fun (k,v) => k ++ ": " ++ v) ++
+    (screen.viewer?.map ("Signed in: " ++ ·)).toList))
+
+/-- New specification for owner review: the navigation as occurrences: one
+wrapper, one heading per group and one target per link (a button with role
+`nav`, as in `uiNavAtoms`). It was one combined text occurrence, so G3 and G10
+never saw the individual links. -/
+def navNode (nav : List (String × List (String × String))) : UiNode :=
+  .section "navigation" "Navigation" (nav.map fun (title,items) =>
+    .section title title (items.map fun (id,label) => .button id label "nav" true none none))
+
+/-- New specification for owner review: the three roots before the workspace
+are the banner, the title and the navigation tree. -/
+def chromeNodes (screen : UiScreen) : List UiNode :=
+  [bannerNode screen, .text screen.title, navNode screen.nav]
+
 def screenNodes (screen : UiScreen) : List (List Nat × UiNode) :=
-  prefixChildren (([UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v)),
-    .text screen.title, .text (String.intercalate "  " (screen.nav.map fun (title,items) => title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side ++
+  prefixChildren ((chromeNodes screen ++ screen.workspace ++ screen.side ++
     screen.modal.toList ++ screen.urgent?.getD []).map semanticNodes)
 
 /-- Erased semantic placement class. Content, labels, values, row counts and
 font glyph repertoire do not occur in the family key. UiNode structure and
 current-task/interaction identity do occur in it. -/
 inductive Region | banner | title | body | side | footer | modal
+  /-- New specification for owner review: an occurrence of `UiScreen.urgent?`,
+  the strip of active urgent alerts and their acknowledgment. -/
+  | urgent
   deriving Repr, DecidableEq, Inhabited, ToJson, FromJson
 
 structure SlotShape where
@@ -73,14 +107,19 @@ abbrev ScreenShape := List SlotShape
 
 def sourceKey (path : List Nat) : String := "source-" ++ toString path
 
+/-- New specification for owner review: every occurrence under a root of
+`screen.urgent?` (the roots after the modal) has region `urgent`, whatever the
+node is; the strip is never classified as body, side or commit. -/
 def screenShape (screen : UiScreen) : ScreenShape :=
   let entries := screenNodes screen
   let commit := (entries.find? (fun e => semanticCommit e.2)).map Prod.fst
   let sideStart := 3 + screen.workspace.length
   let modalRoot := sideStart + screen.side.length
+  let urgentStart := modalRoot + screen.modal.toList.length
   entries.map fun (path,node) =>
     let rootIndex := path.head?.getD 0
     let region := if path == [0] then Region.banner else if path == [1] then .title
+      else if rootIndex ≥ urgentStart then .urgent
       else if some path == commit then .footer
       else if screen.modal.isSome && path.head? == some modalRoot then .modal
       else if rootIndex == 2 || (rootIndex ≥ sideStart && rootIndex < modalRoot) then .side else .body
@@ -91,6 +130,11 @@ def screenShape (screen : UiScreen) : ScreenShape :=
     ⟨path,semanticTarget node,region,lines⟩
 
 def shapeSources (shape : ScreenShape) : List (List Nat) := shape.map SlotShape.path
+
+/-- New specification for owner review: the occurrence paths of the urgent
+strip, the `urgent` argument of rule G11. -/
+def urgentPaths (shape : ScreenShape) : List (List Nat) :=
+  (shape.filter (fun s => s.region == .urgent)).map SlotShape.path
 
 theorem screenShape_sources (screen : UiScreen) :
     shapeSources (screenShape screen) = (screenNodes screen).map Prod.fst := by
@@ -106,11 +150,14 @@ theorem screenShape_flat_length (n : Nat) : (screenShape (flatScreen n)).length 
     calc
       _ = (((List.replicate n [(([] : List Nat), UiNode.text "")]).zipIdx 3).map Prod.fst).map List.length := by simp only [List.map_map, Function.comp_def]
       _ = _ := by simp [List.zipIdx_map_fst]
-  simp [screenShape, flatScreen, screenNodes, prefixChildren, semanticNodes,
+  simp [screenShape, flatScreen, screenNodes, chromeNodes, bannerNode, navNode, prefixChildren, semanticNodes,
     List.length_flatMap, hm, List.sum_replicate_nat, Nat.add_comm]
   omega
 
-/-- W1 reference geometry, evaluated solely on the erased semantic shape.
+/-- New specification for owner review: urgent occurrences are pinned rows
+between the title and the review scroller (see the comment in the body).
+
+W1 reference geometry, evaluated solely on the erased semantic shape.
 Every safety slot is an unbounded vertical text scroller; no patient string is
 consulted during geometry computation. Arbitrary designs remain separate Nodes
 and are admitted by the same checker through `Family`. -/
@@ -121,31 +168,39 @@ def compileShape (v : Size) (shape : ScreenShape) : Node := Id.run do
   let mut footer : List Node := []
   let mut banner : List Node := []
   let mut modal : List Node := []
+  let mut urgent : List Node := []
+  -- New specification for owner review: urgent occurrences are fixed 30 px
+  -- rows on a 32 px pitch between the title and the review scroller, which
+  -- (with the modal layer) starts below them. A shape without urgent
+  -- occurrences keeps the earlier geometry exactly.
+  let reserve := (shape.filter (fun s => s.region == .urgent)).length*2048
   for entry in shape do
     let id := sourceKey entry.path
     let isBanner := entry.region == .banner
     let isTitle := entry.region == .title
     let isCommit := entry.region == .footer
     let isModal := entry.region == .modal
-    let reservedLines := if isBanner then 5 else if isTitle then 1 else if isCommit then 3 else if isModal then 2 else entry.lines
+    let isUrgent := entry.region == .urgent
+    let reservedLines := if isBanner then 5 else if isTitle then 1 else if isCommit then 3 else if isModal then 2 else if isUrgent then 1 else entry.lines
     let slot : TextSlot := { key := id, maxLength := 0, maxLines := reservedLines, overflow := .scroll, safety := true, font := if isTitle then 3 else 0, fontSize := if isTitle then 1280 else 896, lineHeight := if isTitle then 1920 else 1408 }
-    let m : Meta := { id, source := some entry.path, target := entry.target, commit := isCommit, banner := isBanner, interruptive := isModal, text := some slot }
+    let m : Meta := { id, source := some entry.path, target := entry.target, commit := isCommit, banner := isBanner, interruptive := isModal, urgent := isUrgent, text := some slot }
     let s : Style := { width := .fill, height := .fixed (reservedLines*slot.lineHeight+512), bg := if isBanner then ⟨241,245,249⟩ else if isCommit then ⟨29,78,216⟩ else ⟨255,255,255⟩, z := if isModal then 100 else 0, fg := if isCommit then ⟨255,255,255⟩ else ⟨15,23,42⟩, radius := 256 }
     match entry.region with
     | .banner => banner := banner ++ [.box .frame { s with position := ⟨1024,512⟩, width := .fixed (v.w-2048) } m []]
     | .title => title := title ++ [.box .frame { s with position := ⟨20480,8192⟩, width := .fixed (v.w-21504) } m []]
     | .footer => footer := footer ++ [.box .frame { s with position := ⟨20480,(v.h : Int)-6400⟩, width := .fixed (v.w-21504) } m []]
-    | .modal => modal := modal ++ [.box .frame { s with position := ⟨20480,11264 + (modal.length*3584 : Nat)⟩, width := .fixed (v.w-21504) } m []]
+    | .modal => modal := modal ++ [.box .frame { s with position := ⟨20480,11264 + (reserve + modal.length*3584 : Nat)⟩, width := .fixed (v.w-21504) } m []]
+    | .urgent => urgent := urgent ++ [.box .frame { s with position := ⟨20480,11264 + (urgent.length*2048 : Nat)⟩, width := .fixed (v.w-21504) } m []]
     | .side => side := side ++ [.box .frame s m []]
     | .body => body := body ++ [.box .frame s m []]
   let sidebar : Node := .box .scroll
     { position := ⟨1024,8192⟩, width := .fixed 17920, height := .fixed (v.h-14592), gap := 256 }
     { id := "sidebar-viewport", paint := false } side
   let scroll : Node := .box .scroll
-    { position := ⟨20480,11264⟩, width := .fixed (v.w-21504), height := .fixed (v.h-19456), gap := 384 }
+    { position := ⟨20480,11264 + (reserve : Nat)⟩, width := .fixed (v.w-21504), height := .fixed (v.h-19456-reserve), gap := 384 }
     { id := "review-viewport", paint := false } body
   return .box .absolute { width := .fill, height := .fill }
-    { id := "signing-root", paint := false } (banner ++ [sidebar] ++ title ++ [scroll] ++ footer ++ modal)
+    { id := "signing-root", paint := false } (banner ++ [sidebar] ++ title ++ urgent ++ [scroll] ++ footer ++ modal)
 
 def screenContent (screen : UiScreen) : Content :=
   (screenNodes screen).map fun (path,node) => (sourceKey path,semanticText node)

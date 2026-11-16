@@ -15,5 +15,9 @@ def textResizePercent : Nat := 200
 def reflowCssPx : Nat := 320
 /-- Owner's desktop range plus tablet; intermediate widths are sampled. -/
 def viewportWidths : List Nat := [768, 1280, 1440, 1600, 1920]
+/-- New specification for owner review: smallest admitted font size in CSS px.
+The browser screen check enforced this floor (its `EHR_MIN_FONT_PX` could only
+be raised above 12); the Lean layout rule G4 now reads it from here. -/
+def minFontPx : Nat := 12
 
 end Ehr.Specs.PhysicalBounds

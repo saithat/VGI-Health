@@ -89,7 +89,15 @@ theorem semanticNodes_unique (node : UiNode) : (paths (semanticNodes node)).Nodu
   | rowAction target row cs ih => simpa only [semanticNodes] using wrap_unique (.rowAction target row cs) cs ih
   | «section» id title cs ih => simpa only [semanticNodes] using wrap_unique (.section id title cs) cs ih
   | columns cs ih => simpa only [semanticNodes] using wrap_unique (.columns cs) cs ih
-  | tabs id labels selected cs ih => simpa only [semanticNodes] using wrap_unique (.tabs id labels selected cs) cs ih
+  | tabs id labels selected cs ih =>
+    simp only [semanticNodes]
+    refine List.nodup_cons.mpr ⟨prefix_no_nil 0 _,prefix_unique 0 _ ?_⟩
+    intro es hes
+    rcases List.mem_append.mp hes with tab | body
+    · obtain ⟨node,_,rfl⟩ := List.mem_map.mp tab
+      simp [paths]
+    · obtain ⟨node,member,rfl⟩ := List.mem_map.mp body
+      exact ih node member
   | nil => rename_i child member; cases member
   | cons node cs ih im =>
     rename_i child member
@@ -109,29 +117,30 @@ theorem screenShape_unique (screen : UiScreen) : (shapeSources (screenShape scre
   exact screenNodes_unique screen
 
 
-private theorem regions_partition (shape : ScreenShape)
+/-- Body rows (workspace first, then navigation and side), the commit, the
+modal layer and the pinned strip partition every shape without a second
+banner. `fit` says whether the strip is pinned; an unpinned urgent occurrence
+is a body row. -/
+private theorem regions_partition (fit : Bool) (shape : ScreenShape)
     (noBanner : ∀ slot ∈ shape, slot.region ≠ .banner) :
-    shape.Perm (shape.filter Shell.ordinaryRegion ++
-      (shape.filter (fun s => s.region == .footer) ++ shape.filter (fun s => s.region == .modal))) := by
-  induction shape with
-  | nil => simp
-  | cons slot rest ih =>
-    have nb := noBanner slot (by simp)
-    have hr : ∀ s ∈ rest, s.region ≠ .banner := fun s hs => noBanner s (by simp [hs])
-    have h := ih hr
-    cases reg : slot.region with
-    | banner => exact False.elim (nb reg)
-    | title | body | side =>
-      simpa [List.filter_cons,Shell.ordinaryRegion,reg] using h.cons slot
-    | footer =>
-      simpa [List.filter_cons,Shell.ordinaryRegion,reg] using
-        (h.cons slot).trans (List.perm_middle.symm)
-    | modal =>
-      have moved := (List.perm_middle (a := slot)
-        (l₁ := rest.filter Shell.ordinaryRegion ++ rest.filter (fun s => s.region == .footer))
-        (l₂ := rest.filter (fun s => s.region == .modal))).symm
-      simpa [List.filter_cons,Shell.ordinaryRegion,reg,List.append_assoc] using (h.cons slot).trans
-        (by simpa only [List.append_assoc] using moved)
+    shape.Perm ((shape.filter (Shell.bodySlot fit false) ++ shape.filter (Shell.bodySlot fit true)) ++
+      (shape.filter (fun s => s.region == .footer) ++
+        (shape.filter (fun s => s.region == .modal) ++ shape.filter (Shell.pinnedSlot fit)))) := by
+  apply List.perm_iff_count.mpr
+  intro a
+  have key : ∀ p : SlotShape → Bool,
+      List.count a (shape.filter p) = if p a = true then List.count a shape else 0 := by
+    intro p
+    by_cases h : p a = true
+    · rw [ite_eq_left h, List.count_filter h]
+    · rw [ite_eq_right h]
+      exact List.count_eq_zero.mpr (fun m => h (List.mem_filter.mp m).2)
+  simp only [List.count_append, key]
+  by_cases mem : a ∈ shape
+  · have nb := noBanner a mem
+    cases reg : a.region <;> cases fit <;>
+      simp_all [Shell.bodySlot, Shell.ordinaryRegion, Shell.pinnedSlot]
+  · simp [List.count_eq_zero.mpr mem]
 
 private theorem filter_find (shape : ScreenShape) (p : SlotShape → Bool)
     (small : (shape.filter p).length ≤ 1) : (shape.find? p).toList = shape.filter p := by
@@ -151,10 +160,15 @@ private theorem fits_of_shape (b : SlotShape) (rest : ScreenShape)
     (modalSmall : ((b::rest).filter (fun s => s.region == .modal)).length ≤ 2)
     (unique : (shapeSources (b::rest)).Nodup) : Shell.Fits (b::rest) := by
   constructor
-  · refine ⟨bannerRegion,bannerTarget,?_,?_,?_,modalSmall⟩
+  · refine ⟨bannerRegion,bannerTarget,?_,?_,?_,modalSmall,?_,(Shell.pinned_small (b::rest)).1,
+      (Shell.pinned_small (b::rest)).2⟩
     · intro slot hs
-      have h := (List.mem_filter.mp hs).2
-      simpa [Shell.ordinaryRegion,Bool.and_eq_true,and_assoc] using h
+      have ordinary : Shell.ordinaryRegion slot = true := by
+        rcases List.mem_append.mp hs with hs | hs <;>
+          · have h := (List.mem_filter.mp hs).2
+            simp only [Shell.bodySlot,Bool.and_eq_true] at h
+            exact h.1.1
+      simpa [Shell.ordinaryRegion,Bool.and_eq_true,and_assoc] using ordinary
     · intro slot hs
       have found : (b::rest).find? (fun s => s.region == .footer) = some slot := Option.mem_def.mp hs
       have member := List.mem_of_find?_eq_some found
@@ -162,20 +176,34 @@ private theorem fits_of_shape (b : SlotShape) (rest : ScreenShape)
       exact ⟨reg,footerTarget slot member reg⟩
     · intro slot hs
       simpa using (List.mem_filter.mp hs).2
+    · intro slot hs
+      have h := (List.mem_filter.mp hs).2
+      simp only [Shell.pinnedSlot,Bool.and_eq_true,beq_iff_eq] at h
+      exact h.2
   · refine ⟨?_,unique⟩
-    have partition := regions_partition rest noBanner
+    have partition := regions_partition (Shell.stripFits (b::rest)) rest noBanner
     have found := filter_find rest (fun s => s.region == .footer)
       (by simpa [bannerRegion] using footerSmall)
-    simpa [Shell.Parts.slots,Shell.splitShape,List.filter_cons,Shell.ordinaryRegion,
-      bannerRegion,found] using (partition.cons b).symm
+    simpa [Shell.Parts.slots,Shell.splitShape,List.filter_cons,Shell.bodySlot,Shell.ordinaryRegion,
+      Shell.pinnedSlot,bannerRegion,found] using (partition.cons b).symm
 
 /-- A normalization of the existing shape adapter, definitionally equal to it.
 Keeping it here makes every range argument depend on the actual adapter. -/
 def commitPath (screen : UiScreen) : Option (List Nat) :=
   ((screenNodes screen).find? (fun e => semanticCommit e.2)).map Prod.fst
 
+/-- New specification for owner review: the first root index of
+`screen.urgent?`: after the banner, title and navigation roots, the workspace,
+the side nodes and the modal. -/
+def urgentRoot (screen : UiScreen) : Nat :=
+  3+screen.workspace.length+screen.side.length+screen.modal.toList.length
+
+/-- New specification for owner review: occurrences under an urgent root have
+region `urgent`; the other regions are as before. Definitionally the region
+assignment of `screenShape` (`screenShape_normal`). -/
 def regionOf (screen : UiScreen) (path : List Nat) : Region :=
   if path == [0] then .banner else if path == [1] then .title
+  else if path.head?.getD 0 ≥ urgentRoot screen then .urgent
   else if some path == commitPath screen then .footer
   else if screen.modal.isSome && path.head? == some (3+screen.workspace.length+screen.side.length) then .modal
   else if path.head?.getD 0 == 2 || (path.head?.getD 0 ≥ 3+screen.workspace.length &&
@@ -201,7 +229,9 @@ private theorem region_banner (screen : UiScreen) (path : List Nat) :
         · contradiction
         · split at eq
           · contradiction
-          · split at eq <;> contradiction
+          · split at eq
+            · contradiction
+            · split at eq <;> contradiction
   · intro same; simp [regionOf,same]
 
 private theorem region_footer (screen : UiScreen) (path : List Nat)
@@ -212,10 +242,12 @@ private theorem region_footer (screen : UiScreen) (path : List Nat)
   · split at footer
     · contradiction
     · split at footer
-      · simpa using ‹(some path == commitPath screen) = true›
+      · contradiction
       · split at footer
-        · contradiction
-        · split at footer <;> contradiction
+        · simpa using ‹(some path == commitPath screen) = true›
+        · split at footer
+          · contradiction
+          · split at footer <;> contradiction
 
 private theorem region_modal (screen : UiScreen) (path : List Nat)
     (modal : regionOf screen path = .modal) :
@@ -228,9 +260,11 @@ private theorem region_modal (screen : UiScreen) (path : List Nat)
     · split at modal
       · contradiction
       · split at modal
-        · simpa only [Bool.and_eq_true,beq_iff_eq] using
-            ‹(screen.modal.isSome && path.head? == some (3+screen.workspace.length+screen.side.length)) = true›
-        · split at modal <;> contradiction
+        · contradiction
+        · split at modal
+          · simpa only [Bool.and_eq_true,beq_iff_eq] using
+              ‹(screen.modal.isSome && path.head? == some (3+screen.workspace.length+screen.side.length)) = true›
+          · split at modal <;> contradiction
 
 private theorem entry_unique (entries : List Entry) (unique : (paths entries).Nodup)
     (a b : Entry) (ha : a ∈ entries) (hb : b ∈ entries) (same : a.1 = b.1) : a = b := by
@@ -308,12 +342,10 @@ private theorem prefix_filter_single (k : Nat) (entries : List Entry) :
   simp [hpath,eq]
 
 def beforeModal (screen : UiScreen) : List UiNode :=
-  [UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v)),
-   .text screen.title,.text (String.intercalate "  " (screen.nav.map fun (title,items) =>
-     title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side
+  chromeNodes screen ++ screen.workspace ++ screen.side
 private theorem before_length (screen : UiScreen) :
     (beforeModal screen).length = 3+screen.workspace.length+screen.side.length := by
-  simp [beforeModal]
+  simp [beforeModal,chromeNodes]
   omega
 
 private theorem screen_parts (screen : UiScreen) (node : UiNode) (hm : screen.modal = some node) :
@@ -322,9 +354,7 @@ private theorem screen_parts (screen : UiScreen) (node : UiNode) (hm : screen.mo
        prefixAt (4+screen.workspace.length+screen.side.length) ((screen.urgent?.getD []).map semanticNodes)) := by
   change prefixAt 0 _ = _
   have listEq :
-      (([UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v)),
-        .text screen.title,.text (String.intercalate "  " (screen.nav.map fun (title,items) =>
-          title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side ++
+      ((chromeNodes screen ++ screen.workspace ++ screen.side ++
         screen.modal.toList ++ screen.urgent?.getD []).map semanticNodes) =
       (beforeModal screen).map semanticNodes ++ ([semanticNodes node] ++ (screen.urgent?.getD []).map semanticNodes) := by
     simp [beforeModal,hm,List.map_append,List.append_assoc]
@@ -379,12 +409,11 @@ private theorem modal_small (screen : UiScreen) (small : SmallModal screen) :
 
 private theorem screen_first (screen : UiScreen) :
     ∃ rest, screenShape screen = ⟨[0],false,.banner,1⟩ :: rest := by
-  let initial := UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v))
-  let remaining := ([UiNode.text screen.title,.text (String.intercalate "  " (screen.nav.map fun (title,items) =>
-    title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side ++
+  let initial := bannerNode screen
+  let remaining := ([UiNode.text screen.title,navNode screen.nav] ++ screen.workspace ++ screen.side ++
     screen.modal.toList ++ screen.urgent?.getD []).map semanticNodes
   have head : screenNodes screen = ([0],initial) :: prefixAt 1 remaining := by
-    simp [screenNodes,prefixChildren,prefixAt,initial,remaining,List.map_append,
+    simp [screenNodes,chromeNodes,bannerNode,prefixChildren,prefixAt,initial,remaining,List.map_append,
       List.zipIdx_append,List.flatMap_append,List.append_assoc,semanticNodes]
   rw [screenShape_normal,head,List.map_cons]
   exact ⟨_,rfl⟩
@@ -444,6 +473,16 @@ private theorem strip_small (sp : Ehr.Spec) (facts : Ehr.Facts) (user : Ehr.User
     by_cases urgent : Ehr.Specs.AlertUrgency.approvedTier popup.1 = some .urgent
     · simp [hp,urgent] at member
     · exact small node (by simpa [hp,urgent] using member)
+
+/-- New specification for owner review: the clinical screen with its urgent
+strip, for any facts, fits the fixed shell. This is the screen
+`Sem.UrgentStrip` reasons about. -/
+theorem strip_range (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
+    (display : Display) (user : Ehr.User) (state : Ehr.State) :
+    Shell.accepts (screenShape (withUrgentStrip sp facts user state
+      (renderUi sp program facts display user state))) = true :=
+  smallModal_fits _ (strip_small sp facts user state _ (uiModal_small
+    {sp,prog := program,facts,disp := display,user,s := state}))
 
 /-- The actual renderer always satisfies the bounded fixed-modal grammar.
 No program well-formedness, clinical acceptance, data or reachability premise. -/
@@ -564,6 +603,7 @@ theorem layoutAccepted_program (sp : Ehr.Spec) (program : Ehr.Program)
 #print axioms uiModal_small
 #print axioms strip_small
 #print axioms render_small
+#print axioms strip_range
 #print axioms renderer_range
 #print axioms unchecked_sound
 #print axioms checkProgram_accepts
