@@ -38,8 +38,15 @@ or generated family is committed. Missing shape coverage refuses the page.
 The reference shell leaves a 16px bottom margin for host status feedback. The
 host login/status surfaces and browser popup ink are outside layout admission;
 custom families should reserve space for status feedback.
-The reference compiler remains the default; this page adds no alternative
-layout generator.
+The default is the same plain JavaScript dense generator used by the Node
+reports and Lean nightly mode. The page generates a content-free family for its
+current shape, checks all three supported viewports with WASM, then binds the
+actual screen for painting. Admission is cached by augmented shape and screen
+limit (256 entries). A refused dense family tries the fixed shell at the same
+recorded screen limit; refusal of both makes the page inert. Transport/decoder
+errors never count as successful fallback. Explicit custom families are checked
+at the same limit and refuse when uncovered. `data-reference-layout` and
+`data-reference-generator` retain read-only browser evidence of the selection.
 
 Lean changes are API/export routing and narrower runtime imports only. The
 layout types/fonts/keyboard files use `Lean.Data.Json` (and `Std` for keyboard
@@ -147,7 +154,7 @@ covered by the presentation row; their underlying child controls remain present.
 | `patientPane` | Missing interaction | Banner, metadata, ordinary/modal children retained by source path. Needs patient-scoped event transport, per-pane choice metadata, modal ownership and board shell geometry; disabled here. |
 | `UiScreen.banner`, title and side nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome or patient avatar. |
 | `UiScreen.urgent` nodes | Works, simpler look | Lean pins them in a fixed strip (rule G11): outside every scroller, in the viewport and clear of every other box. The painter keeps strip boxes operable while a modal is open and blocks everything else. A state with more urgent nodes than the layout can pin is refused, not painted. |
-| `UiScreen.nav` | Works, simpler look | A heading card per group and one button per link, each in its own Lean target box, sends the existing `click` IDs. In the reference shell the navigation follows the workspace in the body scroller. |
+| `UiScreen.nav` | Works, simpler look | A heading card per group and one button per link, each in its own Lean target box, sends the existing `click` IDs. The dense layout places group headings and wrapping button bars before the workspace in the shared body scroller; the fixed-shell fallback places navigation after it. |
 | Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean `alertDialog` Tab transitions, inert ordinary controls, initial focus and restoration. Escape is ignored by the Lean profile and swallowed by the painter. Board modality remains missing. |
 | Review/sign persistence and draft restoration | Existing live path | Same `createLiveSession`, native screen comparison, guarded command endpoint and database. No alternate save implementation. |
 
@@ -268,3 +275,24 @@ here. Native service replay and durable command writes are exercised.
    checks only when their covered risks have replacements. Run the appropriate
    accessibility/screen audits for that renderer, update setup/architecture
    documentation and retain a tested rollback path.
+
+## Dense default verification
+
+The targeted P1/P3 workflows can also save five 1440×900 comparisons with the
+stock application on exactly the same state:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+DENSE_LAYOUT_SHOTS="$TMPDIR/dense-page-shots" \
+DATABASE_URL=postgres://postgres:synthetic-painter-test@127.0.0.1:55542/painter \
+EHR_BIN="$PWD/lean/.lake/build/bin/ehr" pnpm_config_verify_deps_before_run=false \
+pnpm --filter app exec playwright test --config src/lean-ui/playwright.config.ts \
+  workflows.pw.ts --workers=1
+```
+
+The optional capture writes `dense.png`, `vendor.png`, `screen.json` and
+`evidence.json` for P1 landing, documentation, orders and signing, plus P3
+assessment. It reads the actual session screen and creates no dispatch hook.
+[Results and remaining fidelity gaps](../audits/dense-reference-defaults.md)
+include the bundle audit and exact command outcomes. No full browser audit is
+claimed by this targeted workflow.

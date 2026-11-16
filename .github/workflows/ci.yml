@@ -32,6 +32,10 @@ jobs:
       - name: Audit headline theorem axioms
         run: bash scripts/audit-verification.sh
       - uses: ./.github/actions/setup-js
+      - name: Dense reference layout tests (native checker required)
+        run: |
+          (cd lean && lake build ui-layout)
+          node --test scripts/layout-reference/*.test.mjs
       - name: World-to-Lean boundary tests (need the Lean build)
         env:
           VGI_REQUIRE_LEAN_TESTS: '1'
@@ -41,7 +45,7 @@ jobs:
         run: |
           lake env lean --run Ehr/Tools/ExportContent.lean "$TMPDIR/ci-content"
           lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/commit-fixture.json"
-          tar -czf "$TMPDIR/ehr-test-inputs.tar.gz" -C "$PWD/.lake/build/bin" ehr -C "$TMPDIR" ci-content/programs commit-fixture.json
+          tar -czf "$TMPDIR/ehr-test-inputs.tar.gz" -C "$PWD/.lake/build/bin" ehr ui-layout -C "$TMPDIR" ci-content/programs commit-fixture.json
       - uses: actions/upload-artifact@v4
         with:
           name: ehr
@@ -98,10 +102,11 @@ jobs:
         with:
           name: ehr
           path: ${{ runner.temp }}/ehr-artifact
-      - name: Restore native binary
+      - name: Restore native binaries
         run: |
           tar -xzf "$RUNNER_TEMP/ehr-artifact/ehr-test-inputs.tar.gz" -C "$TMPDIR"
           install -D -m 755 "$TMPDIR/ehr" lean/.lake/build/bin/ehr
+          install -D -m 755 "$TMPDIR/ui-layout" lean/.lake/build/bin/ui-layout
       - name: Install sandbox test runtime
         run: |
           sudo apt-get update -qq
@@ -119,7 +124,7 @@ jobs:
       - name: Script and conformance runner units
         run: |
           node conformance/cures-probe.mjs
-          mapfile -t tests < <(find scripts conformance -name '*.test.mjs' ! -name 'completion-check.test.mjs' ! -name 'screen-cache-browser.test.mjs' ! -path 'scripts/ui-library/*' | sort)
+          mapfile -t tests < <(find scripts conformance -name '*.test.mjs' ! -name 'completion-check.test.mjs' ! -name 'screen-cache-browser.test.mjs' ! -path 'scripts/ui-library/*' ! -path 'scripts/layout-reference/*' | sort)
           node --import ./agent/node_modules/tsx/dist/loader.mjs --test --test-concurrency=2 "${tests[@]}"
       - run: python3 scripts/test-information-needs-compare.py
 

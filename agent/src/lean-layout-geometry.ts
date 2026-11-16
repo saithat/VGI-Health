@@ -52,10 +52,10 @@ export function occurrences(
       d["alert"];
     entries.push({ path, ids: typeof id === "string" ? [id] : [] });
     // A tabs node lists one target per label before its selected body
-    // (Layout.Semantic.tabNodes). The tabs id stays bound to the wrapper box.
+    // (Layout.Semantic.tabNodes). Indexed IDs select exact tab target boxes.
     const tabs =
       kind === "tabs" ? z.array(z.string()).parse(d["labels"] ?? []).length : 0;
-    for (let i = 0; i < tabs; i++) entries.push({ path: [...path, i], ids: [] });
+    for (let i = 0; i < tabs; i++) entries.push({ path: [...path, i], ids: typeof id === "string" ? [`${id}#tab:${i}`] : [] });
     const children = z
       .array(z.unknown())
       .parse(d["children"] ?? d["body"] ?? []);
