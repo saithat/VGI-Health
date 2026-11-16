@@ -205,14 +205,14 @@ def windowsOf (cfg : Config) (eligible : String → String → Bool) (asked : St
 Every paged list of the workspace and the side shows the page asked for (the
 last page when a later one is asked), and the screen carries the windows, which
 the display parts read (`Display.windowParts`). A screen without a list long
-enough to page is unchanged. The modal and the urgent strip are never paged. -/
+enough to page carries no windows. The modal and the urgent strip are never
+paged. -/
 def windowScreen (cfg : Config) (screen : UiScreen) : UiScreen :=
   if !cfg.enabled then screen else
   let ws := (screen.workspace ++ screen.side).flatMap (windowsOf cfg (eligibleIn screen) (askedIn screen))
-  if ws.isEmpty then screen else
   { screen with workspace := screen.workspace.map (windowNode cfg (eligibleIn screen) (askedIn screen)),
                 side := screen.side.map (windowNode cfg (eligibleIn screen) (askedIn screen)),
-                windows? := some ws }
+                windows? := if ws.isEmpty then screen.windows? else some ws }
 
 /-- The layout's entry: a screen that already carries windows is shown as it is. -/
 def windowOnce (cfg : Config) (screen : UiScreen) : UiScreen :=

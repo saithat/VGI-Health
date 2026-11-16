@@ -2,6 +2,7 @@ import Ehr.Layout.Range
 import Ehr.Layout.Density
 import Ehr.Layout.Strip
 import Ehr.Layout.Parts
+import Ehr.Layout.WindowProofs
 import Ehr.Render.Cli
 namespace Ehr.Layout
 open Lean Ehr Ehr.Render
