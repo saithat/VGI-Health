@@ -3,13 +3,17 @@ import {occurrences} from './generator.mjs';
 // This is an estimator, not an admission decision or browser measurement.
 export function geometryFor(screen,painted,{state='',sample}={}) {
   const boxes=painted.boxes, components={},scrollers={},clipRects={},approximations=[];
+  const sourceBoxes=new Map();
+  for(const {box} of boxes)if(box.info.source) {
+    const path=box.info.source.join('.');if(!sourceBoxes.has(path))sourceBoxes.set(path,box);
+  }
   for(const d of boxes.filter(d=>d.box.scroll)) {
     const b=d.box, extent=Math.max(b.rect.y+b.rect.h,...boxes.filter(p=>p.box.clips.some(([id])=>id===b.info.id)).map(p=>p.box.rect.y+p.box.rect.h));
     scrollers[b.info.id]={maxX:0,maxY:Math.max(0,(extent-b.rect.y-b.rect.h)/64),width:b.rect.w/64,height:b.rect.h/64};
     clipRects[b.info.id]={x:b.rect.x/64,y:b.rect.y/64,w:b.rect.w/64,h:b.rect.h/64};
   }
   function at(path) {
-    const box=boxes.find(d=>d.box.info.source?.join('.')===path.join('.'))?.box;
+    const box=sourceBoxes.get(path.join('.'));
     if(!box) return null;
     let x=(box.rect.x+box.rect.w/2)/64,y=(box.rect.y+box.rect.h/2)/64;
     const center={x,y},offsets={},chain=box.clips.map(([id])=>id);

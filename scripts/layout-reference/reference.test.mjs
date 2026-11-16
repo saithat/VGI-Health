@@ -109,3 +109,12 @@ test('admission memory is bounded while evicted cases remain independently check
   const c=new ReferenceLayouts({maxMemoryEntries:1}),a=screen(),b=screen();b.workspace[0].columns.children[1].section.children[0].info.rows=[[['Value','Synthetic']]];
   c.get(a);c.get(b);assert.equal(c.memory.size,1);assert.equal(c.get(a).cacheHit,false);assert.equal(c.stats.misses,3);
 });
+test('runtime urgent sources remain fixed above the banner without changing semantic flags',()=>{
+  const s=screen();s.urgent=[{alert:{comp:'urgent',alertId:'policy',label:'Review before signing',severity:'high'}}];
+  const c=new ReferenceLayouts(),r=c.get(s);assert.equal(r.denseAccepted,true);
+  for(const viewport of viewports) {
+    const out=c.paint(r,s,viewport),urgent=out.boxes.find(d=>d.original?.includes('Review before signing')),banner=out.boxes.find(d=>d.box.info.banner);
+    assert.equal(out.accepted,true);assert.deepEqual(urgent.box.clips,[]);assert.equal(urgent.box.info.interruptive,false);
+    assert.ok(urgent.box.rect.y+urgent.box.rect.h<=banner.box.rect.y);
+  }
+});

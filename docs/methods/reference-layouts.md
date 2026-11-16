@@ -12,6 +12,8 @@ horizontal navigation, heading, optional 158px summary pane with an 8px gutter,
 compact safety-text cards, wrapping control rows and width-dependent columns.
 The summary and content columns share one vertical scrolling body, matching
 the vendor document's coupled scrolling rather than introducing independent panes.
+In dense layouts, runtime urgent-strip slots stay fixed above the banner, with a structural
+height reserve shifting the banner, navigation, heading and modal down.
 Collapse controls share their section's heading row; choice wrappers occupy
 field columns. Table reserves grow by 24px per row plus a 22px heading, with a
 36px minimum, rather than capping long tables at a constant height.
@@ -191,6 +193,9 @@ following adapter/language gaps prevent full vendor fidelity without Lean work:
 
 - Navigation is one noninteractive semantic text slot. Individual navigation
   button identities, labels and action targets are absent from the inventory.
+- Runtime urgent-strip entries have ordinary body classification in the native
+  shape. Authoring hints pin their geometry while preserving those flags; the
+  library's modal G2 classification does not itself classify the urgent strip.
 - A tabs node exposes the combined tab caption and selected body, not each tab
   choice as a target. The geometry reports explicitly mark navigation and tab
   centers as proxies; their missing targets are not silently invented for G10.
