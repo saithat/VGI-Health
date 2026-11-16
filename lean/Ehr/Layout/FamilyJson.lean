@@ -44,11 +44,11 @@ def familyOutput (family : Family) (screen : UiScreen) (v : Size) (limit : Nat :
       ("error",toJson "semantic shape not in admitted family; this is not a text-length or glyph failure")]
   | some c =>
     let ps := boxes v (c.tree v)
-    let data := ps.map (bindSemantic screen)
+    let data := bindAll screen ps
     let layoutOk := checkAll limit (shapeSources c.shape) (urgentPaths c.shape) v ps
     Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family && family.all admitUrgent &&
         viewports.contains v)),
-      ("viewport",toJson v),("boxes",toJson data),
+      ("viewport",toJson v),("boxes",toJson data),("parts",boxPartsJson screen ps),
       ("tree",semanticPaintTree screen (layout ⟨{},v⟩ (c.tree v))),
       ("lineWidths",toJson (data.map drawnLineWidths)),
       ("findings",toJson (findings (shapeSources c.shape) v ps ++ densityFindings limit v ps ++
@@ -62,7 +62,7 @@ def structuralOutput (screen : UiScreen) (v : Size) : Json :=
     Json.mkObj [("accepted",toJson false),("uncoveredShape",toJson shape),
       ("error",toJson "fixed-shell class requires one banner, at most one commit, at most two modal occurrences and unique sources")]
   else
-    let data := (Shell.classBoxes v shape).map (bindSemantic screen)
+    let data := bindAll screen (Shell.classBoxes v shape)
     let tree := match data with
       | [] => Json.null
       | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
@@ -70,7 +70,8 @@ def structuralOutput (screen : UiScreen) (v : Size) : Json :=
     -- New specification for owner review: a screen whose urgent strip does not
     -- fit the pinned band is refused (G11); `Shell.class_urgent` covers the rest.
     Json.mkObj [("accepted",toJson (viewports.contains v && Shell.stripFits shape)),("viewport",toJson v),
-      ("boxes",toJson data),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
+      ("boxes",toJson data),("parts",boxPartsJson screen (Shell.classBoxes v shape)),
+      ("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
       ("findings",toJson (realizationWarnings data ++ shellStripFindings shape)),
       ("urgentPinned",toJson (Shell.stripFits shape)),("structuralClass",toJson "fixed-shell-v2")]
 
@@ -80,7 +81,8 @@ def programOutput (input : RenderInput) (v : Size) : Json :=
   if !viewports.contains v then Json.mkObj [("accepted",toJson false),("error",toJson "unsupported viewport")]
   else
     let screen := runRenderUi input
-    let data := (Range.uncheckedPaint screen v).getD []
+    -- `Range.uncheckedPaint` with the inventory computed once (`Range.uncheckedPaint_bound`).
+    let data := bindAll screen (Shell.classBoxes v (screenShape screen))
     let tree := match data with
       | [] => Json.null
       | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
@@ -90,7 +92,7 @@ def programOutput (input : RenderInput) (v : Size) : Json :=
     let shape := screenShape screen
     Json.mkObj [("accepted",toJson (Range.checkProgram input.spec input.program &&
         Density.checkProgramDensity input.spec input.program && Shell.stripFits shape)),("viewport",toJson v),
-      ("boxes",toJson data),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
+      ("boxes",toJson data),("parts",boxPartsJson screen (Shell.classBoxes v shape)),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
       ("structuralClass",toJson "fixed-shell-v2"),
       ("rangeTheorem",toJson "Ehr.Layout.Range.layoutAccepted_program"),
       ("densityTheorem",toJson "Ehr.Layout.Density.checkProgramDensity_sound"),

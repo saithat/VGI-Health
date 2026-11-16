@@ -65,11 +65,20 @@ def dispatch (json : Json) : Except String Json := do
     let ps := boxes viewport n
     let errors := contentErrors data ps
     let urgent := urgentPaths (screenShape screen)
+    let data := bindAll screen ps
     pure (Json.mkObj [("accepted",toJson (checkAll limit expected urgent viewport ps && errors.isEmpty)),
       ("viewport",toJson viewport), ("tree",semanticPaintTree screen (layout ⟨{},viewport⟩ n)),
-      ("boxes",toJson (ps.map (bindSemantic screen))), ("lineWidths",toJson (ps.map (fun p => drawnLineWidths (bindSemantic screen p)))),
+      ("boxes",toJson data), ("parts",boxPartsJson screen ps),
+      ("lineWidths",toJson (data.map drawnLineWidths)),
       ("findings",toJson (findings expected viewport ps ++ densityFindings limit viewport ps ++
-        urgentFindings viewport urgent ps ++ errors ++ realizationWarnings (ps.map (bindSemantic screen))))])
+        urgentFindings viewport urgent ps ++ errors ++ realizationWarnings data))])
+  else if (json.getObjValAs? String "op").toOption.getD "" == "inventory" then
+    -- New specification for owner review: the semantic inventory of a screen:
+    -- every display part with its occurrence path, and the erased shape.
+    let screen : Ehr.Render.UiScreen ← match json.getObjVal? "render" with
+      | .ok r => do pure (Ehr.Render.runRenderUi (← fromJson? r))
+      | .error _ => json.getObjValAs? Ehr.Render.UiScreen "screen"
+    pure (Json.mkObj [("inventory",inventoryJson screen),("shape",toJson (screenShape screen))])
   else
     let r ← fromJson? json
     runRequest r

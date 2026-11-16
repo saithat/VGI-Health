@@ -13,28 +13,42 @@ export function reviewScreen(rows=[]){return {banner:[['Patient','Synthetic pati
 ],side:[],modal:null};}
 const widths=[[1440,900],[1280,800],[1920,1080]];
 const text={key:'deliberately-wrong-key',maxLength:0,maxLines:2,overflow:'scroll',safety:true,font:0,fontSize:896,lineHeight:1408};
-function layouts(){return widths.map(([w,h])=>({viewport:{w:w*64,h:h*64},tree:{type:'Absolute',id:'root',width:'fill',height:'fill',children:[
+const line={...text,maxLines:1};
+/** One box per occurrence: banner, title, navigation, the table caption with
+ * `parts` display parts (cells), Sign and its blocked reason. */
+function layouts(parts=1){return widths.map(([w,h])=>({viewport:{w:w*64,h:h*64},tree:{type:'Absolute',id:'root',width:'fill',height:'fill',children:[
   {type:'Text',id:'banner',source:[0],banner:true,position:{x:1024,y:512},width:(w-32)*64,height:5120,text},
   {type:'Text',id:'title',source:[1],position:{x:1024,y:6400},width:(w-32)*64,height:2816,text},
   {type:'Text',id:'nav',source:[2],position:{x:1024,y:9600},width:(w-32)*64,height:2816,text},
-  {type:'Text',id:'review',source:[3],position:{x:1024,y:12800},width:(w-32)*64,height:6400,text},
+  {type:'Text',id:'review',source:[3],position:{x:1024,y:12800},width:(w-32)*64,height:2816,text},
+  ...Array.from({length:parts},(_,i)=>({type:'Text',id:'part'+i,source:[3,i],position:{x:1024,y:16000+i*1664},width:(w-32)*64,height:1600,text:line})),
+  {type:'Text',id:'reason',source:[4,0],position:{x:1024,y:16000+parts*1664},width:(w-32)*64,height:1600,text:line},
   {type:'Button',id:'sign',source:[4],commit:true,position:{x:1024,y:(h-80)*64},width:(w-32)*64,height:3840,text},
 ]}}));}
+const table=(drug,dose,note)=>[[['Drug',drug],['Dose',dose],['Route','PO']],[['Allergy',note]]];
 
 test('a data-erased admitted family rebinds unlimited safety payloads by source path',()=>{
-  const reference=reviewScreen();const references=[{screen:reference,layouts:layouts()}];
-  assert.equal(run({op:'family-check',references}).accepted,true);
+  // The reference fixes the structure (four cells, each a caption and a value); every string is free.
+  const reference=reviewScreen(table('x','y','z'));const references=[{screen:reference,layouts:layouts(8)}];
+  const admitted=run({op:'family-check',references});
+  assert.equal(admitted.accepted,true,JSON.stringify(admitted.findings));
   const payload='🧬 medication '+ 'W'.repeat(70000);
-  const actual=reviewScreen([[['Drug',payload],['Dose','5 mg'],['Route','PO']],[['Allergy','a\nb']]]);
+  const actual=reviewScreen(table(payload,'5 mg','a\nb'));
+  actual.banner=[['Patient','Another synthetic patient'],['MRN','000'],['Allergies','None recorded']];
+  actual.workspace[1].button.blockedReason='Review every order '.repeat(400);
   const out=run({op:'family-paint',references,screen:actual});
   assert.equal(out.accepted,true,JSON.stringify(out));assert.equal(out.linked,true);
-  const review=out.boxes.find(d=>d.box.info.source?.join('.')==='3');
-  assert.ok(review.original.includes(payload));assert.ok(review.original.includes('Dose: 5 mg'));
-  assert.ok(review.lines.join('').includes('[U+01F9EC]'));
-  assert.notEqual(review.original,out.boxes.find(d=>d.box.info.source?.join('.')==='0').original);
+  const at=path=>out.boxes.find(d=>d.box.info.source?.join('.')===path);
+  assert.equal(at('3.1').original,payload);assert.ok(at('3.1').lines.join('').includes('[U+01F9EC]'));
+  assert.deepEqual(['3.0','3.2','3.3','3.6','3.7'].map(p=>at(p).original),['Drug','Dose','5 mg','Allergy','a\nb']);
+  assert.equal(at('4.0').original,'Review every order '.repeat(400));
+  assert.ok(at('0').original.includes('Another synthetic patient')&&at('0').original.includes('Allergies: None recorded'));
+  // A table of another size is another structure: it is reported, never painted with the wrong boxes.
+  const longer=run({op:'family-paint',references,screen:reviewScreen([...table('x','y','z'),[['Allergy','second']]])});
+  assert.equal(longer.accepted,false);assert.ok(longer.uncoveredShape);
 });
 test('semantic linkage prevents hiding the real commit to claim G9 exemption',()=>{
-  const changed=layouts();for(const r of changed)r.tree.children[4].commit=false;
+  const changed=layouts();for(const r of changed)r.tree.children.at(-1).commit=false;
   assert.equal(run({op:'family-check',references:[{screen:reviewScreen(),layouts:changed}]}).accepted,false);
 });
 test('family admission covers each desktop viewport and does not silently accept new structures',()=>{
