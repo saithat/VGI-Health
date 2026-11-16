@@ -34,14 +34,17 @@ uncovered custom shapes and refused viewports do not fall back to host layout.
 `{"op":"inventory","screen":…}` (or `"render"`) returns every occurrence path
 with its display part; `{"op":"format","name":…,"args":[…]}` calls one display
 formatter by name, so native and WASM wording can be compared on any text.
-The pinned Lean runtime builds `String.toList` on 32-bit targets with an
-allocated object in place of the empty list; compiled code that hands back a
-borrowed empty list then frees it twice, which corrupted the WASM heap for
-some values (for example a record number of up to eight digits). The display
-formatters therefore build their character lists in Lean (`Format.listOf`),
-and the WASM test compares every formatter and the inventory of eight P1/P3
-screens with the native binary. Other Lean code that keeps the tail of a
-`String.toList` result is exposed to the same runtime defect.
+The pinned Lean runtime ends the list built by `String.toList` with
+`lean_box_uint32(0)`, which on 32-bit targets is an allocated object rather
+than the empty list; compiled code that hands back a borrowed empty list then
+frees it twice. In the WASM this crashed the existing wrapped and ellipsis
+text layout on short strings and corrupted the heap in the display
+formatters. `wasm/build.py` now compiles a build-local copy of
+`runtime/object.cpp` that ends the list with `lean_box(0)`, as it already
+patches `system.cpp` and `io.cpp`; the pinned checkout is unchanged. The WASM
+test compares wrapped and ellipsis text, every formatter and the inventory of
+eight P1/P3 screens with the native binary. The formatters also build their
+character lists in Lean (`Format.listOf`).
 
 Supply custom references with
 `/lean.html?persona=P1&family=/runs/example/family.json`; the file is a JSON array

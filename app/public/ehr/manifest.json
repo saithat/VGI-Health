@@ -412,7 +412,7 @@
   "buildInputs": {
     "wasm/build-ehr.sh": "3355ab529725f82715d1952de99676e2f0e65931e5e34a5301f9f4edb897000c",
     "wasm/build_ehr.py": "85ddfd21d66490305bfafa4e7abac48f909ca33610f78d72edf8da9ea5aeb4f0",
-    "wasm/build.py": "44c406da7aa089edf9d5cf5c1ecd3faae4062f0e0ab5d812d188ba80c276da2c",
+    "wasm/build.py": "c73b2dd2cb30c2e47e2ed8e99ff2c7c01cc4b3ae830754346089580dcaf9322e",
     "wasm/interp-bridge.cpp": "3406f791181a048b74e81f23a2dbb1552aa7dda35bd4be46c68141969e4d1806",
     "wasm/uv-error.c": "f1ffc015ed7c357ac6964426a024956098c10ed6d62e98ddc92190ce1bd4e0fa",
     "wasm/interp-loader.mjs": "a4729b120f637d61d04d71e1dd636bea3eac9927ff92b55e7d9f6278bfc8cd7e",
@@ -424,7 +424,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "9f2265143dc27772c3c69913109afcf08c0a2e61eb44a700898053ffce3c1e05",
+    "ehr-interp.wasm": "ac46e93351c74eb1f45a0121957587dfef43e4c0d58143d77a71f3749fa1c2fb",
     "interp-loader.mjs": "97bdde445bef78a3aec9f5664e1274b9399094191d5282a71a656b88713040b7",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

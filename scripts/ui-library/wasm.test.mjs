@@ -88,3 +88,12 @@ test('native and WASM list the same display parts for P1/P3 screens',()=>{
   assert.ok(parts>1500,`compared ${parts} parts`);
   console.log(`Inventory agreement: ${parts} parts on 8 screens.`);
 });
+test('WASM runtime ends String.toList with the empty list (wrapped and ellipsis text)',()=>{
+  // Engine.textLines splits String.toList into chunks. With the runtime's
+  // 32-bit list terminator (a boxed 0) the borrowed nil tail was freed twice:
+  // a short wrap/ellipsis text crashed the WASM. The build patches object.cpp.
+  for(const overflow of ['wrap','ellipsis']) for(const s of ['','a','abc','12/','12345678','\n','a\nb','🧬','Élodie','x'.repeat(200)]) {
+    const request={tree:{type:'Text',id:'t',width:9000,height:20000,text:{key:'k',maxLength:300,maxLines:10,overflow}},content:[['k',s]],viewport:{w:92160,h:57600}};
+    assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),layout(request),`${overflow} ${JSON.stringify(s)}`);
+  }
+});
