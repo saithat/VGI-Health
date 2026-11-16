@@ -1,4 +1,5 @@
 // Untrusted, content-independent vendor reference geometry. All sizes are 1/64px.
+import {windowOnce} from './window.mjs';
 export const viewports = [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}];
 export const version = 'dense-reference-v9';
 const px = n => Math.round(n * 64);
@@ -83,8 +84,11 @@ const childNodes=(kind,v)=>kind==='patientPane'?[...v.children,...v.modal]:kind=
 const confirmComps=node=>{const [kind,v]=Object.entries(node)[0];return kind==='button'?(v.role==='confirm'?[v.comp]:[]):childNodes(kind,v).flatMap(confirmComps);};
 /** Every occurrence of the semantic inventory, in Lean's order and with Lean's
  * paths: `{path, role, target, commit, comp, ids, kind, value, leaf, ...}`.
- * `kind`/`value` are the UiNode of an own part; a display part has `leaf`. */
-export function occurrences(screen) {
+ * `kind`/`value` are the UiNode of an own part; a display part has `leaf`.
+ * Like Lean's `inventory` operation, it reads the screen as the layout shows
+ * it: bounded lists one page at a time (window.mjs mirrors Layout.Window). */
+export const occurrences=screen=>inventoryOf(windowOnce(screen));
+function inventoryOf(screen) {
   const result=[],body=[...screen.workspace,...screen.side,...(screen.modal?[screen.modal]:[]),...(screen.urgent??[])];
   const push=(path,part,extra={})=>result.push({path,role:part.role,target:part.target??false,commit:part.commit??false,
     comp:part.comp??'',ids:part.ids??[],...(part.narrative?{narrative:true}:{}),...(part.row!==undefined?{row:part.row}:{}),
@@ -109,6 +113,7 @@ export function occurrences(screen) {
 // This mirrors screenShape for authoring only; family-check independently derives
 // the authoritative shape and verifies every source, target and semantic flag.
 export function shapeFor(screen) {
+  screen=windowOnce(screen);
   const entries=occurrences(screen);
   const commit=entries.find(e=>e.commit);
   const sideStart=3+screen.workspace.length,modalRoot=sideStart+screen.side.length,urgentRoot=modalRoot+Number(Boolean(screen.modal));
@@ -136,7 +141,7 @@ export function shapeFor(screen) {
 export function eraseContent(screen) {
   const result=structuredClone(screen);result.banner=[];result.title='';result.viewer=null;result.nav=result.nav.map(([,items])=>['',items.map(([id])=>[id,''])]);
   const blank=v=>v===null||v===undefined?v:'';
-  const entries=occurrences(result).filter(e=>e.path[0]>=3&&!e.leaf);
+  const entries=inventoryOf(result).filter(e=>e.path[0]>=3&&!e.leaf);
   for(const {kind,value} of entries) {
     for(const field of ['label','title','s']) if(typeof value[field]==='string') value[field]='';
     if(kind==='info') value.rows=value.rows.map(row=>row.map(([k])=>[k,'']));

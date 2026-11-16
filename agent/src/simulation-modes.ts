@@ -6,13 +6,16 @@ export const simulationModesSchema = z.object({
   interruptions: z.enum(['realWork', 'fixedCost']),
   simModel: z.enum(['wave3', 'legacy']).exactOptional(),
   textCost: z.enum(['length', 'legacy']).exactOptional(),
+  /** Bounded lists (Layout.Window): the simulated clinician pages to the records
+   * it reads. Lean-painted screens show lists paged; the stock painter whole. */
+  lists: z.enum(['whole', 'paged']).exactOptional(),
 });
 export type SimulationModes = z.infer<typeof simulationModesSchema>;
 export const legacyModes: SimulationModes = {clockMode:'legacy', interruptions:'fixedCost'};
 export const realWorkModes: SimulationModes = {clockMode:'continuous', interruptions:'realWork',simModel:'wave3',textCost:'length'};
 /** Missing wave-3 keys on retained manifests select the pre-wave3 model. */
 export function resolvedSimulationModes(modes:SimulationModes) {
-  return {...modes,simModel:modes.simModel??'legacy',textCost:modes.textCost??'legacy'};
+  return {...modes,simModel:modes.simModel??'legacy',textCost:modes.textCost??'legacy',lists:modes.lists??'whole'};
 }
 export function withSimulationModes(ehr:EhrClient, modes:SimulationModes):EhrClient {
   return {...ehr, mode:ehr.mode, binary:ehr.binary,

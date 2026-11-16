@@ -179,7 +179,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   armCrashHook(llm.name);
   if(opts.verificationRelease&&llm.name!=='scripted'&&llm.name!=='replay')throw new Error('Verification release refuses live models');
   const log = opts.log ?? (() => undefined);
-  const simulationModes=simulationModesSchema.parse(opts.simulationModes??realWorkModes);
+  const requestedModes=simulationModesSchema.parse(opts.simulationModes??realWorkModes);
+  // Lean-painted screens page bounded lists (Layout.Window): the simulated
+  // clinician pages to the records it reads, and each page action is a click.
+  const simulationModes:SimulationModes=leanMode&&requestedModes.lists===undefined?{...requestedModes,lists:'paged'}:requestedModes;
   const underlyingEhr = withSimulationModes(opts.ehr ?? createEhr(),simulationModes);
   const world = await loadWorld(opts.worldDir);
   if (['codex','claude','openai-compat'].includes(llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
