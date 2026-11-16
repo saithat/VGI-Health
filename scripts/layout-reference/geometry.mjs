@@ -32,8 +32,8 @@ export function geometryFor(screen,painted,{state='',sample}={}) {
   // a button, a tab target (`id#tab:i`); a tabs node points at its selected tab.
   for(const entry of occurrences(screen)) {
     for(const id of entry.ids) {const box=at(entry.path);if(box) components[id]=box;}
-    if(entry.kind==='alert' && entry.value.alertId) components[entry.value.alertId]=at(entry.path);
-    if(entry.kind==='tabs') components[entry.value.id]=at([...entry.path,entry.value.selected]);
+    if(entry.kind==='alert' && entry.value.alertId) components[entry.patient?`${entry.patient}::${entry.value.alertId}`:entry.value.alertId]=at(entry.path);
+    if(entry.kind==='tabs') components[entry.patient?`${entry.patient}::${entry.value.id}`:entry.value.id]=at([...entry.path,entry.value.selected]);
   }
   return {screen:screen.screen??'',state,...(sample?{sample}:{}),viewport:{width:painted.viewport.w/64,height:painted.viewport.h/64},components,scrollers,clipRects,approximations};
 }
@@ -52,6 +52,7 @@ export class GeometryMeter {
     }
     let id=Object.entries(ev.event).filter(([kind])=>kind!=='hotkey').map(([,payload])=>payload?.comp??payload?.alert).find(Boolean);
     if(ev.event.selectTab && id)id=`${id}#tab:${ev.event.selectTab.idx}`;
+    if(id && ev.patient && geometry.components[`${ev.patient}::${id}`])id=`${ev.patient}::${id}`;
     if(!id || (!ev.ops.some(op=>['point','click'].includes(op)) && !ev.event.enter && !ev.event.confirm)) return;
     if(geometry.approximations.some(p=>p.id===id)) this.proxiedEvents++;
     const b=geometry.components[id];

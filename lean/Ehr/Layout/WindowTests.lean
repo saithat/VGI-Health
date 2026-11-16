@@ -31,13 +31,18 @@ private def windowsOf' (s : UiScreen) : List UiWindow := (windowScreen {} s).win
 #guard (windowScreen { size := 500 } (listScreen none)).windows? == none
 #guard (windowScreen { enabled := false } (listScreen none)).windows? == none
 -- A list named by a row action, or shown twice, is not paged.
-#guard (windowScreen {} { listScreen none with
-  workspace := (listScreen none).workspace ++ [.rowAction "results" 2 [.button "open" "Open" "nav" true none none]] }).windows? == none
-#guard (windowScreen {} { listScreen none with
-  workspace := (listScreen none).workspace ++ (listScreen none).workspace }).windows? == none
+private def withRowAction : UiScreen :=
+  { listScreen none with
+      workspace := (listScreen none).workspace ++ [.rowAction "results" 2 [.button "open" "Open" "nav" true none none]] }
+private def shownTwice : UiScreen :=
+  { listScreen none with workspace := (listScreen none).workspace ++ (listScreen none).workspace }
+#guard (windowScreen {} withRowAction).windows? == none
+#guard (windowScreen {} shownTwice).windows? == none
 -- The window's parts: position, flagged count, then the four targets.
-#guard (pagerParts { comp := "results", page := 1, pages := 3, size := 20, total := 47, flagged := 2,
-    flaggedElsewhere := 1, nextFlagged? := some 0 }).map (fun p => (p.role, p.text, p.col, p.enabled)) ==
+private def pageTwo : UiWindow :=
+  { comp := "results", page := 1, pages := 3, size := 20, total := 47, flagged := 2, flaggedElsewhere := 1,
+    nextFlagged? := some 0 }
+#guard (pagerParts pageTwo).map (fun p => (p.role, p.text, p.col, p.enabled)) ==
   [(.position, "Records 21–40 of 47", some 1, true), (.flagged, "1 flagged record on another page", none, true),
    (.pager, "Previous page", some 0, true), (.pager, "Next page", some 2, true), (.pager, "Page 2 of 3", some 1, true),
    (.pager, "Next flagged", some 0, true)]

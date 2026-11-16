@@ -1,472 +1,64 @@
-# Lean UI & Plain DOM Painter Cut-Over Inventory
-
-This document inventories every repository dependency on the React/Mantine clinical renderer (`app/src/ehr/ui/*`, `app/src/ehr/painter.tsx`) and the Playwright browser screen gate (`agent/src/screencheck.ts`, `app/scripts/screen-check.mjs`, and downstream consumers), maps every check performed by the browser gate and audits to Lean's formal layout and semantic theorems (`lean/Ehr/Layout/*`, `lean/Ehr/Render/*`, `lean/Ehr/Sem/*`, `lean/Ehr/Props/*`, `lean/Ehr/Check/*`), and defines the disposition and cut-over sequence for removing the React clinical renderer and the browser gate from the nightly loop.
-
----
-
-## 1. What Depends on the React Clinical Renderer
-
-Today, the clinical application has two React rendering paths in `app/src/ehr/` plus a research prototype of the Lean-computed plain DOM painter in `app/src/browser/ui-library/`:
-
-1. **Primary structured clinical UI renderer (`app/src/ehr/ui/*`)**: Renders Lean's `UiScreen` (`lean/Ehr/Render/Ui.lean`, `app/src/ehr/ui/types.ts`) through React and `@mantine/core` (`AppShell`, `Modal`, `Tabs`, `SimpleGrid`, `Paper`, `Alert`, `Button`, `TextInput`, `NumberInput`, `Select`, `Textarea`, `Checkbox`, `Badge`, `Tooltip`, `Kbd`).
-2. **Legacy HTML tree painter (`app/src/ehr/painter.tsx`)**: Renders Lean's `Html` (`lean/Ehr/View.lean`, `app/src/ehr/html.ts`) into React elements styled by `app/src/ehr.css`.
-3. **Research Lean UI library painter (`app/src/browser/ui-library/Painter.tsx`)**: Draws Lean `Drawn[]` records (`lean/Ehr/Layout/Types.lean`, coordinates in `1/64` CSS px) directly onto DOM nodes (`<div>`, `<button>`, `<svg>`). It currently renders static geometry (`data-box`, `data-scroll`, `data-source`, `role`, `aria-label`, `aria-modal`, `tabIndex`) and does not yet wire interactive clinical event dispatch (`onEvent: (event: Event) => void`), form controls (`<input>`, `<select>`, `<textarea>`), or `[data-comp-id]` / `[data-event]` attributes.
-
-### 1.1 Core Clinical Renderer Modules (`app/src/ehr/**`)
-
-| Path | Classification | Role & React / Mantine / DOM Assumptions |
-| :--- | :--- | :--- |
-| `app/src/ehr/ui/Screen.tsx` | **Clinical** | Root `UiScreenView`, `PatientBanner`, `WorkflowNav`. Uses `@mantine/core` (`AppShell`, `Badge`, `Group`, `Modal`, `Text`, `Title`), `ResizeObserver` to maintain `--clinical-header-height` and `scrollPaddingTop`, and `requestAnimationFrame` twice after mount/update to fire `onPaint`. Emits `.clinical-app-shell`, `.clinical-header`, `.clinical-main`, `[data-screen-id]`, `[data-comp-id="patient-banner"]`, `[data-comp-id="workflow-nav"]`, `[data-comp-id="urgent-alert-strip"]`, `[data-comp-id="interruptive-alerts"]`, and `role="dialog"`. |
-| `app/src/ehr/ui/nodes.tsx` | **Clinical** | Renders recursive `UiNode` variants (`UiNodeView`, `UiChildren`, `SectionNode`, `ColumnsNode`, `TabsNode`, `StepperNode`, `FieldNode`, `InfoNode`, `AlertNode`, `ButtonNode`, `TextNode`). Uses `@mantine/core` (`Alert`, `Badge`, `Box`, `Button`, `Checkbox`, `Group`, `Kbd`, `NumberInput`, `Paper`, `Select`, `SimpleGrid`, `Stack`, `Tabs`, `Text`, `TextInput`, `Textarea`, `Tooltip`). Emits `[data-comp-id]`, `[data-event]`, `[data-action-kind]`, `[data-field-id]`, `[data-source-label]`, `[data-late-entry]`, `.clinical-section`, `.clinical-columns`, `.clinical-tabs`, `.clinical-info-table`, `.clinical-button`, `.clinical-alert`. |
-| `app/src/ehr/ui/UrgentStrip.tsx` | **Clinical** | Renders sticky top `.urgent-alert-strip` (`role="region"`, `aria-label="Active urgent alerts"`), maintains `--urgent-strip-height` via `ResizeObserver`, and dispatches `ackAlert` / `modalAction` / `navigate` events. |
-| `app/src/ehr/ui/urgent-strip.css` | **Clinical** | Styles `.urgent-alert-strip` (`z-index: 400`, above Mantine modal overlay `z-index: 200`) and offsets `.mantine-Modal-inner` by `var(--urgent-strip-height)`. |
-| `app/src/ehr/ui/Board.tsx` | **Clinical** | Renders `UiNode` variants `board` (`Board`, `.clinical-board`, `.clinical-board-scroll`) and `patientPane` (`PatientPane`, `.clinical-patient-pane`) with `@mantine/core` (`Badge`, `Box`, `Group`, `Paper`, `Stack`, `Text`, `Title`). |
-| `app/src/ehr/ui/DatedTimeline.tsx` | **Clinical** | Renders `datedTimeline` nodes (`.clinical-dated-timeline`, `.clinical-dated-lane`) with `@mantine/core` and `useClinicalDensity`. |
-| `app/src/ehr/ui/Timeline.tsx` | **Clinical** | Renders `timeline` nodes with `@mantine/core` (`Badge`, `Box`, `Group`, `Paper`, `Stack`, `Text`), `.clinical-timeline-track`, and `.clinical-timeline-legend-swatch`. |
-| `app/src/ehr/ui/presentations.tsx` | **Clinical** | Resolves `node.presentation` against compiled agent `PresentationRegistry` or built-in presentations (`StructuredInfo`, `MarGrid`, `SparklinePresentation`, `RangeBarPresentation`, `MeowsTrendPresentation`, `PartogramPresentation`, `FluidBalancePresentation`), wrapping rendered trees in React `PresentationBoundary` error boundaries. |
-| `app/src/ehr/ui/presentation-helpers.tsx` | **Clinical** | Exports `UiNodeView` and `PresentationProps` under the `@ehr/presentation` module alias (`app/vite.config.ts`, `app/tsconfig.json`) for agent-authored TSX presentation components. |
-| `app/src/ehr/ui/presentation-types.ts` | **Clinical** (also imported by non-clinical `src/browser/data.ts` and `agent/src/presentation-compiler.ts`) | Defines `PresentationComponent`, `PresentationProps`, `PresentationRegistry`, and `wrapperNames` (`['Box', 'Stack', 'Group', 'Paper', 'Flex']` from `@mantine/core`). |
-| `app/src/ehr/ui/custom/example/v0/Review.tsx` | **Clinical** | Example custom presentation component importing `Box`, `Group`, `Paper`, `Stack` from `@mantine/core` and `UiNodeView` from `@ehr/presentation`. |
-| `app/src/ehr/ui/presentations/StructuredInfo.tsx` | **Clinical** | Built-in structured info table presentation (`data-presentation="structured-info"`), using `@mantine/core` (`Badge`, `Box`, `Group`, `Stack`, `Text`), `vitalGroups`, `displayRows`, and `splitRowsByColumns`. |
-| `app/src/ehr/ui/presentations/MarGrid.tsx` | **Clinical** | Built-in MAR grid presentation (`data-presentation="mar-grid"`), using `@mantine/core` and `UiNodeView`. |
-| `app/src/ehr/ui/presentations/charts.tsx` | **Clinical** | Built-in SVG clinical chart presentations (`sparkline`, `range-bar`, `meows-trend`, `partogram`, `fluid-balance`), using `@mantine/core` (`Badge`, `Box`, `Group`, `Stack`, `Text`) and `<svg role="img">`. |
-| `app/src/ehr/ui/presentations/row-layout.ts` | **Clinical** | Pure column-splitting helper `splitRowsByColumns` for `StructuredInfo.tsx` and `nodes.tsx`. |
-| `app/src/ehr/ui/presentations/presentations.css` | **Clinical** | CSS for `.clinical-structured-info`, `.clinical-mar-grid`, and `.clinical-chart-*`. |
-| `app/src/ehr/ui/fidelity.ts` | **Clinical** (screen gate helper) | Computes `expectedAria(screen)` / `expectedNodeAria` and `observedAria(root)` (walking live DOM elements, `aria-label`, `aria-labelledby`, `<label for>`, `role`, `[data-comp-id]`, `[data-late-entry]`, `<time datetime>`, and `expectedRowPlacement`). |
-| `app/src/ehr/ui/display.tsx` | **Clinical** (also imported by non-clinical `src/browser/RevisionDetails.tsx` and `src/dashboard/Dashboard.tsx`) | Formatters and React helpers: `RenderFormattedText`, `StatusBadge` (`@mantine/core` `Badge`), `StepIcon`, `humanizeToken`, `formatBannerDetails`, `formatMedicationDirections`, `medicationTaskCaption`, `vitalGroups`, `displayRows`, `clinicalTime`, `observationValue`. |
-| `app/src/ehr/ui/clinical-display.ts` | **Clinical** (also imported by non-clinical `src/browser/RevisionDetails.tsx`) | Pure formatting helpers: `humanizeEnumToken`, `clinicalTimestamp`, `normalizeTimestampText`, `parseAllergyDetails`, `parseOrderSummary`, `vitalGroupOrder`, `parseStepperLabel`. |
-| `app/src/ehr/ui/clinical-formatters.ts` | **Clinical** | Pure clinical string formatters (`formatRoute`, `formatFrequency`, `formatDoseUnit`, `formatMedicationDisplay`, `formatOrderSummary`, `formatLabDisplay`, `formatImagingDisplay`). |
-| `app/src/ehr/ui/clinical-metadata.tsx` | **Clinical** | React component `ClinicalMetadataBadges` (`@mantine/core` `Badge`, `Group`, `Text`) emitting `[data-source-label]` and `[data-late-entry]`. |
-| `app/src/ehr/ui/Density.ts` | **Clinical** | React context `ClinicalDensityContext` / `useClinicalDensity` (`default` vs `dense` shell mode). |
-| `app/src/ehr/ui/FieldChoices.ts` | **Clinical** | React context `FieldChoicesContext` supplying dynamic select/combobox option lists (`FieldChoices` from `session.ts`) to `FieldNode`. |
-| `app/src/ehr/ui/SourceLabels.ts` | **Clinical** | React context `SourceLabelContext` (`showSourceLabels: boolean`) consumed by `nodes.tsx` and `StructuredInfo.tsx`. |
-| `app/src/ehr/ui/events.ts` | **Clinical** | Encodes Lean `Event` values to JSON strings (`encodeEvent`) for `data-event` DOM attributes and dispatches them (`triggerEvent`). |
-| `app/src/ehr/ui/layout.ts` | **Clinical** | Pure layout helpers (`columnsLayout`, `fieldInputMode`, `splitFieldLabel`, `dedupActionLabel`, `compactSectionCount`). |
-| `app/src/ehr/ui/Icons.tsx` | **Clinical & Non-clinical** | Inline SVG icons imported by `Screen.tsx`, `nodes.tsx`, `display.tsx`, and non-clinical `src/browser/*` and `src/dashboard/*`. |
-| `app/src/ehr/ui/personas.ts` | **Clinical & Non-clinical** | Persona metadata (`PERSONAS`, `RELEASE_IDS`, `personaMeta`) imported by `LiveApp.tsx`, `App.tsx`, `offline.tsx`, and non-clinical `src/browser/Browse.tsx` and `src/dashboard/Dashboard.tsx`. |
-| `app/src/ehr/ui/theme.ts` | **Clinical & Non-clinical** | Mantine `createTheme` (`clinicalTheme`) and `statusColor`, imported by `main.tsx`, `offline.tsx`, `exotic-offline.tsx`, `Screen.tsx`, `nodes.tsx`, `Board.tsx`, `DatedTimeline.tsx`, `Timeline.tsx`, `display.tsx`, and `e2e/live-drafts.harness.tsx`. |
-| `app/src/ehr/ui/types.ts` | **Clinical & Non-clinical** | TypeScript definitions for `UiScreen`, `UiNode`, `PatientHeader`, `NavItem`, `InfoRow`, `TableCell`, `AlertView`, `ButtonAction`, `FieldKind`, `StepperView`, `BoardCard`, `TimelineLane`. |
-| `app/src/ehr/ui/clinical.css` | **Clinical** | Styles `.clinical-app-shell`, `.clinical-header`, `.clinical-main`, `.clinical-section`, `.clinical-info-table`, `.clinical-alert`, `.clinical-button`, focus outlines, and Mantine overrides (`.mantine-Tabs-tab`, `.mantine-Input-input`, `.mantine-Alert-root`, `.mantine-Modal-content`). |
-| `app/src/ehr/ui/dense-shell.css` | **Clinical** | Dense shell CSS overrides (`.clinical-dense-shell`, compact Mantine table/control spacing). |
-| `app/src/ehr/ui/density.css` | **Clinical** | CSS custom properties (`--ehr-font-*`, `--ehr-space-*`, `--ehr-control-min-height: 24px`). |
-| `app/src/ehr/ui/fonts/fonts.css` & `noto-*.woff2` | **Clinical & Non-clinical** | Self-hosted pinned Noto Sans, Noto Sans Mono, and Noto Symbols2 WOFF2 fonts whose glyph metrics match `lean/Ehr/Layout/Fonts.lean`. |
-| `app/src/ehr/ui/AppHeader.tsx` & `app/src/ehr/ui/chrome.css` | **Non-clinical tool** | Top navigation header (`AppHeader`) imported **only** by `app/src/browser/Browse.tsx` and `app/src/dashboard/Dashboard.tsx` (never by clinical screens). |
-| `app/src/ehr/ui/Exotic.tsx`, `exotic-axis.ts`, `exotic.css`, `app/src/ehr/exotic-offline.tsx`, `app/exotic-check.html` | **Non-clinical tool (research lab)** | Experimental visualization prototypes (`ConstellationScreen`, `HorizonScreen`, `DecayScreen`, `RiverScreen`, `AnatomyScreen`) and offline harness `window.renderExotic` used only by `app/scripts/exotic-gate.mjs` and `app/e2e/exotic-check.spec.ts`. |
-| `app/src/ehr/painter.tsx`, `app/src/ehr/html.ts`, `app/src/ehr.css` | **Clinical (legacy) & Non-clinical fallback** | Legacy `Html` -> React painter (`paint`). Used by `offline.tsx` (`window.renderEhr`), `app/e2e/screen-check.spec.ts`, `app/src/dashboard/replay.tsx` (when `result.ui` is absent), and `app/src/mock/*`. |
-| `app/src/ehr/offline.tsx` & `app/screen-check.html` | **Clinical (screen gate / geometry harness) & Non-clinical (screenshot scripts)** | Mounts React root with `MantineProvider(clinicalTheme)` and exposes `window.renderUi(screen, opts)` and `window.renderEhr(html)` for Playwright screen checks, geometry capture, and screenshot scripts. |
-
-### 1.2 Application Entry Points, Sessions, and Non-Clinical Tools (`app/src/**`, `services/**`)
-
-| Path | Classification | Role & Dependency on React Clinical Renderer |
-| :--- | :--- | :--- |
-| `app/src/main.tsx` | **Mixed (root router)** | Wraps the entire app in `<MantineProvider theme={clinicalTheme}>` and `<Notifications />`, and imports `./ehr.css`, `./ehr/ui/fonts/fonts.css`, and `./ehr/ui/clinical.css`. Routes `/`, `/browse`, `/dashboard`, `/replay`, `/ehr`, `/mar`, `/adt`, `/ui-library`. |
-| `app/src/navigation.tsx` | **Mixed (router helper)** | Parses URL path/search into `RouteState` (`browse`, `dashboard`, `replay`, `ehr`, `mar`, `adt`, `ui-library`). |
-| `app/src/LiveApp.tsx` | **Clinical (`/ehr` live mode)** | Imports `UiScreenView`, `FieldChoicesContext`, `PERSONAS`, `personaMeta`, `humanizeToken`, and Mantine (`Badge`, `Button`, `Group`, `Modal`, `NativeSelect`, `PasswordInput`, `SegmentedControl`, `Select`, `Stack`, `Text`, `TextInput`). Renders clinical chart via `<UiScreenView screen={live.screen} onEvent={...} onPaint={live.recordPaint} />` inside a Mantine encounter/login/inspector shell. |
-| `app/src/MarApp.tsx` | **Clinical (`/mar` route)** | Dedicated Medication Administration Record station. Imports `UiScreenView`, `FieldChoicesContext`, `humanizeToken`, and Mantine (`Badge`, `Button`, `Group`, `NativeSelect`, `PasswordInput`, `SegmentedControl`, `Stack`, `Text`, `TextInput`). Renders `<UiScreenView screen={mar.screen} onEvent={...} onPaint={mar.recordPaint} />`. |
-| `app/src/App.tsx` | **Non-clinical tool (`/ehr?mode=replay` inspector)** | Renders `<UiScreenView screen={screen} onEvent={dispatch} />` (or legacy `paint(view)`) alongside a Mantine `<Drawer>` state/goal/history inspector and persona selector. |
-| `app/src/AdtApp.tsx` | **Clinical / Operational (`/adt` route)** | Standalone Mantine bed-board/admission-discharge-transfer view (`Badge`, `Button`, `Group`, `Modal`, `NativeSelect`, `PasswordInput`, `Select`, `Stack`, `Table`, `Text`, `Textarea`, `TextInput`). Does **not** import `app/src/ehr/ui/*` or `UiScreenView`. |
-| `app/src/core/session.ts` | **Clinical & Non-clinical** | Session reducer (`initSession`, `applyEvent`, `changePersona`, `extractFieldChoices`) calling WASM `interp.renderUi(...)` (`UiScreen`) and `interp.render(...)` (`Html`). |
-| `app/src/core/liveSession.ts` & `app/src/core/marSession.ts` | **Clinical** | Live session hooks. Expose `recordPaint(painted: UiScreen)` (passed as `onPaint` to `UiScreenView`) which records screen hashes in `screenJournal` before `commitEncounter` sends them to `services/commit`. |
-| `app/src/data/screenFingerprint.ts` & `services/commit/src/screens.ts` | **Clinical** | Computes and verifies `vgi-screen-v1:` SHA-256 hashes over the semantic `UiScreen` JSON structure (not the React DOM), triggered when the painter invokes `onPaint`. |
-| `app/src/ReplayApp.tsx` & `app/src/dashboard/replay.tsx` | **Non-clinical tool (`/replay`)** | Step-by-step trajectory replay viewer. Renders `<UiScreenView screen={result.ui} />` or fallback `paint(result.page)` inside `[data-testid="replay-ehr-viewport"]` and queries `[data-comp-id="${cssEscape(target)}"]` on the rendered DOM to set `data-replay-highlight="true"`. |
-| `app/src/dashboard/TrajectoryFrame.tsx`, `app/src/dashboard/trajectory-frame-main.tsx`, `app/trajectory-frame.html` | **Non-clinical tool (dashboard iframe)** | Isolated `1440×900` iframe used by Dashboard to replay trajectories. Wraps `<UiScreenView>` in `<MantineProvider theme={clinicalTheme}>` and queries rendered DOM selectors `[data-comp-id]`, `[role="dialog"] button`, and `button, input, select, textarea, [role="tab"]` to animate the virtual pointer, scroll containers, and set `data-trajectory-highlight="true"`. |
-| `app/src/dashboard/Dashboard.tsx` & `app/src/dashboard/trajectory-compare.ts` | **Non-clinical tool (`/dashboard`)** | Imports `AppHeader`, `Icons`, `StatusBadge`, `humanizeToken`, `PERSONAS`, `RELEASE_IDS`, and mounts `trajectory-frame.html` in an `<iframe>`. |
-| `app/src/browser/Browse.tsx`, `RevisionDetails.tsx`, `SessionReview.tsx`, `data.ts`, `revision-diff.ts`, `timeline.ts` | **Non-clinical tool (`/browse`)** | Run/revision/session explorer. Imports `UiScreenView`, `SourceLabelContext`, `PresentationRegistry`, `AppHeader`, `Icons`, `StatusBadge`, `humanizeToken`, `humanizeEnumToken`, `PERSONAS`, `RELEASE_IDS` to render live interactive clinical screen previews and diffs inside the browser tool. |
-| `app/src/browser/ui-library/UiLibrary.tsx`, `Painter.tsx`, `metrics.ts`, `types.ts` | **Non-clinical tool (`/ui-library` & target painter prototype)** | Interactive viewer for Lean's `Ehr.Layout` engine and plain DOM painter (`Painter`). Imports only `app/src/ehr/ui/fonts/fonts.css` from `ehr/ui`. |
-| `app/src/mock/page.ts` & `app/src/mock/export.ts` | **Non-clinical tool (legacy test fixtures)** | Static `Html` mock page and exporter for legacy `screen-check.spec.ts`. |
-
-### 1.3 Agent Presentation Compiler & Build Binding
-
-| Path | Classification | Role & Dependency on React Clinical Renderer |
-| :--- | :--- | :--- |
-| `agent/src/presentation-compiler.ts` | **Clinical (agent loop)** | Compiles agent-authored `program.presentationComponents` TSX strings via esbuild + ESLint (`app/scripts/presentation-lint.mjs`), enforcing that only `@mantine/core` (`Box`, `Stack`, `Group`, `Paper`, `Flex` from `wrapperNames` in `app/src/ehr/ui/presentation-types.ts`) and `@ehr/presentation` (`UiNodeView`, `PresentationProps`) are imported. |
-| `app/scripts/presentation-lint.mjs` & `app/eslint.config.js` | **Clinical (agent loop)** | ESLint gate invoked by `presentation-compiler.ts` to restrict agent TSX presentations. |
-| `app/vite.config.ts` & `app/tsconfig.json` | **Build configuration** | Maps `@ehr/presentation` to `app/src/ehr/ui/presentation-helpers.tsx` and configures multi-page HTML entry points (`index.html`, `screen-check.html`, `exotic-check.html`, `trajectory-frame.html`). |
-| `app/scripts/build-binding-plugin.ts` | **Clinical & Certification** | Computes `app/dist/build.json` (`appSha256`, `thirdPartySha256`, `fontsSha256`). Hashes all first-party modules reachable from `main.tsx`, `screen-check.html`, and `exotic-check.html` **except** `src/dashboard/` and `src/browser/`, plus `src/ehr/ui/fonts/noto-*.woff2`, `../pnpm-lock.yaml`, `vite.config.ts`, and `index.html`. Any edit under `app/src/ehr/**` changes `appSha256` and invalidates recorded run build bindings until `make rebind` is run. |
-
-### 1.4 Tests, Scripts, CI Jobs, Makefile Targets, and Docs Depending on React Clinical Renderer
-
-#### Playwright E2E Specs (`app/e2e/**`)
-* **Clinical screen gate specs**:
-  * `app/e2e/ui-check.spec.ts` (clinical gate): Mounts `UiScreen` via `window.renderUi` on `screen-check.html`; asserts Mantine/React DOM attributes (`[data-comp-id]`, `[data-field-id]`, `[data-action-kind]`, `[data-late-entry]`, `.clinical-section`, `.clinical-columns`, `.clinical-tabs`, `.clinical-info-table`, `.urgent-alert-strip`, `[role="dialog"]`).
-  * `app/e2e/screen-check.spec.ts` (legacy clinical gate): Mounts `Html` via `window.renderEhr`.
-  * `app/e2e/action-density.spec.ts` & `app/e2e/action-density.ts` (clinical R5 gate): Mounts `window.renderUi` and counts visible `[data-comp-id]` / `[role="tab"]` / `.clinical-section [aria-expanded]` targets.
-  * `app/e2e/contrast.spec.ts`, `app/e2e/columns.spec.ts`, `app/e2e/density.spec.ts`, `app/e2e/urgent-transition.spec.ts`, `app/e2e/physical-bounds-adversarial.spec.ts` (clinical gate regression specs): Mount `window.renderUi` on `screen-check.html` and assert contrast, column wrap, density, and sticky urgent-strip geometry.
-* **Clinical live/replay & realism E2E specs** (drive `/ehr`, `/mar`, `/adt`, or `window.renderUi` via React/Mantine DOM selectors):
-  * `app/e2e/live-workflow.spec.ts`, `app/e2e/live-persistence.spec.ts`, `app/e2e/live-persistence-extended.spec.ts`, `app/e2e/live-drafts.spec.ts` (with `app/e2e/live-drafts.harness.tsx` and `app/e2e/live-drafts.html`), `app/e2e/live-handoff.spec.ts`, `app/e2e/live-inbox.spec.ts`, `app/e2e/live-orders.spec.ts`, `app/e2e/live-mar.spec.ts`, `app/e2e/live-med-admin.spec.ts`, `app/e2e/live-discharge.spec.ts`, `app/e2e/live-adt.spec.ts`, `app/e2e/live-emergency.spec.ts`, `app/e2e/live-concurrent.spec.ts`, `app/e2e/live-supervisor.spec.ts`, `app/e2e/live-care-plan.spec.ts`, `app/e2e/live-referral.spec.ts`, `app/e2e/live-results-routing.spec.ts`, `app/e2e/live-calculator.spec.ts`, `app/e2e/live-cosign.spec.ts`, `app/e2e/live-keyboard.spec.ts`, `app/e2e/live-audit-log.spec.ts`, `app/e2e/live-telemetry.spec.ts`, `app/e2e/live-banner-context.spec.ts`, `app/e2e/ehr-replay.spec.ts`, `app/e2e/clinical-realism.spec.ts`, `app/e2e/clinical-depth.spec.ts`, `app/e2e/clinical-polish.spec.ts`, `app/e2e/chart-biopsy.spec.ts`, `app/e2e/layout-stability.spec.ts`, `app/e2e/audit/buttons.spec.ts` & `app/e2e/audit/driver.ts`.
-* **Non-clinical tool E2E specs**:
-  * `app/e2e/browse.spec.ts`, `app/e2e/dashboard.spec.ts`, `app/e2e/replay.spec.ts`, `app/e2e/session-review.spec.ts`, `app/e2e/trajectory-video.spec.ts`, `app/e2e/ui-library.spec.ts`, `app/e2e/exotic-check.spec.ts`.
-
-#### Unit Tests (`app/tests/**`, `agent/test/**`)
-* **Clinical unit tests importing `app/src/ehr/ui/*` or `painter.tsx`**:
-  * `app/tests/ui-render.test.tsx`, `app/tests/ui-density.test.tsx`, `app/tests/ui-theme.test.ts`, `app/tests/fidelity.test.ts`, `app/tests/presentations.test.tsx`, `app/tests/charts.test.tsx`, `app/tests/board.test.tsx`, `app/tests/dated-timeline.test.tsx`, `app/tests/timeline.test.tsx`, `app/tests/urgent-strip.test.tsx`, `app/tests/clinical-display.test.ts`, `app/tests/clinical-formatters.test.ts`, `app/tests/clinical-metadata.test.tsx`, `app/tests/display-helpers.test.ts`, `app/tests/layout-helpers.test.ts`, `app/tests/events.test.ts`, `app/tests/personas.test.ts`, `app/tests/painter.test.tsx`, `app/tests/screen-fingerprint.test.ts`, `app/tests/session.test.ts`, `app/tests/live-session.test.ts`, `app/tests/mar-session.test.ts`.
-  * `agent/test/presentation-compiler.test.ts` (tests compilation and `@mantine/core` wrapper restrictions for agent TSX presentations).
-* **Non-clinical unit tests importing `app/src/ehr/ui/*` types or helpers**:
-  * `app/tests/browse-data.test.ts`, `app/tests/revision-diff.test.ts`, `app/tests/bounded-pointing.test.ts`, `app/tests/ui-library-painter.test.tsx` (tests `app/src/browser/ui-library/Painter.tsx`).
-
-#### Scripts, CI Jobs, Makefile Targets, and Documentation
-* **Screenshot / video / inspection scripts (non-clinical tools using `window.renderUi` or `trajectory-frame.html`)**:
-  * `app/scripts/render-screenshots.mjs`, `app/scripts/render-persona-screenshots.mjs`, `app/scripts/render-alert-before-after.mjs`, `app/scripts/record-trajectory-video.mjs`, `explore/screenshots.mjs`.
-* **UI library evaluation scripts (target painter research scripts)**:
-  * `scripts/ui-library/export-screens.mjs`, `scripts/ui-library/measure.mjs`, `scripts/ui-library/render-pngs.mjs`, `scripts/ui-library/check-determinism.mjs`.
-* **CI workflows (`.github/workflows/ci.yml`, `.github/workflows/ehrheavy.yml`)**:
-  * `.github/workflows/ci.yml` runs `pnpm --filter app test` (which executes the Vitest unit tests in `app/tests/**` above) and `pnpm --filter agent test` (which executes `agent/test/presentation-compiler.test.ts`).
-* **Makefile targets (`Makefile`)**:
-  * `make install` (`pnpm --filter app build` bundles `app/src/ehr/ui/*` and `app/src/ehr/painter.tsx` into `app/dist/` and records `app/dist/build.json`).
-  * `make rebind` (`pnpm --filter agent rebind --run $(RUN)` updates run certificates when `app/dist/build.json` changes).
-* **Documentation**:
-  * `README.md`, `docs/architecture.md`, `docs/assurance.md`, `docs/reproduction.md`, `docs/methods/ui-library.md`, `docs/methods/screen-validation.md`, `docs/design/alert-urgency.md`, `docs/design/metric-gaming.md`.
-
----
-
-## 2. What Depends on the Browser Screen Gate
-
-### 2.1 Core Browser Screen Gate & R5 DOM Density Pipeline
-
-1. **`agent/src/screencheck.ts`**:
-   * Defines `ScreenChecker` (`check(program, opts): Promise<CheckFailure[]>`), `ScreenCheckOptions` (`personas`, `referenceProgram`, `allowMissingReleaseReferences`, `presentationBundle`, `ui`), `CliScreenChecker`, `FakeScreenChecker`, `screenCheckRejection`, and `parseScreenCheckOutput`.
-   * `CliScreenChecker.check`:
-     1. Calls `this.ehr.renderScreens(program, outDir, { personas, ui: true })` (`agent/src/ehr.ts`), invoking `lean/.lake/build/bin/ehr render-screens --ui` to emit `*-ui.json` (`UiScreen`), `*-meta.json`, and `*-geometry.json` popup probes (`exportPopupGeometry` in `agent/src/geometry-popups.ts`).
-     2. Resolves R5 vendor density references: loads `releaseReference(persona)` (`agent/src/vendor-reference.ts`) and `opts.referenceProgram` (from `noAgentReference` in `agent/src/vendor-reference.ts`), renders their `UiScreen` trees, and builds `referenceManifest`.
-     3. Compiles `program.presentationComponents` via `compilePresentationComponents` (`agent/src/presentation-compiler.ts`) if not already supplied.
-     4. Spawns `pnpm --filter app screen-check --ui <outDir>` with `EHR_SCREEN_RESULT`, `EHR_SCREEN_MANIFEST`, `EHR_PRESENTATION_BUNDLE`, and `EHR_DENSITY_REFERENCE_MANIFEST`.
-     5. Parses `gate-result.json`, extracts captured `GeometryAtlas` (`desktop-1440x900`) into `this.atlases`, and converts failures into `CheckFailure` objects (`property: 'ScreenCheck'`, `counterexample: '[screen-check] ...'`).
-   * `FakeScreenChecker`: In-memory test double that enforces `MAX_TEXT = 80` characters on elements with `data-comp-id` in legacy `Html` trees.
-2. **`agent/src/vendor-reference.ts`**:
-   * Exports `releaseReference(persona)` (resolves `programs/releases/<persona>.json`) and `noAgentReference(runDir, maxDay)` (reads `no-agent/days/day-N/<persona>.program.json` up to `maxDay` so R5 compares candidate action density against the higher of the release program and the same-day no-agent program).
-3. **`app/scripts/screen-check.mjs`**:
-   * Entry point for `pnpm --filter app screen-check`.
-   * Acquires the cross-process browser lock (`acquireBrowserLock` in `scripts/browser-heavy-lock.mjs`) unless running inside an agent screen-check subprocess.
-   * Computes `screenContext` (`scripts/screen-results.mjs`: hashes `app/e2e/ui-check.spec.ts`, `app/e2e/screen-check.spec.ts`, `app/e2e/physical-policy.ts`, `app/e2e/action-density.ts`, `app/e2e/visibility.ts`, `app/e2e/geometry-capture.ts`, `app/e2e/capture-environment.ts`, `app/src/ehr/ui/fidelity.ts`, `app/scripts/screen-check.mjs`, `scripts/density-reference.mjs`, `docs/design/screen-density.json`, and `app/dist/build.json`).
-   * Calls `measureReference` (`scripts/density-reference.mjs`) to measure R5 reference target counts via Playwright (`app/e2e/action-density.spec.ts`).
-   * Batches screens in chunks of 64 and spawns `npx playwright test e2e/ui-check.spec.ts` (or `e2e/screen-check.spec.ts`) across projects `desktop` (`1440×900`) and `narrow` (`390×844`), using `recoverTimeouts` (`app/scripts/audit-execution.mjs`) to retry timed-out specs with `--workers=1`.
-   * Evaluates `densityFindings` (`scripts/density-reference.mjs`) against `docs/design/screen-density.json` (`maxTargetsPerViewport: 57`, `referencePolicy: "max-of-no-agent-and-release"`, `viewport: { width: 1440, height: 900 }`).
-   * Writes `EHR_PHYSICAL_REPORT` (`physical-report.json`, collecting `physicalSamples`, `urgencySamples`, `actionDensitySamples`, `geometrySamples`) and `EHR_SCREEN_RESULT` (`gate-result.json`).
-4. **`scripts/density-reference.mjs`**:
-   * Exports `loadDensityPolicy`, `screenLimits`, `densityFindings`, and `measureReference` (spawns Playwright `e2e/action-density.spec.ts --project desktop --grep "R5 measurement batch"` and caches per-screen-hash measurements under `$EHR_SCREEN_CACHE_DIR/density`).
-5. **`scripts/screen-results.mjs`, `scripts/screen-pool.mjs`, `scripts/compare-screen-results.mjs`, `scripts/browser-heavy-lock.mjs`**:
-   * `screen-results.mjs`: Content-addressed screen-check cache key computation (`screenTreeHash`, `screenContext`, `verifyScreenResults`).
-   * `screen-pool.mjs`: Content-addressed cache directory manager for screen-check results.
-   * `compare-screen-results.mjs`: CLI tool comparing cached vs fresh screen-check outputs.
-   * `browser-heavy-lock.mjs`: File lock serializing heavy Playwright runs across worktrees.
-
-### 2.2 Browser Geometry & Pointer/Scroll Cost Pipeline
-
-1. **`app/e2e/geometry-capture.ts`**:
-   * Runs inside Playwright at `1440×900` (`GEOMETRY_VIEWPORT_ID = 'desktop-1440x900'`). Queries `[data-comp-id]` elements, measures bounding boxes (`BBox`), scroll container chains (`ScrollerGeometry`), scroll-into-view target centers (`reveal`, `offsets`), and popup states (`modalAction` probes), producing `ScreenGeometry` and `GeometryAtlas` (`schema: 'vgi.geometry-atlas.v1'`).
-2. **`app/scripts/geometry-browser.mjs`**:
-   * Persistent headless Chromium worker reading JSONL `measure` requests on stdin, rendering `UiScreen` via `window.renderUi` on `screen-check.html`, calling `captureGeometry`, and returning `GeometryAtlas` on stdout.
-3. **`agent/src/browser-geometry.ts`, `agent/src/frozen-geometry.ts`, `agent/src/geometry-popups.ts`, `agent/src/geometry.ts`**:
-   * `browser-geometry.ts`: `browserGeometry(opts)` client for `geometry-browser.mjs` with per-screen SHA-256 disk caching.
-   * `frozen-geometry.ts`: `frozenGeometry(runDir)` offline reader for `<runDir>/geometry/<programSha256>.atlas.json`.
-   * `geometry-popups.ts`: `exportPopupGeometry` (enumerates `modalAction` buttons on `UiScreen` so popup states are measured by `geometry-capture.ts`).
-   * `geometry.ts`: `geometryEhr(base, measure, cache)` wrapper around `EhrVerifier` that attaches `pointerTravel` (`mouseTravelPx`, `scrollPx`, `scrolls` from `app/src/metrics/geometry.ts`) to every `PatientResult` during `simulate` / `simulateBatch`. Also exports `attachGeometry`.
-4. **`app/src/metrics/geometry.ts` & `app/src/dashboard/bounded-pointing.ts`**:
-   * `app/src/metrics/geometry.ts`: Defines `GeometryAtlas`, `ScreenGeometry`, `ElementGeometry`, `pointerTravel`, and `resolveStepGeometry`.
-   * `app/src/dashboard/bounded-pointing.ts`: Consumes `GeometryAtlas` + `UiScreen` trees (`pointingTrace`, `projectBoundedPoints`) to compute the R2 bounded-pointing proxy (`miss_slot_proxy`, Fitts effective width `min(w, h)`).
-5. **Downstream consumers of `GeometryAtlas` and `pointerTravel`**:
-   * `agent/src/night.ts`: `TrainEstimator` (populates `this.atlases` from `CliScreenChecker` or `geometryMeasure`), `makeHoldout`, `interactionAcceptable` (rejects candidate if `mouseTravelPx`, `scrollPx`, or `scrolls` regresses on improved tasks), `improved`, `predictionVerdict`, and `checkR2Gate` (`agent/src/replay-r2-gate.ts`).
-   * `agent/src/run.ts`: `runDays` wraps `ehr` in `geometryEhr` when `browserGeometry` is enabled and writes `<runDir>/geometry/<sha>.atlas.json`.
-   * `agent/src/online-context.ts`, `agent/src/quality.ts`, `agent/src/quality-queries.ts`, `agent/src/hotspots.ts`, `agent/src/locality.ts`: Expose `mouseTravelPx`, `scrollPx`, and `scrolls` to the synthesis agent prompt and SQLite telemetry queries.
-   * `agent/src/agent-loop.ts` (`render_screen` tool), `agent/src/rlm/context.ts` (`render` helper), `agent/src/harness/host.ts` (`night render` CLI command): Allow the agent during synthesis to run `deps.screens.check` on a single persona and inspect failures.
-   * `agent/src/replay-interaction-gate.ts`, `agent/src/replay-r2-gate.ts`, `agent/src/geometry-verify.ts`, `app/scripts/geometry-compare.mjs`, `app/scripts/geometry-determinism.mjs`, `app/scripts/geometry-slice.ts`, `scripts/trajectories/index.mjs`, `scripts/complexity/compute.mjs`, `scripts/geometry-history.mjs`.
-
-### 2.3 Nightly Loop, Release Modes, Cadence, Recertification & Fingerprints
-
-1. **Nightly loop & deployment (`agent/src/night.ts`, `agent/src/cadence.ts`, `agent/src/modes.ts`, `agent/src/no-agent.ts`, `agent/src/run.ts`, `agent/src/adhoc.ts`, `agent/src/dry-run.ts`)**:
-   * `agent/src/night.ts`:
-     * `deployVersion` (L497–L555): Calls `retryScreens(deps.screens).check(candidate, { personas: [persona], referenceProgram, presentationBundle })` and blocks deployment if any `CheckFailure` is returned.
-     * `runNight`: Calls `deployVersion` for each synthesized candidate and records `screenFailures` in `NightSummary`.
-     * `runCadenceNight` (L888): Calls `retryScreens(deps.screens).check(current, { personas: [persona], referenceProgram: opts.referencePrograms?.[persona] })` when evaluating cross-persona release candidates.
-   * `agent/src/modes.ts`: `runSurfaceFeature` and `runMigration` call `deployInto` -> `deployVersion` -> `deps.screens.check`.
-   * `agent/src/no-agent.ts`: `noAgentDay` calls `deployVersion` -> `deps.screens.check`.
-   * `agent/src/run.ts`: `runDays` runs `deployVersion` on day 1, pre-populates `noAgentDay` baselines so `noAgentReference` is available for R5, and aggregates `screenFailures`.
-   * `agent/src/offline-columns-check.ts`, `agent/src/offline-screen-cache.ts`, `agent/src/offline-screen-evidence.ts`: Offline replay caches and evidence validators for recorded screen-check results (`screen-check-cache.json`).
-2. **Run recertification, rebinding, and remeasurement (`scripts/recertify-runs.mjs`, `scripts/migrate-neutral-terms.mjs`, `agent/src/rebind.ts`, `agent/src/remeasure.ts`, `agent/src/remeasure-cli.ts`, `app/scripts/recheck-revision.ts`)**:
-   * `scripts/recertify-runs.mjs`: Iterates over `runs/**`, re-verifies Lean certificates, re-compiles presentations, re-runs `CliScreenChecker.check` (unless `--skip-screens`), and rewrites `binding.json` and `certificate.json`.
-   * `agent/src/rebind.ts` (`make rebind`): Recomputes `buildBinding` (`agent/src/build-binding.ts`) and `runFingerprints` (`agent/src/fingerprints.ts`) for existing run directories.
-   * `agent/src/remeasure.ts` & `agent/src/remeasure-cli.ts`: Re-runs `browserGeometry` over recorded run programs to regenerate `geometry/*.atlas.json` and recompute `pointerTravel` and R2 metrics.
-   * `app/scripts/recheck-revision.ts`: Runs `CliScreenChecker` against a single archived revision in `runs/`.
-3. **Resume fingerprints & build binding (`agent/src/fingerprints.ts`, `agent/src/verify-resume.ts`, `agent/src/build-binding.ts`, `app/src/core/buildBinding.ts`)**:
-   * `agent/src/fingerprints.ts` (`runFingerprints`): Computes SHA-256 fingerprints saved in `<runDir>/fingerprints.json` and checked by `agent/src/verify-resume.ts` before resuming a run:
-     * `boundedPointing`: `app/src/dashboard/bounded-pointing.ts`
-     * `interactionModel`: `lean/Ehr/Check.lean`, `lean/Ehr/Cost.lean`, `app/src/metrics/geometry.ts`
-     * `screenHarness`: `app/scripts` (`screen-check.mjs`, `geometry-browser.mjs`, etc.)
-     * `screenTests`: `app/e2e` (`ui-check.spec.ts`, `physical-policy.ts`, `action-density.ts`, etc.)
-     * `playwright`: `app/playwright.config.ts`
-     * `app`: `app/dist/build.json` (`appSha256`, `thirdPartySha256`, `fontsSha256`, `gitCommit`)
-     * `wasm`: `app/public/ehr_interp.wasm`
-4. **Exploration & Conformance (`explore/**`, `conformance/index.mjs`)**:
-   * `explore/evaluate.ts` & `explore/cli.ts`: Calls `opts.screen.check(program)` (`CliScreenChecker` or `FakeScreenChecker`).
-   * `explore/round2.mjs`, `explore/round2-remeasure.mjs`, `explore/full-binding-check.mjs`, `explore/geometry-check.mjs`, `explore/promote-coverage.mjs`: Run `screen-check.mjs` or `geometry-browser.mjs` on exploration candidates.
-   * `conformance/index.mjs`: Checks Lean/WASM semantic conformance (does not invoke Playwright).
-
-### 2.4 Audit Scripts, CI Workflows, Makefile Targets, and Documentation
-
-1. **Audit scripts (`scripts/**`, `app/scripts/**`)**:
-   * `scripts/audit-alert-policy.mjs`: Runs Lean `ehr verify-program`, renders template and `--personas` (`programs/releases/*.json`) `UiScreen` trees, runs `app/scripts/screen-check.mjs --ui` with `EHR_PHYSICAL_REPORT`, checks urgent-strip visibility samples (`urgencySamples`) and `lean/Ehr/Specs/AlertUrgency.lean` alignment, and executes `e2e/urgent-transition.spec.ts`.
-   * `scripts/audit-action-density.mjs`: Audits R5 action density across release and run programs via `scripts/density-reference.mjs` and `action-density.spec.ts`.
-   * `scripts/check-r5-p2.mts` & `scripts/check-r5-release-fallback.mts`: Verify R5 reference fallback logic on recorded runs.
-   * `scripts/information-needs-pixels.mts`: Uses Playwright `screen-check.html` to measure pixel heights of clinical information sections.
-   * `app/scripts/density-screen-check.mjs`, `app/scripts/density-estimates.ts`: Measure and compare DOM density vs static density estimates.
-   * `app/scripts/exotic-gate.mjs`: Runs Playwright `e2e/exotic-check.spec.ts` against `exotic-check.html`.
-   * `app/scripts/promote-gate.mjs`, `app/scripts/promote-physical.mjs`: Run physical policy and screen gate checks before promoting candidate programs.
-2. **`.github/workflows/ci.yml` and `.github/workflows/ehrheavy.yml`**:
-   * `.github/workflows/ci.yml`: Sets `EHR_SCREEN_WORKERS: '2'` (line 16), builds Lean (`cd lean && lake build`), verifies WASM (`make wasm-check`), builds the app (`pnpm --filter app build`), runs `pnpm --filter agent test` and `pnpm --filter app test`, and runs `node --test` on `scripts/*.test.mjs` while explicitly skipping `scripts/screen-cache-browser.test.mjs` and `scripts/ui-library/*` (line 122). It does **not** execute Playwright browser checks in CI.
-   * `.github/workflows/ehrheavy.yml`: Builds and tests `scripts/build-ehrheavy.py` only; does not touch the renderer or browser gate.
-3. **`Makefile`**:
-   * `install`: `pnpm install && pnpm --filter app build && pnpm --filter agent build`
-   * `run` / `run-live`: Invokes `pnpm --filter agent run-days`, which wires `CliScreenChecker` and `browserGeometry` into the nightly loop.
-   * `check`: `cd lean && lake build`
-   * `verify`: Runs `lean/.lake/build/bin/ehr verify` and `node conformance/index.mjs` (browser-free).
-   * `rebind`: Runs `pnpm --filter agent rebind --run $(RUN)` (recomputes `fingerprints.json` including `screenHarness`, `screenTests`, `playwright`, `app`).
-4. **Documentation**:
-   * `docs/methods/screen-validation.md`: Describes the two-stage Playwright gate (`ui-check.spec.ts`, `physical-policy.ts`, viewports `1440×900` and `390×844`, `screen-check.mjs`, `GeometryAtlas`).
-   * `docs/design/metric-gaming.md`: Documents R1–R6 guardrails, including R2 (`bounded-pointing.ts` using `GeometryAtlas`) and R5 (`scripts/density-reference.mjs` and `app/e2e/action-density.ts`).
-   * `docs/design/alert-urgency.md`: Documents the 3-tier alert urgency architecture (`lean/Ehr/Specs/AlertUrgency.lean`, `lean/Ehr/Sem/UrgentStrip.lean`, `app/src/ehr/ui/UrgentStrip.tsx`, and `scripts/audit-alert-policy.mjs`).
-   * `docs/methods/ui-library.md`: Documents the target Lean layout engine (`lean/Ehr/Layout/*`), rules `G1`–`G10`, pinned Noto font tables (`lean/Ehr/Layout/Fonts.lean`), and the plain DOM painter (`app/src/browser/ui-library/Painter.tsx`).
-
----
-
-## 3. The Guardrail Map
-
-This section lists every distinct check performed today by the browser screen gate (`app/e2e/ui-check.spec.ts`, `app/e2e/screen-check.spec.ts`, `app/e2e/physical-policy.ts`, `app/e2e/action-density.ts`, `app/e2e/visibility.ts`, `app/e2e/geometry-capture.ts`, `app/src/ehr/ui/fidelity.ts`, `app/scripts/screen-check.mjs`, `scripts/density-reference.mjs`) and the browser audits (`scripts/audit-alert-policy.mjs`, `app/e2e/contrast.spec.ts`, `app/e2e/columns.spec.ts`, `app/e2e/urgent-transition.spec.ts`, `app/e2e/density.spec.ts`, `app/e2e/audit/buttons.spec.ts`), and maps each one to its Lean counterpart.
-
-### Status after the guardrail changes
-
-The rows below record the state before Step 1 of Section 5 was carried out.
-Since then the Lean rules were strengthened and the following rows are closed:
-**2.2** (Escape: clinical alerts use `Keyboard.alertDialog`), **2.3** (urgent
-strip: rule G11 and `Ehr.Layout.Strip.layoutAccepted_stripLayout`), **3.1** and
-**3.2** for navigation links and tabs (each is its own target occurrence),
-**3.3** (12 px minimum in G4), **3.6** items 1 and 2 (4.5:1 for all text, 3:1
-for targets and vector marks) and **4.2** item 1 (fixed targets are counted
-with every scroll window). Current statements of the rules are in
-`docs/methods/ui-library.md`.
-
-Corrections to claims in this section and in Sections 5 and 6, found while
-implementing them:
-
-* `PhysicalBounds.minFontPx` did not exist; line 10 of that file is
-  `nontextContrastTenths`. The 12 px floor lived only in the browser checks. The
-  constant has been added.
-* `Region` is defined in `lean/Ehr/Layout/Semantic.lean` with the values
-  `banner`, `title`, `body`, `side`, `footer`, `modal` (now also `urgent`), not
-  in `Types.lean` with `banner`, `nav`, `body`, `modal`. A placed box has the
-  flags `banner`, `interruptive`, `commit` (now also `urgent`); there is no
-  `info.region` or `info.currentCommit`.
-* `StripLayout` is not a record of four flags (`stripPinned`,
-  `stripAboveModal`, `stripDisjointFromModal`, `bannerPinned`). It is a
-  proposition: at every view reachable by view changes, each fact of the strip
-  is in the viewport, legible and unoccluded.
-* `UiScreen` has `workspace`, `side`, one optional `modal` and `urgent?`; it has
-  no `body` or `modals`. `viewer?` is an `Option String` in
-  `lean/Ehr/Render/Types.lean`, not an `Option UiNode` in `Ui.lean`.
-* Urgent nodes were the last roots of the inventory, after the modal, not path
-  `[1]` (which is the title). `Shell.bodyChildren`, `Semantic.bannerText`,
-  `Semantic.rowText` and `Semantic.nodeText` do not exist; the text of a node is
-  `semanticText`, and the shell is `Shell.placements` over
-  `Structural.placements`.
-* No reference layout uses a 15 px font (`960`); they use 14 px and, for the
-  title of the family reference layout, 20 px. `Style` has no border field.
-* No `fixedTargets` definition existed in Lean before this change.
-* Section toggles were already target occurrences: a collapsible section
-  carries a child button with role `toggle`. Only tabs and navigation links
-  were missing.
-* `Keyboard.dialog` does close on Escape, but the plain DOM painter never
-  applied that key to an interruptive alert. Removing the Escape transition
-  from `dialog`, as Step 1 proposed, would have falsified
-  `dialog_escape_restores`; a separate profile was added instead.
-
-### Summary of Coverage Categories
-* **Covered by Lean**: A Lean rule or theorem proves the same (or strictly stronger) property over the Lean layout/semantic representation.
-* **Partly covered**: Lean proves the core property, but specific sub-checks, node kinds, viewports, or thresholds checked by the browser gate are missing or differ in Lean.
-* **No Lean counterpart**: The browser check tests runtime DOM/CSS/event behavior or client-side formatting that has no formalization in `lean/`.
-* **Unclear**: Coverage depends on how the new plain DOM painter or layout lowering is wired; both sides are quoted.
-
----
-
-### 3.1 Semantic Fidelity & ARIA Contract (`app/src/ehr/ui/fidelity.ts`, `app/e2e/ui-check.spec.ts:386-561`, `app/e2e/screen-check.spec.ts:121-225`)
-
-| # | Browser Gate / Audit Check | Lean Counterpart & Coverage Status |
-| :--- | :--- | :--- |
-| **1.1** | **Expected-to-observed node occurrence (`expectedAria` vs `observedAria`, `fidelity.ts:272-502`, `ui-check.spec.ts:539-550`)**: Every semantic element in `UiScreen` (`banner`, `nav`, `urgent`, `modals`, `body`, `viewer`) must appear in the rendered DOM with matching `role`, accessible `name`, `compId`, and `ancestorIds`, with no unexpected extra interactive/landmark nodes and no duplicate occurrences. | **Partly covered.**<br>• **Covered in Lean (`Ctx → UiScreen`)**: `lean/Ehr/Render/UiProofs.lean` proves `D1_landmark`, `D2_workspace_required`, `D3_honest_actions`, `D3_all_buttons`, `D4_interruptive_modal`, `D4_passive_no_modal`, `D4_passive_inline`, `D6_clear_fields`, `D6_field_labels`, `T10_ui_shown`, `T10_ui_only_shown`, `T10_ui_hidden`, `T11_ui_info`, `T11_ui_full_info`, `T11_ui_allergy_fhir`, `T11_ui_med_fhir`, `uiNotes_complete`, `uiLateEntries_exact`.<br>• **Covered in Lean (`UiScreen → Drawn`)**: `G7` & `G8` (`lean/Ehr/Layout/Check.lean:107-120`), `layoutAccepted_safety` (`Check.lean:314-319`), `SourceLinked` / `Realizes` / `layoutAccepted_allScreens` (`lean/Ehr/Layout/Family.lean:22-149`), and `renderer_range` / `checkProgram_allStates` / `layoutAccepted_program` (`lean/Ehr/Layout/Range.lean:178-311`) prove that every `SafetyItem` in `screenItems s` is painted (`G7`) with its exact text preserved (`G8`) across all reachable states.<br>• **Missing in Lean**:<br>1. `screen.viewer?` (`Option UiNode` on `UiScreen` in `lean/Ehr/Render/Ui.lean:180`) is omitted from `Ehr.Layout.Semantic.screenNodes` (`lean/Ehr/Layout/Semantic.lean:54-57`), which only extracts `banner`, `urgent`, `nav`, `modals`, and `body`.<br>2. `Ehr.Layout` does not verify ARIA `role` strings: `Meta.role` (`lean/Ehr/Layout/Types.lean:129`) is an unconstrained `String` (`compileShape`, `Structural`, and `Shell` leave `role = ""`), and `SourceLinked` (`Family.lean:22-28`) does not constrain `p.info.role`.<br>3. `Semantic.lean:23-44` flattens `screen.nav` into a single text node (`String.intercalate " · "`) rather than individual `link` items, and serializes `.stepper`, `.board`, `.datedTimeline`, `.patientPane`, `.valueSet`, and `.chartReferences` via `toString (toJson n)` rather than structured items.<br>4. `Semantic.lean` does not verify that a `.rowAction` node is placed inside the matching `.info` table row (`expectedRowPlacement` in `fidelity.ts:27-75`). |
-| **1.2** | **Patient banner text & badge fidelity (`ui-check.spec.ts:406-408`, `screen-check.spec.ts:127-146`)**: `[data-comp-id="patient-banner"]` must display `banner.name`, formatted `banner.details`, and every `banner.badges` label. | **Partly covered.**<br>• `D1_landmark` (`lean/Ehr/Render/UiProofs.lean:456-463`) proves `UiScreen.banner` matches `patientHeader ctx`.<br>• `G1` + `G7` + `G8` (`lean/Ehr/Layout/Check.lean:48-51, 107-120`) and `Semantic.bannerText` (`lean/Ehr/Layout/Semantic.lean:18-21`) prove that `bannerText s.banner` (`name · details · badges`) is painted in the single fixed `Region.banner` box.<br>• **Missing in Lean**: Client-side reformatting of `banner.details` by `formatBannerDetails` (`app/src/ehr/ui/display.tsx:167-190`) is TypeScript-only. |
-| **1.3** | **Clinical info table & formatted text fidelity (`ui-check.spec.ts:452-490`, `fidelity.ts:192-218`)**: Every `InfoRow` (`label`, `value`, `status`, `badge`) and formatted medication/vital caption (`vitalGroups`, `displayRows`, `medicationTaskCaption`, `formatMedicationDirections`) must appear in the rendered table. | **Partly covered.**<br>• `Semantic.rowText` (`lean/Ehr/Layout/Semantic.lean:9-16`), `G7`, and `G8` prove that every `InfoRow`'s raw `label`, `value`, `status?`, `badge?`, `sourceLabel?`, and `lateEntry?` strings are preserved in a painted box.<br>• **Missing in Lean**: Client-side transformations in `app/src/ehr/ui/display.tsx` (`vitalGroups`, `displayRows`, `medicationTaskCaption`, `formatMedicationDirections`) and `app/src/ehr/ui/clinical-formatters.ts` have **no Lean counterpart**. |
-| **1.4** | **Provenance `[data-source-label]` & `[data-late-entry]` attributes and `<time datetime>` (`fidelity.ts:95-118, 220-269`, `ui-check.spec.ts:472-490`)**: Rows/nodes with `lateEntry` must render `[data-late-entry]` and a Late Entry badge; `sourceLabel` must render `[data-source-label]` when enabled; ISO timestamps in clinical rows must render `<time datetime="...">`. | **Partly covered.**<br>• `uiLateEntries_exact` (`lean/Ehr/Render/UiProofs.lean:1239-1255`) proves `UiScreen` provenance fidelity, and `Semantic.rowText` (`lean/Ehr/Layout/Semantic.lean:14-15`) includes `r.sourceLabel?.toList ++ r.lateEntry?.toList` in the text verified by `G8`.<br>• **Missing in Lean**: DOM attributes `[data-late-entry]`, `[data-source-label]`, and `<time datetime="...">` (`clinicalTime` in `app/src/ehr/ui/display.tsx`) have **no Lean counterpart**. |
-| **1.5** | **Action button enabled/disabled & blocked-reason fidelity (`ui-check.spec.ts:500-536`, `fidelity.ts:144-169`)**: Every `ButtonNode` must match `enabled`, `blockedReason`, and `shortcut` (`<kbd>`), and disabled buttons must expose their `blockedReason`. | **Partly covered.**<br>• `D3_honest_actions`, `D3_all_buttons`, and `uiBlocked_reason` (`lean/Ehr/Render/UiProofs.lean:511-524, 698-705`) prove `UiScreen` button honesty and blocked-reason presence.<br>• `Semantic.nodeText` (`lean/Ehr/Layout/Semantic.lean:33-34`) includes `[label] ++ shortcut? ++ blockedReason?` in the text required by `G8`.<br>• **Missing in Lean**: `Ehr.Layout.Semantic.semanticTarget` (`Semantic.lean:46-48`) sets `target := true` for **all** `.button` nodes regardless of `enabled : Bool`; `Meta` (`lean/Ehr/Layout/Types.lean:123-131`) has no `disabled : Bool` field. |
-| **1.6** | **Form field label, value, required, and error message fidelity (`ui-check.spec.ts:492-499`, `fidelity.ts:120-142`)**: Every `FieldNode` must render an accessible control with its label, current value, and validation error. | **Partly covered.**<br>• `D6_clear_fields` and `D6_field_labels` (`lean/Ehr/Render/UiProofs.lean:586-610`) prove `UiScreen` field labels, and `Semantic.nodeText` (`Semantic.lean:25-26`) includes `[label, value] ++ error?.toList` in `G8`.<br>• **Missing in Lean**: Native HTML form control semantics (`<input>`, `<select>`, `<textarea>`, `aria-invalid`, `required`, option lists from `FieldChoices`) have **no Lean counterpart** in `Ehr.Layout`. |
-
----
-
-### 3.2 Banner Pinning, Modal Isolation, and Urgent Alert Perceivability
-
-| # | Browser Gate / Audit Check | Lean Counterpart & Coverage Status |
-| :--- | :--- | :--- |
-| **2.1** | **Sticky patient banner pinning & non-occlusion (`ui-check.spec.ts:223-308`, `urgent-transition.spec.ts`)**: `[data-comp-id="patient-banner"]` must remain within the viewport before and after scrolling any scrollable container and must not be occluded by scrolling body content (`elementFromPoint` / `isVisibleInContainer`). | **Covered by Lean (strictly stronger for banner vs peer boxes).**<br>• Rule **`G1`** (`lean/Ehr/Layout/Check.lean:48-51`) requires a unique painted box `p` with `p.info.region == .banner`, `p.clips = []` (fixed, unclipped by any scroll container), `Contains (viewportRect v) p.rect`, and `bannerSeparated v p q` (`Disjoint (envelope p) (envelope q) ∨ p.style.z > q.style.z`) for every other box `q`.<br>• Theorem **`layoutAccepted_bannerPixels`** (`lean/Ehr/Layout/Check.lean:329-333`) proves that across **every** scroll offset function `offset : String → Int`, no pixel of the banner is ever shared with or covered by any other painted box (`¬ (Pixels p offset x y ∧ Pixels q offset x y)`). |
-| **2.2** | **Interruptive modal visibility, z-order, and background blocking (`ui-check.spec.ts:409-434, 815-829`)**: When `screen.modals` is non-empty, `[role="dialog"]` must be visible in the viewport, above background content, block pointer/keyboard interaction with background controls (`aria-modal="true"`), and **not** dismiss when `Escape` is pressed (`ui-check.spec.ts:411, 825`). | **Partly covered (with a keyboard discrepancy on `Escape`).**<br>• **Covered in Lean**: Rule **`G2`** (`lean/Ehr/Layout/Check.lean:55-57`) proves every `p.info.interruptive = true` box has `p.clips = []`, `Contains (viewportRect v) p.rect`, and `p.style.z > q.style.z` for all non-interruptive boxes `q`. Theorem **`modal_blocks`** (`Check.lean:349-360`) proves `dispatchable ps id = false` for every non-interruptive box whenever any interruptive box is present.<br>• **Discrepancy in Lean**: In `lean/Ehr/Layout/Keyboard.lean:60-64`, `dialog` transitions on `.escape => { s with isOpen := false }`, whereas clinical interruptive alert modals in `ui-check.spec.ts:411, 825` must **not** close on `Escape` (they require an explicit clinical acknowledgment/override action). |
-| **2.3** | **Urgent alert strip continuous perceivability (`urgentFindings`, `urgentVisibility`, `urgencySamples` in `ui-check.spec.ts:107-221, 923-1079, 1375-1435`; `scripts/audit-alert-policy.mjs`)**: When `screen.urgent` is non-empty, `[data-comp-id="urgent-alert-strip"]` must:<br>1. Render every urgent alert with non-empty text, `contrast >= 4.5:1`, and at least one visible action button (`>= 24×24 px`, `contrast >= 3:1`).<br>2. Remain fully within the viewport (`top >= 0`, `bottom <= vh`, `left >= 0`, `right <= vw`) initially, after scrolling the window and every scroll container to the bottom, after switching tabs, and while an interruptive modal is open.<br>3. Have `z-index` strictly above the Mantine modal overlay (`stripZ > modalZ`) and never overlap `[role="dialog"]` (`rectsOverlap(strip, dialog) === false`).<br>4. Pass `elementFromPoint` hit-testing at the center of every urgent alert item and action button. | **Partly covered — critical gap in `lean/Ehr/Layout`.**<br>• **Covered at the semantic layer (conditional on `StripLayout`)**: `lean/Ehr/Specs/AlertUrgency.lean` (`approvedAssignments`, `coverage`, `highAlert_not_removable`), `lean/Ehr/Render/UrgentStrip.lean` (`withUrgentStrip`), `lean/Ehr/Sem/Urgency.lean`, and `lean/Ehr/Sem/UrgentStrip.lean` (`active_urgent_in_strip`, `strip_covers_all_active`, `strip_continuous_perceivability`, `reachable_strip_continuous`) prove that all active high-urgency alerts are placed in `UiScreen.urgent?` and remain continuously perceivable **assuming** the layout satisfies the structure `StripLayout` (`lean/Ehr/Sem/UrgentStrip.lean:16-22`: `stripPinned = true`, `stripAboveModal = true`, `stripDisjointFromModal = true`, `bannerPinned = true`).<br>• **Missing in `lean/Ehr/Layout`**: `lean/Ehr/Layout` does **not** discharge `StripLayout`!<br>1. `Region` (`lean/Ehr/Layout/Types.lean:105-107`) has only `.banner | .nav | .body | .modal` (no `.urgent` region).<br>2. `Ehr.Layout.Semantic.screenNodes` (`lean/Ehr/Layout/Semantic.lean:54-57, 86-92`) maps `s.urgent?.getD []` at path `[1]` to `Region.body` with `interruptive := false`.<br>3. `Ehr.Layout.Shell.bodyChildren` (`lean/Ehr/Layout/Shell.lean:24-26`) places urgent alerts inside the scrolling body container (`Structural.scroller`), so in `Ehr.Layout` urgent alerts **can scroll out of view** and **are blocked by non-urgent modals** (`activeTarget` in `Check.lean:31-32` disables all `interruptive = false` targets when any modal is present). |
-
----
-
-### 3.3 Physical Layout, Target Size, Text Fit, Reflow, and Contrast (`app/e2e/physical-policy.ts`, `app/e2e/ui-check.spec.ts`, `app/e2e/visibility.ts`, `app/e2e/css-policy.ts`)
-
-| # | Browser Gate / Audit Check | Lean Counterpart & Coverage Status |
-| :--- | :--- | :--- |
-| **3.1** | **Interactive target size `>= 24×24` CSS px (WCAG 2.2 SC 2.5.8, `physical-policy.ts:233-250`, `ui-check.spec.ts:1437-1461`)**: Every visible enabled interactive element (`button`, `input`, `select`, `textarea`, `[role="button"]`, `[role="tab"]`, `[role="checkbox"]`, `[role="combobox"]`, `a[href]`) must have bounding box `width >= 24 - 0.5` and `height >= 24 - 0.5` CSS px at desktop (`1440×900`) and narrow (`390×844`). | **Partly covered.**<br>• **Covered in Lean**: Rule **`G3`** (`lean/Ehr/Layout/Check.lean:64-66`) enforces `1536 ≤ p.rect.w ∧ 1536 ≤ p.rect.h` (`1536 / 64 = 24` CSS px exact, with zero tolerance) for every `p` with `p.info.target = true`.<br>• **Missing in Lean**:<br>1. `Ehr.Layout.Semantic.semanticTarget` (`lean/Ehr/Layout/Semantic.lean:46-48`) only marks `.button` and `.field` as `target = true`; it returns `false` for `.tabs`, collapsible `.section` headers, and `screen.nav` links (which are concatenated into one non-target `.text` node at path `[2]`).<br>2. `Types.viewports` (`lean/Ehr/Layout/Types.lean:157`) only checks `1440×900`, `1280×800`, and `1920×1080` (not `390×844` or `320×844`). |
-| **3.2** | **Interactive target separation / non-overlap (`physical-policy.ts:252-265`, `ui-check.spec.ts:1463-1477`)**: Interactive targets must not overlap in the same coordinate plane. | **Partly covered.**<br>• **Covered in Lean**: Rule **`G3`** (`lean/Ehr/Layout/Check.lean:66`) enforces `separated p q` (`p.clips == q.clips → Disjoint p.rect q.rect`) for all pairs in `activeTarget ps`.<br>• **Missing in Lean**: Only checks nodes with `target = true` (`.button` and `.field`), excluding `.tabs` and `nav` items, and does not check cross-clip overlap when one non-banner target is unclipped and another is inside a scroll container (unless one is the banner, which `G1` checks, or has text, which `G4` checks). |
-| **3.3** | **Text legibility `fontSize >= 12` CSS px (`physical-policy.ts:193-201`, `Specs/PhysicalBounds.lean:10`)**: Every visible text node must have computed `font-size >= 12px` (`minFontPx = 12`). | **Covered by Lean.**<br>• `lean/Ehr/Specs/PhysicalBounds.lean` defines `minFontPx : Nat := 12`, and the reference layouts in `lean/Ehr/Layout` use `fontSize := 896` (`14px`) and `1280` (`20px`, title of the family reference layout).<br>• **Closed**: `PhysicalBounds.minFontPx := 12` did not exist when this inventory was written (the 12 px floor lived only in `app/e2e/ui-check.spec.ts`). It has been added, and `textFits` in `lean/Ehr/Layout/Check.lean` now requires `minFontUnits ≤ t.fontSize` (`64 * 12 = 768`); `layoutAccepted_minFont` states the consequence. |
-| **3.4** | **Text fit, line wrapping, non-truncation, and vertical line reserve (`physical-policy.ts:203-219`, `ui-check.spec.ts:252-308, 1479-1568`, `visibility.ts`)**: Text must not be horizontally or vertically clipped by `overflow: hidden/clip` (`scrollWidth <= clientWidth + 1`, `scrollHeight <= clientHeight + 1`), must not use `text-overflow: ellipsis` or `-webkit-line-clamp` without disclosure, and must not be occluded by sibling or sticky boxes (`checkVisibility` / `elementFromPoint`). | **Partly covered.**<br>• **Covered in Lean**: Rule **`G4`** (`lean/Ehr/Layout/Check.lean:74-88`) and theorems `wrap_complete`, `wrap_line_width`, `scroll_complete`, `scroll_line_width`, `paintText_supported`, `textAtoms_preserve` (`lean/Ehr/Layout/Engine.lean:88-281`), `layoutAccepted_textComplete`, and `layoutAccepted_textPixels` (`Check.lean:300-341`) prove that:<br>1. Every character of `t.source` is supported by the pinned Noto font tables (`lean/Ehr/Layout/Fonts.lean`) and preserved in `t.lines`.<br>2. Every wrapped line's exact advance width (`lineWidth t.font t.fontSize line`) fits inside `p.rect.w - p.pad.left - p.pad.right`.<br>3. `p.rect.h` reserves at least `t.lines.length * t.lineHeight + p.pad.top + p.pad.bottom`.<br>4. Every text box is pixel-disjoint (`¬ (Pixels p offset x y ∧ Pixels q offset x y)`) from any box `q` that could paint over it across **all** scroll offsets `offset`.<br>• **Missing in Lean**: `G4` checks `Contains (viewportRect v) (envelope p)` (the outermost scroll viewport or the viewport itself), not whether an intermediate non-scrolling parent container clips `p.rect`. |
-| **3.5** | **Horizontal overflow & multi-viewport reflow (WCAG 2.2 SC 1.4.10, `physical-policy.ts:373-395`, `ui-check.spec.ts:246-250, 735-771`, `columns.spec.ts`)**: No horizontal page scroll (`documentElement.scrollWidth <= window.innerWidth + 1`), no unintended horizontal scrollbars on vertical regions, and clean column/tab/card reflow at `1920`, `1600`, `1440`, `1280`, `768`, `640`, `390`, `320` CSS px and at `200%` text zoom (`Specs/PhysicalBounds.lean:11-16`). | **Partly covered.**<br>• **Covered in Lean at 3 desktop viewports**: Rule **`G5`** (`lean/Ehr/Layout/Check.lean:91-93`) proves `0 ≤ (envelope p).x ∧ (envelope p).right ≤ v.w` and `(p.clip ≠ none → (envelope p).x ≤ p.rect.x ∧ p.rect.right ≤ (envelope p).right)` at `Types.viewports` (`1440×900`, `1280×800`, `1920×1080`).<br>• **Missing in Lean**: `Types.viewports` (`lean/Ehr/Layout/Types.lean:157`) does not include `1600×900`, `768×1024`, or the reflow widths `640`, `390`, `320` CSS px from `lean/Ehr/Specs/PhysicalBounds.lean:14-16`, nor does `Ehr.Layout` check `textResizePercent := 200` (`PhysicalBounds.lean:11`). |
-| **3.6** | **Text & non-text contrast (WCAG 2.2 SC 1.4.3 `>= 4.5:1`, SC 1.4.11 `>= 3.0:1`, `physical-policy.ts:74-192, 222-371`, `contrast.spec.ts`, `ui-check.spec.ts:831-878`)**:<br>1. All visible text (including large text, badges, placeholders, and disabled controls) must have `contrast >= 4.5:1` against its resolved opaque background.<br>2. Interactive control boundaries, custom widgets, state indicators (selected tab, checked checkbox, `:focus-visible` ring), and SVG chart marks (`<path>`, `<line>`, `<rect>`, `<circle>`) must have `contrast >= 3.0:1`.<br>3. Any unresolvable background (`background-image`, gradients, `backdrop-filter`, `<canvas>`, `<video>`, `mix-blend-mode`, `filter`, or `opacity < 1` stacking) triggers a fail-closed `contrast-review` violation. | **Partly covered (with a threshold discrepancy on large text).**<br>• **Covered in Lean**: `lean/Ehr/Layout/Contrast.lean` (`srgbBounds`, `channel_certificates`, `luminance`, `contrastBound`, `contrastPass`) proves exact integer 5th-power sRGB relative luminance bounds without floating-point error. `Color` (`lean/Ehr/Layout/Types.lean:79-83`) is an opaque 8-bit RGB triple and `Style` (`Types.lean:89-95`) has no alpha, gradients, images, filters, or blend modes, eliminating `contrast-review` ambiguity by construction. Rule **`G6`** (`lean/Ehr/Layout/Check.lean:98-102`) checks `p.info.target = true → contrastPass p.style.fg p.style.bg 6 = true` (`>= 3.0:1`) and `p.text.isSome → contrastPass p.style.fg p.style.bg (if large then 6 else 9) = true`.<br>• **Missing / Discrepancy in Lean**:<br>1. **Large-text threshold mismatch**: `G6` (`Check.lean:100-102`) uses `twiceRatio = 6` (`3.0:1`) when `t.fontSize >= 1536` (`24px`) or `t.bold && t.fontSize >= 1195` (`18.67px`), whereas `lean/Ehr/Specs/PhysicalBounds.lean:8` (`textContrastTenths := 45`) and `app/e2e/physical-policy.ts:163` enforce `4.5:1` (`twiceRatio = 9`) on **all** text regardless of size.<br>2. **Non-target marks & borders**: `G6` only checks `p.style.fg` vs `p.style.bg` when `p.info.target = true` or `p.text.isSome`. Boxes with vector marks (`p.mark = some (.circle ... | .wedge ... | .polyline ...)` where `p.info.target = false` and `p.text = none`) are **not** checked by `G6`, nor is `p.style.border` checked against the parent background.<br>3. **Focus / selection state contrast**: `G6` checks static `Style` only; focus ring contrast (`:focus-visible`) is not modeled in `Ehr.Layout`. |
-| **3.7** | **Static CSS anti-clipping policy (`app/e2e/css-policy.ts`, tested in `app/tests/css-policy.test.ts`)**: Forbids `text-overflow: ellipsis`, `-webkit-line-clamp`, and `white-space: nowrap` combined with `overflow: hidden/clip` in clinical stylesheets (`clinical.css`, `dense-shell.css`, `presentations.css`). | **Covered by Lean + plain DOM painter architecture** (provided `Painter.tsx` only emits pre-wrapped `t.lines` from `Engine.wrapParagraphs` and does not import `clinical.css`). |
-| **3.8** | **Deterministic capture environment (`app/e2e/capture-environment.ts`, `ui-check.spec.ts:340-384`)**: Verifies `devicePixelRatio === 1`, pinned Noto font readiness (`document.fonts.check`), animations disabled, and exact viewport dimensions before measuring DOM geometry. | **Covered by Lean (`lean/Ehr/Layout/Fonts.lean`, `lean/Ehr/Layout/Engine.lean:452-454`)**: Theorem **`geometry_independent`** proves that `boxes v node` depends only on the `Viewport` and `LayoutNode` using the compiled-in Noto font advance tables in `Fonts.lean`, with zero browser or OS font dependence. |
-
----
-
-### 3.4 Current-Task Commit Visibility & Per-Screen Action Density (R5)
-
-| # | Browser Gate / Audit Check | Lean Counterpart & Coverage Status |
-| :--- | :--- | :--- |
-| **4.1** | **Current-task commit button fixed visibility (`G9`, `lean/Ehr/Layout/Check.lean:125-133`)**: At `1440×900`, if any current-task commit target (`p.info.currentCommit = true`) exists on the screen, at least one such target is painted unclipped (`p.clips = []`) and fully contained inside the `1440×900` viewport without scrolling. | **Covered by Lean (strictly stronger than browser gate)**: Rule **`G9`** (`lean/Ehr/Layout/Check.lean:125-133`), **`realized_currentCommit_visible`** (`lean/Ehr/Layout/Family.lean:152-182`), and **`certified_currentCommit_visible`** (`lean/Ehr/Layout/Shell.lean:604-611`). |
-| **4.2** | **Per-screen action density R5 (`app/e2e/action-density.ts`, `app/e2e/action-density.spec.ts`, `scripts/density-reference.mjs`, `docs/design/screen-density.json`)**: At `1440×900`, counts distinct interactive `[data-comp-id]` groups (`button:not(:disabled)`, `input:not(:disabled)`, `select:not(:disabled)`, `textarea:not(:disabled)`, `[role="tab"]`, `.clinical-section [aria-expanded]`):<br>1. `totalTargets` across the full screen.<br>2. `maxTargetsInAnyViewportWindow`: maximum targets simultaneously visible in any `1440×900` scroll window (`fixedTargets + scrolledTargetsInWindow`).<br>3. Rejects if `totalTargets > max(noAgentRef, releaseRef, 57 when absent)` or `maxTargetsInAnyViewportWindow > min(57, max(noAgentRef, releaseRef))`. | **Partly covered.**<br>• **Covered in Lean**: Rule **`G10`** (`lean/Ehr/Layout/Check.lean:138-175`), theorem **`G10_window`** (`Check.lean:231-239`), and `lean/Ehr/Layout/Density.lean` (`shell_density`, `render_density`, `acceptFamilyDensity`, `checkProgramDensity_sound`) prove that checking the finite candidate offsets `windowAt c q` bounds active targets across **every** scroll offset `o : Int` of scroll region `c`, and certify `shellCapacity = 15 ≤ sp.design.maxTargetsPerViewport`.<br>• **Missing / Differences in Lean**:<br>1. **Fixed targets omitted from scroll-window sum**: In `lean/Ehr/Layout/Check.lean:163-164`, `windowTargets` filters by `scrollRegion p == some c`, which counts only targets clipped by `c` and **does not add** fixed/unclipped targets (`p.clips = []`, checked separately by `fixedTargets`). In `Shell.lean`, the body scroller holds up to 15 targets (`windowTargets ≤ 15`) plus 1 fixed commit footer (`fixedTargets = 1`), so 16 targets can be simultaneously visible in the `1440×900` viewport while `G10 ps 15` holds.<br>2. **Target set differences**: `Semantic.semanticTarget` (`lean/Ehr/Layout/Semantic.lean:46-48`) counts `.button` (including disabled buttons) and `.field`, but excludes `.tabs`, `.section` toggles, and `screen.nav` links.<br>3. **Total-target bound & reference comparison**: `G10` bounds only per-viewport-window targets against `sp.design.maxTargetsPerViewport` (`15` on `fixedShell`); it does not bound `totalTargets` across the entire scroll height or compare against a release/no-agent reference program. |
-
----
-
-### 3.5 Geometry for Scroll & Pointer Costs and R2 Bounded Pointing (`app/e2e/geometry-capture.ts`, `app/src/metrics/geometry.ts`, `app/src/dashboard/bounded-pointing.ts`)
-
-| # | Browser Gate / Audit Check | Lean Counterpart & Coverage Status |
-| :--- | :--- | :--- |
-| **5.1** | **Component bounding boxes, scroll container chains, and reveal points (`captureGeometry` in `app/e2e/geometry-capture.ts`, consumed by `pointerTravel` in `app/src/metrics/geometry.ts`)**: For every `[data-comp-id]` (including individual nav links, alert buttons, fields, tabs, and popup states after `modalAction`), records `BBox`, `scrollers`, `chain`, `offsets`, and `reveal` coordinates at `1440×900` so `pointerTravel` can compute `mouseTravelPx`, `scrollPx`, and `scrolls` along simulated user trajectories. | **Partly covered.**<br>• **Covered in Lean**: `Ehr.Layout.Engine.boxes` (`lean/Ehr/Layout/Engine.lean:430`) deterministically computes exact integer `1/64` px coordinates (`Placed.rect`, `Placed.clips`) for every `LayoutNode` without a browser.<br>• **Missing in Lean**:<br>1. `Meta` (`lean/Ehr/Layout/Types.lean:123-131`) carries `source : Option SourcePath` (numeric index path into `screenNodes`), not the string `compId` (`patient-banner`, `nav-<id>`, `field-<id>`, `btn-<label>`, `alert-<id>`) indexed by `ScreenGeometry.elements` in `app/src/metrics/geometry.ts`.<br>2. Because `Semantic.lean:23` collapses `screen.nav` into a single `.text` node at path `[2]`, individual workflow navigation links do not have distinct `Placed` boxes in `Ehr.Layout`.<br>3. Lean does not compute `scrollIntoView` reveal offsets (`ElementGeometry.offsets`, `ElementGeometry.reveal`, `ScrollerGeometry.maxScrollTop`) or export the `GeometryAtlas` (`schema: 'vgi.geometry-atlas.v1'`) JSON consumed by `app/src/metrics/geometry.ts` and `agent/src/night.ts`. |
-| **5.2** | **R2 bounded-pointing Fitts slot proxy (`app/src/dashboard/bounded-pointing.ts`, `agent/src/replay-r2-gate.ts`)**: Combines `GeometryAtlas` element boxes (`min(rect.w, rect.h)`) with trajectory actions to verify that pointer targets are not shrunk to game Fitts's law / pointer-travel metrics. | **Partly covered.**<br>• Rule **`G3`** (`1536 ≤ p.rect.w ∧ 1536 ≤ p.rect.h`, i.e. `min(w, h) >= 24px`) enforces a hard lower bound on target dimensions in Lean, and `Placed.rect` provides exact deterministic dimensions.<br>• **Missing in Lean**: Exporting `GeometryAtlas` from Lean's `Placed` boxes so `bounded-pointing.ts` and `replay-r2-gate.ts` can run without `geometry-browser.mjs`. |
-
----
-
-### 3.6 Accessibility, Keyboard Navigation, and Live/Replay Control Audits (`app/e2e/ui-check.spec.ts:563-829`, `app/e2e/audit/buttons.spec.ts`)
-
-| # | Browser Gate / Audit Check | Lean Counterpart & Coverage Status |
-| :--- | :--- | :--- |
-| **6.1** | **Landmark & heading structure (`ui-check.spec.ts:563-620`)**: Every screen must have `banner` (`<header>`), `navigation` (`<nav>`), and `main` (`<main>`) landmarks, and a non-empty heading hierarchy. | **Partly covered.**<br>• `Region` (`lean/Ehr/Layout/Types.lean:105-107`) distinguishes `.banner | .nav | .body | .modal`, and `G1` requires a unique `.banner` box.<br>• **Missing in Lean**: `G1`–`G10` do not require `Meta.role` to be set to `"banner"`, `"navigation"`, `"main"`, or `"heading"` (`Painter.tsx` only sets `role={box.info.role || undefined}`). |
-| **6.2** | **Keyboard tab order, focus visibility, and widget keyboard patterns (`ui-check.spec.ts:622-733, 773-829`)**:<br>1. All enabled controls must be keyboard-focusable (`tabIndex >= 0`) with a visible `:focus-visible` indicator.<br>2. Arrow keys cycle tabs (`role="tab"`); `Enter`/`Space` activate buttons and section disclosures.<br>3. When a modal (`role="dialog"`) is open, `Tab` focus is trapped inside the modal. | **Partly covered.**<br>• `lean/Ehr/Layout/Keyboard.lean` formalizes pure state machines and theorems for `roving` (`roving_bound`), `disclosure` (`disclosure_toggle`), `combobox` (`combobox_enter_closes`, `combobox_escape_closes`), and `dialog` (`dialog_focus_bound`, `dialog_tab_preserves_bound`).<br>• **Missing / Discrepancy**:<br>1. `Keyboard.lean` is not connected to `Ehr.Layout.Check` (`G1`–`G10`) or to `app/src/browser/ui-library/Painter.tsx`.<br>2. As noted in **2.2**, `Keyboard.dialog` (`Keyboard.lean:60-64`) closes on `.escape`, which conflicts with the non-dismissible clinical modal policy in `ui-check.spec.ts:411, 825`. |
-| **6.3** | **SVG chart accessibility (`ui-check.spec.ts:880-921`)**: Clinical charts (`sparkline`, `range-bar`, `meows-trend`, `partogram`, `fluid-balance`) must render `<svg role="img" aria-label="...">` with non-zero bounding boxes and non-overlapping labels. | **Partly covered.**<br>• In `lean/Ehr/Layout/Types.lean:45-61` and `Engine.lean:337-428`, `Shape.chart` (`ChartSpec.sparkline | .bullet | .dots | .ring | .rose`) lowers into `Placed` boxes with `Mark` primitives and text labels checked by `G4`, `G5`, and `G7`/`G8`.<br>• **Missing in Lean**: As noted in **3.6**, non-target `Mark` boxes without text are not checked for 3:1 contrast by `G6`, and `Meta.role := "img"` is not enforced by `G1`–`G10`. |
-| **6.4** | **Live/replay button & control behavioral audit (`app/e2e/audit/buttons.spec.ts`, `app/e2e/audit/driver.ts`)**: Sweeps every control across `/`, `/browse`, `/dashboard`, `/replay`, `/ehr`, `/mar`, `/adt` and verifies:<br>1. Every enabled clinical button/input/tab/select mutates state, opens a modal, navigates, or surfaces feedback within `< 2.4s` without console/page errors.<br>2. Disabled buttons show a visible reason.<br>3. Search inputs return results for known query tokens. | **Partly covered.**<br>• **Covered in Lean (semantic state machine)**: `D3_all_buttons` and `uiBlocked_reason` (`lean/Ehr/Render/UiProofs.lean:521-524, 698-705`), search result emission (`lean/Ehr/Render/Ui.lean:555-560`), and the 13 clinical safety properties + R3/R4/R6 (`lean/Ehr/Check/Sound.lean`) prove that the Lean `UiScreen` transition semantics are well-formed.<br>• **No Lean counterpart**: DOM event wiring in the painter (`onClick` / `onChange` -> `applyEvent`), non-clinical tool routes (`/browse`, `/dashboard`, `/replay`), and `< 2.4s` browser latency. |
-
----
-
-## 4. Disposition Table
-
-Every item from Sections 1 and 2 is assigned one of four dispositions:
-* **Delete**: Remove once the React-free painter, Lean layout/geometry pipeline, and browser-free nightly loop land.
-* **Replace by a named Lean check**: Retire the browser check/script in favor of a specific Lean check or CLI command.
-* **Port to the new painter**: Re-point from `UiScreenView` / `painter.tsx` / Mantine to the plain DOM painter (`Drawn[]` + interactive event dispatch).
-* **Keep**: Retain as-is (non-clinical tools keeping React, pure data/formatting modules, or Lean-only checks).
-
-### 4.1 Renderer, App Entry Points, and Non-Clinical Tools (from Section 1)
-
-| Item / Path | Disposition | One-Line Reason |
-| :--- | :--- | :--- |
-| `app/src/ehr/ui/Screen.tsx` | **Delete** | Replaced by Lean shell layout (`lean/Ehr/Layout/Shell.lean`) and the plain DOM painter. |
-| `app/src/ehr/ui/nodes.tsx` | **Delete** | Replaced by Lean structural/family layout (`lean/Ehr/Layout/Structural.lean`, `Family.lean`) and the plain DOM painter. |
-| `app/src/ehr/ui/UrgentStrip.tsx` & `app/src/ehr/ui/urgent-strip.css` | **Replace by a named Lean check** | Replace with a pinned urgent-strip region in `lean/Ehr/Layout/Shell.lean` + `Check.lean` (discharging `StripLayout` in `lean/Ehr/Sem/UrgentStrip.lean`) and paint via the plain DOM painter. |
-| `app/src/ehr/ui/Board.tsx`, `DatedTimeline.tsx`, `Timeline.tsx` | **Delete** | Replaced by Lean layout families (`lean/Ehr/Layout/Family.lean`) and the plain DOM painter. |
-| `app/src/ehr/ui/presentations.tsx`, `presentation-helpers.tsx`, `custom/example/v0/Review.tsx`, `presentations/StructuredInfo.tsx`, `presentations/MarGrid.tsx`, `presentations/charts.tsx`, `presentations/row-layout.ts`, `presentations/presentations.css` | **Delete** | Agent TSX/Mantine presentations are replaced by Lean `ProgramLayout` / `ScreenFamily` (`lean/Ehr/Layout/Family.lean`) and `Shape.chart` (`lean/Ehr/Layout/Types.lean`). |
-| `app/src/ehr/ui/presentation-types.ts` | **Delete** | Only needed for Mantine TSX presentation compilation; remove once `src/browser/data.ts` drops `PresentationRegistry`. |
-| `app/src/ehr/ui/fidelity.ts` | **Replace by a named Lean check** | Replaced by `lean/Ehr/Render/UiProofs.lean` (`D1`–`D6`, `T10`, `T11`) and `lean/Ehr/Layout/Check.lean` (`G7`, `G8`, `layoutAccepted_safety`) + `Family.lean` (`SourceLinked`). |
-| `app/src/ehr/ui/clinical-metadata.tsx`, `Density.ts`, `FieldChoices.ts`, `SourceLabels.ts`, `layout.ts`, `clinical.css`, `dense-shell.css`, `density.css` | **Delete** | React contexts and Mantine CSS overrides specific to `UiScreenView` / `nodes.tsx`. |
-| `app/src/ehr/ui/events.ts`, `app/src/ehr/ui/types.ts`, `app/src/ehr/ui/fonts/*` | **Port to the new painter** | Keep `UiScreen` / `Event` types, event encoding, and pinned Noto WOFF2 fonts (`lean/Ehr/Layout/Fonts.lean`) for the plain DOM painter. |
-| `app/src/ehr/ui/display.tsx`, `clinical-display.ts`, `clinical-formatters.ts`, `Icons.tsx`, `personas.ts`, `theme.ts`, `AppHeader.tsx`, `chrome.css` | **Keep** | Used by non-clinical React tools (`app/src/dashboard/*`, `app/src/browser/*`) which keep React and Mantine. |
-| `app/src/ehr/ui/Exotic.tsx`, `exotic-axis.ts`, `exotic.css`, `app/src/ehr/exotic-offline.tsx`, `app/exotic-check.html`, `app/scripts/exotic-gate.mjs`, `app/e2e/exotic-check.spec.ts` | **Delete** (or isolate under `app/src/browser/`) | Experimental React research views outside clinical screens; remove from `app/src/ehr/` so clinical code is 100% React-free. |
-| `app/src/ehr/painter.tsx`, `app/src/ehr/html.ts`, `app/src/ehr.css`, `app/src/mock/page.ts`, `app/src/mock/export.ts` | **Delete** | Legacy `Html` React renderer superseded by Lean `Ehr.Layout` and the plain DOM painter. |
-| `app/src/ehr/offline.tsx` & `app/screen-check.html` | **Port to the new painter** (or delete if screenshot scripts move to `/ui-library`) | Replace React `MantineProvider` / `UiScreenView` mount with the plain DOM painter for any remaining offline screenshot/inspection scripts. |
-| `app/src/browser/ui-library/Painter.tsx`, `UiLibrary.tsx`, `metrics.ts`, `types.ts` | **Port to the new painter** | Promote `Painter.tsx` into the production clinical DOM painter and add interactive clinical `Event` dispatch, form controls, and `[data-comp-id]` attributes. |
-| `app/src/LiveApp.tsx` & `app/src/MarApp.tsx` | **Port to the new painter** | Replace `<UiScreenView>` and Mantine clinical chrome with the plain DOM painter while preserving `liveSession.recordPaint` (`screenFingerprint.ts`). |
-| `app/src/AdtApp.tsx` | **Port to the new painter** (or **Keep** if classified as non-clinical admin tool; see Open Question 5) | Uses Mantine directly for the `/adt` bed board without `UiScreenView`. |
-| `app/src/App.tsx`, `app/src/ReplayApp.tsx`, `app/src/dashboard/replay.tsx`, `app/src/dashboard/TrajectoryFrame.tsx`, `app/src/dashboard/trajectory-frame-main.tsx`, `app/trajectory-frame.html` | **Port to the new painter** | Non-clinical replay/inspector tools keep React for their outer chrome, but should mount the plain DOM painter for the clinical viewport and query its `[data-comp-id]` nodes. |
-| `app/src/browser/Browse.tsx`, `RevisionDetails.tsx`, `SessionReview.tsx`, `data.ts`, `revision-diff.ts`, `timeline.ts`, `app/src/dashboard/Dashboard.tsx` | **Keep** (port embedded screen preview to new painter) | Non-clinical tools keep React; replace embedded `<UiScreenView>` preview in `RevisionDetails.tsx` / `SessionReview.tsx` with the plain DOM painter. |
-| `app/src/core/session.ts`, `liveSession.ts`, `marSession.ts`, `app/src/data/screenFingerprint.ts`, `services/commit/src/screens.ts` | **Keep** | Session state reduction and `vgi-screen-v1:` semantic `UiScreen` SHA-256 commit verification are independent of React. |
-| `agent/src/presentation-compiler.ts`, `app/scripts/presentation-lint.mjs`, `agent/test/presentation-compiler.test.ts` | **Replace by a named Lean check** | Replace agent TSX/Mantine compilation with Lean layout checking (`Ehr.Layout.Range.checkProgram` / `Ehr.Layout.Density.checkProgramDensity` in `lean/Ehr/Layout/Range.lean` and `Density.lean`). |
-| `app/scripts/build-binding-plugin.ts`, `app/src/core/buildBinding.ts`, `agent/src/build-binding.ts` | **Keep** (update entry points) | Keep build-binding verification, updated to hash the new plain DOM painter instead of `app/src/ehr/ui/*` and `@mantine/*`. |
-
-### 4.2 Browser Screen Gate, Geometry Pipeline, Tests, Scripts, and Docs (from Section 2)
-
-| Item / Path | Disposition | One-Line Reason |
-| :--- | :--- | :--- |
-| `agent/src/screencheck.ts` (`CliScreenChecker`, `FakeScreenChecker`) | **Replace by a named Lean check** | Replace browser subprocess gate with Lean `ehr verify-program` + `Ehr.Layout.Range.checkProgram` (`G1`–`G10`) and `Ehr.Layout.Density.checkProgramDensity`. |
-| `agent/src/vendor-reference.ts` | **Replace by a named Lean check** (or **Keep** if per-screen reference comparison is ported to Lean; see Open Question 2) | Used only to supply release and no-agent programs to the browser R5 density check (`scripts/density-reference.mjs`). |
-| `app/scripts/screen-check.mjs`, `scripts/density-reference.mjs`, `scripts/screen-results.mjs`, `scripts/screen-pool.mjs`, `scripts/compare-screen-results.mjs`, `scripts/browser-heavy-lock.mjs`, `app/scripts/audit-execution.mjs` | **Delete** | Browser screen-check runner, R5 Playwright measurement harness, and screen-check cache infrastructure retired with the browser gate. |
-| `app/e2e/ui-check.spec.ts`, `app/e2e/screen-check.spec.ts`, `app/e2e/physical-policy.ts`, `app/e2e/action-density.ts`, `app/e2e/action-density.spec.ts`, `app/e2e/visibility.ts`, `app/e2e/capture-environment.ts`, `app/e2e/contrast.spec.ts`, `app/e2e/columns.spec.ts`, `app/e2e/density.spec.ts`, `app/e2e/urgent-transition.spec.ts`, `app/e2e/physical-bounds-adversarial.spec.ts` | **Replace by a named Lean check** | Replaced by `lean/Ehr/Layout/Check.lean` (`G1`–`G10`, `layoutAccepted_safety`, `layoutAccepted_bannerPixels`, `layoutAccepted_textPixels`, `modal_blocks`), `Contrast.lean`, `Density.lean`, `Range.lean`, and `Sem/UrgentStrip.lean` (once the gaps in Section 3 are closed). |
-| `app/e2e/css-policy.ts` & `app/tests/css-policy.test.ts` | **Keep** (scoped to painter CSS) | Lightweight static stylesheet check ensuring the plain DOM painter never introduces `text-overflow: ellipsis` or `line-clamp`. |
-| `app/e2e/geometry-capture.ts`, `app/scripts/geometry-browser.mjs`, `agent/src/browser-geometry.ts`, `agent/src/geometry-popups.ts` | **Replace by a named Lean check** | Replace headless Chromium geometry measurement with a browser-free Lean geometry exporter built on `Ehr.Layout.Engine.boxes` (`lean/Ehr/Layout/Engine.lean:430`). |
-| `agent/src/geometry.ts`, `agent/src/frozen-geometry.ts`, `app/src/metrics/geometry.ts`, `app/src/dashboard/bounded-pointing.ts`, `agent/src/replay-interaction-gate.ts`, `agent/src/replay-r2-gate.ts` | **Keep** (fed by Lean `Engine.boxes` geometry) | Keep `GeometryAtlas`, `pointerTravel`, and R2 bounded-pointing calculations, consuming deterministic `1/64` px coordinates emitted by Lean instead of Playwright. |
-| `agent/src/night.ts`, `agent/src/cadence.ts`, `agent/src/modes.ts`, `agent/src/no-agent.ts`, `agent/src/run.ts`, `agent/src/adhoc.ts`, `agent/src/dry-run.ts`, `agent/src/agent-loop.ts`, `agent/src/rlm/context.ts`, `agent/src/harness/host.ts`, `explore/evaluate.ts`, `explore/cli.ts` | **Keep** (remove `CliScreenChecker` / `browserGeometry` calls) | Switch nightly loop, release modes, and exploration evaluator to browser-free Lean layout verification and Lean geometry. |
-| `agent/src/offline-columns-check.ts`, `agent/src/offline-screen-cache.ts`, `agent/src/offline-screen-evidence.ts` | **Delete** | Offline browser screen-check cache helpers superseded by deterministic Lean layout checks. |
-| `scripts/recertify-runs.mjs`, `agent/src/rebind.ts`, `agent/src/remeasure.ts`, `agent/src/remeasure-cli.ts`, `app/scripts/recheck-revision.ts`, `agent/src/fingerprints.ts`, `agent/src/verify-resume.ts` | **Keep** (update for browser-free verification) | Drop `screenHarness`, `screenTests`, and `playwright` hashes from `agent/src/fingerprints.ts` and recertify/remeasure runs using Lean layout + Lean geometry. |
-| `scripts/audit-alert-policy.mjs`, `scripts/audit-action-density.mjs`, `scripts/check-r5-p2.mts`, `scripts/check-r5-release-fallback.mts`, `scripts/information-needs-pixels.mts`, `app/scripts/density-screen-check.mjs`, `app/scripts/density-estimates.ts`, `app/scripts/promote-gate.mjs`, `app/scripts/promote-physical.mjs` | **Replace by a named Lean check** | Replace Playwright-based audit scripts with `lean/Ehr/Specs/AlertUrgency.lean`, `lean/Ehr/Sem/UrgentStrip.lean`, `lean/Ehr/Layout/Check.lean`, and `lean/Ehr/Layout/Density.lean`. |
-| Clinical live/replay E2E specs (`app/e2e/live-*.spec.ts`, `ehr-replay.spec.ts`, `clinical-*.spec.ts`, `chart-biopsy.spec.ts`, `layout-stability.spec.ts`, `audit/buttons.spec.ts`) | **Port to the new painter** | Update selectors that assume Mantine DOM classes to target the plain DOM painter's elements and `[data-comp-id]` attributes (outside the nightly loop). |
-| Non-clinical E2E specs (`app/e2e/browse.spec.ts`, `dashboard.spec.ts`, `replay.spec.ts`, `session-review.spec.ts`, `trajectory-video.spec.ts`, `ui-library.spec.ts`) | **Keep** | Test non-clinical React tools and `/ui-library`. |
-| React clinical unit tests (`app/tests/ui-render.test.tsx`, `ui-density.test.tsx`, `ui-theme.test.ts`, `fidelity.test.ts`, `presentations.test.tsx`, `charts.test.tsx`, `board.test.tsx`, `dated-timeline.test.tsx`, `timeline.test.tsx`, `urgent-strip.test.tsx`, `clinical-metadata.test.tsx`, `painter.test.tsx`) | **Delete** | Test deleted React/Mantine clinical components (`app/src/ehr/ui/*` and `app/src/ehr/painter.tsx`); replace with unit tests on the plain DOM painter (`app/tests/ui-library-painter.test.tsx`). |
-| `.github/workflows/ci.yml`, `Makefile`, `README.md`, `docs/methods/screen-validation.md`, `docs/methods/ui-library.md`, `docs/design/metric-gaming.md`, `docs/design/alert-urgency.md`, `docs/architecture.md`, `docs/assurance.md`, `docs/reproduction.md` | **Keep** (update documentation and remove `EHR_SCREEN_WORKERS` from `ci.yml`) | Update docs and CI env vars to reflect the browser-free Lean layout gate and plain DOM clinical painter. |
-
----
-
-## 5. Order of Operations
-
-### Step 1: Close Formal Guardrail Gaps in `lean/Ehr/Layout`
-Before removing the browser screen gate, update `lean/Ehr/Layout` so every critical guardrail from Section 3 has an exact Lean proof:
-1. **Urgent strip pinning (`StripLayout`)** (**done**, see `docs/methods/ui-library.md`, "Pinned urgent strip"; `StripLayout` is a proposition over view changes, not a record of four flags, and it is now proved by `Ehr.Layout.Strip.layoutAccepted_stripLayout`; the strip is kept clear of the modal by separation and G2 is unchanged, so it is not drawn above the modal): Add `Region.urgent` (or dedicated fixed urgent strip placement in `lean/Ehr/Layout/Shell.lean` and `Check.lean`) so `screen.urgent?` is painted with `clips = []`, `Contains (viewportRect v) p.rect`, disjoint from both `Region.banner` and `Region.modal`, with `z` above modal overlays and active targets preserved when a modal is open, formally discharging `StripLayout` (`lean/Ehr/Sem/UrgentStrip.lean:16-22`).
-2. **Semantic completeness (`viewer?`, `nav`, interactive target kinds)** (**done**, with corrections: `viewer?` is an `Option String` on `UiScreen` in `lean/Ehr/Render/Types.lean`, not an `Option UiNode`, and is now part of the banner occurrence; section toggles were already child buttons and therefore targets; navigation links and tabs are now button occurrences, so `semanticTarget` itself did not change; a disabled button is still a target, which is stricter than the browser count): Include `screen.viewer?` in `Ehr.Layout.Semantic.screenNodes` (`lean/Ehr/Layout/Semantic.lean:54-57`), preserve individual `screen.nav` items as distinct interactive targets instead of a single concatenated string, and extend `semanticTarget` (`Semantic.lean:46-48`) to cover tabs, section disclosures, and nav links (while distinguishing `enabled = false` buttons).
-3. **Physical bounds alignment (`G4`, `G6`, `G10`)**:
-   * Strengthen `textFits` in `lean/Ehr/Layout/Check.lean:75` from `0 < t.fontSize` to `768 ≤ t.fontSize` (`12 CSS px`). **Done.**
-   * Align `G6` (`Check.lean:100-102`) with `lean/Ehr/Specs/PhysicalBounds.lean:8` (`4.5:1` / `twiceRatio = 9` on all text, plus `3.0:1` / `twiceRatio = 6` on non-target vector `Mark` boxes). **Done**: `G6` reads both thresholds from `PhysicalBounds`; the large-text allowance is gone and painted circle, wedge and polyline marks are checked at `3:1`. `Style` has no border field, so there is no border to check; a plain rectangle is not treated as a mark.
-   * Update `G10` (`Check.lean:163-175`) so per-viewport-window target counts sum `fixedTargets ps + windowTargets ps c w`, matching `app/e2e/action-density.ts:84`. **Done**: `fixedTargets` did not exist as a Lean definition; it has been added, `G10_window` now bounds fixed plus window targets, and the reference shell's body scroller is shorter so that 14 rows and the fixed commit stay within its proved capacity of 15.
-4. **Modal `Escape` behavior**: Remove `.escape => { s with isOpen := false }` from interruptive clinical alert dialogs in `lean/Ehr/Layout/Keyboard.lean:60-64`. **Done differently**: `Keyboard.dialog` is the generic dismissible profile and its theorem `dialog_escape_restores` stays true, so it was not edited. Interruptive alerts have their own profile, `Keyboard.alertDialog`, in which no key closes the dialog; the plain DOM painter uses it (the painter already declined to apply Escape before this change, so the gap was in Lean only).
-* **What to verify after Step 1**: `cd lean && lake build`, verify `#print axioms` on all modified/new theorems in `lean/Ehr/Layout/*` (only `propext`, `Classical.choice`, `Quot.sound`), and run `make verify`.
-* **What would make Step 1 unsafe**: Leaving `screen.urgent?` inside the scrolling `Region.body` container or leaving `windowTargets` disconnected from `fixedTargets` would allow layouts where urgent alerts scroll off-screen or viewport target density exceeds the cap after the browser gate is removed.
-
-### Step 2: Land Browser-Free Lean Geometry Export
-Extend the `lean/.lake/build/bin/ehr` CLI (using `Ehr.Layout.Engine.boxes`) to emit `GeometryAtlas` (`schema: 'vgi.geometry-atlas.v1'`) with `[data-comp-id]` bounding boxes, scroll container bounds, and scroll-into-view reveal coordinates directly from Lean's `1/64` px layout boxes, and wire `agent/src/geometry.ts` to use it instead of `agent/src/browser-geometry.ts`.
-* **What to verify after Step 2**: Run `pnpm --filter agent test` and compare `pointerTravel` (`mouseTravelPx`, `scrollPx`, `scrolls`) and `projectBoundedPoints` (R2) outputs between Lean-emitted atlases and recorded atlases.
-* **What would make Step 2 unsafe**: Missing `compId` mappings for `nav-<id>`, `alert-<id>`, `field-<id>`, or `modalAction` popup states would cause `resolveStepGeometry` (`app/src/metrics/geometry.ts`) to fall back to missing-element penalties and distort `interactionAcceptable` and R2 verdicts in `agent/src/night.ts`.
-
-### Step 3: Cut Over Clinical Routes and Replay Viewport to the Plain DOM Painter
-Promote the React-free plain DOM painter (`app/src/browser/ui-library/Painter.tsx` extended with clinical `Event` dispatch, form controls, `[data-comp-id]`, and `onPaint` callback) into `app/src/LiveApp.tsx`, `app/src/MarApp.tsx`, `app/src/App.tsx`, `app/src/ReplayApp.tsx`, `app/src/dashboard/replay.tsx`, `app/src/dashboard/TrajectoryFrame.tsx`, and `app/src/browser/RevisionDetails.tsx` / `SessionReview.tsx`.
-* **What to verify after Step 3**:
-  * Verify that `liveSession.recordPaint` still produces valid `vgi-screen-v1:` hashes accepted by `services/commit/src/screens.ts` (`verifyScreens`).
-  * Verify that `Dashboard` trajectory playback (`TrajectoryFrame.tsx`) and `/replay` (`replay.tsx`) highlight `[data-comp-id]` targets and scroll containers accurately.
-  * Run `pnpm --filter app build` and `pnpm --filter app test`.
-* **What would make Step 3 unsafe**: Breaking `onPaint` invocation in `LiveApp.tsx` / `MarApp.tsx` (which causes `services/commit` to reject live encounter commits with `screen_hash_mismatch`), or omitting `[data-comp-id]` attributes needed by `TrajectoryFrame.tsx` and `replay.tsx`.
-
-### Step 4: Switch the Nightly Loop, Release Modes, and Exploration to Lean Layout Verification
-Replace `CliScreenChecker` (`agent/src/screencheck.ts`) and `compilePresentationComponents` (`agent/src/presentation-compiler.ts`) in `agent/src/night.ts`, `agent/src/modes.ts`, `agent/src/no-agent.ts`, `agent/src/run.ts`, and `explore/evaluate.ts` with Lean's `Ehr.Layout.Range.checkProgram` and `Ehr.Layout.Density.checkProgramDensity`. Update `agent/src/fingerprints.ts` (`runFingerprints`) to remove `screenHarness`, `screenTests`, and `playwright`.
-* **What to verify after Step 4**: Run `pnpm --filter agent test`, `make verify`, and a dry-run nightly cycle (`agent/src/dry-run.ts`) with zero Chromium processes spawned.
-* **What would make Step 4 unsafe**: Removing `CliScreenChecker` before `Ehr.Layout.Range.checkProgram` and `Ehr.Layout.Density.checkProgramDensity` are invoked on every candidate in `deployVersion` (`agent/src/night.ts`) and `runCadenceNight`.
-
-### Step 5: Delete the Old React Clinical Renderer and Browser Screen Gate, then Rebind Runs
-Delete the files marked **Delete** or **Replace by a named Lean check** in Section 4 (`app/src/ehr/ui/Screen.tsx`, `nodes.tsx`, `UrgentStrip.tsx`, `Board.tsx`, `DatedTimeline.tsx`, `Timeline.tsx`, `presentations.tsx`, `fidelity.ts`, `app/src/ehr/painter.tsx`, `agent/src/screencheck.ts`, `agent/src/presentation-compiler.ts`, `app/scripts/screen-check.mjs`, `scripts/density-reference.mjs`, `app/e2e/ui-check.spec.ts`, `app/e2e/screen-check.spec.ts`, `app/e2e/physical-policy.ts`, `app/e2e/action-density.ts`, and their unit tests). Update `README.md` and `docs/**`, then run `make rebind` / `scripts/recertify-runs.mjs` to update run bindings for the new `app/dist/build.json`.
-* **What to verify after Step 5**:
-  * `cd lean && lake build` and `make verify`
-  * `pnpm --filter app build`, `pnpm --filter app test`, `pnpm --filter agent test`
-  * Verify `git grep` shows zero remaining imports of `app/src/ehr/ui/Screen`, `app/src/ehr/ui/nodes`, `app/src/ehr/painter`, or `agent/src/screencheck`.
-* **What would make Step 5 unsafe**: Deleting `app/src/ehr/ui/display.tsx`, `clinical-display.ts`, `Icons.tsx`, `personas.ts`, `theme.ts`, `AppHeader.tsx`, or `chrome.css` while `app/src/dashboard/*` and `app/src/browser/*` still import them.
-
----
-
-## 6. Open Questions for the Owner
-
-1. **Urgent Alert Strip in `lean/Ehr/Layout`**:
-   **Decided and implemented: yes** (rule G11, the pinned band of the fixed shell, `Ehr.Layout.Strip`). Before the change, `lean/Ehr/Sem/UrgentStrip.lean` proved continuous perceivability of high-urgency alerts **conditional** on the structure `StripLayout` (`stripPinned`, `stripAboveModal`, `stripDisjointFromModal`, `bannerPinned`), whereas `lean/Ehr/Layout/Semantic.lean:54-92` and `Shell.lean:24-26` place `screen.urgent?` inside `Region.body` (the scrolling body region, which scrolls out of view and is blocked when a modal is open). Should we add `Region.urgent` and a rule in `lean/Ehr/Layout/Check.lean` (or strengthen `G1`/`G2`) so `layoutAccepted` formally discharges `StripLayout`?
-
-2. **R5 Action Density Policy (`G10` vs Reference-Program Comparison)**:
-   In `lean/Ehr/Layout/Check.lean:163-175` and `Density.lean`, `G10` checks a static viewport-window cap (`15 ≤ sp.design.maxTargetsPerViewport`, counting only `scrollRegion p == some c` without adding `fixedTargets ps`), whereas the browser R5 gate (`scripts/density-reference.mjs`, `app/e2e/action-density.ts`) sums `fixedTargets + scrolledTargetsInWindow`, caps `totalTargets` across the entire scroll height, and bounds each screen by `max(noAgentReference, releaseReference)`. Should Lean's `G10` be updated to add `fixedTargets ps` to `windowTargets ps c w`, and should reference-program comparison (`noAgentReference` / `releaseReference`) be dropped in favor of the static `maxTargetsPerViewport` bound or ported into Lean?
-
-3. **Viewports and 200% Text Zoom (`Types.viewports` vs `Specs/PhysicalBounds.lean`)**:
-   `lean/Ehr/Layout/Types.lean:157` checks three desktop viewports (`1440×900`, `1280×800`, `1920×1080`) at 100% font size, whereas `lean/Ehr/Specs/PhysicalBounds.lean` specifies widths `768`, `1280`, `1440`, `1600`, `1920`, reflow widths `640`, `390`, `320`, and `textResizePercent := 200` (and `screen-check.mjs` runs `1440×900` and `390×844`). Should `Types.viewports` remain the three desktop viewports, or should `390×844` (or other `PhysicalBounds` widths) be added to `Types.viewports`?
-
-4. **Large-Text Contrast Threshold (`G6` vs `Specs/PhysicalBounds.lean`)**:
-   **Decided and implemented: yes.** Before the change, `lean/Ehr/Layout/Check.lean:100-102` (`G6`) allowed `3.0:1` (`twiceRatio = 6`) contrast for large text (`>= 24px` or bold `>= 18.67px`), whereas `lean/Ehr/Specs/PhysicalBounds.lean:8` (`textContrastTenths := 45`) and `app/e2e/physical-policy.ts:163` require `4.5:1` (`twiceRatio = 9`) for **all** text regardless of size, plus `3.0:1` for graphical marks (`Mark`). Should `G6` be tightened to `twiceRatio = 9` for all text and `twiceRatio = 6` for all `Mark` boxes?
-
-5. **Scope of the Plain DOM Painter on `/adt` (`app/src/AdtApp.tsx`) and `/ehr` Login/Encounter Shell (`app/src/LiveApp.tsx`)**:
-   `LiveApp.tsx` and `MarApp.tsx` wrap the clinical screen in a Mantine login/encounter-selector/inspector bar, and `AdtApp.tsx` is a standalone Mantine bed-board screen that does not use `UiScreen`. Should the login/encounter wrapper in `LiveApp.tsx`/`MarApp.tsx` and the `/adt` route in `AdtApp.tsx` also be converted to plain DOM (so `@mantine/*` is only loaded by `/browse` and `/dashboard`), or is the React-free requirement strictly for the `UiScreen` clinical chart canvas?
-
-6. **Client-Side Clinical Text Formatters (`app/src/ehr/ui/display.tsx`, `clinical-formatters.ts`)**:
-   The React renderer currently applies TypeScript-only text transformations (`vitalGroups`, `displayRows`, `medicationTaskCaption`, `formatMedicationDirections`, `formatBannerDetails`, `clinicalTime`) after Lean produces `UiScreen`. Since `lean/Ehr/Layout/Engine.lean` wraps and measures the exact strings in `UiScreen`, should those formatters be moved into Lean's `UiScreen` renderer (`lean/Ehr/Render/Ui.lean`) or deleted so the plain DOM painter draws the exact strings certified by `G4` and `G8`?
+# Plain DOM clinical cut-over checklist
+
+[Painter and exhaustive widget inventory](../methods/lean-painter.md) ·
+[Layout contract](../methods/ui-library.md)
+
+The experimental `/lean.html` page uses Lean display parts and checked layout
+geometry with native DOM controls. The default application still uses React.
+The dashboard and browser retain their own renderers. Application and WASM
+hashes have changed; retained certificates are historical until rebound.
+
+## Required before switching the clinical entry points
+
+- [ ] Finish the structured list/table work: bounded paging, table and row-action
+  placement, whole-row navigation, and the proved grid keyboard transitions.
+  Keep complete source values and separate confirmation/acknowledgment events.
+- [ ] Improve dense geometry for large clinical boards. The complete two-patient
+  note task can use the checked fixed-shell fallback; interaction works, while
+  the large-board appearance remains simpler. Keep the existing admission limits.
+- [ ] Relate tabs and their visible panels with the appropriate ARIA references;
+  verify focus, arrow navigation and activation across patches.
+- [ ] Validate board tasks with repeated component IDs and separate patient
+  sessions, cross-patient modal ownership, urgent-rail visibility, drafts,
+  signing and navigation at all three supported desktop viewports. The opt-in
+  board URL is `lean.html?patients=<Patient.id>,<Patient.id>`; each pane must
+  select its named patient explicitly. This is not the administrative bed board.
+- [ ] Validate scheduled-dose MAR through the shared dose authority, including
+  duplicate/stale attempts, blocked controls, all documented outcomes and
+  independently authenticated cosigning. The opt-in Lean route accepts
+  `marPatient`, `marRelease` and `marWorkflow` and uses the existing MAR session.
+- [ ] Review charts and timelines using their complete values as well as their
+  visual encodings. Lean supplies numeric/time geometry, axes, labels and
+  reference curves. Unsupported numeric/date strings stay in the table. Plain
+  timelines show source order; only dated timelines have a proportional UTC axis.
+- [ ] Validate custom families and fixed-shell fallback on new rich shapes;
+  a fallback may retain complete text while providing a simpler appearance.
+  Bound rich marks undergo runtime G1–G11 checks. They do not acquire the
+  fixed-shell universal theorem merely by sharing its painter.
+- [ ] Provision the exact `/lean.html` authentication callback URLs in each
+  identity deployment and exercise real sign-in, logout and return URLs.
+- [ ] Decide the supported mobile/reflow and 200% text-resize contract. Current
+  admission supports 1440×900, 1280×800 and 1920×1080 desktop viewports only.
+- [ ] Decide the scope of the encounter/login shell and standalone `/adt` route.
+  Do not delete shared dashboard/browser UI helpers while they have consumers.
+- [ ] Validate the complete deployed release and workload through the Lean page,
+  with required accessibility, screen, replay and protocol checks. Targeted
+  widget tests establish their measured cases, not universal workflow coverage.
+- [ ] Switch default clinical entry points only in a subsequent explicit change;
+  remove the old clinical renderer/browser gate only after all its obligations
+  have a named replacement and no remaining consumers.
+- [ ] Rebuild the application and WASM, record the new hashes, and rebind the
+  retained run evidence against the final implementation. Do not overwrite
+  historical certificates or claim they certify this implementation.
+
+## Implemented prerequisites
+
+The painter shares sign-in and the existing live session/commit path. It serializes
+clinical events, preserves focused editors, uses Lean tab/listbox/alert-dialog
+keyboard transitions, pins the urgent strip, and refuses unsupported viewports.
+The rich-family path adds patient-scoped pane controls and modal ownership,
+medication day/hour cells, note/folder cards, plotted trends/growth reference
+curves, timeline axes, banner-run decoration, severity marks and hotkey activation.
+The [inventory](../methods/lean-painter.md#widget-inventory) is the row-by-row
+status record; [implementation and validation](../methods/painter-parity.md)
+states limitations and reproducible commands.

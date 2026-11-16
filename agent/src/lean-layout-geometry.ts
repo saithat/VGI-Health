@@ -39,7 +39,7 @@ export const leanBoxSchema = z.object({
   original: z.string().nullable().optional(),
 });
 export const paintSchema = z
-  .object({ accepted: z.boolean(), boxes: z.array(leanBoxSchema) })
+  .object({ accepted: z.boolean(), boxes: z.array(leanBoxSchema), viewport: z.object({w:z.number(),h:z.number()}).optional() })
   .passthrough();
 export type Paint = z.infer<typeof paintSchema>;
 /** Occurrence paths of Lean's semantic inventory (Layout.Semantic.screenNodes)
@@ -115,7 +115,7 @@ export function placedGeometry(
   return {
     screen: id,
     state,
-    viewport: { width: 1440, height: 900 },
+    viewport: { width: (paint.viewport?.w ?? 92160)/64, height: (paint.viewport?.h ?? 57600)/64 },
     components,
     scrollers,
   };

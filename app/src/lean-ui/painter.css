@@ -209,3 +209,25 @@ input.lean-control[type="checkbox"] {
 [data-row-action] {
   cursor: pointer;
 }
+/* Run decoration stays inside the single Lean banner rectangle. */
+[data-run="name"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+[data-run="badge"] {
+  box-shadow: inset 0 -2px 0 currentColor;
+}
+[data-run="identity"] {
+  text-decoration: overline;
+}
+[data-run="detail"] {
+  text-decoration: underline dotted;
+}
+[data-run="clinician"] {
+  text-decoration: underline double;
+}
+[data-kind="noteCard"],
+[data-kind="folderCard"] {
+  outline: 1px solid #64748b;
+  outline-offset: -1px;
+}

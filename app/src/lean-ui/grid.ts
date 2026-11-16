@@ -27,7 +27,7 @@ export function tableCells(boxes: GridBox[]): Map<string, GridBox[]> {
 
 /** A record row's single navigation action: the one button of the row-action
  * group that Lean attaches to that table row (`rowAction target row`). */
-export function rowActions(boxes: GridBox[]): Map<string, string> {
+export function rowActions(boxes: GridBox[]): Map<string, GridBox> {
   const byTable = new Map<string, Map<number, GridBox[]>>();
   const wrappers = boxes.filter(
     (b) => b.part?.kind === "rowAction" && b.part.row !== undefined && b.source,
@@ -44,11 +44,13 @@ export function rowActions(boxes: GridBox[]): Map<string, string> {
     if (!byTable.has(table)) byTable.set(table, new Map());
     byTable.get(table)?.set(wrapper.part?.row ?? 0, buttons);
   }
-  const actions = new Map<string, string>();
+  const actions = new Map<string, GridBox>();
   for (const [table, rows] of byTable)
-    for (const [row, buttons] of rows)
-      if (buttons.length === 1 && buttons[0]?.part?.kind === "nav")
-        actions.set(`${table}|${row}`, buttons[0]?.part?.comp ?? "");
+    for (const [row, buttons] of rows) {
+      const only = buttons[0];
+      if (buttons.length === 1 && only?.part?.kind === "nav")
+        actions.set(`${table}|${row}`, only);
+    }
   return actions;
 }
 
@@ -60,7 +62,7 @@ export function rowActions(boxes: GridBox[]): Map<string, string> {
  * geometry is added: the row's action stays the Lean target box it is. */
 export function connectGrids(
   boxes: GridBox[],
-  emit: (event: Event) => void,
+  emit: (box: GridBox, event: Event) => void,
   keyboard: KeyboardTransition,
   blocked: (box: GridBox) => boolean,
 ) {
@@ -87,17 +89,19 @@ export function connectGrids(
       if (!element.hasAttribute("tabindex") || element.tabIndex >= 0)
         element.tabIndex = i === 0 ? 0 : -1;
       const action = actions.get(`${comp}|${row}`);
-      element.dataset.rowAction = action ?? "";
-      if (!action) delete element.dataset.rowAction;
-      element.onclick = () => {
-        if (action && !blocked(cell)) emit({ click: { comp: action } });
+      const click = () => {
+        if (action && !blocked(cell))
+          emit(action, { click: { comp: action.part?.comp ?? "" } });
       };
+      if (action) element.dataset.rowAction = action.part?.comp ?? "";
+      else delete element.dataset.rowAction;
+      element.onclick = click;
       element.onkeydown = (event) => {
         const key = keyboardKey(event);
         if (!key || ["tab", "shiftTab"].includes(key)) return;
         if ((key === "enter" || key === "space") && action && !blocked(cell)) {
           event.preventDefault();
-          emit({ click: { comp: action } });
+          click();
           return;
         }
         const next = keyboard(

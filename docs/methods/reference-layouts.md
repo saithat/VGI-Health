@@ -7,7 +7,8 @@ reference generator for Node reports, `--screens lean` and `/lean.html`.
 Native/WASM Lean admits each structural case at 1440×900, 1280×800 and
 1920×1080. The default browser nightly mode retains its existing painter and
 screen gate. This integration changes application and agent certified hashes;
-it changes no Lean definitions, rules or proofs.
+the rich-widget extension adds display/layout plumbing without changing existing
+rule definitions or theorem statements ([details](painter-parity.md)).
 
 The generator follows the current compact shell: a 96px patient-banner reserve,
 horizontal navigation, heading, optional 158px summary pane with an 8px gutter,

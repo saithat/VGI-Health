@@ -89,6 +89,8 @@ inductive Mark
   | circle
   | wedge (startNum sweepNum denominator : Nat)
   | polyline (points : List Point) (stroke : Nat)
+  /-- New specification for owner review: independent paths and recorded points. -/
+  | plot (paths : List (List Point)) (dots : List Point) (stroke : Nat)
   deriving Repr, Inhabited, DecidableEq, ToJson, FromJson
 
 inductive Track | fixed (units : Nat) | fr (weight : Nat)

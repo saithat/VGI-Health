@@ -10,6 +10,21 @@ def prefixChildren (children : List (List (List Nat × Part))) : List (List Nat 
 /-- A part that is one occurrence: a child without children of its own. -/
 def partEntries (parts : List Part) : List (List (List Nat × Part)) := parts.map fun part => [([],part)]
 
+/-- Components that have an explicit confirmation button. -/
+def confirmComps : UiNode → List String
+  | .button comp _ "confirm" _ _ _ => [comp]
+  | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs | .valueSet _ _ cs
+  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
+    cs.flatMap confirmComps
+  | .patientPane _ _ _ cs modal => cs.flatMap confirmComps ++ modal.flatMap confirmComps
+  | _ => []
+
+
+/-- New specification for owner review: explicit confirmations are scoped to
+one patient's children and modal, even when other panes reuse component IDs. -/
+def paneCx (cx : DisplayCx) (metadata : UiPaneMetadata) (cs modal : List UiNode) : DisplayCx :=
+  {cx.inPane metadata with confirms := (cs ++ modal).flatMap confirmComps}
+
 /-- New specification for owner review: the occurrences of a node are its own
 part, then its further display parts (`leafParts`), then its child nodes. The
 children of a node are numbered in that order, so a field's control is child 0
@@ -21,21 +36,13 @@ two nodes have identical component IDs or text. -/
 def semanticNodes (cx : DisplayCx) (node : UiNode) : List (List Nat × Part) :=
   ([],ownPart cx node) :: prefixChildren (partEntries (leafParts cx node) ++ (match node with
   | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs
-  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
+  | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
     cs.map (semanticNodes cx)
+  | .chartReferences refs cs => cs.map (semanticNodes {cx with references := refs})
   | .valueSet options custom cs => cs.map (semanticNodes (cx.inValueSet options custom))
   | .patientPane _ _ metadata cs modal =>
-    cs.map (semanticNodes (cx.inPane metadata)) ++ modal.map (semanticNodes (cx.inPane metadata))
+    cs.map (semanticNodes (paneCx cx metadata cs modal)) ++ modal.map (semanticNodes (paneCx cx metadata cs modal))
   | _ => []))
-
-/-- Components that have an explicit confirmation button. -/
-def confirmComps : UiNode → List String
-  | .button comp _ "confirm" _ _ _ => [comp]
-  | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs | .valueSet _ _ cs
-  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
-    cs.flatMap confirmComps
-  | .patientPane _ _ _ cs modal => cs.flatMap confirmComps ++ modal.flatMap confirmComps
-  | _ => []
 
 /-- New specification for owner review: the navigation as occurrences: one
 wrapper, one heading per group and one target per link (a button with role
@@ -92,6 +99,25 @@ abbrev ScreenShape := List SlotShape
 
 def sourceKey (path : List Nat) : String := "source-" ++ toString path
 
+/-- New specification for owner review: pane modal descendants and cross-patient
+urgent atoms retain their region even when nested inside a board. -/
+def nestedRegions (cx : DisplayCx) (node : UiNode) : List (List Nat × Region) :=
+  let leaves := leafParts cx node
+  let urgent := match node with
+    | .board _ _ | .patientPane _ _ _ _ _ =>
+      leaves.zipIdx.map fun (_,i) => ([i], Region.urgent)
+    | _ => []
+  let children : List (List (List Nat × Region)) := match node with
+    | .patientPane _ _ metadata cs modal =>
+      (cs.map (nestedRegions (paneCx cx metadata cs modal))) ++
+      (modal.map fun n => (semanticNodes (paneCx cx metadata cs modal) n).map fun (p,_) => (p, Region.modal))
+    | .chartReferences refs cs => cs.map (nestedRegions {cx with references := refs})
+    | .valueSet opts custom cs => cs.map (nestedRegions (cx.inValueSet opts custom))
+    | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs
+    | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs => cs.map (nestedRegions cx)
+    | _ => []
+  urgent ++ children.zipIdx.flatMap fun (es,i) => es.map fun (p,r) => ((leaves.length+i) :: p,r)
+
 /-- New specification for owner review: every occurrence under a root of
 `screen.urgent?` (the roots after the modal) has region `urgent`, whatever the
 node is; the strip is never classified as body, side or commit. -/
@@ -109,6 +135,15 @@ def screenShape (screen : UiScreen) : ScreenShape :=
       else if screen.modal.isSome && path.head? == some modalRoot then .modal
       else if rootIndex == 2 || (rootIndex ≥ sideStart && rootIndex < modalRoot) then .side else .body
     ⟨path,part.target,region,part.lines⟩
+
+/-- New specification for owner review: the rich family API retains the original
+fixed-shell shape, except for the stronger board urgent/modal regions. The
+fixed-shell theorems and their original domain remain unchanged. -/
+def widgetShape (screen : UiScreen) : ScreenShape :=
+  let nested := (screenRoots screen).zipIdx.flatMap fun (n,i) =>
+    (nestedRegions (screenCx screen) n).map fun (p,r) => ((i+2) :: p,r)
+  (screenShape screen).map fun slot =>
+    {slot with region := (nested.lookup slot.path).getD slot.region}
 
 def shapeSources (shape : ScreenShape) : List (List Nat) := shape.map SlotShape.path
 

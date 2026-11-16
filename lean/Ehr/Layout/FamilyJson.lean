@@ -1,4 +1,4 @@
-import Ehr.Layout.Density
+import Ehr.Layout.WidgetGeometry
 namespace Ehr.Layout
 open Lean Ehr.Render
 
@@ -19,7 +19,7 @@ instance : FromJson FamilyReference where
 def invalidTree : Node := .box .frame {} { id := "missing-viewport", paint := false } []
 
 def parseFamily (refs : List FamilyReference) : Except String Family := refs.mapM fun ref => do
-  let shape := screenShape ref.screen
+  let shape := widgetShape ref.screen
   if ref.layouts.isEmpty then return ⟨shape,fun v => compileShape v shape⟩
   let layouts ← ref.layouts.mapM fun r => do
     let tree ← parseNode r.components (Json.mkObj []) 256 [] r.tree
@@ -39,17 +39,20 @@ def shellStripFindings (shape : ScreenShape) : List Finding :=
        deficit := (t : Int) - Shell.stripTargetCapacity }] else [])
 
 def familyOutput (family : Family) (screen : UiScreen) (v : Size) (limit : Nat := 15) : Json :=
-  match selectCandidate family screen with
+  match family.find? (fun c => c.shape == widgetShape screen) with
   | none => Json.mkObj [("accepted",toJson false),("uncoveredShape",toJson (screenShape screen)),
       ("error",toJson "semantic shape not in admitted family; this is not a text-length or glyph failure")]
   | some c =>
-    let ps := boxes v (c.tree v)
+    let ps := widgetBoxes screen (boxes v (c.tree v))
     let data := bindAll screen ps
     let layoutOk := checkAll limit (shapeSources c.shape) (urgentPaths c.shape) v ps
     Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family && family.all admitUrgent &&
-        viewports.contains v)),
+        viewports.contains v && layoutOk)),
       ("viewport",toJson v),("boxes",toJson data),("parts",boxPartsJson screen ps),
-      ("tree",semanticPaintTree screen (layout ⟨{},v⟩ (c.tree v))),
+      ("tree", match data with
+        | [] => Json.null
+        | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
+            (rest.map fun d => Json.mkObj [("drawn",toJson d),("children",toJson ([] : List Json))]))]),
       ("lineWidths",toJson (data.map drawnLineWidths)),
       ("findings",toJson (findings (shapeSources c.shape) v ps ++ densityFindings limit v ps ++
         urgentFindings v (urgentPaths c.shape) ps ++ realizationWarnings data)),

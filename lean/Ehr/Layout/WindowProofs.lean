@@ -458,67 +458,14 @@ theorem window_record_shown (cfg : Config) (enabled : cfg.enabled = true) (scree
   obtain ⟨path, entry⟩ := leaves p member
   exact ⟨path, p, entry, prow, pcol, praw, ptext⟩
 
-/-! ## The windowed inventory is bounded
+/-! ## The windowed inventory does not grow with the records
 
-New specifications for owner review. The windowed screen is compared with the
-screen's structure: the same screen with every pageable list emptied
-(`skeleton`). Every info node adds at most `7 + 2·(maxPageSize·W)` occurrences
-to that structure, where `W` is the widest record (its number of cells): six
-window parts and at most one page of records. Neither depends on how many
-records a list holds. -/
-
-/-- New specification for owner review: a node with its pageable lists emptied. -/
-def skeletonNode (eligible : String → String → Bool) : UiNode → UiNode
-  | .info comp label infoId display rows =>
-    if eligible comp infoId then .info comp label infoId display [] else .info comp label infoId display rows
-  | .board urgent cs => .board urgent (cs.map (skeletonNode (fun _ _ => false)))
-  | .patientPane patient banner metadata cs modal =>
-    .patientPane patient banner metadata (cs.map (skeletonNode (fun _ _ => false)))
-      (modal.map (skeletonNode (fun _ _ => false)))
-  | .datedTimeline title dated undated cs => .datedTimeline title dated undated (cs.map (skeletonNode eligible))
-  | .timeline title cs => .timeline title (cs.map (skeletonNode eligible))
-  | .presentation kind cs => .presentation kind (cs.map (skeletonNode eligible))
-  | .valueSet options custom cs => .valueSet options custom (cs.map (skeletonNode eligible))
-  | .chartReferences refs cs => .chartReferences refs (cs.map (skeletonNode eligible))
-  | .rowAction target row cs => .rowAction target row (cs.map (skeletonNode eligible))
-  | .section id title cs => .section id title (cs.map (skeletonNode eligible))
-  | .columns cs => .columns (cs.map (skeletonNode eligible))
-  | .tabs id labels selected cs => .tabs id labels selected (cs.map (skeletonNode eligible))
-  | node => node
-
-/-- New specification for owner review: the structure of a screen: its pageable
-lists emptied, no windows. -/
-def skeleton (screen : UiScreen) : UiScreen :=
-  { screen with workspace := screen.workspace.map (skeletonNode (eligibleIn screen)),
-                side := screen.side.map (skeletonNode (eligibleIn screen)), windows? := none }
-
-/-- The number of info nodes under a node. -/
-def infoCount : UiNode → Nat
-  | .info .. => 1
-  | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs | .valueSet _ _ cs
-  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
-    (cs.map infoCount).sum
-  | .patientPane _ _ _ cs modal => (cs.map infoCount).sum + (modal.map infoCount).sum
-  | _ => 0
-
-/-- The records of every info node under a node. -/
-def allRows : UiNode → List (List (List (String × String)))
-  | .info _ _ _ _ rows => [rows]
-  | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs | .valueSet _ _ cs
-  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
-    cs.flatMap allRows
-  | .patientPane _ _ _ cs modal => cs.flatMap allRows ++ modal.flatMap allRows
-  | _ => []
-
-private theorem sum_le_sum_add {α : Type} (cs : List α) (f g h : α → Nat) (pt : ∀ c ∈ cs, f c ≤ g c + h c) :
-    (cs.map f).sum ≤ (cs.map g).sum + (cs.map h).sum := by
-  induction cs with
-  | nil => simp
-  | cons c rest ih =>
-    simp only [List.map_cons, List.sum_cons]
-    have := pt c List.mem_cons_self
-    have := ih (fun x hx => pt x (List.mem_cons_of_mem _ hx))
-    omega
+New specifications for owner review. A paged list's display parts are its
+window parts (six, whatever its records) and the cells of the page shown; rich
+presentations over it (a trend, a time grid, cards) read the same page. So the
+windowed inventory depends on the pages shown, not on how many records each
+list has: records outside the shown pages change the window's numbers (the
+position, the page count, the flagged count), never the number of parts. -/
 
 private theorem sum_mul {α : Type} (cs : List α) (h : α → Nat) (C : Nat) :
     (cs.map fun c => h c * C).sum = (cs.map h).sum * C := by
@@ -599,373 +546,195 @@ theorem info_length (cx : DisplayCx) (comp label infoId display : String) (rows 
     partEntries_length, List.length_append]
   omega
 
-private theorem mem_pageRows {α : Type} (rows : List α) (k p : Nat) (x : α) (h : x ∈ pageRows rows k p) : x ∈ rows :=
-  List.mem_of_mem_drop (List.mem_of_mem_take h)
+/-- A context's window parts: six for a list it pages, none otherwise. -/
+theorem windowParts_count (cx : DisplayCx) (comp : String) :
+    (windowParts cx comp).length = if (cx.windows.map (·.comp)).contains comp then 6 else 0 := by
+  unfold windowParts
+  split
+  · rename_i w found
+    have sat := List.find?_some found
+    have member := List.mem_of_find?_eq_some found
+    simp only [beq_iff_eq] at sat
+    have hc : (cx.windows.map (·.comp)).contains comp = true :=
+      List.elem_eq_true_of_mem (List.mem_map.mpr ⟨w, member, sat⟩)
+    rw [if_pos hc]; rfl
+  · rename_i none
+    have absent : (cx.windows.map (·.comp)).contains comp = false := by
+      apply Bool.eq_false_iff.mpr
+      intro hc
+      obtain ⟨w, member, rfl⟩ := List.mem_map.mp (List.elem_iff.mp hc)
+      exact absurd (by simp : (w.comp == w.comp) = true) (List.find?_eq_none.mp none w member)
+    rw [if_neg (by rw [absent]; exact Bool.false_ne_true)]; rfl
 
-private theorem hyp_child (W : Nat) {node : UiNode} (cs : List UiNode) (h : allRows node = cs.flatMap allRows)
-    (hyp : ∀ rows ∈ allRows node, ∀ row ∈ rows, row.length ≤ W) :
-    ∀ c ∈ cs, ∀ rows ∈ allRows c, ∀ row ∈ rows, row.length ≤ W :=
-  fun c hc rows hr => hyp rows (h ▸ List.mem_flatMap.mpr ⟨c, hc, hr⟩)
+private theorem sum_congr (cs : List UiNode) (f g : UiNode → Nat) (h : ∀ c ∈ cs, f c = g c) :
+    (cs.map f).sum = (cs.map g).sum := by
+  rw [List.map_congr_left h]
 
-/-- New specification for owner review: under any context, a windowed node has at
-most `7 + 2·(maxPageSize·W)` occurrences more per info node than its structure. -/
-theorem node_bound (cfg : Config) (asked : String → Nat) (W : Nat) (node : UiNode) :
-    ∀ (eligible : String → String → Bool) (cx : DisplayCx) (ws : List UiWindow),
-      (∀ rows ∈ allRows node, ∀ row ∈ rows, row.length ≤ W) →
-      (semanticNodes { cx with windows := ws } (windowNode cfg eligible asked node)).length ≤
-        (semanticNodes { cx with windows := [] } (skeletonNode eligible node)).length +
-          infoCount node * (7 + 2 * (maxPageSize * W)) := by
+/-- New specification for owner review: under two contexts whose windows name
+the same lists, a node has the same number of occurrences, whatever the
+windows' numbers (positions, page counts, flagged counts). -/
+theorem windows_length (node : UiNode) : ∀ (cx : DisplayCx) (ws : List UiWindow),
+    ws.map (·.comp) = cx.windows.map (·.comp) →
+    (semanticNodes { cx with windows := ws } node).length = (semanticNodes cx node).length := by
   induction node using UiNode.rec
-    (motive_2 := fun cs => ∀ c ∈ cs, ∀ (eligible : String → String → Bool) (cx : DisplayCx) (ws : List UiWindow),
-      (∀ rows ∈ allRows c, ∀ row ∈ rows, row.length ≤ W) →
-      (semanticNodes { cx with windows := ws } (windowNode cfg eligible asked c)).length ≤
-        (semanticNodes { cx with windows := [] } (skeletonNode eligible c)).length +
-          infoCount c * (7 + 2 * (maxPageSize * W))) with
+    (motive_2 := fun cs => ∀ c ∈ cs, ∀ (cx : DisplayCx) (ws : List UiWindow), ws.map (·.comp) = cx.windows.map (·.comp) →
+      (semanticNodes { cx with windows := ws } c).length = (semanticNodes cx c).length) with
   | info comp label infoId display rows =>
-    intro e cx ws hyp
-    have widths : ∀ row ∈ rows, row.length ≤ W := hyp rows (by simp [allRows])
-    have wp1 := windowParts_length { cx with windows := ws } comp
-    have wp2 : (windowParts { cx with windows := [] } comp).length = 0 := by simp [windowParts]
-    have k := sizeOf_le cfg comp
-    simp only [windowNode, skeletonNode, infoCount, paged]
-    by_cases el : e comp infoId = true
-    · by_cases long : cfg.sizeOf comp < rows.length
-      · simp only [el, long, Bool.true_and, decide_true, ↓reduceIte]
-        rw [info_length, info_length, wp2]
-        have bound := infoParts_length_le infoId display
-          (pageRows rows (cfg.sizeOf comp) (clampPage rows.length (cfg.sizeOf comp) (asked comp))) W
-          (fun row hr => widths row (mem_pageRows _ _ _ _ hr))
-        have few := Nat.le_trans (pageRows_length rows (cfg.sizeOf comp)
-          (clampPage rows.length (cfg.sizeOf comp) (asked comp))) k
-        have := Nat.mul_le_mul_right W few
-        omega
-      · simp only [el, long, Bool.true_and, decide_false, Bool.false_eq_true, ↓reduceIte]
-        rw [info_length, info_length, wp2]
-        have bound := infoParts_length_le infoId display rows W widths
-        have := Nat.mul_le_mul_right W (show rows.length ≤ maxPageSize by omega)
-        omega
-    · simp only [el, Bool.false_and, Bool.false_eq_true, ↓reduceIte]
-      rw [info_length, info_length, wp2]
-      omega
-  | board urgent cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member (fun _ _ => false) cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_map]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
-    omega
+    intro cx ws same
+    rw [info_length, info_length, windowParts_count, windowParts_count]
+    simp only [same]
   | patientPane patient banner metadata cs ms ih im =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member => ih c member (fun _ _ => false) (cx.inPane metadata) ws
-      (fun rows hr => hyp rows (by simp only [allRows]; exact List.mem_append_left _ (List.mem_flatMap.mpr ⟨c, member, hr⟩)))
-    have hm : ∀ c ∈ ms, _ := fun c member => im c member (fun _ _ => false) (cx.inPane metadata) ws
-      (fun rows hr => hyp rows (by simp only [allRows]; exact List.mem_append_right _ (List.mem_flatMap.mpr ⟨c, member, hr⟩)))
-    have e1 : ({ cx with windows := ws } : DisplayCx).inPane metadata = { cx.inPane metadata with windows := ws } := rfl
-    have e2 : ({ cx with windows := [] } : DisplayCx).inPane metadata = { cx.inPane metadata with windows := [] } := rfl
-    have same : (leafParts { cx with windows := ws } (.patientPane patient banner metadata
-        (cs.map (windowNode cfg (fun _ _ => false) asked)) (ms.map (windowNode cfg (fun _ _ => false) asked)))).length =
-      (leafParts { cx with windows := [] } (.patientPane patient banner metadata
-        (cs.map (skeletonNode (fun _ _ => false))) (ms.map (skeletonNode (fun _ _ => false))))).length := by
-      simp [leafParts]
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length]
-    rw [same, e1, e2]
-    simp only [List.map_map, Function.comp_def]
-    have h1 := sum_le_sum_add cs _ _ _ hc
-    have h2 := sum_le_sum_add ms _ _ _ hm
-    rw [sum_mul] at h1 h2
-    rw [Nat.add_mul]
-    omega
-  | datedTimeline title dated undated cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_append, List.length_map]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
-    omega
-  | timeline title cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_nil]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
-    omega
-  | presentation kind cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_nil]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
-    omega
-  | valueSet options custom cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e (cx.inValueSet options custom) ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    have e1 : ({ cx with windows := ws } : DisplayCx).inValueSet options custom =
-      { cx.inValueSet options custom with windows := ws } := rfl
-    have e2 : ({ cx with windows := [] } : DisplayCx).inValueSet options custom =
-      { cx.inValueSet options custom with windows := [] } := rfl
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.length_nil]
-    rw [e1, e2]
-    simp only [List.map_map, Function.comp_def]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
+    intro cx ws same
+    have e : paneCx { cx with windows := ws } metadata cs ms = { paneCx cx metadata cs ms with windows := ws } := rfl
+    have hc := sum_congr cs _ _ fun c h => ih c h (paneCx cx metadata cs ms) ws same
+    have hm := sum_congr ms _ _ fun c h => im c h (paneCx cx metadata cs ms) ws same
+    have leaf : leafParts { cx with windows := ws } (.patientPane patient banner metadata cs ms) =
+      leafParts cx (.patientPane patient banner metadata cs ms) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, e, leaf] at *
     omega
   | chartReferences refs cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_map]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
+    intro cx ws same
+    have each : ∀ c ∈ cs, (semanticNodes { { cx with windows := ws } with references := refs } c).length =
+        (semanticNodes { cx with references := refs } c).length :=
+      fun c h => ih c h { cx with references := refs } ws same
+    have hc := sum_congr cs _ _ each
+    have leaf : leafParts { cx with windows := ws } (.chartReferences refs cs) = leafParts cx (.chartReferences refs cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
+    omega
+  | valueSet options custom cs ih =>
+    intro cx ws same
+    have e : ({ cx with windows := ws } : DisplayCx).inValueSet options custom =
+      { cx.inValueSet options custom with windows := ws } := rfl
+    have hc := sum_congr cs _ _ fun c h => ih c h (cx.inValueSet options custom) ws same
+    have leaf : leafParts { cx with windows := ws } (.valueSet options custom cs) = leafParts cx (.valueSet options custom cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, e, leaf] at *
+    omega
+  | nil => exact absurd ‹_ ∈ ([] : List UiNode)› List.not_mem_nil
+  | cons node cs ih im =>
+    rename_i c member cx ws same
+    rcases List.mem_cons.mp member with rfl | member
+    · exact ih cx ws same
+    · exact im c member cx ws same
+  | board urgent cs ih =>
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.board urgent cs) = leafParts cx (.board urgent cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
+    omega
+  | datedTimeline title dated undated cs ih =>
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.datedTimeline title dated undated cs) =
+      leafParts cx (.datedTimeline title dated undated cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
+    omega
+  | timeline title cs ih =>
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.timeline title cs) = leafParts cx (.timeline title cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
+    omega
+  | presentation kind cs ih =>
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.presentation kind cs) = leafParts cx (.presentation kind cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
     omega
   | rowAction target row cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_nil]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.rowAction target row cs) = leafParts cx (.rowAction target row cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
     omega
   | «section» id title cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_nil]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.section id title cs) = leafParts cx (.section id title cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
     omega
   | columns cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      List.length_nil]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.columns cs) = leafParts cx (.columns cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
     omega
   | tabs id labels selected cs ih =>
-    intro e cx ws hyp
-    have hc : ∀ c ∈ cs, _ := fun c member =>
-      ih c member e cx ws (hyp_child W cs (by simp only [allRows]) hyp c member)
-    simp only [windowNode, skeletonNode, infoCount, semanticNodes, leafParts, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_map, Function.comp_def,
-      tabParts, List.length_map, List.length_zipIdx]
-    have := sum_le_sum_add cs _ _ _ hc
-    rw [sum_mul] at this
+    intro cx ws same
+    have hc := sum_congr cs _ _ fun c h => ih c h cx ws same
+    have leaf : leafParts { cx with windows := ws } (.tabs id labels selected cs) = leafParts cx (.tabs id labels selected cs) := rfl
+    simp only [semanticNodes, List.length_cons, prefixChildren_length, List.map_append, List.sum_append,
+      partEntries_length, List.map_map, Function.comp_def, leaf] at *
     omega
-  | nil => exact absurd ‹_ ∈ ([] : List UiNode)› List.not_mem_nil
-  | cons node cs ih im =>
-    rename_i c member e cx ws hyp
-    rcases List.mem_cons.mp member with rfl | member
-    · exact ih e cx ws hyp
-    · exact im c member e cx ws hyp
   | _ =>
-    intro e cx ws _
-    simp only [windowNode, skeletonNode, infoCount, Nat.zero_mul, Nat.add_zero, semanticNodes, List.length_cons,
-      prefixChildren_length, List.map_append, List.sum_append, partEntries_length, List.map_nil, List.sum_nil,
-      List.append_nil]
-    apply Nat.le_of_eq
+    intro cx ws _
+    unfold semanticNodes
     rfl
 
-private theorem flatMap_map_eq {α : Type} (cs : List UiNode) (f : UiNode → UiNode) (g : UiNode → List α)
-    (h : ∀ c ∈ cs, g (f c) = g c) : (cs.map f).flatMap g = cs.flatMap g := by
-  induction cs with
-  | nil => rfl
-  | cons c rest ih =>
-    simp only [List.map_cons, List.flatMap_cons]
-    rw [h c List.mem_cons_self, ih (fun x hx => h x (List.mem_cons_of_mem _ hx))]
-
-private theorem map_eq_self (cs : List UiNode) (f : UiNode → UiNode) (h : ∀ c ∈ cs, f c = c) : cs.map f = cs := by
-  induction cs with
-  | nil => rfl
-  | cons c rest ih =>
-    simp only [List.map_cons]
-    rw [h c List.mem_cons_self, ih (fun x hx => h x (List.mem_cons_of_mem _ hx))]
-
-/-- A window moves no confirmation button. -/
-theorem confirmComps_window (cfg : Config) (asked : String → Nat) (node : UiNode) :
-    ∀ e, confirmComps (windowNode cfg e asked node) = confirmComps node ∧
-      confirmComps (skeletonNode e node) = confirmComps node := by
-  induction node using UiNode.rec
-    (motive_2 := fun cs => ∀ c ∈ cs, ∀ e, confirmComps (windowNode cfg e asked c) = confirmComps c ∧
-      confirmComps (skeletonNode e c) = confirmComps c) with
-  | info comp label infoId display rows =>
-    intro e; simp only [windowNode, skeletonNode]; constructor <;> split <;> simp [confirmComps]
-  | patientPane patient banner metadata cs ms ih im =>
-    intro e
-    simp only [windowNode, skeletonNode, confirmComps]
-    exact ⟨by rw [flatMap_map_eq cs _ _ (fun c h => (ih c h _).1), flatMap_map_eq ms _ _ (fun c h => (im c h _).1)],
-      by rw [flatMap_map_eq cs _ _ (fun c h => (ih c h _).2), flatMap_map_eq ms _ _ (fun c h => (im c h _).2)]⟩
-  | nil => exact absurd ‹_ ∈ ([] : List UiNode)› List.not_mem_nil
-  | cons node cs ih im =>
-    rename_i c member e
-    rcases List.mem_cons.mp member with rfl | member
-    · exact ih e
-    · exact im c member e
-  | button comp label role enabled reason hotkey => intro e; simp [windowNode, skeletonNode]
-  | field => intro e; simp [windowNode, skeletonNode]
-  | alert => intro e; simp [windowNode, skeletonNode]
-  | text => intro e; simp [windowNode, skeletonNode]
-  | stepper => intro e; simp [windowNode, skeletonNode]
-  | _ =>
-    rename_i cs ih
-    intro e
-    simp only [windowNode, skeletonNode, confirmComps]
-    exact ⟨flatMap_map_eq cs _ _ (fun c h => (ih c h _).1), flatMap_map_eq cs _ _ (fun c h => (ih c h _).2)⟩
-
-/-- Nothing is paged where nothing is eligible. -/
-theorem window_none (cfg : Config) (asked : String → Nat) (node : UiNode) :
-    windowNode cfg (fun _ _ => false) asked node = node ∧ skeletonNode (fun _ _ => false) node = node := by
-  induction node using UiNode.rec
-    (motive_2 := fun cs => ∀ c ∈ cs, windowNode cfg (fun _ _ => false) asked c = c ∧
-      skeletonNode (fun _ _ => false) c = c) with
-  | info comp label infoId display rows => simp [windowNode, skeletonNode, paged]
-  | patientPane patient banner metadata cs ms ih im =>
-    simp only [windowNode, skeletonNode]
-    rw [map_eq_self cs _ (fun c h => (ih c h).1), map_eq_self ms _ (fun c h => (im c h).1),
-      map_eq_self cs _ (fun c h => (ih c h).2), map_eq_self ms _ (fun c h => (im c h).2)]
-    exact ⟨rfl, rfl⟩
-  | nil => exact absurd ‹_ ∈ ([] : List UiNode)› List.not_mem_nil
-  | cons node cs ih im =>
-    rename_i c member
-    rcases List.mem_cons.mp member with rfl | member
-    · exact ih
-    · exact im c member
-  | button => simp [windowNode, skeletonNode]
-  | field => simp [windowNode, skeletonNode]
-  | alert => simp [windowNode, skeletonNode]
-  | text => simp [windowNode, skeletonNode]
-  | stepper => simp [windowNode, skeletonNode]
-  | _ =>
-    rename_i cs ih
-    simp only [windowNode, skeletonNode]
-    rw [map_eq_self cs _ (fun c h => (ih c h).1), map_eq_self cs _ (fun c h => (ih c h).2)]
-    exact ⟨rfl, rfl⟩
-
-/-- New specification for owner review: the screen's bounded lists bound its
-inventory. With the window on, the windowed screen has at most
-`7 + 2·(maxPageSize·W)` occurrences more per info node than its structure
-(`skeleton`, every pageable list emptied), where `W` is the widest record of the
-screen. The bound reads the structure, the number of info nodes, the widest
-record and the largest page size; it holds whatever the number of records of
-every pageable list. -/
-private theorem roots_bound (L : List UiNode) (f g : UiNode → UiNode) (cx1 cx2 : DisplayCx) (C : Nat)
-    (h : ∀ c ∈ L, (semanticNodes cx1 (f c)).length ≤ (semanticNodes cx2 (g c)).length + infoCount c * C) :
-    (((L.map f).map (semanticNodes cx1)).map List.length).sum ≤
-      (((L.map g).map (semanticNodes cx2)).map List.length).sum + (L.map infoCount).sum * C := by
-  induction L with
-  | nil => simp
-  | cons c rest ih =>
-    simp only [List.map_cons, List.sum_cons]
-    have := h c List.mem_cons_self
-    have := ih (fun x hx => h x (List.mem_cons_of_mem _ hx))
-    rw [Nat.add_mul]
-    omega
-
-theorem window_inventory_bound (cfg : Config) (enabled : cfg.enabled = true) (screen : UiScreen) (W : Nat)
-    (widths : ∀ root ∈ screenRoots screen, ∀ rows ∈ allRows root, ∀ row ∈ rows, row.length ≤ W) :
-    (screenNodes (windowScreen cfg screen)).length ≤
-      (screenNodes (skeleton screen)).length +
-        ((screenRoots screen).map infoCount).sum * (7 + 2 * (maxPageSize * W)) := by
-  have confirmW : ((screen.workspace.map (windowNode cfg (eligibleIn screen) (askedIn screen)) ++
-      screen.side.map (windowNode cfg (eligibleIn screen) (askedIn screen)) ++ screen.modal.toList ++
-      screen.urgent?.getD []).flatMap confirmComps) =
-      (screen.workspace ++ screen.side ++ screen.modal.toList ++ screen.urgent?.getD []).flatMap confirmComps := by
-    simp only [List.flatMap_append]
-    rw [flatMap_map_eq _ _ _ (fun c _ => (confirmComps_window cfg (askedIn screen) c (eligibleIn screen)).1),
-      flatMap_map_eq _ _ _ (fun c _ => (confirmComps_window cfg (askedIn screen) c (eligibleIn screen)).1)]
-  have confirmS : ((screen.workspace.map (skeletonNode (eligibleIn screen)) ++
-      screen.side.map (skeletonNode (eligibleIn screen)) ++ screen.modal.toList ++
-      screen.urgent?.getD []).flatMap confirmComps) =
-      (screen.workspace ++ screen.side ++ screen.modal.toList ++ screen.urgent?.getD []).flatMap confirmComps := by
-    simp only [List.flatMap_append]
-    rw [flatMap_map_eq _ _ _ (fun c _ => (confirmComps_window cfg (askedIn screen) c (eligibleIn screen)).2),
-      flatMap_map_eq _ _ _ (fun c _ => (confirmComps_window cfg (askedIn screen) c (eligibleIn screen)).2)]
-  obtain ⟨ws, hW⟩ : ∃ ws, windowScreen cfg screen =
-      { screen with
-          workspace := screen.workspace.map (windowNode cfg (eligibleIn screen) (askedIn screen)),
-          side := screen.side.map (windowNode cfg (eligibleIn screen) (askedIn screen)),
-          windows? := ws } := by
-    exact ⟨if ((screen.workspace ++ screen.side).flatMap (windowsOf cfg (eligibleIn screen) (askedIn screen))).isEmpty
-      then screen.windows? else some ((screen.workspace ++ screen.side).flatMap
-        (windowsOf cfg (eligibleIn screen) (askedIn screen))),
-      by unfold windowScreen; simp only [enabled, Bool.not_true, Bool.false_eq_true, ↓reduceIte]⟩
-  obtain ⟨base, hbase⟩ : ∃ b, screenCx screen = b := ⟨_, rfl⟩
-  have cxW : screenCx (windowScreen cfg screen) = { base with windows := ws.getD [] } := by
-    subst hbase; rw [hW]; simp only [screenCx]; rw [confirmW]
-  have cxS : screenCx (skeleton screen) = { base with windows := [] } := by
-    subst hbase; simp only [screenCx, skeleton]; rw [confirmS]; rfl
-  have rootsW : screenRoots (windowScreen cfg screen) =
-      windowNode cfg (fun _ _ => false) (askedIn screen) (navNode screen.nav) ::
-        (screen.workspace.map (windowNode cfg (eligibleIn screen) (askedIn screen)) ++
-          screen.side.map (windowNode cfg (eligibleIn screen) (askedIn screen)) ++
-          screen.modal.toList.map (windowNode cfg (fun _ _ => false) (askedIn screen)) ++
-          (screen.urgent?.getD []).map (windowNode cfg (fun _ _ => false) (askedIn screen))) := by
-    rw [hW]; simp only [screenRoots]
-    rw [(window_none cfg (askedIn screen) (navNode screen.nav)).1,
-      map_eq_self screen.modal.toList _ (fun c _ => (window_none cfg (askedIn screen) c).1),
-      map_eq_self (screen.urgent?.getD []) _ (fun c _ => (window_none cfg (askedIn screen) c).1)]
-  have rootsS : screenRoots (skeleton screen) =
-      skeletonNode (fun _ _ => false) (navNode screen.nav) ::
-        (screen.workspace.map (skeletonNode (eligibleIn screen)) ++
-          screen.side.map (skeletonNode (eligibleIn screen)) ++
-          screen.modal.toList.map (skeletonNode (fun _ _ => false)) ++
-          (screen.urgent?.getD []).map (skeletonNode (fun _ _ => false))) := by
-    simp only [screenRoots, skeleton]
-    rw [(window_none cfg (askedIn screen) (navNode screen.nav)).2,
-      map_eq_self screen.modal.toList _ (fun c _ => (window_none cfg (askedIn screen) c).2),
-      map_eq_self (screen.urgent?.getD []) _ (fun c _ => (window_none cfg (askedIn screen) c).2)]
-  have chrome : chromeEntries (windowScreen cfg screen) = chromeEntries (skeleton screen) := by
-    rw [hW]; rfl
-  have bound := fun (L : List UiNode) (eligible : String → String → Bool)
-      (sub : ∀ c ∈ L, c ∈ screenRoots screen) =>
-    roots_bound L (windowNode cfg eligible (askedIn screen)) (skeletonNode eligible)
-      { base with windows := ws.getD [] } { base with windows := [] } (7 + 2 * (maxPageSize * W))
-      (fun c hc => node_bound cfg (askedIn screen) W c eligible base (ws.getD []) (widths c (sub c hc)))
-  have inRoots : ∀ c, c ∈ screen.workspace ∨ c ∈ screen.side ∨ c ∈ screen.modal.toList ∨ c ∈ screen.urgent?.getD [] →
-      c ∈ screenRoots screen := by
-    intro c hc
-    simp only [screenRoots, List.mem_cons, List.mem_append]
-    rcases hc with h | h | h | h <;> simp [h]
-  have bN := node_bound cfg (askedIn screen) W (navNode screen.nav) (fun _ _ => false) base (ws.getD [])
-    (widths _ (by simp [screenRoots]))
-  have b1 := bound screen.workspace (eligibleIn screen) (fun c h => inRoots c (.inl h))
-  have b2 := bound screen.side (eligibleIn screen) (fun c h => inRoots c (.inr (.inl h)))
-  have b3 := bound screen.modal.toList (fun _ _ => false) (fun c h => inRoots c (.inr (.inr (.inl h))))
-  have b4 := bound (screen.urgent?.getD []) (fun _ _ => false) (fun c h => inRoots c (.inr (.inr (.inr h))))
-  simp only [screenNodes, prefixChildren_length, List.map_append, List.sum_append]
-  rw [chrome, cxW, cxS, rootsW, rootsS]
-  simp only [screenRoots, List.map_cons, List.sum_cons, List.map_append, List.sum_append, Nat.add_mul]
+/-- New specification for owner review: a screen's inventory has the same size
+under any windows that name the same lists. -/
+theorem windows_inventory (A : UiScreen) (ws : List UiWindow) (same : ws.map (·.comp) = (A.windows?.getD []).map (·.comp)) :
+    (screenNodes { A with windows? := some ws }).length = (screenNodes A).length := by
+  have cx : screenCx { A with windows? := some ws } = { screenCx A with windows := ws } := rfl
+  have each := sum_congr (screenRoots A) _ _ fun c _ => windows_length c (screenCx A) ws same
+  have roots : screenRoots { A with windows? := some ws } = screenRoots A := rfl
+  have chrome : chromeEntries { A with windows? := some ws } = chromeEntries A := rfl
+  simp only [screenNodes, prefixChildren_length, List.map_append, List.sum_append, List.map_map,
+    Function.comp_def, cx, roots, chrome] at *
   omega
+
+/-- New specification for owner review: screen size no longer grows with the
+data. A screen holding one list of more than a page of records has the same
+windowed inventory size however many records follow: `inventory_unbounded`
+says the unwindowed inventory grows with every record. -/
+theorem list_inventory_independent (rows more : List (List (String × String))) (long : defaultPageSize < rows.length) :
+    (screenNodes (windowScreen {} (listScreen (rows ++ more)))).length =
+      (screenNodes (windowScreen {} (listScreen rows))).length := by
+  have k : ({} : Config).sizeOf "results" = defaultPageSize := by
+    simp [Config.sizeOf, defaultPageSize, minPageSize, maxPageSize]
+  have elig : ∀ xs : List (List (String × String)), eligibleIn (listScreen xs) "results" "results" = true := by
+    intro xs; simp [eligibleIn, pageable, screenInfoComps, listScreen, infoComps]
+  have asked : ∀ xs : List (List (String × String)), askedIn (listScreen xs) = fun _ => 0 := by
+    intro xs; funext c; simp [askedIn, listScreen]
+  have page : ∀ xs : List (List (String × String)), defaultPageSize < xs.length →
+      windowScreen {} (listScreen xs) =
+        { listScreen (pageRows xs defaultPageSize 0) with
+            windows? := some [windowOf {} "results" xs 0] } := by
+    intro xs hx
+    have hp : paged {} (eligibleIn (listScreen xs)) "results" "results" xs = true := by
+      simp only [paged, elig, k, Bool.true_and, decide_eq_true_eq]; exact hx
+    have c0 : clampPage xs.length defaultPageSize 0 = 0 := by simp [clampPage]
+    have ws : (listScreen xs).workspace = [.info "results" "Results" "results" "table" xs] := rfl
+    have sd : (listScreen xs).side = [] := rfl
+    simp only [windowScreen, Bool.not_true, Bool.false_eq_true, ↓reduceIte, ws, sd, List.map_cons, List.map_nil,
+      List.append_nil, List.flatMap_cons, List.flatMap_nil, windowsOf, windowNode, hp, asked, k, c0]
+    simp [windowOf, listScreen]
+  have more' : defaultPageSize < (rows ++ more).length := by simp; omega
+  rw [page _ more', page _ long]
+  have take : pageRows (rows ++ more) defaultPageSize 0 = pageRows rows defaultPageSize 0 := by
+    simp only [pageRows, Nat.zero_mul, List.drop_zero]
+    exact List.take_append_of_le_length (by omega)
+  rw [take]
+  have e1 := windows_inventory { listScreen (pageRows rows defaultPageSize 0) with windows? := some [windowOf {} "results" rows 0] }
+    [windowOf {} "results" (rows ++ more) 0] (by simp [windowOf])
+  simpa using e1
 
 #print axioms windowParts_length
 #print axioms infoParts_length_le
 #print axioms info_length
-#print axioms node_bound
-#print axioms confirmComps_window
-#print axioms window_none
-#print axioms window_inventory_bound
+#print axioms windowParts_count
+#print axioms windows_length
+#print axioms windows_inventory
+#print axioms list_inventory_independent
 #print axioms shell_reveal_offset
 #print axioms scroll_steps
 #print axioms shell_buried_row

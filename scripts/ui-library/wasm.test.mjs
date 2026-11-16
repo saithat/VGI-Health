@@ -113,3 +113,17 @@ test('native and WASM agree on the window of bounded lists, its pages and its in
   }
   assert.equal(windows,9);
 });
+test('all rich widgets have identical native/WASM inventories, checked boxes and marks', async()=>{
+  const {shapeFor,layoutFor,eraseContent,viewports}=await import('../layout-reference/generator.mjs');
+  const screens=json('app/tests/data/lean-widgets.json'),times=[];
+  for(const [widget,screen] of Object.entries(screens)) {
+    const shape=shapeFor(screen),references=[{screen:eraseContent(screen),layouts:viewports.map(viewport=>({viewport,tree:layoutFor(shape,viewport)}))}];
+    for(const request of [{op:'inventory',screen},{op:'family-check',references},...viewports.map(viewport=>({op:'family-paint',screen,references,viewport}))]){
+      const expected=layout(request),start=performance.now(),actual=wasm.call('ehr_layout',JSON.stringify(request));
+      times.push({widget,op:request.op,viewport:request.viewport,wasmMs:performance.now()-start});
+      assert.equal(actual,expected,`${widget}/${request.op}/${request.viewport?.w}`);
+      if(request.op!=='inventory')assert.equal(JSON.parse(actual).accepted,true);
+    }
+  }
+  writeFileSync(resolve(process.env.TMPDIR??'/home/saithat/Projects/run-tmp','painter-parity-wasm-metrics.json'),JSON.stringify(times,null,2));
+});

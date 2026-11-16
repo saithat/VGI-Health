@@ -99,7 +99,7 @@ theorem semanticNodes_unique (node : UiNode) : ∀ cx : DisplayCx, (paths (seman
   | valueSet options custom cs ih =>
     intro cx; simp only [semanticNodes]; exact node_unique _ _ _ (mapped_unique _ cs (ih _))
   | chartReferences refs cs ih =>
-    intro cx; simp only [semanticNodes]; exact node_unique _ _ _ (mapped_unique cx cs (ih cx))
+    intro cx; simp only [semanticNodes]; exact node_unique _ _ _ (mapped_unique _ cs (ih _))
   | rowAction target row cs ih =>
     intro cx; simp only [semanticNodes]; exact node_unique _ _ _ (mapped_unique cx cs (ih cx))
   | «section» id title cs ih =>
@@ -370,7 +370,11 @@ private theorem leaf_plain (cx : DisplayCx) (node : UiNode) : Plain (leafParts c
   | info comp label infoId display rows => exact plain_append (window_plain cx comp) (info_plain infoId display rows)
   | board urgent children => exact plain_map _ _ fun _ => rfl
   | datedTimeline title dated undated children =>
-    exact plain_append (plain_map _ _ fun _ => rfl) (plain_map _ _ fun _ => rfl)
+    exact plain_append (plain_append (plain_map _ _ fun _ => rfl) (plain_map _ _ fun _ => rfl))
+      (plain_single _ rfl)
+  | alert _ _ _ _ => exact plain_single _ rfl
+  | timeline _ _ => exact plain_single _ rfl
+  | presentation _ _ => exact plain_map _ _ fun _ => rfl
   | chartReferences references children => exact plain_map _ _ fun _ => rfl
   | patientPane patient banner metadata children modal => exact plain_map _ _ atom_plain
   | _ => exact plain_nil
@@ -427,7 +431,7 @@ theorem semanticNodes_all (P : Part → Prop) (own : ∀ cx node, P (ownPart cx 
   | timeline title cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped cx cs (ih cx))
   | presentation kind cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped cx cs (ih cx))
   | valueSet options custom cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped _ cs (ih _))
-  | chartReferences refs cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped cx cs (ih cx))
+  | chartReferences refs cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped _ cs (ih _))
   | rowAction target row cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped cx cs (ih cx))
   | «section» id title cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped cx cs (ih cx))
   | columns cs ih => intro cx; simp only [semanticNodes]; exact step cx _ _ (mapped cx cs (ih cx))

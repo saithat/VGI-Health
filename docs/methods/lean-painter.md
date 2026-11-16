@@ -69,8 +69,9 @@ Lean changes are API/export routing and narrower runtime imports only. The
 layout types/fonts/keyboard files use `Lean.Data.Json` (and `Std` for keyboard
 proof tactics) instead of the full `Lean` compiler umbrella so Emscripten links
 only runtime dependencies. The font generator emits the same narrower import.
-Introducing the painter changed no rule, specification, theorem statement,
-proof body or clinical definition. The layout rules were strengthened
+Introducing the painter changed no clinical rule or theorem statement. Rich
+displays add new specifications and proof-preserving display/layout plumbing;
+[details and validation](painter-parity.md). The layout rules were strengthened
 afterwards (12 px text, 4.5:1 contrast, fixed targets in the density count,
 the pinned urgent strip, one target per navigation link and tab); the
 [UI library](ui-library.md) page states them. The checked API and certificate
@@ -138,13 +139,14 @@ when Lean removes the alert. Escape is sent to the same profile, which ignores
 it (`alertDialog_stays_open`); the painter swallows the key and there is no
 dismiss event, so acknowledgment cannot be bypassed. `Keyboard.dialog`, which
 closes on Escape, remains for ordinary dismissible dialogs and is not used for
-interruptive boxes. Table cells are grid cells: arrows, Home/End and
+interruptive boxes. Rich medication cells have checked rectangles and supplied action
+controls. Table cells are grid cells: arrows, Home/End and
 Control+Home/End call `Keyboard.grid` with the table's rows and columns and
 move a roving focus between the cell boxes (`app/src/lean-ui/grid.ts`). The
 WASM keyboard API exposes and tests all five profiles without reimplementing
 their transitions in TypeScript.
 
-**Admission limitation.** The semantic inventory has one target occurrence
+**Admission boundary.** The semantic inventory has one target occurrence
 per navigation link, per tab, per section toggle, per field control and per
 unconfirmed prefill without an explicit confirmation button, so the size,
 separation and density rules see every one of them; the pending field no
@@ -152,9 +154,8 @@ longer turns into a confirmation button. Table cells are occurrences with
 rectangles, rows and columns of their own, laid out in shared column tracks,
 and `Keyboard.grid` moves focus among them; grid ARIA ownership (rows inside a
 grid element) is not built, since the boxes are flat. Geometry/text agreement
-does not prove control fidelity or accessibility. Tables as grids, nested pane
-modalities and richer widget geometry remain cut-over blockers, not grounds
-for weakening G1–G11.
+does not prove control fidelity or accessibility. Rich board modalities and widget marks use checked family geometry, with no
+weakening of G1–G11.
 
 ## Widget inventory
 
@@ -182,37 +183,37 @@ covered by the presentation row; their underlying child controls remain present.
 | `info`: table/list/summary/document/status/entryTimes | Works, simpler look | Lean's caption and one part per cell with row and column, value text formatted in Lean; state cells and result flags carry a tone; an empty table says so. Uniform tables are a header row and value rows in shared column tracks; cells are grid cells (`role=gridcell`, row and column indexes). No medication cards or document sections. Late-entry times read in UTC. |
 | `info`: bounded lists (pager) | Works | A paged list shows one page (Lean's window): its position ("Records 21–40 of 705") and flagged count are text parts; previous, next and next-flagged are native buttons and the page selector a native select over Lean's page options; each sends `selectTab` with the page Lean gives it. A target that cannot move is disabled. |
 | `info`: structured row actions / keyboard grid | Works, simpler look | Action child buttons stay separate Lean target boxes; the dense layout puts a record's single-button actions in its row. A click or Enter on any cell of a row whose record has one navigation action sends that action's own `click` (no extra target or geometry). Arrow, Home/End and Control+Home/End move a roving focus through `Keyboard.grid` over the cell boxes. Rows with several actions keep their buttons. |
-| `alert` | Simpler look | Lean's label with the alert role; the severity is kind and tone, not text; modal sources receive fixed interruptive placement and inert ordinary controls. No severity icon. |
+| `alert` | Works, simpler look | Lean label, severity tone and a checked geometric severity mark; interruptive placement and inert ordinary controls remain. |
 | `button`: navigation, primary commit, macro, review, toggle, add/remove, reconciliation | Works, simpler look | Native button; `click` unchanged. Enabled state comes from Lean; the complete blocked reason is its own part. Lean step owns every action, including macro confirmations and group visibility. |
 | `button`: acknowledgment / explicit confirmation | Works, simpler look | `ack {alert: comp}` or `confirm {comp}` exactly as the current renderer. No automatic acknowledgment or confirmation. |
-| `button`: hotkey badge | Simpler look | The hotkey is its own part. Global shortcut activation is not added (the stock button renderer displays the badge). |
+| `button`: hotkey badge | Works | A displayed hotkey activates a unique enabled button; editors, modal ownership and patient scope are respected. Ambiguous shortcuts require focus in a pane. |
 | `text` | Works | Complete source and pinned prebroken visual spelling; missing scalars use Lean's escapes. |
-| `presentation` | Simpler look; rich surfaces missing | All wrapper/child occurrences painted. React presentation overrides are ignored. Structured tables, MAR time grids, note cards and growth/trend charts need native presentations and appropriate Lean mark/row geometry before visual parity. |
+| `presentation` | Works for rich displays; tables remain simpler | Dedicated time-grid, note/folder card and plotted trend/growth parts; complete original info/actions remain available. Tables are grids and long lists are paged (rows above). |
 | `valueSet` | Works, simpler look | The wrapper prints nothing; Lean passes its options to the controls inside. |
-| `chartReferences` | Simpler look | One readable part per reference curve with every sample; no overlaid percentile/reference curves. Needs a native plotted presentation and checked mark geometry. |
+| `chartReferences` | Works | Every reference sample/source stays readable; matching growth series overlay Lean-placed dashed reference curves. |
 | `rowAction` | Works, simpler look | Child controls retain their events and separate source boxes; the wrapper names the table and row; single-button actions sit in their record's row and the row forwards a click to a single navigation action. A list named by a row action is not paged. |
-| `timeline` | Simpler look | Heading and ordered children preserved as read-only cards; no styled event list. |
-| `datedTimeline` | Simpler look | One readable part per dated source (UTC instant, record, field, recorded timestamp) and per undated source, then the children; no graphical UTC-aligned axis. |
-| `board` | Missing multi-patient interaction | One alert part per urgent demand (patient, record number, alert) and all pane occurrences are readable. No patient-scoped board session/dispatch host is connected; pane controls are disabled to prevent unscoped events. |
-| `patientPane` | Missing interaction | The pane banner as one part with runs, urgent atoms, ordinary/modal children by source path. Needs patient-scoped event transport, modal ownership and board shell geometry; disabled here. |
-| `UiScreen.banner`, title and side nodes | Simpler look | One fixed banner part whose runs (name, identity, badges, details, clinician) are tagged for styling; title and child parts. Banner fields are not separate boxes: rule G1 admits one banner box. No patient avatar. |
+| `timeline` | Works, simpler look | Lean-placed source-order axis plus the complete ordered children; no dates are inferred. |
+| `datedTimeline` | Works | Lean-placed proportional UTC axis, exact timestamp/source labels, explicit undated entries and complete children. |
+| `board` | Works; large boards have a simpler look | Opt-in patient-scoped live sessions, a pinned urgent rail, pane shell geometry and global modal ownership. A pane explicitly selects its named patient; other-patient selection is refused. Large clinical boards can use the checked fixed-shell fallback when the dense candidate exceeds the existing limits. |
+| `patientPane` | Works, simpler look | Text/composition, controls, tabs and acknowledgment use the enclosing patient binding; repeated component IDs retain separate DOM/geometry identity. The active modal blocks foreign pane controls, including their urgent actions. |
+| `UiScreen.banner`, title and side nodes | Works, simpler look | Name, identity, badge, detail and clinician runs are decorated inside the one fixed G1 banner box. No avatar; glyph metrics and Lean colours remain pinned. |
 | `UiScreen.urgent` nodes | Works, simpler look | Lean pins them in a fixed strip (rule G11): outside every scroller, in the viewport and clear of every other box. The painter keeps strip boxes operable while a modal is open and blocks everything else. A state with more urgent nodes than the layout can pin is refused, not painted. |
 | `UiScreen.nav` | Works, simpler look | A heading per group and one button per link, each in its own Lean target box, sends the existing `click` IDs; the active link is flagged by Lean. The dense layout places group headings and wrapping button bars before the workspace in the shared body scroller; the fixed-shell fallback places navigation after it. |
-| Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean `alertDialog` Tab transitions, inert ordinary controls, initial focus and restoration. Escape is ignored by the Lean profile and swallowed by the painter. Board modality remains missing. |
+| Interruptive dialog focus | Works | Lean alert-dialog transitions trap focus; Escape cannot dismiss. Pane modal ownership is rechecked at dispatch; focus follows modal changes and returns to its invoker. |
 | Review/sign persistence and draft restoration | Existing live path | Same `createLiveSession`, native screen comparison, guarded command endpoint and database. No alternate save implementation. |
 
 The stock presentation kinds are fully enumerated below. None introduces a
 new clinical event constructor; row actions use their existing child controls.
-The painter retains every underlying row and action, while these visual
-encodings remain to be reproduced.
+The painter retains every underlying row and action; the rows below distinguish
+implemented rich encodings from the remaining table/list work.
 
 | Presentation kinds | Current surface and interaction | New painter status / need |
 |---|---|---|
 | `table`, `schedule`, `trackBoard`, `orSchedule`, `worklist`, `flowsheet`, `messages`, `results` | Structured record columns/status styling; supplied row controls; an enabled single navigation row can proxy its button click | Simpler text cards + separate action controls. Whole-row click proxy and column/status presentation missing; needs row/cell geometry. |
-| `timeGrid` | MAR day/hour columns, medication rows, due/status cells and supplied action controls | All data/actions retained as cards; time-grid visual encoding missing. Needs checked hour/cell/row placements. |
-| `folderList` | Folder names/counts/details and supplied child row controls | Simpler complete text and separate child controls; folder list styling missing. |
-| `notes` | Note metadata/cards and provenance-aware title/body text | Complete unbounded text; note card typography/grouping missing. |
-| `trend`, `growth` | Read-only numeric/time charts and tabular records; growth reference percentiles from context | Complete values/reference metadata retained; curves, axes, point labels and plotted reference bands missing. Needs Lean mark geometry. |
+| `timeGrid` | MAR day/hour columns, medication rows, due/status cells and supplied action controls | Works: checked row/hour/cell rectangles; supplied controls retain events. Long axes wrap into blocks; complete original values remain available. |
+| `folderList` | Folder names/counts/details and supplied child row controls | Works, simpler look: folder cards retain names/counts/details; supplied controls remain separate. |
+| `notes` | Note metadata/cards and provenance-aware title/body text | Works, simpler look: grouped cards retain complete metadata/body/provenance, with internal text scrolling. |
+| `trend`, `growth` | Read-only numeric/time charts and tabular records; growth reference percentiles from context | Works: Lean-placed paths/points, axes, endpoint and point labels, and matching reference curves; complete tables retained. Unsupported numeric/date strings stay unplotted. |
 
 `PresentationBundle` overrides in the current renderer add `Box`, `Stack`,
 `Group`, `Paper` and `Flex` wrappers around the original node. They are ignored
@@ -225,14 +226,15 @@ would be additional work if chosen for a future clinical cut-over.
 
 Run from the repository root with restored local synthetic fixtures, dependencies,
 the pinned Lean/Emscripten toolchain and a disposable Postgres database. Browser
-tests use one worker under the existing shared lock. They substitute only the
-authentication transport and run the production `/lean.html`, packaged WASM,
-full v3 P1/P3 programs, native service replay, screen comparison and real
-Postgres writes. The patient is generated in the service process; no patient,
+tests use one worker under the existing shared lock. They use synthetic OIDC
+authentication and the production `/lean.html`, packaged WASM, full v3
+P1/P2/P3 programs, native service replay, screen comparison and real Postgres
+writes. The scheduled-dose test substitutes notification streaming. The patient is generated in the service process; no patient,
 run or certificate data is added to git. Keycloak itself is outside these tests.
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=4 JOBS=4
+export ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0
 # On worktrees with an already restored dependency tree:
 export pnpm_config_verify_deps_before_run=false
 (cd lean && lake build && lake build ui-layout)
@@ -257,7 +259,7 @@ The complete pinned research font set is 5.52 MiB; an ordinary 400-weight Latin
 page requests its 60,004-byte face. WASM layout timing includes JSON encoding,
 parsing and the boundary call; it is sampled, not a responsiveness guarantee.
 
-Native/WASM paint agreement covers six P1/P3 screens at all three viewports,
+The earlier v8 measurement below covered six P1/P3 screens at all three viewports,
 including program and family painting (36 byte comparisons), all 65
 profile/key combinations, and error paths. The browser differential checks
 outer DOM rectangles after clip translations, Lean text line widths and
@@ -285,37 +287,16 @@ and would take seconds or more. The unsupported-viewport test checks inert
 refusal and recovery. The P1 task includes real sequential typing and caret
 preservation during re-layout. Full React accessibility/screen audits and the
 full Playwright suite were deliberately not run for this separate renderer.
-Keycloak provisioning/login and multi-patient board interaction remain untested
-here. Native service replay and durable command writes are exercised.
+Those earlier measurements did not exercise Keycloak provisioning/login or
+multi-patient board interaction. Current rich-widget results are documented in
+[the parity validation record](painter-parity.md). Native service replay and durable command writes are exercised.
 
-## Cut-over checklist
+## Cut-over
 
-1. Navigation links and tab labels have their own semantic targets and checked
-   rectangles. Give tab panels, grid cells and any additional native control
-   theirs. Keep G1–G11 unchanged and prove/check the corresponding layout
-   families.
-2. Complete the missing inventory rows: patient-scoped board sessions and
-   modality, custom code suggestions, rich clinical presentations, implicit
-   pending-field editing and structured row/grid interaction. Verify every
-   presentation-specific interaction before removing its React implementation.
-3. Connect APG tablist, listbox, dialog and grid roles/relationships to the
-   proved transitions; retain clinical guards for all close/activation paths.
-   Audit keyboard-only and assistive-technology behavior on supported desktops.
-4. Run complete workflow, draft recovery, alert, multi-patient, concurrency and
-   persistence regressions on the new page, with real identity-provider login.
-   Validate custom family coverage and all three viewports, and repeat pixel,
-   glyph, clipping, focus, caret, scroll and dependency differentials.
-5. Establish reviewed font/WASM/application bindings for the new clinical
-   bundle; regenerate certificates and run native/WASM conformance and strict
-   replay. Keep recorded source data untouched and report incompatibilities.
-6. Change the default clinical entry only after the inventory has behavioral
-   parity. Keep dashboard and replay React dependencies isolated; remove the
-   React clinical renderer and Mantine from the clinical bundle, then assert
-   the resulting default entry's transitive dependency graph is framework-free.
-7. Replace renderer-specific screen checks with the validated new painter
-   checks only when their covered risks have replacements. Run the appropriate
-   accessibility/screen audits for that renderer, update setup/architecture
-   documentation and retain a tested rollback path.
+The current [cut-over checklist](../design/lean-ui-cutover.md) records the
+remaining table/list, accessibility, deployment, default-route and certificate
+work. [Rich display methods](painter-parity.md) describe the patient board,
+scheduled-dose route, new display parts, checked marks and targeted evidence.
 
 ## Dense default verification
 
