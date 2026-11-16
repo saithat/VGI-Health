@@ -297,8 +297,8 @@ private theorem horizontal (v : Size) (hv : v ∈ viewports) (first body commit 
 private theorem contrast (v : Size) (hv : v ∈ viewports) (first body commit ms)
     (unique : (inventory first body commit ms).Nodup) : G6 (placements v first body commit ms) := by
   have base := (base_rules v hv first body commit ms unique).2.2.2.2.2.1
-  have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 9 = true := by decide_cbv
-  have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 6 = true := by decide_cbv
+  have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ textTwiceRatio = true := by decide_cbv
+  have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ nonTextTwiceRatio = true := by decide_cbv
   intro p hp
   rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
   · exact base p hp

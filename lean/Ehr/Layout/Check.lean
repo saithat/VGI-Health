@@ -100,14 +100,30 @@ def G5 (v : Size) (ps : List Placed) : Prop :=
   ∀ p ∈ ps, 0 ≤ (envelope p).x ∧ (envelope p).right ≤ v.w ∧
     (p.clip ≠ none → (envelope p).x ≤ p.rect.x ∧ p.rect.right ≤ (envelope p).right)
 
-/-- G6: text 4.5:1, large (≥24px, or ≥18⅔px at weight≥700) 3:1;
-interactive components 3:1. The opaque local background is part of the mark,
-so arbitrary underlying layers cannot change its computed contrast. -/
+/-- New specification for owner review: `contrastPass` threshold for text, as
+twice the ratio: 4.5:1 (`PhysicalBounds.textContrastTenths`), at every size. -/
+def textTwiceRatio : Nat := Ehr.Specs.PhysicalBounds.textContrastTenths / 5
+/-- New specification for owner review: `contrastPass` threshold for targets
+and vector marks, as twice the ratio: 3:1 (`PhysicalBounds.nontextContrastTenths`). -/
+def nonTextTwiceRatio : Nat := Ehr.Specs.PhysicalBounds.nontextContrastTenths / 5
+
+/-- The two thresholds are the hospital bounds exactly (no rounding). -/
+theorem contrast_thresholds_exact :
+    5 * textTwiceRatio = Ehr.Specs.PhysicalBounds.textContrastTenths ∧
+    5 * nonTextTwiceRatio = Ehr.Specs.PhysicalBounds.nontextContrastTenths := by decide
+
+/-- G6. New specification for owner review: foreground against background is
+at least 4.5:1 for all text regardless of size or weight, and at least 3:1 for
+every target and every painted vector mark (circle, wedge, polyline). The rule
+previously allowed 3:1 for large text and did not check non-target marks.
+The opaque local background is part of the mark, so arbitrary underlying
+layers cannot change its computed contrast. A plain rectangle has no ink of
+its own: only its text and target state are checked. -/
 def G6 (ps : List Placed) : Prop :=
-  ∀ p ∈ ps, (p.info.target = true → contrastPass p.style.fg p.style.bg 6 = true) ∧
-    ∀ t ∈ p.info.text,
-      contrastPass p.style.fg p.style.bg
-        (if t.fontSize ≥ 1536 || (t.font ≥ 3 && t.font ≤ 5 && t.fontSize ≥ 1195) then 6 else 9) = true
+  ∀ p ∈ ps, (p.info.target = true → contrastPass p.style.fg p.style.bg nonTextTwiceRatio = true) ∧
+    (p.info.paint = true → p.info.mark ≠ .rect →
+      contrastPass p.style.fg p.style.bg nonTextTwiceRatio = true) ∧
+    (p.info.text.isSome = true → contrastPass p.style.fg p.style.bg textTwiceRatio = true)
 
 /-- G7: each semantic tree-path occurrence appears once; no invented sources.
 Painted node IDs are also unique, so diagnostic and event identities are honest. -/
@@ -284,6 +300,24 @@ theorem layoutAccepted_minFont (e v ps) (h : check e v ps = true)
     (p : Placed) (hp : p ∈ ps) (t : TextSlot) (ht : t ∈ p.info.text) : 768 ≤ t.fontSize :=
   ((layoutAccepted_rules e v ps h).2.2.2.1.2.1 p hp t ht).2.1
 
+/-- New specification for owner review: all text of an accepted layout has
+foreground/background contrast of at least 4.5:1, whatever its size. -/
+theorem layoutAccepted_textContrast (e v ps) (h : check e v ps = true)
+    (p : Placed) (hp : p ∈ ps) (text : p.info.text.isSome = true) :
+    contrastPass p.style.fg p.style.bg 9 = true :=
+  ((layoutAccepted_rules e v ps h).2.2.2.2.2.1 p hp).2.2 text
+
+/-- New specification for owner review: every target and every painted vector
+mark of an accepted layout has contrast of at least 3:1. -/
+theorem layoutAccepted_nonTextContrast (e v ps) (h : check e v ps = true)
+    (p : Placed) (hp : p ∈ ps)
+    (ink : p.info.target = true ∨ (p.info.paint = true ∧ p.info.mark ≠ .rect)) :
+    contrastPass p.style.fg p.style.bg 6 = true := by
+  have g6 := (layoutAccepted_rules e v ps h).2.2.2.2.2.1 p hp
+  rcases ink with target | ⟨paint, mark⟩
+  · exact g6.1 target
+  · exact g6.2.1 paint mark
+
 /-- New specification for owner review: G1–G9 plus G10 with a density limit. -/
 def checkDensity (limit : Nat) (expected : List (List Nat)) (v : Size) (ps : List Placed) : Bool :=
   check expected v ps && decide (G10 limit v ps)
@@ -421,12 +455,16 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
       for q in ps do
         if q.info.paint && !q.info.interruptive && q.style.z ≥ p.style.z then
           out := out ++ [{ rule := "G2", node := p.info.id, other := q.info.id, metric := "z-order", actual := p.style.z, required := q.style.z+1, deficit := q.style.z+1-p.style.z }]
-    for t in p.info.text.toList do
-      let (n,d) := contrastBound p.style.fg p.style.bg
-      let ratio := if t.fontSize ≥ 1536 || (t.font ≥ 3 && t.font ≤ 5 && t.fontSize ≥ 1195) then 3000000 else 4500000
-      let lower := n*1000000/d
+    let (n,d) := contrastBound p.style.fg p.style.bg
+    let lower := n*1000000/d
+    if p.info.text.isSome then
+      let ratio := textTwiceRatio*500000
       if lower < ratio+250000 then
         out := out ++ [{ rule := "G6", node := p.info.id, metric := "contrast-lower-millionths", actual := lower, required := ratio, deficit := (ratio : Int)-lower, warning := lower ≥ ratio }]
+    if p.info.target || (p.info.paint && p.info.mark != .rect) then
+      let ratio := nonTextTwiceRatio*500000
+      if lower < ratio then
+        out := out ++ [{ rule := "G6", node := p.info.id, metric := "nontext-contrast-lower-millionths", actual := lower, required := ratio, deficit := (ratio : Int)-lower }]
   for (p,i) in ps.zipIdx do
     for q in ps.drop (i+1) do
       if p.info.banner && q.info.paint && !decide (separated p q) then
@@ -479,6 +517,9 @@ def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
 #print axioms layoutAccepted_safety
 #print axioms layoutAccepted_rules
 #print axioms layoutAccepted_minFont
+#print axioms contrast_thresholds_exact
+#print axioms layoutAccepted_textContrast
+#print axioms layoutAccepted_nonTextContrast
 #print axioms layoutAccepted_geometry
 #print axioms layoutAccepted_allViewports
 #print axioms layoutAccepted_textComplete

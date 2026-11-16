@@ -189,8 +189,8 @@ private theorem horizontal (v : Size) (hv : v ∈ viewports) (first : List Nat)
 
 private theorem contrast (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
     G6 (placements v first xs) := by
-  have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 9 = true := by decide_cbv
-  have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 6 = true := by decide_cbv
+  have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ textTwiceRatio = true := by decide_cbv
+  have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ nonTextTwiceRatio = true := by decide_cbv
   intro p hp
   rcases placement_cases hp with rfl | rfl | ⟨a,i,_,rfl⟩
   · simp [scroller]

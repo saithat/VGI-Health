@@ -32,6 +32,21 @@ private def fontBox (size : Nat) : Placed :=
 #guard !decide (textFits (fontBox 767) { maxLength := 4, fontSize := 767, lineHeight := 1408 })
 #guard !decide (G4 ⟨92160,57600⟩ [fontBox 704])
 #guard (findings [] ⟨92160,57600⟩ [fontBox 704]).any fun f => f.rule == "G4" && f.metric == "font-size" && f.deficit == 64
+/-! Contrast (G6); new specification for owner review. Grey 119 on white is
+4.48:1 and grey 118 is 4.54:1; grey 160 is 2.6:1. -/
+private def inkBox (m : Meta) (fg : Color) : Placed := ⟨⟨0,0,6400,3072⟩,{ fg },m,none,false,[],[]⟩
+#guard textTwiceRatio == 9 && nonTextTwiceRatio == 6
+#guard !decide (G6 [inkBox { text := some { fontSize := 1536, lineHeight := 2304 } } ⟨119,119,119⟩])
+#guard !decide (G6 [inkBox { text := some { font := 3, fontSize := 1280, lineHeight := 1920 } } ⟨119,119,119⟩])
+#guard decide (G6 [inkBox { text := some { fontSize := 1536, lineHeight := 2304 } } ⟨118,118,118⟩])
+#guard !decide (G6 [inkBox { mark := .circle } ⟨160,160,160⟩])
+#guard !decide (G6 [inkBox { mark := .polyline [⟨0,0⟩,⟨640,640⟩] 64 } ⟨160,160,160⟩])
+#guard decide (G6 [inkBox { mark := .circle } ⟨119,119,119⟩])
+#guard decide (G6 [inkBox { mark := .circle, paint := false } ⟨160,160,160⟩])
+#guard decide (G6 [inkBox {} ⟨250,250,250⟩])
+#guard !decide (G6 [inkBox { target := true } ⟨160,160,160⟩])
+#guard (findings [] ⟨92160,57600⟩ [inkBox { id := "mark", mark := .circle } ⟨160,160,160⟩]).any
+  fun f => f.rule == "G6" && f.node == "mark" && f.metric == "nontext-contrast-lower-millionths" && !f.warning
 private def hugging : Node := .box .frame { width := .hug, height := .hug }
   { id := "hug", paint := false } [label]
 #guard ((boxes ⟨20000,10000⟩ hugging).head!).rect.w == 6400
