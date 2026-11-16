@@ -97,3 +97,19 @@ test('WASM runtime ends String.toList with the empty list (wrapped and ellipsis 
     assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),layout(request),`${overflow} ${JSON.stringify(s)}`);
   }
 });
+test('native and WASM agree on the window of bounded lists, its pages and its inventory',()=>{
+  const record=i=>[['Test',`Test ${i}`],['Value',String(i)],['Flag',i%17===3?'H':''],['Collected','Jan 1, 2026 08:00']];
+  const screen=pages=>({banner:[],nav:[['Chart',[['home','Home']]]],title:'Results',side:[],modal:null,
+    workspace:[{info:{comp:'results',label:'Results',infoId:'resultDetail',display:'table',rows:Array.from({length:130},(_,i)=>record(i))}}],
+    ...(pages?{pages}:{})});
+  let windows=0;
+  for(const pages of [undefined,[['results',2]],[['results',99]]]) for(const window of [undefined,false,{size:7},{sizes:[['results',33]]}]) {
+    for(const op of ['window','inventory']) {
+      const request={op,screen:screen(pages),...(window===undefined?{}:{window})};
+      const expected=layout(request);
+      assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),expected,JSON.stringify(request).slice(0,120));
+      if(op==='window')windows+=(JSON.parse(expected).screen.windows??[]).length;
+    }
+  }
+  assert.equal(windows,9);
+});

@@ -104,6 +104,14 @@ export class ReferenceLayouts {
   }
 }
 export function limitFor(report,persona,release,screen) {
+  // Lean-painted screens with bounded lists: the frozen vendor baseline
+  // (docs/methods/lean-paged-density.json) when it covers the screen.
+  const paged=report.paged?.limits?.[`${release}/${persona}/${screen}`];
+  if(paged)return {limit:paged.limit,applied:paged.applied,source:paged.applied==='vendor-dense'?
+    `vendor dense layout with bounded lists (lean-paged-density.json#sha256=${report.paged.sha256})`:paged.measuredSource};
+  return measuredLimitFor(report,persona,release,screen);
+}
+export function measuredLimitFor(report,persona,release,screen) {
   const measured=report.measurements?.[`${release}/${persona}`];
   if(measured && Object.hasOwn(measured.limits,screen))return {limit:measured.limits[screen],source:measured.sources[screen].source};
   // Persona release measurements take priority over the broader canonical.

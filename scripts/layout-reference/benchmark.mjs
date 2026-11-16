@@ -2,9 +2,9 @@
 import {join,resolve} from 'node:path';
 import {readdirSync,existsSync} from 'node:fs';
 import {ReferenceLayouts,limitFor,digest} from './admission.mjs';
-import {read,write,args} from './cli.mjs';
+import {read,write,args,densityPolicy} from './cli.mjs';
 const opts=args(process.argv.slice(2)),out=resolve(opts.out??join(process.env.TMPDIR??'/home/saithat/Projects/run-tmp','reference-layouts'));
-const report=read(join(out,'report.json')),density=read('docs/audits/r5-per-screen.json');
+const report=read(join(out,'report.json')),density=densityPolicy();
 // A fresh memory-only cache measures actual cold admission, independently of
 // the warmed coverage run. Reuse its already recorded vendor thresholds.
 const cache=new ReferenceLayouts(),target=Number(opts.count??100),started=performance.now();

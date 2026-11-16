@@ -3,7 +3,7 @@ import {simulationModesSchema,resolvedSimulationModes,realWorkModes,legacyModes}
 describe('persisted simulation modes',()=>{
   it('replays retained continuous/real-work manifests with the pre-wave3 assumptions',()=>{
     const old=simulationModesSchema.parse({clockMode:'continuous',interruptions:'realWork'});
-    expect(resolvedSimulationModes(old)).toEqual({clockMode:'continuous',interruptions:'realWork',simModel:'legacy',textCost:'legacy'});
+    expect(resolvedSimulationModes(old)).toEqual({clockMode:'continuous',interruptions:'realWork',simModel:'legacy',textCost:'legacy',lists:'whole'});
     expect(resolvedSimulationModes(old)).not.toEqual(resolvedSimulationModes(realWorkModes));
   });
   it('normalizes explicit legacy controls for resume comparisons',()=>{

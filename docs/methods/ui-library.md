@@ -20,8 +20,9 @@ rectangles, circles, rational-turn wedges, lines/polylines and text. Component
 expansion has a total bounded-depth parser; cycles fail explicitly. Grid tracks accept integer fixed widths and integer fractional weights
 (`tracks: [6400, "1fr", {"fr": 2}]`); omitted tracks retain equal columns.
 Fixed tracks are honored even when they overrun their parent, so the checker
-reports overflow rather than restricting the input language. A dynamic
-bounded-list authoring primitive remains to implement.
+reports overflow rather than restricting the input language. Long lists are
+bounded by the layout's window ([bounded lists](#bounded-lists)), not by an
+authoring primitive of the language.
 
 **Layout and text proofs.** `layout_satisfies` establishes incoming size
 constraints; clamping a parent does not itself establish child containment.
@@ -202,7 +203,7 @@ present only when its datum is. No JSON is displayed.
 | `section`, `timeline`, `datedTimeline` | `heading` | a dated timeline lists one `item` per dated and undated source; then the children |
 | `tabs` | `wrapper` without text | one `tab` target per label (`col` its index, `selected` on the selected one), then the body |
 | `stepper` | `wrapper` | one numbered `step` per step, the current one `selected` |
-| `info` | `heading` | the cells, each with `row` and `col`: a table whose rows share their captions (two rows or more) shows the captions once as `cellLabel` in row 0 and then one value cell per record cell; otherwise each value cell follows its own `cellLabel`. A value cell is `cellValue`, `status` (a state column; `tone` from `statusTone`) or `badge` (a result flag). An empty table has one `empty` part; an empty status line has none |
+| `info` | `heading` | the cells, each with `row` and `col`: a table whose rows share their captions (two rows or more) shows the captions once as `cellLabel` in row 0 and then one value cell per record cell; otherwise each value cell follows its own `cellLabel`. A value cell is `cellValue`, `status` (a state column; `tone` from `statusTone`) or `badge` (a result flag). An empty table has one `empty` part; an empty status line has none. A paged list's cells follow its window parts: `position`, `flagged` and four `pager` targets ([bounded lists](#bounded-lists)) |
 | `valueSet` | `wrapper` | the children; its options reach the fields inside as popup data |
 | `rowAction` | `wrapper` with the info component and `row` | the child controls |
 | `chartReferences` | `wrapper` | one `item` per reference curve with every sample |
@@ -292,6 +293,81 @@ content-measured table grids, the medication time grid, charts as marks,
 the multi-patient board, banner fields as boxes, and grouping of several
 records into one line (blood-pressure pairs, same-time vital signs,
 medication tasks), which today's application does in TypeScript.
+
+<a id="bounded-lists"></a>
+**Bounded lists.** *New specification for owner review.* Since every
+displayed part is an occurrence, a list shown whole makes a screen as long as
+its data: P1's result review screen (`w2Result`) had 10,930 parts. The layout
+therefore pages every list it can (`Ehr.Layout.Window`, `WindowCore`,
+`WindowProofs`). These are statements about the layout model, not clinical
+claims; the page size, the record order and what counts as flagged are
+modelling choices.
+
+*Why unbounded lists are bad*, on the fixed shell's geometry (every renderer
+output's certified painter: one 56 px row per occurrence in one body
+scroller):
+
+| Statement | Lean |
+|---|---|
+| Body row `i` is in the scroll window only at an offset of more than `56·i + 288 − H` px: reveal cost grows linearly with position | `WindowProofs.shell_reveal_offset` |
+| Steps of at most `s` px reach offset `o` only after at least `o / s` steps | `WindowProofs.scroll_steps` |
+| For every bound there is a list with a body row beyond it: no bound independent of the record count | `WindowProofs.reveal_unbounded` |
+| At every supported viewport the last record of a 16-record list flagged high lies entirely outside the first viewport | `WindowProofs.critical_buried` (`shell_buried_row`) |
+| A screen holding one list has at least one occurrence per record | `WindowProofs.inventory_unbounded` |
+
+*The window.* A list is paged when it belongs to a component (so the pager's
+events reach it), is not a search result list (already at most 25 matches) or
+the patient directory, is not named by a row action (its actions would leave
+their records), occurs once on the screen, lies outside a multi-patient board
+or patient pane, and has more records than its page size (`pageable`,
+`eligibleIn`, `paged`). The page size is 20 by default (`defaultPageSize`; a
+caption, the pager row, the header and twenty 20 px rows fill about 470 px,
+which the dense layout's first viewport holds at 1440×900); a layout may set a
+list's own size, kept within 5–50 (`Config.sizeOf`). Records keep the
+renderer's order: the window never reorders (`pages_cover`). The renderer is
+unchanged and still emits every record, so D2 and T11 still speak of the whole
+list; `windowScreen` cuts each paged list of the workspace and side to the page
+asked for and records its window (`UiScreen.windows?`). A paged list's display
+parts begin with its position ("Records 21–40 of 705"), the flagged count of
+other pages and four targets: previous page, next page, a page selector whose
+options are every page, and the next page holding a flagged record
+(`Display.pagerParts`). A target that cannot move is shown but not enabled.
+
+*View state and events.* The page is view state in `State.tabSel`, where the
+selected tab already lives, and is selected by the same `selectTab` event:
+`selectTabCore` now also accepts a shown panel, table, trend or
+prior-authorization component (*changed definition*, below). A popup blocks it
+like every other event; a hidden component ignores it. The renderer passes the
+selected pages on (`UiScreen.pages?`, page 0 not listed); the window shows the
+page asked for, or the last page when a later one is asked. A flagged record
+is an abnormal result flag (critical, high, low) or a state with the red tone
+(`flaggedCell`), as the display already classifies cells.
+
+| Contract | Lean |
+|---|---|
+| A page holds at most its size of records | `Window.pageRows_length`, `windowNode_info` |
+| The screen's inventory is at most the structure (pageable lists emptied) plus `7 + 2·(50·W)` occurrences per info node, `W` the widest record, whatever the record counts | `WindowProofs.window_inventory_bound` (`node_bound`) |
+| Record `i` is on page `i / k` at position `i % k`, on no other page; the pages in order are the list | `Window.pageRows_get`, `page_unique`, `record_off_page`, `pages_cover` |
+| When the view state asks for a record's page, the windowed inventory has every cell of the record with its complete value | `Window.record_shown`, `WindowProofs.window_record_shown` |
+| The fixed shell paints the windowed screen of every renderer output and shows every part completely (the windowed `render_parts_shown`) | `WindowProofs.render_window_parts_shown` |
+| From the first page, `p` next-page presses reach page `p`; the selector offers every page, so one selection reaches any record | `Window.next_reaches`, `next_target`, `selector_offers` |
+| Every window says "Records a–b of n" | `Window.position_shown` |
+| Either every flagged record is on the page shown, or the window counts those elsewhere (positive) and its enabled next-flagged target selects another page holding one | `Window.nothing_buried` (`nextFlagged_found`, `nextFlagged_none`, `flaggedOff_pos`) |
+| The pager's event is applied by the interpreter for a shown list and changes only the view state; a popup refuses it | `WindowProofs.selectTab_selects_page`, `selectTab_blocked` |
+| The renderer asks for the page the view state holds | `WindowProofs.uiPages_asks`, `withUrgentStrip_pages` |
+
+Paging rather than a scroll window: a window that follows the scroll offset
+keeps the distance to a record linear in its position and would make the
+inventory depend on a scroll offset that is not interpreter state. Pages are
+discrete view state, go through the event path, bound the actions to any record
+(one selection) and make the inventory a function of the page size.
+
+The layout API windows every screen it reads (`program-paint`,
+`structural-paint`, `family-check`, `family-paint`, `port`, `inventory`; a
+screen that already carries windows is kept) and has a `window` operation;
+requests may pass `window: false` or `window: {size, sizes}`. The JavaScript
+mirror (`scripts/layout-reference/window.mjs`) is tested against it; the
+painter asks Lean.
 
 **Universal bridge.** `screenShape` erases every text (labels, values, cell
 contents), while retaining occurrence paths, interaction/commit placement
@@ -641,7 +717,9 @@ renderer has that exact shape.
 they are separate conjuncts of the density and urgent-strip theorems. G11 holds
 for the fixed shell only when the strip fits its six pinned rows; a state with
 more urgent occurrences is refused, not painted. Close widget
-fidelity, bounded-list authoring, complete DOM/APG integration,
+fidelity, paging of the lists the window excludes (row-action lists, the
+patient directory, lists in boards and panes, duplicated lists), complete
+DOM/APG integration,
 Comparator coverage and deployment integration remain open. Browser glyph and
 accessibility rendering remain trusted. Nothing here replaces existing clinical
 certification or authorizes switching the deployed painter or generator. No data
