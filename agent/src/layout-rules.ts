@@ -61,7 +61,8 @@ export function applyLayoutRules(ui: Record<string, unknown>, viewport: Viewport
     }
     const semantic = occurrences(ui);
     const select = (s: z.infer<typeof selector>): Block[] => {
-        const matches = semantic.filter(o => (!s.id || [o.value.comp, o.value.id].includes(s.id)) && (!s.kind || o.kind === s.kind) && (!s.role || o.value.role === s.role));
+        // Rules move whole nodes: match a node's own part, never its label/control/unit parts.
+        const matches = semantic.filter(o => o.value !== undefined && !o.leaf && (!s.id || [o.comp, o.value.comp, o.value.id].includes(s.id)) && (!s.kind || o.kind === s.kind) && (!s.role || o.value.role === s.role));
         if (!matches.length)
             throw new LayoutRuleRefusal(`unknown target ${JSON.stringify(s)} on screen ${String(ui.screen)}`);
         return matches.map(o => {
@@ -192,7 +193,7 @@ export function applyLayoutRules(ui: Record<string, unknown>, viewport: Viewport
  * in each column are inside both the viewport and their outer scroll clip. */
 export function denseOutline(ui: Record<string, unknown>, viewport: Viewport) {
     const tree = nodeSchema.parse(layoutFor(shapeFor(ui), viewport));
-    const slots = shapeFor(ui).slots, ids = new Map(occurrences(ui).map(o => [key(o.path), o.value.comp ?? o.value.id ?? o.kind]));
+    const slots = shapeFor(ui).slots, ids = new Map(occurrences(ui).filter(o => o.value !== undefined && !o.leaf).map(o => [key(o.path), o.comp || o.value?.comp || o.value?.id || o.kind]));
     const regions = new Map<string, Map<string, {
         x: number;
         scrolls: string[];

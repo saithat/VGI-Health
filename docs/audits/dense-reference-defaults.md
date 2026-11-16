@@ -1,11 +1,14 @@
 # Dense reference defaults
 
-The shared `dense-reference-v7` generator supplies default geometry to the
+The shared `dense-reference-v8` generator supplies default geometry to the
 opt-in Lean nightly mode and the experimental `/lean.html` page. Missing custom
 shape cases receive this default; matching custom cases must pass independently.
 Dense refusal tries the fixed shell at the same unchanged vendor screen limit.
 Neither a transport error nor refusal of both families becomes successful
-fallback. No Lean source, rule, theorem, density limit or default was changed.
+fallback. No rule, theorem statement, density limit or default was changed; v8
+follows the display-part inventory (one occurrence per field label, control,
+annotation, table cell, tab and button reason) and the faster G3/G4 decision
+procedures of the layout checker.
 Application and agent source hashes changed; old certificates were not rebound.
 The ordinary browser nightly mode retains its existing behavior.
 
@@ -20,7 +23,8 @@ checks the family with WASM, then paints the actual semantic screen through WASM
 ## Evidence scope
 
 All patients and clinicians are synthetic. Local output is under
-`/home/saithat/Projects/run-tmp/dense-v7/`; nothing there is tracked in git.
+`/home/saithat/Projects/run-tmp/display-lane/dense-v8b/` (v7:
+`/home/saithat/Projects/run-tmp/dense-v7/`); nothing there is tracked in git.
 The Program corpus is all fifteen persona/release Programs with exported group,
 tab and alert variants on the same Abdul Sauer fixture. The recorded-state
 corpus is the retained native UiScreens for the same 84 persona-days from
@@ -48,13 +52,13 @@ no lockfile changed. Commands are from the repository root:
 
 ```sh
 node --test scripts/layout-reference/reference.test.mjs scripts/ui-library/family.test.mjs
-node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/layout-reference/report.mjs --out "$TMPDIR/dense-v7"
-node scripts/layout-reference/visited.mjs --out "$TMPDIR/dense-v7" \
+node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/layout-reference/report.mjs --out "$TMPDIR/dense-v8"
+node scripts/layout-reference/visited.mjs --out "$TMPDIR/dense-v8" \
   --frozen-snapshots "$TMPDIR/reference-layouts/native-screens"
-node scripts/layout-reference/benchmark.mjs --out "$TMPDIR/dense-v7" --count 100
-node scripts/layout-reference/summary.mjs --out "$TMPDIR/dense-v7"
-node scripts/discovery/smoke.mjs "$TMPDIR/dense-v7/nightly-smoke-bound"
-node scripts/layout-reference/nightly-benchmark.mjs "$TMPDIR/dense-v7/nightly-real-bound"
+node scripts/layout-reference/benchmark.mjs --out "$TMPDIR/dense-v8" --count 100
+node scripts/layout-reference/summary.mjs --out "$TMPDIR/dense-v8"
+node scripts/discovery/smoke.mjs "$TMPDIR/dense-v8/nightly-smoke-bound"
+node scripts/layout-reference/nightly-benchmark.mjs "$TMPDIR/dense-v8/nightly-real-bound"
 pnpm --filter app typecheck
 pnpm --filter app lint
 pnpm --filter app test --maxWorkers=2
@@ -71,7 +75,7 @@ For the two actual P1/P3 browser workflows and five screenshots:
 docker run --rm -d --name vgi-dense-postgres \
   -e POSTGRES_PASSWORD=synthetic-painter-test -e POSTGRES_DB=painter \
   -p 127.0.0.1:55542:5432 --memory=512m postgres:16.15
-DENSE_LAYOUT_SHOTS="$TMPDIR/dense-v7/page-visual" \
+DENSE_LAYOUT_SHOTS="$TMPDIR/dense-v8/page-visual" \
 DATABASE_URL=postgres://postgres:synthetic-painter-test@127.0.0.1:55542/painter \
 EHR_BIN="$PWD/lean/.lake/build/bin/ehr" pnpm --filter app exec playwright test \
   --config src/lean-ui/playwright.config.ts workflows.pw.ts --workers=1
@@ -95,110 +99,75 @@ recording were outside this task and were not used.
 
 ## Remaining fidelity gaps
 
-Navigation and tabs now have real, individually measured targets, and urgent
-content is checked under G11 even with a modal. The page still shows safety
-text cards in the Lean rectangles. Fields do not have separately placed label,
-control and annotation parts; pending confirmation still shares one semantic
-field box. Tables retain all data in local text scrollers rather than checked
-cell geometry and attached row actions. Charts, icons, clinical chrome,
-content-measured row heights, complete ARIA relationships and broader assistive
-technology behavior remain different from today's application. This change
-adds no certification of those missing behaviors. See the detailed
+Fields are laid out as label, control and annotations, tables as caption,
+header row and value cells in column tracks, tabs in one row and button
+reasons inline ([reference layouts](../methods/reference-layouts.md)). The
+banner is still one part; row actions are not attached to their table rows;
+column tracks are equal width; cells are one-line safety scrollers; records
+merged on one line by today's application stay separate rows. Charts, icons,
+clinical chrome, complete ARIA relationships and broader assistive technology
+behavior remain different from today's application. See the detailed
 [widget inventory](../methods/lean-painter.md).
 
 ## Program coverage and timing results
 
-The Program/variant corpus admits **4,146/4,371 dense cases (94.85%)**.
-All **225 dense refusals are G10**; no other rule refuses a dense case in this
-corpus. Same-limit fixed-shell admission recovers 144; **81 cases refuse both**.
-Per release, P1/P4/P5 each have 19 dense refusals (nine also refuse fixed),
-while P2/P3 each have nine dense refusals (all recover with fixed).
-`report.json` retains each case and the exact limit; `density.md` gives desktop
-maxima for every release/persona/screen across both corpora. Limits stay unchanged.
+With display parts (v8) the Program/variant corpus admits **4,086/4,371 dense
+cases (93.48%)**; v7 admitted 4,146 (94.85%). All **285 dense refusals are
+G10**, and **every** one is recovered by the same-limit fixed shell: zero cases
+refuse both (v7: 81, the `w2Result` variants at limit 11). Each release has the
+same counts: P1 311/339, P2 164/173, P3 118/127, P4 295/323, P5 474/495.
 
-The cold benchmark checks 100 distinct families from 175 states in **7.98 s**,
-with **12.88 shape admissions/s** (7.77 s spent in admission), zero fallback in
-that sample, and a fresh memory-only cache. This includes native startup and
-all three viewport checks; it is not kernel throughput.
+The cold benchmark checks 100 distinct families from 175 states in **33.2 s,
+3.07 shape admissions/s** (v7: 7.98 s, 12.88/s). A screen now has three to
+five times as many occurrences, and the checker's cost grows with the square
+of the number of boxes: on the largest retained screen (`w2Result`, 10,930
+parts, two long result tables) one native `family-check` takes 92 s and one
+single-viewport check 33 s, after the G3/G4 procedures stopped being cubic
+(a 1,000-part screen went from 10.5 s to 1.1 s per family paint). The WASM page
+was not measured on such a screen; it would be slower than native.
 
-The final real P3 day phase takes **152.08 s (2.53 min)** and completes **38/38**
-tasks in both arms, with 482 clicks and 578 modeled scrolls in each. The earlier
-fixed-shell pilot's P3 day 1 took 161.12 s; its persona-day range was about
-2–6 minutes. These are local observations on a shared machine, with changed
-layout rules/source and concurrent coverage work, not a matched speed test.
-The phase includes training, bounded training, canonical and no-agent controls;
-initial certification and final digest are outside the phase time.
+The nightly-mode timings, manifest counts and two-day scripted/replay runs of
+v7 were **not** measured again for v8.
 
-The manifest records **2,265 dense, zero fallback, zero custom and zero refused**
-geometry states for P3 day 1 across those evaluations. There are **230 uncached
-shape admissions in 18.42 s (12.49/s)** and 196 shape-cache hits. Three complete
-Program gates, including native screen export, actual gallery text binding and
-family/geometry work, all pass in 53.18 summed seconds (**0.0564 gates/s**).
-The earlier pilot reported 0.0354 whole-Program gates/s across its different
-three-persona/two-day workload. Those rates measure different amounts of work.
-Generator source SHA-256 is `e3e3884b45898b9ae6a52092bef0af67c3089e38c8bc1abd7639155877560b49`;
-native layout executable SHA-256 is `488bc0a036a3178e3fa8ff9849c40b849afab0c98c0dacaccf451ba746cec98f`.
-
-The final two-day, three-persona scripted and replay runs each pass **30/30**
-Program gates with matching decisions and daily counts. Scripted persona-day
-phases take 0.74–1.43 s; replay takes 0.78–1.47 s. Gate rates are 2.089/s and
-2.045/s respectively. Their clinical checker, simulator and semantic fixtures
-are fakes; native layout admission is real. Manifest counts match in both runs:
-
-| Persona | Day | Dense states | Checked fallback | Custom | Refused |
-|---|---:|---:|---:|---:|---:|
-| P1 | 1 | 96 | 0 | 0 | 0 |
-| P3 | 1 | 126 | 0 | 0 | 0 |
-| P5 | 1 | 144 | 0 | 0 | 0 |
-| P1 | 2 | 32 | 0 | 0 | 0 |
-| P3 | 2 | 16 | 0 | 0 | 0 |
-| P5 | 2 | 16 | 0 | 0 | 0 |
-
-Final local checks: **23/23** reference/family tests, **339** app unit tests
-passed (32 conditional skips), **294** agent unit tests passed (64 conditional
-skips), both typechecks and lints passed, app build passed, **2/2** targeted
-browser workflows passed (24.7 s), and the transitive bundle test passed.
-The Lean page's emitted graph is 405,708 bytes / 77,193 gzip bytes, with no
-React or Mantine dependency; the comparison app graph remains 920,067 bytes.
-The cache regression also verifies that gallery artifacts bind actual source
-text independently of cached content-free geometry.
+The P1/P3 browser workflows pass with v8 (2/2, one worker); all five page
+selections (`P1-landing`, `P1-document`, `P1-orders`, `P1-sign`,
+`P3-assessment`) used the dense layout. Screenshots are under
+`/home/saithat/Projects/run-tmp/display-lane/page-visual/`.
 
 ## Retained-state coverage and three-way costs
 
-All **132,843/132,843** retained event pre-states across **84 persona-days**
-were covered. Dense admission is **128,405/132,843 (96.66%)**. All **4,438**
-dense refusals are **G10**, and all recover with admitted fixed-shell geometry
-at the same screen limit. There are **zero** missing target bindings, zero
-retained replay-mismatch days and zero unrendered states. Sixteen absent
-persona-days remain excluded. The Program-only cases refusing both families
-are `w2Result` variants for P1/P4/P5 at limit 11; none of those double-refused
-variants occurs in this retained-state corpus.
+v8 rechecked **131,308 of the 132,843** retained event pre-states (83 of 84
+persona-days). `core-10day` P1 day 10 (1,535 states) was **not** rechecked: its
+long `w2Result` tables made each day take up to two hours and the run was
+stopped. Of the rechecked states **125,143 (95.30%)** are admitted dense (v7:
+96.66% of all 132,843). All **6,165** refusals are **G10**, all recover with the
+fixed shell at the same limit, and there are zero missing target bindings,
+zero mismatches and zero states refusing both. The per-persona recheck ran in
+separate processes (one output directory per persona and recording) with the
+native call timeout raised to 30 minutes (`REFERENCE_NATIVE_TIMEOUT_MS`).
 
-`density.md` reports first-viewport and fixed-plus-scroll-window desktop maxima
-against the unchanged limit for all **260** release/persona/screen combinations.
-**26** combinations have at least one over-limit dense proposal, which is
-refused. Examples: `v1/P1/chartSummary` is 11/11 against 11;
-`v1/P1/w1Exam` is 29/29 against 29; `v3/P1/w2Result` reaches 22/22 against 11
-and therefore needs fallback. These are maxima over variants, not a claim that
-refused boxes were painted by the live page. Full case counts and findings are
-in `report.json`, `visited.json` and the checksummed admission receipts.
-
-Columns below are **scroll count / scroll pixels / pointer-travel pixels**.
-All retained-state costs use admitted dense/fallback geometry. Explicit original
-scroll events remain in the trace, and the stored browser atlas is historical.
-P2 requires more scrolls than the fixed shell in both recordings; pointer travel
-also reflects the real separate navigation/tab targets and wider horizontal
-arrangements. These results do not establish uniform savings or an agent effect.
+Columns are **scroll count / scroll pixels / pointer-travel pixels** on the
+same retained traces; "Stored browser" is the historical browser atlas, as in
+v7. For `core-10day` P1 all three columns cover the same nine days.
 
 | Recording | Persona | Days | Dense / states | Both refused | Fixed | Dense/fallback | Stored browser |
 |---|---|---:|---:|---:|---|---|---|
-| core-10day | P1 | 10 | 14702/15753 | 0 | 10870 / 9062084 / 1475980 | 10283 / 7911138 / 3435694 | 10029 / 10140457 / 3538181 |
-| core-10day | P2 | 10 | 26748/26779 | 0 | 20456 / 15543596 / 4062676 | 21889 / 17360246 / 6096142 | 23739 / 21103992 / 5768934 |
-| core-10day | P3 | 10 | 10410/10410 | 0 | 5578 / 4298096 / 1463948 | 5447 / 4281078 / 3117460 | 6730 / 6689826 / 3046256 |
-| core-10day | P4 | 10 | 11216/11216 | 0 | 8145 / 5803356 / 1331984 | 7679 / 5851798 / 2276329 | 8075 / 7673840 / 2544165 |
-| core-10day | P5 | 10 | 13064/13122 | 0 | 11746 / 10204372 / 646456 | 10555 / 9026526 / 2199639 | 10602 / 9826197 / 2059013 |
-| rules3-10day-invalid-simloop | P1 | 7 | 11477/12183 | 0 | 8765 / 7226492 / 1078254 | 7878 / 5987924 / 2455471 | 8684 / 13082999 / 2576979 |
-| rules3-10day-invalid-simloop | P2 | 6 | 15247/17039 | 0 | 12811 / 9672136 / 2718348 | 13824 / 10355332 / 3626737 | 15550 / 18267105 / 3442477 |
-| rules3-10day-invalid-simloop | P3 | 7 | 7901/7901 | 0 | 4853 / 3634884 / 1165942 | 4763 / 3828844 / 2423031 | 5690 / 5811207 / 2382515 |
-| rules3-10day-invalid-simloop | P4 | 7 | 7854/8602 | 0 | 6291 / 4571356 / 961310 | 5901 / 4511662 / 1642975 | 6270 / 6397272 / 1855322 |
-| rules3-10day-invalid-simloop | P5 | 7 | 9786/9838 | 0 | 8792 / 7745360 / 483638 | 7701 / 6434282 / 1604389 | 6407 / 6147927 / 1516005 |
+| core-10day | P1 | 9 | 12781/14218 | 0 | 12076 / 52734252 / 809662 | 9562 / 22225732 / 2991469 | 9038 / 9072317 / 3184800 |
+| core-10day | P2 | 10 | 26478/26779 | 0 | 21943 / 38650212 / 3224100 | 21563 / 18057810 / 6081656 | 23739 / 21103992 / 5768934 |
+| core-10day | P3 | 10 | 9946/10410 | 0 | 7198 / 24695656 / 1122508 | 5254 / 4013646 / 3170071 | 6730 / 6689826 / 3046256 |
+| core-10day | P4 | 10 | 10904/11216 | 0 | 9746 / 20390192 / 908120 | 7530 / 6726096 / 2312241 | 8075 / 7673840 / 2544165 |
+| core-10day | P5 | 10 | 12926/13122 | 0 | 11841 / 22404276 / 629848 | 10385 / 9637464 / 2165024 | 10602 / 9826197 / 2059013 |
+| rules3-10day-invalid-simloop | P1 | 7 | 11079/12183 | 0 | 10434 / 38263080 / 674714 | 8104 / 15147608 / 2410428 | 8684 / 13082999 / 2576979 |
+| rules3-10day-invalid-simloop | P2 | 6 | 15086/17039 | 0 | 13872 / 24212984 / 2169484 | 13829 / 17005268 / 3551437 | 15550 / 18267105 / 3442477 |
+| rules3-10day-invalid-simloop | P3 | 7 | 7901/7901 | 0 | 5569 / 18124212 / 938542 | 4637 / 3662556 / 2401804 | 5690 / 5811207 / 2382515 |
+| rules3-10day-invalid-simloop | P4 | 7 | 8346/8602 | 0 | 7435 / 15735440 / 643914 | 5962 / 5191202 / 1834723 | 6270 / 6397272 / 1855322 |
+| rules3-10day-invalid-simloop | P5 | 7 | 9696/9838 | 0 | 8862 / 16654224 / 460918 | 7537 / 6794934 / 1576032 | 6407 / 6147927 / 1516005 |
+
+On `core-10day` dense pointer travel is **16.72M px against 16.60M** for the
+stored browser atlas on the same days (v7: 17.1M against 17.0M over ten days).
+Dense scroll distance is close to the browser's for P2–P5 (P3 4.0M against
+6.7M, P5 9.6M against 9.8M) but **2.4 times** the browser's for P1 (22.2M
+against 9.1M): each result row is now one row of cells, so long result tables
+are as long as in today's application, while the stored browser atlas was
+measured with an earlier build. The fixed shell, at one 56px row per part, now
+scrolls three to six times further than before.

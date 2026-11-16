@@ -1,91 +1,75 @@
 import Ehr.Layout.Json
-import Ehr.Render.Json
+import Ehr.Layout.Display
 namespace Ehr.Layout
 open Lean Ehr.Render
 
 /-- Prefix each child occurrence by its sibling ordinal. -/
-def prefixChildren (children : List (List (List Nat × UiNode))) : List (List Nat × UiNode) :=
-  children.zipIdx.flatMap fun (es,i) => es.map fun (path,node) => (i::path,node)
+def prefixChildren (children : List (List (List Nat × Part))) : List (List Nat × Part) :=
+  children.zipIdx.flatMap fun (es,i) => es.map fun (path,part) => (i::path,part)
 
-/-- New specification for owner review: one target occurrence per tab label,
-so each tab has its own box under G3 and counts under G10. The occurrence is
-a button with role `tab` carrying the tabs' component id; its position among
-the children is the tab index. -/
-def tabNodes (id : String) (labels : List String) : List UiNode :=
-  labels.map fun label => .button id label "tab" true none none
+/-- A part that is one occurrence: a child without children of its own. -/
+def partEntries (parts : List Part) : List (List (List Nat × Part)) := parts.map fun part => [([],part)]
 
-/-- New specification for owner review: the children of a tabs node are its
-tab targets (`tabNodes`) followed by the selected body.
+/-- New specification for owner review: the occurrences of a node are its own
+part, then its further display parts (`leafParts`), then its child nodes. The
+children of a node are numbered in that order, so a field's control is child 0
+of the field and the body of a tabs node starts after its tab targets. A value
+set passes its options, and a patient pane its metadata, to the nodes inside.
 
-Every UiNode occurrence, including wrappers and selected-tab bodies. Paths
-identify occurrences even when two nodes have identical component IDs/text. -/
-def semanticNodes (node : UiNode) : List (List Nat × UiNode) :=
-  ([],node) :: (match node with
+Every display part is an occurrence of its own with a unique path, even when
+two nodes have identical component IDs or text. -/
+def semanticNodes (cx : DisplayCx) (node : UiNode) : List (List Nat × Part) :=
+  ([],ownPart cx node) :: prefixChildren (partEntries (leafParts cx node) ++ (match node with
   | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs
-  | .valueSet _ _ cs | .chartReferences _ cs | .rowAction _ _ cs
-  | .section _ _ cs | .columns cs => prefixChildren (cs.map semanticNodes)
-  | .tabs id labels _ cs =>
-    prefixChildren ((tabNodes id labels).map (fun tab => [([],tab)]) ++ cs.map semanticNodes)
-  | .patientPane _ _ _ cs modal =>
-    prefixChildren (cs.map semanticNodes ++ modal.map semanticNodes)
-  | _ => [])
+  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
+    cs.map (semanticNodes cx)
+  | .valueSet options custom cs => cs.map (semanticNodes (cx.inValueSet options custom))
+  | .patientPane _ _ metadata cs modal =>
+    cs.map (semanticNodes (cx.inPane metadata)) ++ modal.map (semanticNodes (cx.inPane metadata))
+  | _ => []))
 
-/-- Preserve all non-child payload in a readable slot. Container metadata is
-retained as JSON where no clinical caption exists; no clinical rows are elided. -/
-def semanticText : UiNode → String
-  | .text s => s
-  | .section _ title _ | .timeline title _ => title
-  | .columns _ => ""
-  | .presentation _ _ => ""
-  | .tabs _ labels selected _ => String.intercalate " | " labels ++ s!" (selected {selected+1})"
-  | .field _ label _ value unit provenance pending human required =>
-    label ++ ": " ++ value.getD "" ++ " " ++ unit.getD "" ++ " " ++ provenance.getD "" ++
-    (if pending then " — confirmation pending" else "") ++ (if human then " — human entry" else "") ++
-    (if required then " — required" else "")
-  | .info _ label _ _ rows => label ++ "  " ++
-    String.intercalate "  " (rows.map fun row => String.intercalate " | " (row.map fun (k,v) => k ++ ": " ++ v))
-  | .alert _ _ label severity => label ++ " (" ++ severity ++ ")"
-  | .button _ label _ enabled reason hotkey => label ++
-    (if enabled then "" else " — blocked: " ++ reason.getD "") ++ (hotkey.map ("  " ++ ·)).getD ""
-  | .stepper steps current => (toJson (steps,current)).compress
-  | .board urgent _ => (toJson urgent).compress
-  | .datedTimeline title dated undated _ => title ++ " " ++ (toJson (dated,undated)).compress
-  | .patientPane patient banner metadata _ _ => patient ++ " " ++ (toJson (banner,metadata)).compress
-  | .valueSet options custom _ => (toJson (options,custom)).compress
-  | .chartReferences references _ => (toJson references).compress
-  | .rowAction target row _ => target ++ s!" row {row}"
-
-def semanticTarget : UiNode → Bool
-  | .button .. | .field .. => true
-  | _ => false
-
-def semanticCommit : UiNode → Bool
-  | .button _ _ "primary" _ _ _ => true
-  | _ => false
-
-/-- New specification for owner review: the banner occurrence carries the
-signed-in clinician (`viewer?`) after the patient fields, as the application's
-banner does. `viewer?` was missing from the inventory. -/
-def bannerNode (screen : UiScreen) : UiNode :=
-  .text (String.intercalate "  " ((screen.banner.map fun (k,v) => k ++ ": " ++ v) ++
-    (screen.viewer?.map ("Signed in: " ++ ·)).toList))
+/-- Components that have an explicit confirmation button. -/
+def confirmComps : UiNode → List String
+  | .button comp _ "confirm" _ _ _ => [comp]
+  | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs | .valueSet _ _ cs
+  | .chartReferences _ cs | .rowAction _ _ cs | .section _ _ cs | .columns cs | .tabs _ _ _ cs =>
+    cs.flatMap confirmComps
+  | .patientPane _ _ _ cs modal => cs.flatMap confirmComps ++ modal.flatMap confirmComps
+  | _ => []
 
 /-- New specification for owner review: the navigation as occurrences: one
 wrapper, one heading per group and one target per link (a button with role
-`nav`, as in `uiNavAtoms`). It was one combined text occurrence, so G3 and G10
-never saw the individual links. -/
+`nav`, as in `uiNavAtoms`); the active link is flagged. -/
 def navNode (nav : List (String × List (String × String))) : UiNode :=
   .section "navigation" "Navigation" (nav.map fun (title,items) =>
     .section title title (items.map fun (id,label) => .button id label "nav" true none none))
 
-/-- New specification for owner review: the three roots before the workspace
-are the banner, the title and the navigation tree. -/
-def chromeNodes (screen : UiScreen) : List UiNode :=
-  [bannerNode screen, .text screen.title, navNode screen.nav]
+/-- The nodes of a screen after the banner and the title: the navigation, the
+workspace, the side nodes, the modal and the urgent strip. -/
+def screenRoots (screen : UiScreen) : List UiNode :=
+  navNode screen.nav :: (screen.workspace ++ screen.side ++ screen.modal.toList ++ screen.urgent?.getD [])
 
-def screenNodes (screen : UiScreen) : List (List Nat × UiNode) :=
-  prefixChildren ((chromeNodes screen ++ screen.workspace ++ screen.side ++
-    screen.modal.toList ++ screen.urgent?.getD []).map semanticNodes)
+/-- New specification for owner review: the field metadata of a screen that
+its parts display: quick picks, source captions, entry hints, the active
+navigation link and the components with an explicit confirmation button. -/
+def screenCx (screen : UiScreen) : DisplayCx :=
+  { fieldChoices := screen.fieldChoices?.getD [], fieldSources := screen.fieldSources?.getD [],
+    sourceLabels := screen.sourceLabels?.getD [], entryHints := screen.entryHints?.getD [],
+    activeNav := screen.activeNav?,
+    confirms := (screen.workspace ++ screen.side ++ screen.modal.toList ++ screen.urgent?.getD []).flatMap confirmComps }
+
+/-- New specification for owner review: the first two roots are the banner
+(one part: patient fields and the signed-in clinician as runs, so that rule G1
+keeps all of it on screen) and the title. -/
+def chromeEntries (screen : UiScreen) : List (List (List Nat × Part)) :=
+  [[([],bannerPart screen.banner screen.viewer?)],[([],{ role := .title, text := screen.title })]]
+
+/-- New specification for owner review: the semantic inventory: every part a
+user sees, each with its occurrence path. The roots are the banner `[0]`, the
+title `[1]`, the navigation `[2]`, then the workspace from `[3]`, the side
+nodes, the modal and the urgent strip. -/
+def screenNodes (screen : UiScreen) : List (List Nat × Part) :=
+  prefixChildren (chromeEntries screen ++ (screenRoots screen).map (semanticNodes (screenCx screen)))
 
 /-- Erased semantic placement class. Content, labels, values, row counts and
 font glyph repertoire do not occur in the family key. UiNode structure and
@@ -112,22 +96,18 @@ def sourceKey (path : List Nat) : String := "source-" ++ toString path
 node is; the strip is never classified as body, side or commit. -/
 def screenShape (screen : UiScreen) : ScreenShape :=
   let entries := screenNodes screen
-  let commit := (entries.find? (fun e => semanticCommit e.2)).map Prod.fst
+  let commit := (entries.find? (fun e => e.2.commit)).map Prod.fst
   let sideStart := 3 + screen.workspace.length
   let modalRoot := sideStart + screen.side.length
   let urgentStart := modalRoot + screen.modal.toList.length
-  entries.map fun (path,node) =>
+  entries.map fun (path,part) =>
     let rootIndex := path.head?.getD 0
     let region := if path == [0] then Region.banner else if path == [1] then .title
       else if rootIndex ≥ urgentStart then .urgent
       else if some path == commit then .footer
       else if screen.modal.isSome && path.head? == some modalRoot then .modal
       else if rootIndex == 2 || (rootIndex ≥ sideStart && rootIndex < modalRoot) then .side else .body
-    let lines := match node with
-      | .section .. | .columns .. | .presentation .. | .text .. | .tabs .. => 1
-      | .info .. => 3
-      | _ => 2
-    ⟨path,semanticTarget node,region,lines⟩
+    ⟨path,part.target,region,part.lines⟩
 
 def shapeSources (shape : ScreenShape) : List (List Nat) := shape.map SlotShape.path
 
@@ -146,12 +126,14 @@ def flatScreen (n : Nat) : UiScreen :=
   { banner := [], nav := [], title := "", workspace := List.replicate n (.text ""), side := [], modal := none }
 
 theorem screenShape_flat_length (n : Nat) : (screenShape (flatScreen n)).length = 3+n := by
-  have hm : ((List.replicate n [(([] : List Nat), UiNode.text "")]).zipIdx 3).map (fun a => a.fst.length) = List.replicate n 1 := by
+  have hm (part : Part) : ((List.replicate n [(([] : List Nat), part)]).zipIdx 3).map (fun a => a.fst.length) =
+      List.replicate n 1 := by
     calc
-      _ = (((List.replicate n [(([] : List Nat), UiNode.text "")]).zipIdx 3).map Prod.fst).map List.length := by simp only [List.map_map, Function.comp_def]
+      _ = (((List.replicate n [(([] : List Nat), part)]).zipIdx 3).map Prod.fst).map List.length := by
+        simp only [List.map_map, Function.comp_def]
       _ = _ := by simp [List.zipIdx_map_fst]
-  simp [screenShape, flatScreen, screenNodes, chromeNodes, bannerNode, navNode, prefixChildren, semanticNodes,
-    List.length_flatMap, hm, List.sum_replicate_nat, Nat.add_comm]
+  simp [screenShape, flatScreen, screenNodes, chromeEntries, screenRoots, navNode, prefixChildren, semanticNodes,
+    partEntries, leafParts, List.length_flatMap, hm, List.sum_replicate_nat, Nat.add_comm]
   omega
 
 /-- New specification for owner review: urgent occurrences are pinned rows
@@ -203,10 +185,19 @@ def compileShape (v : Size) (shape : ScreenShape) : Node := Id.run do
     { id := "signing-root", paint := false } (banner ++ [sidebar] ++ title ++ urgent ++ [scroll] ++ footer ++ modal)
 
 def screenContent (screen : UiScreen) : Content :=
-  (screenNodes screen).map fun (path,node) => (sourceKey path,semanticText node)
+  (screenNodes screen).map fun (path,part) => (sourceKey path,part.text)
+
+/-- The text of every occurrence, by path. -/
+def sourceTable (screen : UiScreen) : List (List Nat × String) :=
+  (screenNodes screen).map fun (p,part) => (p,part.text)
 
 def sourceValue (screen : UiScreen) (path : List Nat) : String :=
-  (((screenNodes screen).map fun (p,node) => (p,semanticText node)).lookup path).getD ""
+  ((sourceTable screen).lookup path).getD ""
+
+/-- New specification for owner review: the part an occurrence path displays:
+its role and state, emitted with every painted box. -/
+def sourcePart (screen : UiScreen) (path : List Nat) : Option Part :=
+  (screenNodes screen).lookup path
 
 /-- Semantic sources bind by tree path, independently of agent-supplied text
 keys. This prevents an accepted source box from painting another slot's value. -/
@@ -215,9 +206,55 @@ def bindSemantic (screen : UiScreen) (p : Placed) : Drawn :=
   | some path, some t => bind [(t.key,sourceValue screen path)] p
   | _, _ => bind [] p
 
-def semanticPaintTree (screen : UiScreen) : Tree → Json
-  | ⟨p,kids⟩ => Json.mkObj [("drawn",toJson (bindSemantic screen p)),
-    ("children",toJson (kids.map (semanticPaintTree screen)))]
+/-- `bindSemantic` against a table computed once. -/
+def bindTable (table : List (List Nat × String)) (p : Placed) : Drawn :=
+  match p.info.source, p.info.text with
+  | some path, some t => bind [(t.key,(table.lookup path).getD "")] p
+  | _, _ => bind [] p
+
+/-- All boxes of a screen, bound with one inventory traversal. -/
+def bindAll (screen : UiScreen) (ps : List Placed) : List Drawn :=
+  let table := sourceTable screen
+  ps.map (bindTable table)
+
+theorem bindAll_eq (screen : UiScreen) (ps : List Placed) :
+    bindAll screen ps = ps.map (bindSemantic screen) := rfl
+
+/-- New specification for owner review: the part of each box, in box order:
+what the painter draws there and how. A box without a semantic source has none. -/
+def boxParts (screen : UiScreen) (ps : List Placed) : List (Option Part) :=
+  let inventory := screenNodes screen
+  ps.map fun p => p.info.source.bind fun path => inventory.lookup path
+
+theorem boxParts_eq (screen : UiScreen) (ps : List Placed) :
+    boxParts screen ps = ps.map fun p => p.info.source.bind (sourcePart screen) := rfl
+
+/-- New specification for owner review: the number of painted glyph cells of
+each run of a part, in order. A character the font lacks is painted as its
+escape, which counts all its cells; a line break paints none. A painter tags
+cells by these counts and never re-reads the text. -/
+def runCells (t : TextSlot) (runs : List Run) : List Nat :=
+  runs.map fun run => ((textAtoms t run.text).map fun atom => (atom.ink.filter (· != '\n')).length).sum
+
+/-- The parts of the boxes as data; a part with runs also carries `cells`. -/
+def boxPartsJson (screen : UiScreen) (ps : List Placed) : Json :=
+  toJson ((ps.zip (boxParts screen ps)).map fun (p,part) =>
+    match part, p.info.text with
+    | some part, some t =>
+      if part.runs.isEmpty then toJson part else (toJson part).setObjVal! "cells" (toJson (runCells t part.runs))
+    | some part, none => toJson part
+    | none, _ => Json.null)
+
+def tablePaintTree (table : List (List Nat × String)) : Tree → Json
+  | ⟨p,kids⟩ => Json.mkObj [("drawn",toJson (bindTable table p)),
+    ("children",toJson (kids.map (tablePaintTree table)))]
+
+def semanticPaintTree (screen : UiScreen) (tree : Tree) : Json := tablePaintTree (sourceTable screen) tree
+
+/-- New specification for owner review: the inventory as data: every
+occurrence path with its part, in reading order. -/
+def inventoryJson (screen : UiScreen) : Json :=
+  toJson ((screenNodes screen).map fun (path,part) => Json.mkObj [("path",toJson path),("part",toJson part)])
 
 theorem bindSemantic_box (screen : UiScreen) (p : Placed) :
     (bindSemantic screen p).box = p := by
@@ -242,6 +279,8 @@ acceptance theorem for arbitrary EHR states/programs. -/
 theorem portAccepted_rules (v screen) (h : let (n,_,e) := portScreen v screen; check e v (boxes v n) = true) :
     let (n,_,e) := portScreen v screen; Rules e v (boxes v n) := by
   exact layoutAccepted_rules _ _ _ h
+#print axioms bindAll_eq
+#print axioms boxParts_eq
 #print axioms bindSemantic_box
 #print axioms bindSemantic_original
 #print axioms screenShape_flat_length

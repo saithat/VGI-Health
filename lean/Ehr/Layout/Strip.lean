@@ -61,24 +61,34 @@ def stripMoment (v : Size) (screen : UiScreen) (painted : List Drawn) (offset : 
   unoccluded f := ∃ node d, observe node = f ∧ StripBox screen painted node d ∧
     Unoccluded painted offset d
 
-/-- The `k`th strip node is an occurrence of the semantic inventory. -/
+/-- The `k`th strip node's own part is an occurrence of the semantic inventory. -/
 theorem urgent_entry (screen : UiScreen) (k : Nat) (node : UiNode)
     (hk : (screen.urgent?.getD [])[k]? = some node) :
-    ([Range.urgentRoot screen + k], node) ∈ screenNodes screen := by
+    ([Range.urgentRoot screen + k], ownPart (screenCx screen) node) ∈ screenNodes screen := by
+  have root : 3 ≤ Range.urgentRoot screen := by simp [Range.urgentRoot]; omega
+  have roots : (screenRoots screen)[Range.urgentRoot screen + k - 2]? = some node := by
+    have length : (navNode screen.nav :: (screen.workspace ++ screen.side ++ screen.modal.toList)).length =
+        Range.urgentRoot screen - 2 := by
+      simp [Range.urgentRoot]
+      omega
+    have split : screenRoots screen =
+        (navNode screen.nav :: (screen.workspace ++ screen.side ++ screen.modal.toList)) ++ screen.urgent?.getD [] := by
+      simp [screenRoots]
+    rw [split, List.getElem?_append_right (by rw [length]; omega), length]
+    have index : Range.urgentRoot screen + k - 2 - (Range.urgentRoot screen - 2) = k := by omega
+    rw [index]
+    exact hk
   unfold screenNodes prefixChildren
   apply List.mem_flatMap.mpr
-  refine ⟨(semanticNodes node, Range.urgentRoot screen + k), ?_, ?_⟩
+  refine ⟨(semanticNodes (screenCx screen) node, Range.urgentRoot screen + k), ?_, ?_⟩
   · apply List.mem_zipIdx_iff_getElem?.mpr
-    rw [List.getElem?_map]
-    have length : (chromeNodes screen ++ screen.workspace ++ screen.side ++
-        screen.modal.toList).length = Range.urgentRoot screen := by
-      simp [Range.urgentRoot,chromeNodes]
-      omega
-    rw [List.getElem?_append_right (by rw [length]; omega), length]
-    simp [hk]
+    have chrome : (chromeEntries screen).length = 2 := rfl
+    rw [List.getElem?_append_right (by rw [chrome]; omega), chrome, List.getElem?_map]
+    simp [roots]
   · apply List.mem_map.mpr
-    refine ⟨([], node), ?_, rfl⟩
-    cases node <;> simp [semanticNodes]
+    refine ⟨([], ownPart (screenCx screen) node), ?_, rfl⟩
+    unfold semanticNodes
+    exact List.mem_cons_self
 
 /-- Every occurrence under a strip root has region `urgent`. -/
 theorem region_urgent (screen : UiScreen) (k : Nat) :
@@ -103,35 +113,32 @@ theorem urgent_path (screen : UiScreen) (k : Nat) (node : UiNode)
   rw [Range.screenShape_normal]
   unfold urgentPaths
   apply List.mem_map.mpr
-  refine ⟨Range.entryShape screen ([Range.urgentRoot screen + k], node), ?_, rfl⟩
+  refine ⟨Range.entryShape screen ([Range.urgentRoot screen + k], ownPart (screenCx screen) node), ?_, rfl⟩
   apply List.mem_filter.mpr
   refine ⟨List.mem_map.mpr ⟨_, urgent_entry screen k node hk, rfl⟩, ?_⟩
   simp [Range.entryShape, region_urgent]
 
-private theorem lookup_unique {β γ : Type} (f : β → γ) :
-    ∀ (l : List (List Nat × β)), (l.map Prod.fst).Nodup → ∀ (path : List Nat) (b : β), (path,b) ∈ l →
-      (l.map fun (p,x) => (p, f x)).lookup path = some (f b)
-  | [], _, _, _, mem => by simp at mem
-  | (p0,b0) :: rest, unique, path, b, mem => by
-    simp only [List.map_cons, List.nodup_cons] at unique
-    rcases List.mem_cons.mp mem with same | tail
-    · cases same
-      simp
-    · have different : path ≠ p0 := by
-        intro same
-        subst same
-        exact unique.1 (List.mem_map.mpr ⟨(path,b), tail, rfl⟩)
-      have step := lookup_unique f rest unique.2 path b tail
-      simp only [List.map_cons, List.lookup]
-      rw [show (path == p0) = false from beq_eq_false_iff_ne.mpr different]
-      exact step
-
 /-- The text bound to the strip node's path is the node's own text. -/
-theorem sourceValue_entry (screen : UiScreen) (path : List Nat) (node : UiNode)
-    (mem : (path, node) ∈ screenNodes screen) : sourceValue screen path = semanticText node := by
-  unfold sourceValue
-  rw [lookup_unique semanticText (screenNodes screen) (Range.screenNodes_unique screen) path node mem]
-  rfl
+theorem sourceValue_entry (screen : UiScreen) (k : Nat) (node : UiNode)
+    (hk : (screen.urgent?.getD [])[k]? = some node) :
+    sourceValue screen [Range.urgentRoot screen + k] = semanticText node := by
+  rw [Range.sourceValue_entry screen _ _ (urgent_entry screen k node hk), ownPart_text]
+
+/-- New specification for owner review: the part emitted with the strip
+node's box is the node's own part. An alert's severity is not printed in its
+text any more; it is this part's `kind`, and its `tone` is decided from it. -/
+theorem strip_part (screen : UiScreen) (k : Nat) (node : UiNode)
+    (hk : (screen.urgent?.getD [])[k]? = some node) :
+    sourcePart screen [Range.urgentRoot screen + k] = some (ownPart (screenCx screen) node) :=
+  Range.sourcePart_entry screen _ _ (urgent_entry screen k node hk)
+
+/-- New specification for owner review: the part of a strip alert carries the
+alert's label as text and its severity as kind and tone. -/
+theorem strip_alert_part (screen : UiScreen) (k : Nat) (comp alertId label severity : String)
+    (hk : (screen.urgent?.getD [])[k]? = some (.alert comp alertId label severity)) :
+    ∃ part, sourcePart screen [Range.urgentRoot screen + k] = some part ∧ part.role = .alert ∧
+      part.text = label ∧ part.kind = severity ∧ part.tone = severityTone severity :=
+  ⟨_, strip_part screen k _ hk, rfl, rfl, rfl, rfl⟩
 
 /-- New specification for owner review: in an accepted layout every strip node
 has a box that is fixed in the viewport, legible and unoccluded at every
@@ -154,7 +161,7 @@ theorem accepted_box (v : Size) (screen : UiScreen) (painted : List Drawn)
   obtain ⟨_, vis, apart⟩ := pinned.1 d.box member flagged
   obtain ⟨t, ht, safe, original, lines, realized⟩ :=
     bound d hd [Range.urgentRoot screen + k] (Option.mem_def.mpr flags.1)
-  rw [sourceValue_entry screen _ node entry] at original lines realized
+  rw [sourceValue_entry screen k node hk] at original lines realized
   have fits := rules.2.2.2.1.2.1 d.box member t ht
   have contrast := (rules.2.2.2.2.2.1 d.box member).2.2
     (by rw [Option.mem_def.mp ht]; rfl)
@@ -297,16 +304,18 @@ private def probeOk (screen : UiScreen) : Bool := viewports.all fun v =>
 -- Body order: title and workspace first, then the navigation; each link and tab is a target row.
 private def bodyRows (screen : UiScreen) : List (List Nat) :=
   ((probeBoxes screen).filter (fun p => !p.clips.isEmpty)).filterMap (·.info.source)
-#guard bodyRows (probe 0 0 false) == [[1],[3],[4],[4,0],[4,1],[4,2],[2],[2,0],[2,0,0],[2,0,1]]
+-- A field is its label row followed by its control row; the control is the target.
+#guard bodyRows (probe 0 0 false) == [[1],[3],[3,0],[4],[4,0],[4,1],[4,2],[2],[2,0],[2,0,0],[2,0,1]]
 #guard ((probeBoxes (probe 0 0 false)).filter (fun p => p.info.target && !p.clips.isEmpty)).filterMap (·.info.source) ==
-  [[3],[4,0],[4,1],[2,0,0],[2,0,1]]
+  [[3,0],[4,0],[4,1],[2,0,0],[2,0,1]]
 end Regressions
 
 #print axioms urgent_entry
 #print axioms region_urgent
 #print axioms urgent_path
-#print axioms lookup_unique
 #print axioms sourceValue_entry
+#print axioms strip_part
+#print axioms strip_alert_part
 #print axioms accepted_box
 #print axioms within_stripView
 #print axioms stripView_perceived

@@ -1,12 +1,12 @@
 import type { Event } from "../../../lean/generated/ehr-types";
-import type { UiScreen } from "../ehr/ui/types";
+import type { NodeOf, UiScreen } from "../ehr/ui/types";
 import { entryEvent } from "../ehr/ui/events";
-import { screenSources, type Source } from "./sources";
 import {
   keyboardKey,
   type KeyboardTransition,
   type Drawn,
   type Output,
+  type Part,
 } from "./layout";
 import { paintShape, paintText, px, rgb } from "./text";
 
@@ -18,7 +18,10 @@ type Control =
 interface Entry {
   element: HTMLDivElement;
   drawn: Drawn;
-  source?: Source | undefined;
+  /** Lean's display part of this box: role, state and control data. */
+  part?: Part | undefined;
+  /** Inside a patient pane: no patient-scoped dispatch host exists yet. */
+  pane: boolean;
   control?: Control | undefined;
   controlKind?: string;
   textKey?: string;
@@ -27,9 +30,20 @@ export interface PainterOptions {
   dispatch(event: Event): void;
   keyboard: KeyboardTransition;
 }
-/** Layout is already decided. DOM mutation only translates/clips Lean rectangles.
- * Keys use clinical control identity + occurrence, so inserted sibling cards do
- * not replace an editing control. Source paths still bind each current payload. */
+const sourceKey = (drawn: Drawn) => drawn.box.info.source?.join(".");
+const parentKey = (drawn: Drawn) =>
+  drawn.box.info.source?.slice(0, -1).join(".");
+/** The native control of a part, decided by Lean's role and kind alone. */
+function nativeKind(part: Part | undefined): string {
+  if (!part?.target) return "";
+  if (part.role === "control")
+    return part.kind === "datetime" ? "datetime-local" : (part.kind ?? "text");
+  return "button";
+}
+/** Layout is already decided, and so is every text: each box draws the part
+ * Lean assigned to it. DOM mutation only translates and clips Lean rectangles.
+ * Keys use clinical control identity + occurrence, so inserted sibling parts
+ * do not replace an editing control. */
 export function createPainter(root: HTMLElement, options: PainterOptions) {
   const entries = new Map<string, Entry>();
   const offsets = new Map<string, number>();
@@ -82,10 +96,16 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       pointerEvents: info.paint || box.scroll ? "auto" : "none",
     });
   }
+  /** The parts of the same node: the boxes with the same parent path. */
+  const siblings = (entry: Entry) => {
+    const parent = parentKey(entry.drawn);
+    return [...entries.values()].filter(
+      (e) => e !== entry && parentKey(e.drawn) === parent,
+    );
+  };
   function buildControl(entry: Entry, kind: string): Control | undefined {
     let control: Control | undefined;
-    if (kind === "button" || kind === "confirm")
-      control = document.createElement("button");
+    if (kind === "button") control = document.createElement("button");
     else if (kind === "select") control = document.createElement("select");
     else if (kind === "textarea") control = document.createElement("textarea");
     else if (kind) {
@@ -101,15 +121,21 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     control.className = "lean-control";
     if (control instanceof HTMLButtonElement) control.type = "button";
     const sendValue = () => {
-      const n = entry.source?.node;
-      if (!n || !("field" in n) || entry.source?.patient) return;
+      const part = entry.part;
+      if (part?.role !== "control" || entry.pane) return;
       let raw: string | boolean =
         control instanceof HTMLInputElement && control.type === "checkbox"
           ? control.checked
           : control.value;
-      if (n.field.kind === "observation-time" && typeof raw === "string")
+      if (part.kind === "datetime" && typeof raw === "string")
         raw = raw ? String(Math.floor(Date.parse(raw) / 60000)) : "";
-      const event = entryEvent(n.field, raw);
+      // Lean supplies the component, value kind and unit of the entry.
+      const field: Pick<NodeOf<"field">, "comp" | "kind" | "unit"> = {
+        comp: part.comp ?? "",
+        kind: part.entry ?? "text",
+        unit: part.unit ?? null,
+      };
+      const event = entryEvent(field, raw);
       if (event) emit(event);
     };
     control.oninput = (event) => {
@@ -130,52 +156,47 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         sendValue();
     };
     control.onclick = () => {
-      const n = entry.source?.node;
-      if (!n || entry.source?.patient) return; // Board dispatch needs a patient-scoped host.
-      const tab = entry.source?.tab;
-      if (entry.controlKind === "confirm" && "field" in n)
-        emit({ confirm: { comp: n.field.comp } });
-      else if (tab)
-        // Each tab is its own Lean target box; its position is the tab index.
-        emit({ selectTab: { comp: tab.comp, idx: tab.index } });
-      else if ("button" in n)
+      const part = entry.part;
+      if (!part || entry.pane) return; // Board dispatch needs a patient-scoped host.
+      const comp = part.comp ?? "";
+      if (part.role === "pending") emit({ confirm: { comp } });
+      else if (part.role === "tab")
+        // Each tab is its own Lean target box; Lean gives its index.
+        emit({ selectTab: { comp, idx: part.col ?? 0 } });
+      else if (part.role === "button")
         emit(
-          n.button.role === "ack"
-            ? { ack: { alert: n.button.comp } }
-            : n.button.role === "confirm"
-              ? { confirm: { comp: n.button.comp } }
-              : { click: { comp: n.button.comp } },
+          part.kind === "ack"
+            ? { ack: { alert: comp } }
+            : part.kind === "confirm"
+              ? { confirm: { comp } }
+              : { click: { comp } },
         );
     };
     control.onkeydown = (event) => {
       const key = keyboardKey(event),
-        n = entry.source?.node;
-      if (!key || !n) return;
-      const tab = entry.source?.tab;
-      if (tab && ["left", "right", "home", "end"].includes(key)) {
+        part = entry.part;
+      if (!key || !part) return;
+      if (part.role === "tab" && ["left", "right", "home", "end"].includes(key)) {
         // Manual activation: arrows move focus among the sibling tab boxes
         // through the Lean tabs profile; Enter/Space click the focused tab.
         event.preventDefault();
+        const tabs = [entry, ...siblings(entry)].filter(
+          (e) => e.part?.role === "tab" && e.part.comp === part.comp,
+        );
         const next = options.keyboard(
           "tabs",
           1,
-          tab.count,
+          tabs.length,
           {
-            focus: tab.index,
-            selected: tab.selected,
+            focus: part.col ?? 0,
+            selected: tabs.find((e) => e.part?.selected)?.part?.col ?? 0,
             isOpen: true,
             invoker: "",
           },
           key,
         );
-        const parent = entry.drawn.box.info.source?.slice(0, -1).join(".");
-        [...entries.values()]
-          .find(
-            (e) =>
-              e.source?.tab?.comp === tab.comp &&
-              e.source.tab.index === next.focus &&
-              e.drawn.box.info.source?.slice(0, -1).join(".") === parent,
-          )
+        tabs
+          .find((e) => e.part?.col === next.focus)
           ?.control?.focus({ preventScroll: true });
       } else if (
         control instanceof HTMLSelectElement &&
@@ -200,8 +221,9 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         control.dispatchEvent(new window.Event("change", { bubbles: true }));
       }
     };
-    // The full source stays visible until editing begins. Native controls own
-    // their caret and selection; their assigned rectangle is never subdivided.
+    // The displayed value stays Lean's text until editing begins. Native
+    // controls own their caret and selection; their assigned rectangle is
+    // never subdivided.
     control.onfocus = () => {
       for (const [id, clip] of entry.drawn.box.clips) {
         const scroll = [...entries.values()].find(
@@ -215,7 +237,11 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         if (top < offset) scroll.element.scrollTop = top;
         else if (bottom > offset) scroll.element.scrollTop = bottom;
       }
-      if (!(control instanceof HTMLButtonElement))
+      if (
+        !(control instanceof HTMLButtonElement) &&
+        !(control instanceof HTMLSelectElement) &&
+        !(control instanceof HTMLInputElement && control.type === "checkbox")
+      )
         entry.element.dataset.editing = "true";
     };
     control.onblur = () => {
@@ -223,32 +249,9 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     };
     return control;
   }
-  function updateControl(
-    entry: Entry,
-    blocked: boolean,
-    explicit: Set<string>,
-  ) {
-    const source = entry.source,
-      node = source?.node;
-    const field = node && "field" in node ? node.field : undefined;
-    let kind = "";
-    if (node && "button" in node) kind = "button";
-    else if (field) {
-      const base = field.kind.split(":")[0];
-      if (field.pendingConfirm && !explicit.has(field.comp)) kind = "confirm";
-      else if (base === "flag") kind = "checkbox";
-      else if (["qty", "quantity", "number"].includes(base ?? ""))
-        kind = "number";
-      else if (
-        ["code", "coded"].includes(base ?? "") &&
-        !source?.allowOther &&
-        (source?.choices.length || field.kind.includes(":"))
-      )
-        kind = "select";
-      else if (base === "observation-time") kind = "datetime-local";
-      else if (base === "textarea" || base === "text") kind = "textarea";
-      else kind = base === "search" ? "search" : "text";
-    }
+  function updateControl(entry: Entry, blocked: boolean) {
+    const part = entry.part;
+    const kind = nativeKind(part);
     if (entry.controlKind !== kind) {
       entry.control?.remove();
       entry.control = buildControl(entry, kind);
@@ -256,85 +259,90 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       if (entry.control) entry.element.append(entry.control);
     }
     const control = entry.control;
-    if (!control) return;
+    if (!control || !part) return;
     control.hidden = !entry.drawn.box.info.paint;
     control.disabled =
       !entry.drawn.box.info.paint ||
       blocked ||
-      Boolean(source?.patient) ||
-      Boolean(node && "button" in node && !node.button.enabled);
-    const original = entry.drawn.original ?? "";
-    control.setAttribute(
-      "aria-label",
-      kind === "confirm" && field
-        ? `Confirm ${field.label}. ${original}`
-        : original,
-    );
-    control.title =
-      node && "button" in node
-        ? (node.button.blockedReason ?? original)
-        : original;
-    control.dataset.compId =
-      field?.comp ?? (node && "button" in node ? node.button.comp : "");
-    control.dataset.event = field
-      ? kind === "confirm"
-        ? "confirm"
-        : "enter"
-      : source?.tab
-        ? "selectTab"
-        : node && "button" in node && node.button.role === "ack"
-          ? "ack"
-          : node && "button" in node && node.button.role === "confirm"
+      entry.pane ||
+      part.enabled === false;
+    control.dataset.compId = part.comp ?? "";
+    control.dataset.event =
+      part.role === "control"
+        ? "enter"
+        : part.role === "tab"
+          ? "selectTab"
+          : part.role === "pending" || part.kind === "confirm"
             ? "confirm"
-            : "click";
-    if (source?.tab) {
-      control.setAttribute("role", "tab");
-      control.setAttribute(
-        "aria-selected",
-        String(source.tab.index === source.tab.selected),
+            : part.kind === "ack"
+              ? "ack"
+              : "click";
+    // Accessible names are relationships between Lean's own parts: a control
+    // is labelled by its field's label box and described by the field's other
+    // parts; a button is named by its own text and described by its parts.
+    const name = entry.drawn.original ?? "";
+    if (part.role === "control") {
+      const parent = [...entries.values()].find(
+        (e) => sourceKey(e.drawn) === parentKey(entry.drawn),
       );
-      control.dataset.tabIndex = String(source.tab.index);
+      if (parent) control.setAttribute("aria-labelledby", parent.element.id);
+      else control.setAttribute("aria-label", name);
+      const described = siblings(entry).map((e) => e.element.id);
+      if (described.length)
+        control.setAttribute("aria-describedby", described.join(" "));
+      else control.removeAttribute("aria-describedby");
+      control.setAttribute(
+        "aria-required",
+        String(siblings(entry).some((e) => e.part?.role === "required")),
+      );
+    } else {
+      control.setAttribute("aria-label", name);
+      const described = [...entries.values()]
+        .filter((e) => parentKey(e.drawn) === sourceKey(entry.drawn))
+        .filter((e) => e.part?.role === "reason" || e.part?.role === "hotkey")
+        .map((e) => e.element.id);
+      if (described.length)
+        control.setAttribute("aria-describedby", described.join(" "));
+      else control.removeAttribute("aria-describedby");
+    }
+    control.title = name;
+    if (part.role === "tab") {
+      control.setAttribute("role", "tab");
+      control.setAttribute("aria-selected", String(part.selected ?? false));
+      control.dataset.tabIndex = String(part.col ?? 0);
     } else {
       control.removeAttribute("role");
       control.removeAttribute("aria-selected");
       delete control.dataset.tabIndex;
     }
-    if (field) {
-      control.setAttribute("aria-required", String(field.required));
-      if (control instanceof HTMLInputElement && control.type === "checkbox")
-        control.checked = field.value === "true";
-      if (
-        control instanceof HTMLInputElement ||
-        control instanceof HTMLTextAreaElement
-      ) {
-        let value = field.value ?? "";
-        if (field.kind === "observation-time" && value) {
-          const date = new Date(Number(value) * 60000);
-          value = Number.isFinite(date.getTime())
-            ? new Date(date.getTime() - date.getTimezoneOffset() * 60000)
-                .toISOString()
-                .slice(0, 16)
-            : "";
-        }
-        if (document.activeElement !== control && control.value !== value)
-          control.value = value;
+    if (part.role !== "control") return;
+    const raw = part.raw ?? part.text;
+    if (control instanceof HTMLInputElement && control.type === "checkbox")
+      control.checked = part.selected ?? false;
+    else if (
+      control instanceof HTMLInputElement ||
+      control instanceof HTMLTextAreaElement
+    ) {
+      let value = raw;
+      if (part.kind === "datetime" && value) {
+        // The native editor works in the browser's wall time; the stored
+        // value stays the epoch minute Lean recorded.
+        const date = new Date(Number(value) * 60000);
+        value = Number.isFinite(date.getTime())
+          ? new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+              .toISOString()
+              .slice(0, 16)
+          : "";
       }
-    }
-    if (control instanceof HTMLSelectElement) {
+      if (document.activeElement !== control && control.value !== value)
+        control.value = value;
+      control.placeholder = part.placeholder ?? "";
+    } else if (control instanceof HTMLSelectElement) {
+      // Options and the empty choice's caption are Lean's data.
       const pairs: [string, string][] = [
-        ["", "Choose value"],
-        ...(source?.choices.length
-          ? source.choices
-          : (field?.kind
-              .split(":")
-              .slice(1)
-              .join(":")
-              .split("|")
-              .filter(Boolean)
-              .map((s) => [s, s] satisfies [string, string]) ?? [])),
+        ["", part.placeholder ?? ""],
+        ...(part.options ?? []),
       ];
-      if (field?.value && !pairs.some(([id]) => id === field.value))
-        pairs.push([field.value, field.value]);
       const key = JSON.stringify(pairs);
       if (control.dataset.options !== key) {
         control.replaceChildren(
@@ -342,7 +350,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         );
         control.dataset.options = key;
       }
-      control.value = field?.value ?? "";
+      control.value = raw;
     }
   }
   const dialogKeys = (event: KeyboardEvent) => {
@@ -399,13 +407,12 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         offsets.clear();
         screenId = screen.screen;
       }
-      const sources = screenSources(screen);
-      const explicit = new Set(
-        [...sources.values()].flatMap((s) =>
-          "button" in s.node && s.node.button.role === "confirm"
-            ? [s.node.button.comp]
-            : [],
-        ),
+      const parts = output.parts ?? [];
+      // Occurrences under a patient pane's caption belong to that pane.
+      const panes = output.boxes.flatMap((d, i) =>
+        parts[i]?.kind === "patientPane" && d.box.info.source
+          ? [`${d.box.info.source.join(".")}.`]
+          : [],
       );
       const modal = output.boxes.some((d) => d.box.info.interruptive);
       const active =
@@ -415,21 +422,15 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       if (modal && !modalOpen) modalInvoker = active;
       const retained = new Set<string>(),
         counts = new Map<string, number>();
+      const fresh: Entry[] = [];
       let cursor: ChildNode | null = root.firstChild;
-      for (const drawn of output.boxes) {
-        const source = drawn.box.info.source
-          ? sources.get(drawn.box.info.source.join("."))
-          : undefined;
-        const node = source?.node;
+      output.boxes.forEach((drawn, index) => {
+        const part = parts[index] ?? undefined;
+        const path = sourceKey(drawn);
         const identity =
-          node && "field" in node
-            ? `field:${node.field.comp}`
-            : node && "button" in node
-              ? `button:${node.button.comp}:${node.button.role}`
-              : node && "tabs" in node
-                ? `tabs:${node.tabs.id}`
-                : (drawn.box.info.source?.join(".") ??
-                  `box:${drawn.box.info.id}`);
+          part?.target && part.comp !== undefined
+            ? `${part.role}:${part.comp}:${part.kind ?? ""}:${part.role === "tab" ? (part.col ?? 0) : ""}`
+            : (path ?? `box:${drawn.box.info.id}`);
         const occurrence = counts.get(identity) ?? 0;
         counts.set(identity, occurrence + 1);
         const key = `${screen.screen ?? screen.title}:${identity}:${occurrence}`;
@@ -437,7 +438,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         let entry = entries.get(key);
         if (!entry) {
           const element = document.createElement("div");
-          entry = { element, drawn, source };
+          entry = { element, drawn, part, pane: false };
           entries.set(key, entry);
           const current = entry;
           element.onscroll = () => {
@@ -468,25 +469,46 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           };
         }
         entry.drawn = drawn;
-        entry.source = source;
+        entry.part = part;
+        entry.pane = path !== undefined && panes.some((p) => path.startsWith(p));
+        fresh.push(entry);
         const { element } = entry;
         element.dataset.box = drawn.box.info.id;
         element.id = `lean-box-${drawn.box.info.id}`;
-        if (drawn.box.info.source)
-          element.dataset.source = drawn.box.info.source.join(".");
+        if (path !== undefined) element.dataset.source = path;
         else delete element.dataset.source;
+        // Role and state are Lean's; they select presentation, never text.
+        const state: Record<string, string | undefined> = {
+          role: part?.role,
+          kind: part?.kind,
+          tone: part?.tone,
+          selected: part?.selected ? "true" : undefined,
+          disabled: part?.enabled === false ? "true" : undefined,
+          row: part?.row === undefined ? undefined : String(part.row),
+          col: part?.col === undefined ? undefined : String(part.col),
+        };
+        for (const [name, value] of Object.entries(state))
+          if (value === undefined || value === "")
+            delete element.dataset[name];
+          else element.dataset[name] = value;
         element.setAttribute("aria-label", drawn.original ?? drawn.box.info.id);
+        if (part?.raw !== undefined && part.raw !== part.text)
+          element.title = part.raw;
+        else element.removeAttribute("title");
         const role =
           drawn.box.info.role ||
           (drawn.box.info.banner
             ? "banner"
-            : node && "alert" in node
+            : part?.role === "alert"
               ? "alert"
               : drawn.box.info.interruptive && !drawn.box.info.target
                 ? "dialog"
                 : "");
         if (role) element.setAttribute("role", role);
         else element.removeAttribute("role");
+        if (part?.role === "step" && part.selected)
+          element.setAttribute("aria-current", "step");
+        else element.removeAttribute("aria-current");
         if (role === "dialog") {
           element.setAttribute("aria-modal", "true");
           element.tabIndex = -1;
@@ -504,6 +526,8 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           drawn.box.style,
           drawn.box.info.text,
           drawn.box.info.mark,
+          part?.runs,
+          part?.cells,
         ]);
         if (entry.textKey !== textKey) {
           const previous = element.querySelector<HTMLElement>(".lean-lines");
@@ -514,15 +538,13 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
             const shape = paintShape(drawn);
             if (shape) element.append(shape);
             if (drawn.lines.length) {
-              const lines = paintText(drawn);
+              const lines = paintText(drawn, part);
               element.append(lines);
               lines.scrollTop = scroll;
             }
           }
           entry.textKey = textKey;
         }
-        updateControl(entry, blocked, explicit);
-        element.dataset.interactive = String(Boolean(entry.control));
         if (drawn.box.scroll) {
           let spacer = element.querySelector<HTMLElement>(".lean-spacer");
           if (!spacer) {
@@ -548,12 +570,22 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         }
         if (element !== cursor) root.insertBefore(element, cursor);
         else cursor = cursor?.nextSibling ?? null;
-      }
+      });
       for (const [key, entry] of entries)
         if (!retained.has(key)) {
           entry.element.remove();
           entries.delete(key);
         }
+      // Controls refer to the boxes of their sibling parts, so they are
+      // updated once every box of this paint exists.
+      for (const entry of fresh) {
+        const { drawn } = entry;
+        updateControl(
+          entry,
+          modal && !drawn.box.info.interruptive && !drawn.box.info.urgent,
+        );
+        entry.element.dataset.interactive = String(Boolean(entry.control));
+      }
       Object.assign(root.style, {
         width: px(output.viewport.w),
         height: px(output.viewport.h),

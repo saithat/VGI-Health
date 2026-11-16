@@ -13,7 +13,8 @@ test('one repeat-body class paints arbitrary list counts, targets and record len
   for(const n of [0,1,2,50,300]) for(const viewport of [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}]) {
     const out=run(screen(n),viewport);
     assert.equal(out.accepted,true,JSON.stringify(out));
-    assert.equal(out.boxes.filter(d=>d.box.info.source!==null).length,n+3);
+    // Banner, title and navigation; a table is its caption and one captioned cell, a field its label and control.
+    assert.equal(out.boxes.filter(d=>d.box.info.source!==null).length,3+3*Math.ceil(n/2)+2*Math.floor(n/2));
     assert.equal(new Set(out.boxes.map(d=>d.box.info.id)).size,out.boxes.length);
     assert.equal(out.boxes.filter(d=>d.box.info.target).length,Math.floor(n/2));
     assert.ok(out.boxes.filter(d=>d.box.info.source!==null).every(d=>d.box.info.text.safety&&d.box.info.text.overflow==='scroll'));
@@ -27,7 +28,10 @@ test('fixed commits satisfy G9 with and without a two-occurrence modal',()=>{
       const fixed=out.boxes.filter(d=>d.box.info.commit);assert.equal(fixed.length,1);
       assert.equal(fixed[0].box.info.target,true);assert.deepEqual(fixed[0].box.clips,[]);
       const rect=fixed[0].box.rect;assert.ok(rect.x>=0&&rect.y>=0&&rect.x+rect.w<=viewport.w&&rect.y+rect.h<=viewport.h);
-      assert.equal(fixed[0].original.includes('Required review '.repeat(1000)),true);
+      // The fixed commit shows its label; the blocked reason is its own part, complete, in the body.
+      assert.equal(fixed[0].original,'Sign');
+      const reason=out.boxes.find(d=>d.box.info.source?.join('.')===[...fixed[0].box.info.source,0].join('.'));
+      assert.equal(reason.original,'Required review '.repeat(1000));assert.equal(reason.box.info.target,false);
       const alerts=out.boxes.filter(d=>d.box.info.interruptive);assert.equal(alerts.length,modal?2:0);
       for(const alert of alerts) { assert.deepEqual(alert.box.clips,[]);assert.ok(alert.box.style.z>fixed[0].box.style.z); }
     }
@@ -74,7 +78,8 @@ test('an urgent strip beyond the pinned capacity is refused with counts, never p
   assert.deepEqual(buttons.findings.filter(f=>f.rule==='G11').map(f=>[f.metric,f.actual,f.required]),[['urgent-strip-targets',3,2]]);
 });
 test('fixed-shell density counts the commit and pinned strip targets with every body window',()=>{
-  const dense=screen(60);dense.workspace=dense.workspace.map((n,i)=>({field:{comp:String(i),label:'Capture',kind:'text',value:'',unit:null,provenance:null,pendingConfirm:false,humanOnly:false,required:false}}));
+  // Buttons are the densest body: every row is a target.
+  const dense=screen(60);dense.workspace=dense.workspace.map((n,i)=>({button:{comp:String(i),label:'Action',role:'secondary',enabled:true,blockedReason:null,hotkey:null}}));
   dense.workspace.push({button:{comp:'sign',label:'Sign',role:'primary',enabled:true,blockedReason:null,hotkey:null}});
   const out=run({...dense,urgent:strip(2,2)});assert.equal(out.accepted,true);
   const rows=out.boxes.filter(d=>d.box.info.target&&d.box.clips.length),fixed=out.boxes.filter(d=>d.box.info.target&&!d.box.clips.length);
@@ -82,6 +87,11 @@ test('fixed-shell density counts the commit and pinned strip targets with every 
   const clip=rows[0].box.clips[0][1];let worst=0;
   for(const r of rows) { const o=r.box.rect.y+r.box.rect.h-1-clip.y; worst=Math.max(worst,rows.filter(q=>q.box.rect.y<clip.y+clip.h+o&&q.box.rect.y+q.box.rect.h>clip.y+o).length); }
   assert.equal(worst,12);assert.ok(worst+fixed.length<=15);
+  // A field is a label row and a control row, so fields put at most six targets in a window.
+  const fields=screen(60);fields.workspace=fields.workspace.map((n,i)=>({field:{comp:String(i),label:'Capture',kind:'text',value:'',unit:null,provenance:null,pendingConfirm:false,humanOnly:false,required:false}}));
+  const controls=run(fields).boxes.filter(d=>d.box.info.target&&d.box.clips.length);let most=0;
+  for(const r of controls) { const o=r.box.rect.y+r.box.rect.h-1-clip.y; most=Math.max(most,controls.filter(q=>q.box.rect.y<clip.y+clip.h+o&&q.box.rect.y+q.box.rect.h>clip.y+o).length); }
+  assert.equal(most,6);
 });
 test('navigation links and tabs are separate target boxes; the signed-in clinician is in the banner',()=>{
   const chrome={...screen(2),viewer:'Registered nurse',nav:[['Chart',[['goOrders','Orders'],['goNotes','Notes']]],['Tools',[['goSearch','Search']]]]};

@@ -6,7 +6,7 @@ import {spawnSync} from 'node:child_process';
 import {layoutFor,fixedShellFor,shapeFor,eraseContent,viewports,version} from './generator.mjs';
 export const digest=value=>createHash('sha256').update(typeof value==='string'||Buffer.isBuffer(value)?value:JSON.stringify(value)).digest('hex');
 export function native(input,binary=resolve('lean/.lake/build/bin/ui-layout')) {
-  const p=spawnSync(binary,[],{input:JSON.stringify(input)+'\n',encoding:'utf8',maxBuffer:128*1024*1024,timeout:60000,
+  const p=spawnSync(binary,[],{input:JSON.stringify(input)+'\n',encoding:'utf8',maxBuffer:512*1024*1024,timeout:Number(process.env.REFERENCE_NATIVE_TIMEOUT_MS??60000),
     env:{...process.env,TMPDIR:process.env.TMPDIR??'/home/saithat/Projects/run-tmp',LEAN_NUM_THREADS:'2'}});
   if(p.status!==0) throw Error(`ui-layout failed: ${p.stderr || p.error || p.status}`);
   const result=JSON.parse(p.stdout);

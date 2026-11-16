@@ -1,9 +1,17 @@
-import type { Drawn } from "./layout";
+import type { Drawn, Part } from "./layout";
 export const px = (n: number) => `${n / 64}px`;
 export const rgb = (c: { r: number; g: number; b: number }) =>
   `rgb(${c.r},${c.g},${c.b})`;
 const weights = [400, 600, 650, 700, 750, 800, 400, 400];
-export function paintText(d: Drawn): HTMLElement {
+/** Each glyph cell is drawn where Lean measured it. When the part has runs,
+ * Lean's cell counts say which cells belong to which run; the run's role is
+ * exposed for styling and no text is composed or re-read here. */
+export function paintText(d: Drawn, part?: Part): HTMLElement {
+  const runRoles: string[] = [];
+  (part?.runs ?? []).forEach((run, i) => {
+    for (let n = part?.cells?.[i] ?? 0; n > 0; n--) runRoles.push(run.role);
+  });
+  let painted = 0;
   const text = document.createElement("div");
   text.className = "lean-lines";
   text.setAttribute("aria-hidden", "true");
@@ -45,6 +53,7 @@ export function paintText(d: Drawn): HTMLElement {
     const cells = Array.from(line).map((ch, j) => ({
       ch,
       width: widths[j] ?? 0,
+      run: runRoles[painted++],
     }));
     const runs: { rtl: boolean; cells: typeof cells }[] = [];
     for (const cell of cells) {
@@ -60,6 +69,7 @@ export function paintText(d: Drawn): HTMLElement {
       for (const cell of run.rtl ? [...run.cells].reverse() : run.cells) {
         const glyph = document.createElement("span");
         glyph.dataset.glyph = "";
+        if (cell.run) glyph.dataset.run = cell.run;
         glyph.textContent = cell.ch;
         Object.assign(glyph.style, {
           position: "absolute",

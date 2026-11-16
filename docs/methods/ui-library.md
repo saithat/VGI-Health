@@ -111,6 +111,13 @@ content environments for one fixed semantic template.
 | G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero; at most that many fixed targets (outside every scroll viewport); and, at every scroll offset of each scroll viewport, at most that many fixed targets and targets in the window together. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G9 conjunction; see "Action density" below. |
 | G11 | *New specification for owner review.* Every box flagged `urgent` (the pinned urgent strip) is painted, outside every scroll viewport, contained in the page viewport and separated from every other painted box, a modal included, whatever the stacking order; and every painted source box of an urgent occurrence of the semantic inventory carries the flag. It holds at every supported size. It is checked next to G1–G9 and G10 (`checkAll`, `layoutAccepted_all`); see "Pinned urgent strip" below. |
 
+The decision procedures for G3 and G4 compute whether a modal is open once
+per layout (`G3Hoisted`, `G4Hoisted`, equal to G3 and G4 by `G3_hoisted` and
+`G4_hoisted`, both `Iff.rfl`); they previously recomputed it for every pair of
+boxes, which made checking cubic in the number of boxes. With one box per
+display part a 1,000-part screen took 10.5 s to paint through a family and
+now takes 1.1 s; a 3,000-part screen takes 9.4 s. No rule changed.
+
 The pixel model overapproximates nested clipping with the outermost viewport;
 inner clips can only remove pixels. Scroll ancestor identities distinguish
 independent regions; this conservative envelope test can reject safe nested
@@ -152,18 +159,14 @@ matching the pinned advance/vertical tables remains trusted, as do browser
 clipping, paint and accessibility behavior; the differential validates samples,
 not those assumptions universally.
 
-`Semantic.portScreen` maps every `UiNode` occurrence, including wrappers, to a
-unique path and retains user-facing labels, values and rows in safety-classified text.
-*New specification for owner review:* the inventory (`screenNodes`) exposes
-every control the user can operate as an occurrence of its own. The navigation
-root (`navNode`) is a wrapper, one heading per group and one target per link;
-a tabs node lists one target per tab label (`tabNodes`) before its selected
-body; section toggles were already child buttons. Each is therefore a separate
-box under G3 (24×24 px, separated) and counts under G10. The banner occurrence
-(`bannerNode`) also carries the signed-in clinician (`viewer?`), which was
-missing from the inventory. The first three roots are still banner, title and
-navigation, so workspace paths start at `[3]` as before; the body of a tabs
-node now starts after its tab targets. W1 signing
+`Semantic.portScreen` maps every occurrence of the semantic inventory to a
+unique path and binds its text in a safety-classified slot. The inventory
+(`screenNodes`) lists display parts, described under "Display parts" below:
+every piece of text a user sees is an occurrence of its own, so each is a
+separate box under G3, G4 and G7 and each target counts under G10. The first
+three roots are the banner `[0]`, the title `[1]` and the navigation `[2]` (a
+wrapper, one heading per group and one target per link); workspace paths start
+at `[3]`. W1 signing
 uses a persistent slate banner, blue commit control, fixed review scroller and
 interruptive layers. It is a semantic prototype: fields/review rows are text
 cards, not a close visual/interactive reproduction of today's EHR widgets.
@@ -181,9 +184,120 @@ establishes universal coverage. The intentionally bad clinical programs remain
 rejected by the unchanged clinical checker independently of layout admission.
 Source data and audit outputs stay outside git.
 
-**Universal bridge.** `screenShape` erases patient labels/values and info-table
-rows, while retaining occurrence paths, interaction/commit placement classes
-and structural line reservations. `compileShape` never reads content.
+**Display parts.** *New specification for owner review.* `Ehr.Layout.Display`
+decides what a clinical screen displays. A `Part` has a role (`PartRole`), the
+text that is measured and painted, the recorded datum it presents (`raw`,
+when a formatter reworded it) and state that is never drawn as text: target,
+commit, component, kind, tone, selected, enabled, row and column, the options
+of a select, the value kind and unit of an entry, a placeholder. For a node
+at path `p`, `ownPart` is the occurrence `p`, `leafParts` are `p.0`, `p.1`, …
+in reading order, and the child nodes follow at the next indices. A part is
+present only when its datum is. No JSON is displayed.
+
+| Node | Occurrence `p` | Further parts, then children |
+|---|---|---|
+| `field` | `label` | `control` at `p.0` (the target; its text is the displayed value, for a coded value the label of its option; kind `text`, `textarea`, `number`, `checkbox`, `select`, `datetime` or `search`; options, value kind and unit as data), then `unit`, `code` (the code beside its label where codes are shown), `required`, `hint`, `source`, `pending`, `human` |
+| `button` | `button` (target; commit when primary; `enabled`; role as kind; the active navigation link is `selected`) | `reason` when blocked or a reason is recorded, `hotkey` |
+| `alert` | `alert`: the label; the severity is kind and tone | |
+| `section`, `timeline`, `datedTimeline` | `heading` | a dated timeline lists one `item` per dated and undated source; then the children |
+| `tabs` | `wrapper` without text | one `tab` target per label (`col` its index, `selected` on the selected one), then the body |
+| `stepper` | `wrapper` | one numbered `step` per step, the current one `selected` |
+| `info` | `heading` | the cells, each with `row` and `col`: a table whose rows share their captions (two rows or more) shows the captions once as `cellLabel` in row 0 and then one value cell per record cell; otherwise each value cell follows its own `cellLabel`. A value cell is `cellValue`, `status` (a state column; `tone` from `statusTone`) or `badge` (a result flag). An empty table has one `empty` part; an empty status line has none |
+| `valueSet` | `wrapper` | the children; its options reach the fields inside as popup data |
+| `rowAction` | `wrapper` with the info component and `row` | the child controls |
+| `chartReferences` | `wrapper` | one `item` per reference curve with every sample |
+| `board` | `wrapper` | one `alert` per demand (patient, record number, alert) |
+| `patientPane` | `heading` with the pane banner as runs | one `alert` or `button` per urgent atom, then children and modal |
+| `columns`, `presentation` | `wrapper` | the children |
+| `text` | `text` | |
+
+The banner `[0]` is one part of role `banner`. Rule G1 admits exactly one
+banner box and keeps it fixed, visible and clear of every other box, so the
+banner fields are runs of that part, not boxes: the patient name, the
+identity fields (date of birth, record number, age and sex), the badges
+(allergies, code status, isolation, weight), the remaining details and the
+signed-in clinician, in that order. The part's text is the concatenation of
+its runs (`banner_complete`), and every painted box carries the number of
+glyph cells of each run (`runCells`), so a painter styles runs without
+reading text. Placing banner fields as separate boxes needs a pinning rule for
+them and a shell with room for them; neither exists yet.
+
+A prefilled value awaiting confirmation has a `pending` part. Without an
+explicit confirmation button on the screen that part is a target that confirms
+the value, and the control stays an editor; it was an implicit second use of
+the field's own rectangle. Targets of this kind count under G3 and G10.
+
+*Formatting.* `Ehr.Layout.Format` holds the wording: captions in sentence or
+title case without code-system tags, button labels without workflow
+annotations, units, short names of the listed laboratory tests and vital
+signs, states, encounter classes, age and sex, durations, medication
+directions, the allergy summary, rounding of long observation decimals on
+their recorded digits, one-line vital summaries, empty-table text, the tones,
+and dates. A recorded date or date-time is shown by its own recorded
+wall-time digits (`MM/DD/YYYY HHMM`, `05 Jan 2024`); no zone is applied and no
+host locale or clock is read. An instant stored as an epoch minute (a late
+entry's observed and signed times, an observation-time field) has no recorded
+wall time and Lean has no display time zone in its data, so it is written in
+UTC and labelled UTC. Narrative (`Text`, `Title`) is never reworded. The
+functions are pure; `#guard` cases include those of the application's
+formatter tests.
+
+*Nothing is lost.* Per kind, the parts carry every datum of the node:
+`field_complete`, `control_shows_choice`, `button_complete`, `alert_complete`,
+`section_complete`, `tabs_complete`, `stepper_complete`, `info_complete`,
+`info_empty`, `banner_complete`, `lists_complete`. `Parts.node_parts` proves
+that the own part and every display part of every node of a screen, at any
+depth, is an occurrence of the inventory, and `Range.realized_part` that a
+painting which realizes the screen shows each occurrence in a box of its own
+with its complete text under the safety-text contract
+(`Parts.realized_node_parts`). For the renderer and the fixed shell no premise
+is left:
+
+```lean
+render_parts_shown (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
+    (display : Display) (user : Ehr.User) (state : Ehr.State) (v : Size) (hv : v ∈ viewports) :
+  ∃ painted, Range.uncheckedPaint (runRenderUi ⟨sp,program,facts,display,user,state⟩) v = some painted ∧
+    ∀ path part, (path,part) ∈ screenNodes (runRenderUi ⟨sp,program,facts,display,user,state⟩) →
+      ∃ d ∈ painted, d.box.info.source = some path ∧ d.box.info.paint = true ∧
+        d.original = some part.text ∧
+        ∃ t ∈ d.box.info.text, t.safety = true ∧
+          d.lines = textLines t d.box.rect.w (paintText t part.text) ∧
+          SafetyRealized t d.box.rect.w part.text
+```
+
+What these theorems do not say: that a formatter's wording is clinically
+right (each formatter is a specification to review; the recorded datum stays
+in `raw`), or that a painter draws the role, tone and state it is given.
+`runCells` is checked by regressions and the native tests, not by a theorem.
+
+*Consequences for layouts.* The erased shape now has one slot per part, so it
+depends on which optional parts are present, on the number of table cells and
+on whether a button is blocked; a layout family written for the earlier
+inventory no longer matches. The JSONL operations add `parts` (the part of
+each box, in box order) to `program-paint`, `structural-paint`, `family-paint`
+and `port`, and `{"op":"inventory","screen":…}` (or `"render"`) returns every
+path with its part and the shape. The fixed shell places one part per row in
+inventory order, so a label is directly above its control and the parts of a
+node stay together; its capacity of 15 targets is unchanged, because parts
+other than controls, buttons, tabs and unconfirmed confirmations are not
+targets and every row was already counted as if it were one. The fixed commit
+row shows the button's label; its blocked reason and hotkey are body rows at
+the button's place. The body is longer: on six release screens the
+occurrences grew from 70–97 to 324–544 and the body from about 3,800–5,400 px
+to 18,000–30,400 px, with the same 25–50 targets. That is the fixed shell;
+the dense reference layouts ([reference layouts](reference-layouts.md)) place
+the parts as today's application does: labels above controls in field rows,
+table header rows and column tracks, tabs in one row. Still missing:
+content-measured table grids, the medication time grid, charts as marks,
+the multi-patient board, banner fields as boxes, and grouping of several
+records into one line (blood-pressure pairs, same-time vital signs,
+medication tasks), which today's application does in TypeScript.
+
+**Universal bridge.** `screenShape` erases every text (labels, values, cell
+contents), while retaining occurrence paths, interaction/commit placement
+classes and structural line reservations. Since each display part is an
+occurrence, the number of table cells and the presence of optional parts are
+structure, not erased payload. `compileShape` never reads content.
 `Family.acceptFamily` checks every supplied shape/layout case at all supported
 viewports, including semantic flag linkage (`Linked`). Layouts are arbitrary
 Nodes, with per-viewport JSON cases; the reference compiler is optional.
@@ -228,8 +342,8 @@ layoutAccepted_allPatients_finite
 
 `Realizes` includes G1–G9 on the actual semantic inventory, linked source roles,
 exact full original values and the unbounded safety-text preservation/width
-contract. `Covered` is finite structural family membership, with no string or
-row-count bound. For a finite descriptor, `RenderCovered` requires every actual
+contract. `Covered` is finite structural family membership, with no string
+bound. For a finite descriptor, `RenderCovered` requires every actual
 EHR render shape reachable by human/macro events or time to belong to the
 admitted family, for every Facts/Display/user. The theorem makes that premise
 visible; the structural program certificate below discharges the corresponding
@@ -238,14 +352,14 @@ The all-states theorem needs no coverage or reachability premise: it establishes
 partial correctness for every EHR input state, including unreachable states,
 and identifies missing structural cases exactly. It does **not** promise an
 output for an uncovered shape. The all-screens theorem needs only local shape
-membership and applies to every payload of that shape, including unbounded
-lists represented inside an info node. `realized_currentCommit_visible` proves
+membership and applies to every payload of that shape: every string of
+whatever length. A table with another number of cells is another shape. `realized_currentCommit_visible` proves
 that a linked, complete current-task source cannot be hidden to obtain G9's
 no-commit exemption. `finiteFamily_missingShape` proves that a finite shape
 family cannot cover all possible UiScreens; it does not rule out coverage for a
 particular EHR Program. Therefore finite probes are not treated as a global
-coverage proof. Patient-directory controls can introduce structural growth even
-when clinical table rows stay inside a single info node. The parameterized structural
+coverage proof. Patient-directory controls and table rows both introduce
+structural growth. The parameterized structural
 certificate below closes the renderer range without enumerating these shapes.
 
 **Ordinary structural certificate.** `Ehr.Layout.Structural`
@@ -312,7 +426,10 @@ strip is kept clear of the modal by separation, not by drawing it on top.
 
 The fixed shell pins the strip when it has at most six occurrences
 (`stripCapacity`) of which at most two are targets (`stripTargetCapacity`):
-`Shell.stripFits`. `shell_urgent`, `class_urgent` and `certifiedClass_urgent`
+`Shell.stripFits`. Every part under a strip root is an urgent occurrence, so
+the blocked reason or hotkey of a strip button counts toward the six; the
+renderer's strip (alerts and enabled acknowledgments) has no such parts.
+`shell_urgent`, `class_urgent` and `certifiedClass_urgent`
 prove G11 for every such shape; `Density.render_urgent` extends it to every
 output of the renderer. A strip that does not fit is painted as ordinary body
 rows, so G1–G9 and `renderer_range` still hold for it, and G11 fails:
@@ -340,6 +457,10 @@ layoutAccepted_stripLayout (v : Size) (ui : UiScreen) (painted : List Drawn)
 conditions off the placed boxes at scroll offsets `offset`: the strip node's
 box is fixed in the viewport; its text slot is at least 12 px and 4.5:1 and
 holds the node's complete text; no other painted box shares a pixel with it.
+An alert's text is its label; its severity is no longer printed in brackets
+but is the kind and tone of the part emitted with the box (`strip_part`,
+`strip_alert_part`), so the legibility conjunct covers the label and a painter
+is trusted to show the tone.
 `stripEdge` is any view change (scrolling, tabs, navigation, a dialog opening
 or closing) that leads to another accepted layout of a screen with the same
 strip. `shell_stripLayout` and `render_stripLayout` specialise this to the
@@ -474,7 +595,12 @@ links and tabs became occurrences of their own. Afterwards the audit was
 repeated on the fifteen release persona programs: 4,314/4,314 class probes,
 279/279 W1 port checks and 279/279 shell geometry checks pass, and every
 probed urgent strip (up to four occurrences) is pinned. The recorded-run
-programs were not audited again.
+programs were not audited again. With display parts as occurrences the same
+fifteen programs were audited once more (all screens, all variants):
+4,314/4,314 class probes, 279/279 W1 port checks of the family reference
+layout and 279/279 shell geometry checks pass, every probed urgent strip is
+pinned (1,170 probes, up to four occurrences), and no window shows more than
+12 body targets.
 
 The [earlier ordinary-class inventory](../audits/ui-certs-20261107.json)
 records the narrower `repeat-body-v1` implementation. The current fixed-shell
@@ -482,20 +608,34 @@ range inventory supersedes its coverage limits.
 
 There is also a closed positive certificate: `reviewFamily_accepted` proves
 admission of `reviewFamily` with proof-producing `decide_cbv` (kernel checked,
-no native evaluation axiom). `layoutAccepted_reviewAllPayloads` states:
+no native evaluation axiom). Its statement changed with the display parts.
+`layoutAccepted_reviewAllPayloads` states:
 
 ```lean
-∀ (banner : List (String × String)) (rows : List (List (String × String)))
-  (enabled : Bool) (reason : Option String) (v : Size), v ∈ viewports →
+∀ (banner : List (String × String)) (reason : Option String) (v : Size), v ∈ viewports →
   ∃ painted,
-    familyPaint reviewFamily (reviewScreen banner rows enabled reason) v = some painted ∧
+    familyPaint reviewFamily (reviewScreen banner [] false reason) v = some painted ∧
+    Realizes (reviewScreen banner [] false reason) v painted
+```
+
+It was stated for every table (`rows`) and for Sign enabled or blocked. Table
+cells and the blocked reason are occurrences now; a finite family paints a
+fixed number of boxes and G7 wants one per occurrence, so no finite family
+covers tables of every size. The earlier conclusion holds for every payload
+with the fixed shell as the painter:
+
+```lean
+Parts.layoutAccepted_reviewAllPayloads_shell
+    (banner : List (String × String)) (rows : List (List (String × String)))
+    (enabled : Bool) (reason : Option String) (v : Size) (hv : v ∈ viewports) :
+  ∃ painted, Range.uncheckedPaint (reviewScreen banner rows enabled reason) v = some painted ∧
     Realizes (reviewScreen banner rows enabled reason) v painted
 ```
 
-This has no length, glyph, shape-membership, coverage or runtime-acceptance
-premise. It is a semantic review/sign family with arbitrary banner fields,
-review-table rows and enabled/blocked reason; it is not a theorem that every
-state of the deployed EHR renderer has that exact shape.
+Neither has a length, glyph, coverage or runtime-acceptance premise. The
+family certificate covers arbitrary banner fields and blocked reasons of an
+empty review table; it is not a theorem that every state of the deployed EHR
+renderer has that exact shape.
 
 **Not proved / incomplete.** G10 and G11 are not part of `Realizes` or `Rules`;
 they are separate conjuncts of the density and urgent-strip theorems. G11 holds
@@ -514,17 +654,18 @@ export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
 (cd lean && lake build && lake build ui-layout ui-port-audit)
 node --test scripts/ui-library/native.test.mjs scripts/ui-library/family.test.mjs \
   scripts/ui-library/structural.test.mjs scripts/ui-library/program.test.mjs \
-  scripts/ui-library/fonts.test.mjs
+  scripts/ui-library/fonts.test.mjs scripts/ui-library/parts.test.mjs
 node scripts/ui-library/port-audit.mjs --all-screens
 pnpm --filter app typecheck
 pnpm --filter app lint
 flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright test --config src/browser/ui-library/playwright.config.ts
 ```
 
-Targeted checks pass 30 native regressions (28 layout/program tests and two
-font tests). The named-declaration audit covers 253 theorems in
-`lean/Ehr/Layout`; each uses at most `propext`, `Classical.choice` and
-`Quot.sound`. The following figures predate the strengthened rules G4, G6,
+Targeted checks pass 34 native regressions (28 layout/program tests, four
+display-part tests and two font tests); the part tests compare the TypeScript
+inventory mirror with Lean on eight P1/P3 screens. The named-declaration audit
+covers 305 theorems in `lean/Ehr/Layout` (16 without axioms); each uses at
+most `propext`, `Classical.choice` and `Quot.sound`. The following figures predate the strengthened rules G4, G6,
 G10 and G11 and the per-link inventory, and were not measured again: seven
 Playwright tests (one worker under the shared lock, after the refreshed port
 audit); a differential of 228 boxes, 153 text lines and 6,861 intrinsic glyph
@@ -545,7 +686,7 @@ The default `lake build` imports the unit tests, closed review-family certificat
 and original family axiom checks; the two UI executables additionally build
 the shell/range proof. The current range inventory embeds the exact axiom-audit
 source used against the compiled modules; explicit source inspection is also available with
-`cd lean && for module in Engine Contrast Check Keyboard Json Semantic Family Examples Structural Shell Range;
+`cd lean && for module in Engine Contrast Check Keyboard Json Format Display Semantic Family Examples Structural Shell Range Parts;
 do lake env lean "Ehr/Layout/$module.lean"; done`.
 
 Source changes require a WASM rebuild and manifest check before app build,

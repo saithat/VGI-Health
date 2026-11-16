@@ -1,5 +1,12 @@
 import { z } from "zod";
 import type { ScreenGeometry } from "../../app/src/metrics/geometry.js";
+import { screenOccurrences } from "../../app/src/lean-ui/sources.js";
+import type { UiScreen } from "../../lean/generated/ehr-types.js";
+/** The screen is Lean's own UiScreen output; it is read structurally, as the
+ * clinical page reads it, without re-validating the wire format. */
+const leanScreen = z.custom<UiScreen>(
+  (value) => typeof value === "object" && value !== null,
+);
 const rect = z.object({
   x: z.number(),
   y: z.number(),
@@ -35,57 +42,18 @@ export const paintSchema = z
   .object({ accepted: z.boolean(), boxes: z.array(leanBoxSchema) })
   .passthrough();
 export type Paint = z.infer<typeof paintSchema>;
+/** Occurrence paths of Lean's semantic inventory (Layout.Semantic.screenNodes)
+ * with the components whose click point each occurrence is. One mirror serves
+ * the painter's tests and this geometry: a field's component is bound to its
+ * control part (the target), not to its label; a button, alert, section, info
+ * and tabs wrapper keep their own occurrence. */
 export function occurrences(
   screen: Record<string, unknown>,
 ): { path: number[]; ids: string[] }[] {
-  const entries: { path: number[]; ids: string[] }[] = [];
-  function visit(node: unknown, path: number[]) {
-    const [kind, value] =
-      Object.entries(z.record(z.string(), z.unknown()).parse(node))[0] ?? [];
-    const data = z.record(z.string(), z.unknown()).safeParse(value),
-      d = data.success ? data.data : {};
-    const id =
-      d["comp"] ??
-      (["tabs", "section", "patientPane"].includes(kind ?? "")
-        ? d["id"]
-        : undefined) ??
-      d["alert"];
-    entries.push({ path, ids: typeof id === "string" ? [id] : [] });
-    // A tabs node lists one target per label before its selected body
-    // (Layout.Semantic.tabNodes). Indexed IDs select exact tab target boxes.
-    const tabs =
-      kind === "tabs" ? z.array(z.string()).parse(d["labels"] ?? []).length : 0;
-    for (let i = 0; i < tabs; i++) entries.push({ path: [...path, i], ids: typeof id === "string" ? [`${id}#tab:${i}`] : [] });
-    const children = z
-      .array(z.unknown())
-      .parse(d["children"] ?? d["body"] ?? []);
-    children.forEach((child, i) => visit(child, [...path, tabs + i]));
-    if (kind === "patientPane")
-      z.array(z.unknown())
-        .parse(d["modal"] ?? [])
-        .forEach((child, i) => visit(child, [...path, children.length + i]));
-  }
-  // Layout.Semantic.navNode: a wrapper, a heading per group, a box per link.
-  const nav = z
-    .array(z.tuple([z.string(), z.array(z.tuple([z.string(), z.string()]))]))
-    .parse(screen["nav"]);
-  const roots = [
-    { text: { s: "" } },
-    { text: { s: "" } },
-    {
-      section: {
-        children: nav.map(([, links]) => ({
-          section: { children: links.map(([comp]) => ({ button: { comp } })) },
-        })),
-      },
-    },
-    ...z.array(z.unknown()).parse(screen["workspace"]),
-    ...z.array(z.unknown()).parse(screen["side"]),
-    ...(screen["modal"] ? [screen["modal"]] : []),
-    ...z.array(z.unknown()).parse(screen["urgent"] ?? []),
-  ];
-  roots.forEach((n, i) => visit(n, [i]));
-  return entries;
+  return screenOccurrences(leanScreen.parse(screen)).map(({ path, ids }) => ({
+    path,
+    ids,
+  }));
 }
 const px = (r: z.infer<typeof rect>) => ({
   x: r.x / 64,

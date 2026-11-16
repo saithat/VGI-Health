@@ -95,7 +95,20 @@ def runtime_sources():
         io_text = io_text.replace(old, name + "()")
     patched_io = BUILD / "patched/io.cpp"
     write_changed(patched_io, io_text)
-    return [patched_io if p == original_io else p for p in sources] + [WASM / "uv-error.c"]
+    sources = [patched_io if p == original_io else p for p in sources]
+    # String.toList/String.data ends its list with lean_box_uint32(0). On wasm32
+    # that is an allocated scalar box, not the empty list lean_box(0): compiled
+    # code treats the nil tail as unboxed and skips reference counting, then
+    # frees the object twice. End the list with the real empty list.
+    original_object = LEAN_SRC / "runtime/object.cpp"
+    object_text = original_object.read_text()
+    old = "obj_res  r = lean_box_uint32(0);"
+    if object_text.count(old) != 1:
+        raise RuntimeError("Unexpected string_to_list_core; review object.cpp patch")
+    patched_object = BUILD / "patched/object.cpp"
+    write_changed(patched_object, object_text.replace(old, "obj_res  r = lean_box(0);"))
+    sources = [patched_object if p == original_object else p for p in sources]
+    return sources + [WASM / "uv-error.c"]
 
 
 def initializer_body(code, name):
