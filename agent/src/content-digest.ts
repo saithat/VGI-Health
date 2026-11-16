@@ -10,6 +10,7 @@ import { sha256,stableStringify } from './program.js';
 import { writeJson } from './util.js';
 export const VOLATILE_FILES = [/^\.cache\//, /(^|\/)digest\.json$/, /\.tmp$/, /\.error\.json(?:\.gz)?$/, /^completion\//, /^infrastructure\//, /^recovery\//, /^screen-cache\//, /^reports\/screens\/.*\/output\.txt$/];
 export const VOLATILE_FIELDS = [
+ {file:/^(lean-timings\.jsonl|reports\/lean-screens\/admissions\.jsonl)$/,keys:['elapsedMs']},
  {file:/.*/,keys:['createdAt','startedAt','resumes']},
  {file:/(^|\/)manifest\.json$/,keys:['runId','parallel','personaWorkers','screenWorkersPerPersona','contentDigest','infrastructureRetries']},
  {file:/^(rebind|recovery)\//,keys:['timestamp']},
@@ -75,7 +76,7 @@ export async function contentDigest(dir:string,include:(file:string)=>boolean=()
    if(!include(file))continue;
    const bytes=await readFile(absolute),text=(file.endsWith('.gz')?gunzipSync(bytes):bytes).toString();
    let value:unknown;
-   if(file.endsWith('.jsonl'))value=text.trim().split('\n').filter(Boolean).map(line=>JSON.parse(line)).filter(row=>!file.startsWith('ehr/')||row.ok).sort((a,b)=>String(a.file??'').localeCompare(String(b.file??'')));
+   if(file.endsWith('.jsonl'))value=text.trim().split('\n').filter(Boolean).map(line=>JSON.parse(line)).filter(row=>!file.startsWith('ehr/')||row.ok).sort((a,b)=>{const key=(row:Record<string,unknown>)=>String(row.file??(/^(lean-timings\.jsonl|reports\/lean-screens\/admissions\.jsonl)$/.test(file)?stableStringify({...row,elapsedMs:undefined}):''));return key(a).localeCompare(key(b));});
    else if(/\.json(?:\.gz)?$/.test(file))value=JSON.parse(text);
    else if(/\.(txt|md|tsx?|html|css|svg)$/.test(file))value=text;
    else value={bytes:bytes.toString('base64')};

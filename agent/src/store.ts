@@ -1,3 +1,4 @@
+import {designOf,withDesign,layoutDesignSchema} from './layout-design.js';
 import { readBinding } from './binding-pointer.js';
 import { presentationBundleSchema } from '../../app/src/ehr/ui/presentation-types.js';
 import { existsSync } from 'node:fs';
@@ -29,7 +30,7 @@ import { pad2, readJson, writeJson, writeJsonAtomic } from './util.js';
 export const deployedPointerSchema = z.object({ version: z.number().int().nonnegative(), program: z.string(), certificate: z.string(), build: z.string().optional(), source: z.string().optional(), components: z.string().optional() });
 
 export class RunStore {
-  constructor(readonly dir: string, private readonly customRoot = path.join(REPO_ROOT, 'app/src/ehr/ui/custom')) {}
+  constructor(readonly dir: string, private readonly customRoot = path.join(REPO_ROOT, 'app/src/ehr/ui/custom'), private readonly leanLayouts=false) {}
 
   programPath(persona: string, version: number): string { return path.join(this.dir, 'programs', persona, `v${version}.json`); }
   certPath(persona: string, version: number): string { return path.join(this.dir, 'certs', persona, `v${version}.json`); }
@@ -45,12 +46,18 @@ export class RunStore {
       if(program.version===current.version){
         const source=await readJson(path.join(this.dir,current.source??current.program),programSchema);
         const certified=await readJson(path.join(this.dir,current.certificate),certificateSchema);
+        const sameDesign=!this.leanLayouts||stableStringify(await this.readDesign(program,persona))===stableStringify(designOf(program)??[]);
         const sameBuild=!build||(current.build&&stableStringify(await readBinding(path.join(this.dir,current.build)))===stableStringify(build));
-        if(stableStringify(source)===stableStringify(program)&&stableStringify(certified)===stableStringify(certificate)&&sameBuild)return {version:current.version,program:current.program,certificate:current.certificate,...(current.build?{build:current.build}:{}),...(current.source?{source:current.source}:{}),...(current.components?{components:current.components}:{})};
+        if(stableStringify(source)===stableStringify(program)&&stableStringify(certified)===stableStringify(certificate)&&sameBuild&&sameDesign)return {version:current.version,program:current.program,certificate:current.certificate,...(current.build?{build:current.build}:{}),...(current.source?{source:current.source}:{}),...(current.components?{components:current.components}:{})};
       }
       if (program.version <= current.version) throw new Error('Published versions are immutable; deploy a new version');
     }
     const programFile = this.programPath(persona, program.version);
+    if(this.leanLayouts){
+      const layouts=designOf(program)??[];
+      await writeJsonAtomic(programFile.replace(/\.json$/,'.layouts.json'),layouts);
+      await writeJsonAtomic(programFile.replace(/\.json$/,'.layout-binding.json'),{screenGate:'lean',browserCertified:false,programSha256:sha256(stableStringify(program)),layoutsSha256:sha256(stableStringify(layouts))});
+    }
     const certFile = this.certPath(persona, program.version);
     const executable = expandProgram(program);
     const components = compilePresentations(program);
@@ -100,6 +107,7 @@ export class RunStore {
       const components = pointer.components ? await readJson(path.join(this.dir, pointer.components), presentationBundleSchema) : [];
       if (binding.componentsSha256 !== sha256(stableStringify(components))) throw new Error('Components no longer match the build binding');
     }
+    if(this.leanLayouts)withDesign(source,await this.readDesign(source,persona));
     return { program: source, certificate };
   }
 
@@ -145,6 +153,14 @@ export class RunStore {
     }
   }
 
+  private async readDesign(program:Program,persona:string){
+    const file=this.programPath(persona,program.version);
+    const layouts=await readJson(file.replace(/\.json$/,'.layouts.json'),layoutDesignSchema);
+    const binding=await readJson(file.replace(/\.json$/,'.layout-binding.json'),z.object({screenGate:z.literal('lean'),browserCertified:z.literal(false),programSha256:z.string(),layoutsSha256:z.string()}));
+    if(binding.programSha256!==sha256(stableStringify(program))||binding.layoutsSha256!==sha256(stableStringify(layouts)))throw Error('Lean design sidecar binding mismatch');
+    return layouts;
+  }
+
   readDecision(night: number, persona: string): Promise<DecisionRecord> {
     return readJson(this.decisionPath(night, persona), decisionRecordSchema);
   }
@@ -153,9 +169,11 @@ export class RunStore {
     await writeJson(this.dayPath(result.day, result.persona), dayResultSchema.parse(result));
   }
 
-  readProgram(persona: string, version: number): Promise<Program> {
+  async readProgram(persona: string, version: number): Promise<Program> {
     const executable = this.programPath(persona, version);
     const source = executable.replace(/\.json$/, '.source.json');
-    return readJson(existsSync(source) ? source : executable, programSchema);
+    const program=await readJson(existsSync(source) ? source : executable, programSchema);
+    if(this.leanLayouts)withDesign(program,await this.readDesign(program,persona));
+    return program;
   }
 }

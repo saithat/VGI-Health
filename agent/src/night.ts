@@ -1,3 +1,4 @@
+import {LeanLayoutRefusal} from './lean-layout-refusal.js';
 import { scoredPair, releaseScoringSchema, RELEASE_SCORING_POLICY } from './release-scoring.js';
 import { onlineQuality, assertTrain } from './online-context.js';
 import { rankHotspots, type InformationEffort } from './hotspots.js';
@@ -123,7 +124,7 @@ export interface Gate {
 }
 
 /** Apply a patch to `base` and run `ehr check`. */
-export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly JsonPatchOp[], gate: Gate): Promise<{ program: Program | null; check: CheckResult }> {
+export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly JsonPatchOp[], gate: Gate, screens?:ScreenChecker): Promise<{ program: Program | null; check: CheckResult }> {
   let program: Program;
   try {
     program = applyToProgram(base, patch, { version: gate.nextVersion, specVersion: gate.specVersion }).program;
@@ -134,6 +135,10 @@ export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly 
     return { program: null, check: invalidPatch(e) };
   }
   const verdict = await ehr.check({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, ...(gate.workload ? {workload:gate.workload} : {}) });
+  if(verdict==='ok'&&screens?.mode==='lean'){
+    const screen=await retryScreens(screens).check({specVersion:gate.specVersion,program});
+    if(screen.status!=='pass')return {program,check:screenCheckRejection(screen)};
+  }
   return { program, check: toCheckResult(verdict) };
 }
 
@@ -185,9 +190,14 @@ export class TrainEstimator {
 }
 
 export async function evaluateCandidate(deps: LoopDeps, base: Program, c: Candidate, gate: Gate, estimator: TrainEstimator | null): Promise<EvaluatedCandidate> {
-  const { program, check } = await checkPatch(deps.ehr, base, c.patch, gate);
-  const trainEstimate = program && check.status === 'pass' && !c.seeded && estimator ? await estimator.estimate(program) : null;
-  return { candidate: c, check, trainEstimate, componentsMoved: program ? componentsMoved(base, program) : null };
+  const { program, check } = await checkPatch(deps.ehr, base, c.patch, gate,deps.screens);
+  try {
+    const trainEstimate = program && check.status === 'pass' && !c.seeded && estimator ? await estimator.estimate(program) : null;
+    return { candidate: c, check, trainEstimate, componentsMoved: program ? componentsMoved(base, program) : null };
+  }catch(error){
+    if(!(error instanceof LeanLayoutRefusal))throw error;
+    return {candidate:c,check:screenCheckRejection(error.result),trainEstimate:null,componentsMoved:program?componentsMoved(base,program):null};
+  }
 }
 
 /** Record rejections that count toward the "tempting bad proposals" criterion. */
@@ -387,7 +397,7 @@ export async function deployVersion(deps: LoopDeps, persona: string, program: Pr
   try {
   if (gate.night !== undefined && (!completionOk(gate.validation ?? null) || !learnabilityOk(gate.validation ?? null))) throw new Error('Full expert completion and R2 bounded validation required before deploy');
   stage='build';
-  const build = deps.ehr.mode === 'real' ? await retryInfrastructure('deploy:build',()=>installedBuild(undefined, deps.ehr.binary ?? undefined),true) : undefined;
+  const build = deps.ehr.mode === 'real'&&deps.screens.mode!=='lean' ? await retryInfrastructure('deploy:build',()=>installedBuild(undefined, deps.ehr.binary ?? undefined),true) : undefined;
   stage='screen-check';
   const referenceProgram=gate.referenceProgram ?? await noAgentReference(deps.store.dir,gate.night===undefined?Infinity:gate.night+1)({specVersion:gate.specVersion,program});
   screenCheck = await retryScreens(deps.screens).check({ specVersion: gate.specVersion, program, ...(referenceProgram?{referenceProgram}:{}) });
@@ -524,6 +534,16 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   }
 
   const eligible = rec.candidates.filter((e) => e.check.status === 'pass' && !e.candidate.seeded);
+  if(!eligible.length&&deps.screens.mode==='lean'){
+    let failed=rec.candidates.find(e=>e.check.property==='ScreenCheck'&&!e.candidate.seeded);
+    for(let r=1;failed&&r<=MAX_REPAIRS&&!eligible.length;r++){
+      let repair:Proposal;
+      try {repair=await deps.agent.proposeCandidates({callId:callId(night,persona.id,`lean-repair-${r}`),purpose:'repair',source:'repair',parts:repairPrompt({night,persona,spec:release.spec,program:current,attempt:r,maxAttempts:MAX_REPAIRS,failedSummaries:[failed.candidate],failedPatch:failed.candidate.patch,check:failed.check})});}
+      catch(error){if(error instanceof InfrastructureError||error instanceof ReplayDivergedError||error instanceof ReplayMissingError)throw error;rec.flags.push(`llm-error (Lean repair ${r}): ${errorMessage(error)}`);rec.outcome='llm-error';return finish(null);}
+      calls.push(repair.call);
+      for(const candidate of repair.candidates){const ev=await evaluateCandidate(deps,current,{...candidate,id:`${candidate.id}@lean-repair${r}`},gate,estimator);rec.candidates.push(ev);rec.certification.attempts.push({attempt:r,candidateIds:[ev.candidate.id],source:'repair',patch:ev.candidate.patch,check:ev.check});if(ev.check.status==='pass')eligible.push(ev);else failed=ev;}
+    }
+  }
   if (eligible.length === 0) {
     rec.outcome = proposal.decision === 'noChange' && proposal.candidates.length === 0 ? 'no-change' : 'no-passing-candidate';
     rec.validation.reason = 'no certified candidate to validate';
@@ -591,7 +611,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
 
   // 6. Certify the merged program; feed counterexamples back (max 3 repairs).
   const mergedPatch = chosen.flatMap((c) => c.patch);
-  let attempt = await checkPatch(deps.ehr, current, mergedPatch, gate);
+  let attempt = await checkPatch(deps.ehr, current, mergedPatch, gate,deps.screens);
   rec.certification.attempts.push({ attempt: 0, candidateIds: chosen.map((c) => c.id), source: 'merged', patch: mergedPatch, check: attempt.check });
   let finalProgram = attempt.check.status === 'pass' ? attempt.program : null;
   let failed: { ids: { id: string; summary: string; moveType: string }[]; patch: JsonPatchOp[]; check: CheckResult } = {
@@ -617,7 +637,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
       const certAttempt: CertAttempt = { attempt: r, candidateIds: [ev.candidate.id], source: 'repair', patch: ev.candidate.patch, check: ev.check };
       rec.certification.attempts.push(certAttempt);
       if (ev.check.status === 'pass') {
-        attempt = await checkPatch(deps.ehr, current, ev.candidate.patch, gate);
+        attempt = await checkPatch(deps.ehr, current, ev.candidate.patch, gate,deps.screens);
         finalProgram = attempt.program;
         chosen = [ev.candidate];
         rec.predicted = sumSavings(chosen);
@@ -644,7 +664,9 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
 
   // 7. Validate: replay past calibration tasks (same patients, events, choices) on the old and new versions.
   const moved = componentsMoved(current, finalProgram);
-  const replay = await input.holdout.validate(current, finalProgram, specVersion, {...release.canonical,owner:current.owner,id:current.id});
+  let replay:ReplayDay|null;
+  try {replay=await input.holdout.validate(current, finalProgram, specVersion, {...release.canonical,owner:current.owner,id:current.id});}
+  catch(error){if(!(error instanceof LeanLayoutRefusal))throw error;rec.screenCheck=error.result;rec.validation.reason=error.message;rec.outcome='validation-rejected';return finish(null);}
   const stabilityOk = moved <= release.spec.design.stabilityBudget;
   rec.validation.replay = replay;
   rec.measured.validation = replay;
@@ -914,6 +936,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
     const estimate = observation.trainEstimate, cost = observation.switchCost, screen = observation.screen;
     if (observation.check.status !== 'pass' || observation.staticError || !estimate || !cost || screen?.status !== 'pass' ||
       estimate.after.tasks < 1 || estimate.before.tasks !== estimate.after.tasks || estimate.after.completed !== estimate.after.tasks) continue;
+    if(screen.mode==='lean')throw Error('Lean screens use the core nightly loop');
     const candidate = describeProgram(program, workflows);
     const score = (estimate.before.clicks + estimate.before.scrolls - estimate.after.clicks - estimate.after.scrolls) / estimate.days.length - cost.cost;
     const id = hash;
@@ -924,7 +947,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
     evaluations.push({ id, candidate, status: 'accepted', metrics: estimate.after, quality: score,
       evidence: { leanVerdict: 'ok', screenStatus: 'pass', trainDays: estimate.days } });
     offers.set(id, { id, candidateIds: entry.candidateIds, program,
-      evidence: { train: estimate, switchCost: cost, score, moved: componentsMoved(current, program), leanVerdict: 'ok', screen, niche: niche(candidate.point) } });
+      evidence: { train: estimate, switchCost: cost, score, moved: componentsMoved(current, program), leanVerdict: 'ok', screen:{...screen,mode:screen.mode}, niche: niche(candidate.point) } });
   }
   const archive = archiveFrom(evaluations);
   snapshot.night = night;

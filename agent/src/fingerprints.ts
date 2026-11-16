@@ -19,7 +19,7 @@ export async function treeHash(dir: string): Promise<string> {
   }
   await visit(dir); return hash.digest('hex');
 }
-export async function runFingerprints(ehr: EhrClient, world: string, root = REPO_ROOT) {
+export async function runFingerprints(ehr: EhrClient, world: string, root = REPO_ROOT, screenMode:'browser'|'lean'='browser') {
   const specs: Record<string,string> = {};
   for (const release of ['v1','v2','v3']) specs[release] = await fileHash(path.join(root,'releases',release,'spec.json'));
   let fixtures='FAKE';
@@ -29,6 +29,6 @@ export async function runFingerprints(ehr: EhrClient, world: string, root = REPO
     fixtures=await treeHash(path.dirname(path.resolve(root,manifest.fixtures.index)));
   }
   return { boundedPointing:await fileHash(path.join(root,'app/src/dashboard/bounded-pointing.ts')), interactionModel:await treeHash(path.join(root,'app/src/metrics')),agent:await treeHash(path.join(root,'agent/src')), screenHarness:await treeHash(path.join(root,'app/scripts')), screenTests:await treeHash(path.join(root,'app/e2e')), playwright:await fileHash(path.join(root,'app/playwright.config.ts')), fixtures, ehr: ehr.binary ? await fileHash(ehr.binary) : 'FAKE', releases: specs, world: await treeHash(world),
-    app: ehr.mode === 'real' ? z.object({appSha256:z.string().regex(/^[a-f0-9]{64}$/)}).parse(JSON.parse(await readFile(path.join(root,'app/dist/build.json'),'utf8'))).appSha256 : 'FAKE',
+    app: screenMode==='lean' ? 'NOT_USED_LEAN_GEOMETRY' : ehr.mode === 'real' ? z.object({appSha256:z.string().regex(/^[a-f0-9]{64}$/)}).parse(JSON.parse(await readFile(path.join(root,'app/dist/build.json'),'utf8'))).appSha256 : 'FAKE',
     wasm: await fileHash(path.join(root,'app/public/ehr/ehr-interp.wasm')) };
 }

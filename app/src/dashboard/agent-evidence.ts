@@ -2,6 +2,7 @@
  * schema: dashboard metadata must not invalidate certified painter builds. */
 import { z } from 'zod';
 import {
+  screenCheckResultSchema as baseScreenCheck,
   candidateSchema as baseCandidate, evaluatedCandidateSchema as baseEvaluated,
   decisionRecordSchema as baseDecision, llmCandidateSchema as baseLlmCandidate,
   llmProposalSchema as baseProposal, toCandidate as baseToCandidate,
@@ -23,7 +24,9 @@ export const candidateSchema=baseCandidate.extend({portfolio:portfolioSchema.opt
 export const evaluatedCandidateSchema=baseEvaluated.extend({candidate:candidateSchema});
 export const llmCandidateSchema=baseLlmCandidate.extend({portfolio:portfolioSchema.optional()});
 export const llmProposalSchema=baseProposal.extend({candidates:z.array(llmCandidateSchema)});
-export const decisionRecordSchema=baseDecision.extend({evidence:trainSummarySchema,backend:baseDecision.shape.backend.extend({name:z.enum(['claude','codex','openai-compat','replay','scripted'])}),candidates:z.array(evaluatedCandidateSchema),exploration:z.object({
+export const screenCheckResultSchema=baseScreenCheck.extend({mode:z.enum(['real','fake','lean'])});
+export type ScreenCheckResult=z.infer<typeof screenCheckResultSchema>;
+export const decisionRecordSchema=baseDecision.extend({screenCheck:screenCheckResultSchema.nullable(),evidence:trainSummarySchema,backend:baseDecision.shape.backend.extend({name:z.enum(['claude','codex','openai-compat','replay','scripted'])}),candidates:z.array(evaluatedCandidateSchema),exploration:z.object({
   policy:z.string(),minimumEffect:z.number(),
   checker:z.object({proposed:z.number().int().nonnegative(),rejected:z.number().int().nonnegative(),rate:z.number().nullable(),checkerRejected:z.number().int().nonnegative(),invalid:z.number().int().nonnegative()}),
   candidates:z.array(z.object({id:z.string(),gross:z.number(),net:z.number(),switchCost:z.number(),fromCurrent:z.number(),fromArchive:z.number(),explorationRank:z.number()})),

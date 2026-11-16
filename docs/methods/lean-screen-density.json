@@ -1,0 +1,1748 @@
+{
+  "description": "Per-screen maxima over existing exact vendor-reference contexts. Only densityReference receipts with an exact release persona Program hash qualify. No candidate counts set a limit.",
+  "measurements": {
+    "v1/P1": {
+      "vendorProgramSha256": "c65646ab73e1554f68e37cceef3e4f6262b8cad58d2b6b0df6f0eec733fec8f2",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 11,
+        "home": 23,
+        "w1Close": 28,
+        "w1Exam": 29,
+        "w1Hpi": 32,
+        "w1Labs": 24,
+        "w1MedRec": 30,
+        "w1Orders": 55,
+        "w1Rooming": 42,
+        "w1Sign": 26,
+        "w1Verify": 27,
+        "w2Inbox": 19,
+        "w2Message": 17,
+        "w2Result": 11,
+        "w7Decision": 19,
+        "w7Queue": 19,
+        "w7Review": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Close": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Exam": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Hpi": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Labs": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1MedRec": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Orders": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Rooming": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Sign": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Verify": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w7Decision": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w7Queue": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w7Review": {
+          "source": "runs/rules4-10day/reports/screens/P1/v0/80d830bff2576c7022b317966aad5b59a7b464abf13b50b59b6c39fabd830685.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.5393b2f7b577f9e72b301d43f324975eaa09b1265fce44f075a28f29e2747faa/screen-policy.json",
+          "reportSha256": "c50267870e50f0cf3c8d28d35325f92452dd9c26c8f1b2381e293ee755441a1d",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v1/P2": {
+      "vendorProgramSha256": "b34dbbecfad4be8c9854139cc40db7a06e91aae0cc93e934b65acf62aa2cd60c",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 9,
+        "home": 10,
+        "w3Disposition": 32,
+        "w3OrderSets": 61,
+        "w3Orders": 56,
+        "w3Provider": 18,
+        "w3Sign": 30,
+        "w3TrackBoard": 24,
+        "w3Triage": 44
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w3Disposition": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w3OrderSets": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w3Orders": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w3Provider": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w3Sign": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w3TrackBoard": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w3Triage": {
+          "source": "runs/rules4-10day/reports/screens/P2/v0/b8efa117c7bb87c5b2c77d5df392e54f99020f615fc9930cd0f6034b6ba5773d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2958e58cf6deac7d22bb035f2c7597f49fd07e9be0c95124951cfa55ae81a482/screen-policy.json",
+          "reportSha256": "eb315d44addb7e6c578441edd78e407b54751855153593b162bd6947660bca87",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v1/P3": {
+      "vendorProgramSha256": "d5fe46ea3f7b084f439714bb770069ca15e712b67e2b2afed76706f2f8bba518",
+      "limits": {
+        "chartHistory": 21,
+        "chartSummary": 10,
+        "home": 11,
+        "w4Admin": 34,
+        "w4Flowsheet": 30,
+        "w4Handoff": 29,
+        "w4Mar": 26,
+        "w4Worklist": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w4Admin": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w4Flowsheet": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w4Handoff": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w4Mar": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w4Worklist": {
+          "source": "runs/rules4-10day/reports/screens/P3/v0/ea3a29daa2df57a147a44f445b2b8800c208fbc8bcabe92bc11a066ebffe6fa4.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1ae0d41e1af2974d2f4dfdf05ccf35000eae406c0486c3610c883cf48c21a6a6/screen-policy.json",
+          "reportSha256": "b33d904fd7d7fd5e8ee7a346f7a1fa79676576ff8195816e5bf069ac03e96007",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v1/P4": {
+      "vendorProgramSha256": "0fb5db0059514d904915dd3c2ae5da50b7aad3050b2be9a9fff464d96ee4c1f6",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 11,
+        "home": 23,
+        "w2Inbox": 19,
+        "w2Message": 17,
+        "w2Result": 11,
+        "w5Close": 28,
+        "w5Growth": 23,
+        "w5Immunizations": 32,
+        "w5Note": 27,
+        "w5Orders": 51,
+        "w5Rooming": 39,
+        "w5Sign": 26,
+        "w7Decision": 19,
+        "w7Queue": 19,
+        "w7Review": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w5Close": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w5Growth": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w5Immunizations": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w5Note": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w5Orders": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w5Rooming": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w5Sign": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w7Decision": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w7Queue": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w7Review": {
+          "source": "runs/rules4-10day/reports/screens/P4/v0/3360263db67fd99f4cbee75d05fc5f3fcfb0b11a645a0a7d747090875ed195ab.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.9121d0f6bfadba1478a52849a76f0af42442bc51835fe2177bc6b11175557b8f/screen-policy.json",
+          "reportSha256": "a2ed2866b63facd24b1bfa6f8739b09782a5f6d78332b24e482b3c3413dd3005",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v1/P5": {
+      "vendorProgramSha256": "89ce729642c24a746ea0bffa5f6b72bd6844bdc0c7fc94ac2592940c1dbccf51",
+      "limits": {
+        "chartHistory": 21,
+        "chartSummary": 13,
+        "home": 16,
+        "w1Close": 31,
+        "w1Exam": 32,
+        "w1Hpi": 34,
+        "w1Labs": 26,
+        "w1MedRec": 33,
+        "w1Orders": 57,
+        "w1Rooming": 44,
+        "w1Sign": 29,
+        "w1Verify": 30,
+        "w2Inbox": 19,
+        "w2Message": 16,
+        "w2Result": 11,
+        "w6Consult": 24,
+        "w6ConsultClose": 36,
+        "w6Consults": 35,
+        "w6Discharge": 42,
+        "w6OpNote": 34,
+        "w6Orders": 64,
+        "w6PostOp": 52,
+        "w6PreOp": 35,
+        "w6Rounding": 32,
+        "w6Schedule": 36,
+        "w6Sign": 34
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Close": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Exam": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Hpi": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Labs": {
+          "source": "runs/rules4-10day/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/screen-policy.json",
+          "reportSha256": "e7c68d91665f4878614a118a80660b9f74b01f5a909be91b1aedb602b7f9a7a2",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1MedRec": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Orders": {
+          "source": "runs/rules4-10day/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/screen-policy.json",
+          "reportSha256": "e7c68d91665f4878614a118a80660b9f74b01f5a909be91b1aedb602b7f9a7a2",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w1Rooming": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Verify": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules4-10day/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/screen-policy.json",
+          "reportSha256": "e7c68d91665f4878614a118a80660b9f74b01f5a909be91b1aedb602b7f9a7a2",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules4-10day/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/screen-policy.json",
+          "reportSha256": "e7c68d91665f4878614a118a80660b9f74b01f5a909be91b1aedb602b7f9a7a2",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w6Consult": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6ConsultClose": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Consults": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Discharge": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6OpNote": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6PostOp": {
+          "source": "runs/rules4-10day/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/screen-policy.json",
+          "reportSha256": "e7c68d91665f4878614a118a80660b9f74b01f5a909be91b1aedb602b7f9a7a2",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        },
+        "w6PreOp": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Rounding": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Schedule": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.3eae2c8ece0bf079cd013c7dcbd1040bc9a1b3158bff53c1de58b201f60445de/screen-policy.json",
+          "reportSha256": "762568bb36e1759e832b0957ac11b7716cab8818dbc797150fd62f48c0a62e58",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Sign": {
+          "source": "runs/rules4-10day/reports/screens/P5/v0/58d95b2b72a28539df82634d56a1b8e39d61156ad895149ed81a8c366c566a54.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/screen-policy.json",
+          "reportSha256": "e7c68d91665f4878614a118a80660b9f74b01f5a909be91b1aedb602b7f9a7a2",
+          "measurementContext": "0159fc4c1a67279a447b0182df71d22c4cc86e64a5b38c0651a476102618bce4",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v2/P1": {
+      "vendorProgramSha256": "4952132572216a6da6b27ee86382f3fa99d323cc39b863e56d4436ff0917d5dd",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 11,
+        "home": 23,
+        "w1Close": 28,
+        "w1Exam": 29,
+        "w1Hpi": 32,
+        "w1Labs": 28,
+        "w1MedRec": 30,
+        "w1Orders": 54,
+        "w1Rooming": 42,
+        "w1Sign": 26,
+        "w1Verify": 27,
+        "w2Inbox": 19,
+        "w2Message": 17,
+        "w2Result": 11,
+        "w7Decision": 19,
+        "w7Queue": 19,
+        "w7Review": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Close": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Exam": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Hpi": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Labs": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1MedRec": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Rooming": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Verify": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Decision": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Queue": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Review": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v1/53201a6f238d09664356827abf8d0540e56ccd6c45805302ee527e1b03bc1967.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "f946f0c053dd09af55451ce6ece52eee37fe659ba809dd0362c54ab8f820bb00",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v2/P2": {
+      "vendorProgramSha256": "d70235b85b9932894cad18552e13a0b1e33665c0b3758d7ee53d4c575f314ac4",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 9,
+        "home": 10,
+        "w3Disposition": 32,
+        "w3OrderSets": 61,
+        "w3Orders": 56,
+        "w3Provider": 18,
+        "w3Sign": 30,
+        "w3TrackBoard": 24,
+        "w3Triage": 44
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Disposition": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3OrderSets": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Provider": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3TrackBoard": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Triage": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v1/5439dc94598b8609c38674e257012f62350ab582d9fca97890d9f6983ae62c31.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "99a5ff088adc0012a75a8ad61c075c082ff236abb0830057c1645a44114ac327",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v2/P3": {
+      "vendorProgramSha256": "ad6a08a872e76c7717908cf62aaabc0e5f2689619eb63c530f98a2f96a72fc8f",
+      "limits": {
+        "chartHistory": 21,
+        "chartSummary": 10,
+        "home": 11,
+        "w4Admin": 34,
+        "w4Flowsheet": 30,
+        "w4Handoff": 29,
+        "w4Mar": 26,
+        "w4Worklist": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Admin": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Flowsheet": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Handoff": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Mar": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Worklist": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v1/17147df6df4407a2c431f5ed55ff409c9f26dade3886b7a33b2f870818980165.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "88f3a90312949da3d9a80ae716ff2c132b422b428604d91eeaa3d0bfafdc4972",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v2/P4": {
+      "vendorProgramSha256": "25b2e588fba4a8b87087b37fcd4e921c3d980483ca9ff49ea5948acb35130976",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 11,
+        "home": 23,
+        "w2Inbox": 19,
+        "w2Message": 17,
+        "w2Result": 11,
+        "w5Close": 28,
+        "w5Growth": 23,
+        "w5Immunizations": 32,
+        "w5Note": 27,
+        "w5Orders": 51,
+        "w5Rooming": 39,
+        "w5Sign": 26,
+        "w7Decision": 19,
+        "w7Queue": 19,
+        "w7Review": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Close": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Growth": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Immunizations": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Note": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Rooming": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Decision": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Queue": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Review": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v1/1e1489daa03f127cc40ffb0516a19ae2eb34b88f40febeb51662f7ae8cfc904b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "418d69a42a56c0afaf9b6c9ae1b431301159ca1244db3e4c7c5f6d8bc562c39e",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v2/P5": {
+      "vendorProgramSha256": "16b28731933106de28902eec537df4fdf13a0010fc6eb04b4d77bbd095ebc1d9",
+      "limits": {
+        "chartHistory": 21,
+        "chartSummary": 13,
+        "home": 16,
+        "w1Close": 31,
+        "w1Exam": 32,
+        "w1Hpi": 34,
+        "w1Labs": 30,
+        "w1MedRec": 33,
+        "w1Orders": 56,
+        "w1Rooming": 44,
+        "w1Sign": 29,
+        "w1Verify": 30,
+        "w2Inbox": 19,
+        "w2Message": 16,
+        "w2Result": 11,
+        "w6Consult": 24,
+        "w6ConsultClose": 36,
+        "w6Consults": 35,
+        "w6Discharge": 42,
+        "w6OpNote": 34,
+        "w6Orders": 56,
+        "w6PostOp": 52,
+        "w6PreOp": 33,
+        "w6Rounding": 32,
+        "w6Schedule": 36,
+        "w6Sign": 34
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Close": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Exam": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Hpi": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Labs": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1MedRec": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Rooming": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Verify": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Consult": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6ConsultClose": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Consults": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Discharge": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6OpNote": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6PostOp": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6PreOp": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Rounding": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Schedule": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v1/07b749c6ea8132a498b05916b0a2b8000ef3fac0c2d19605a359deb8961bb26d.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.68d07e1ce67be5061b1bde4f49b44bc04118199f75766cefc831ffc0e9a50f66/screen-policy.json",
+          "reportSha256": "2b62cacbe71c1ff436ae00ea81d3192696f2193fa763eceff9e4ef8e0fbdad50",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v3/P1": {
+      "vendorProgramSha256": "e6237fe723ece87132b67415d41d78a7adb8ecdd191d5ba4da16558c3b0f02af",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 11,
+        "home": 23,
+        "w1Close": 28,
+        "w1Exam": 29,
+        "w1Hpi": 32,
+        "w1Labs": 28,
+        "w1MedRec": 30,
+        "w1Rooming": 42,
+        "w1Verify": 27,
+        "w2Inbox": 19,
+        "w2Message": 17,
+        "w2Result": 11,
+        "w7Decision": 19,
+        "w7Queue": 19,
+        "w7Review": 26,
+        "w1Orders": 55,
+        "w1Sign": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Close": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Exam": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Hpi": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Labs": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1MedRec": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Rooming": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Verify": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Decision": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Queue": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Review": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P1/v2/a87d6710add5ef7f3bd73e963bdf7208fcc5b50d2efe49837cd8ceb41092b02f.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.2ff36a438718192ba9a2488818900a61e896a7b589fd7067a285dc31245911d0/screen-policy.json",
+          "reportSha256": "7ee92ebef21d2435f50470c25472e36f81d9c1b6ad237b3775f65b7b2829a27c",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v3/P2": {
+      "vendorProgramSha256": "d059e539c88342a77a17df9894cf79057f18ecfa3a0dff20b68295cb50939682",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 9,
+        "home": 10,
+        "w3Disposition": 32,
+        "w3OrderSets": 57,
+        "w3Orders": 57,
+        "w3Provider": 18,
+        "w3Sign": 26,
+        "w3TrackBoard": 24,
+        "w3Triage": 44
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Disposition": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3OrderSets": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Provider": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3TrackBoard": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w3Triage": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P2/v2/f687b7ad374e8523a1c6b5e46f15fbe7f5ddc067a5b07738d4f723d1fb174a46.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.158cc7c1b3d7358fb8290fa39cb962fb0291dff25759091dbf200621b8ea0152/screen-policy.json",
+          "reportSha256": "27176d5c72abe684c72997cb13202f5a0e680ea79c0092ef36f6762ee82c29dc",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v3/P3": {
+      "vendorProgramSha256": "a6eed9a76b7d54060b84452210c646178b01906ea9395587301bea0a3524565c",
+      "limits": {
+        "chartHistory": 21,
+        "chartSummary": 10,
+        "home": 11,
+        "w4Flowsheet": 30,
+        "w4Handoff": 29,
+        "w4Mar": 26,
+        "w4Worklist": 26,
+        "w4Admin": 32
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Flowsheet": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Handoff": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Mar": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Worklist": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w4Admin": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P3/v2/625abb3d42e9f2d8252d532ff31d464a033448b8e08ba0dc9fc4227ccaae1198.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.33174559e3304b2166fe33d90336c4e7c6ca1b3d187d204db859d8b73ce19fff/screen-policy.json",
+          "reportSha256": "14271d3018ce804022b7346f8caf9be47bc5eab1200af7acbe0c8ea39e87991d",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v3/P4": {
+      "vendorProgramSha256": "8ebffce89d95fb8af7bb12e0e550ffa57fb5b75092e5a82389a8810e185a5105",
+      "limits": {
+        "chartHistory": 20,
+        "chartSummary": 11,
+        "home": 23,
+        "w2Inbox": 19,
+        "w2Message": 17,
+        "w2Result": 11,
+        "w5Close": 28,
+        "w5Growth": 23,
+        "w5Immunizations": 32,
+        "w5Note": 27,
+        "w5Orders": 52,
+        "w5Rooming": 39,
+        "w5Sign": 26,
+        "w7Decision": 19,
+        "w7Queue": 19,
+        "w7Review": 26
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.94a3d5fda567837acc3048b5242e1b23ea1b2bb92b6cd8bc1c6eae9b3678ae1e/screen-policy.json",
+          "reportSha256": "b62f65b72795103f09d6b3e408a26f0c667466a04365f0b2f9599ba958fc4d67",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Close": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Growth": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Immunizations": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Note": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Rooming": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w5Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Decision": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Queue": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w7Review": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P4/v2/7c76fea9bd1e658e7cd5bea4e1dc15f3d7a85ab1ee4e0359f64c6f75a9187835.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.1344b7fd9f1af8e85a9f6f3135da38aacc3f295faa92165600a09540358d04ed/screen-policy.json",
+          "reportSha256": "563863b9fb6376206434b3bdd08e5e4a914c45915dcc84747dd9de82e518d208",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    },
+    "v3/P5": {
+      "vendorProgramSha256": "21c4996ea2b0c89191ae838cc96e36875a336c30dbe8642801b1461704e508e0",
+      "limits": {
+        "chartHistory": 21,
+        "chartSummary": 13,
+        "home": 16,
+        "w1Close": 31,
+        "w1Exam": 32,
+        "w1Hpi": 34,
+        "w1Labs": 30,
+        "w1MedRec": 33,
+        "w1Orders": 57,
+        "w1Rooming": 44,
+        "w1Sign": 29,
+        "w1Verify": 30,
+        "w2Inbox": 19,
+        "w2Message": 16,
+        "w2Result": 11,
+        "w6Consult": 24,
+        "w6ConsultClose": 36,
+        "w6Consults": 35,
+        "w6Discharge": 42,
+        "w6OpNote": 34,
+        "w6Orders": 57,
+        "w6PostOp": 53,
+        "w6PreOp": 33,
+        "w6Rounding": 32,
+        "w6Schedule": 36,
+        "w6Sign": 32
+      },
+      "sources": {
+        "chartHistory": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "chartSummary": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "home": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Close": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Exam": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Hpi": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Labs": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1MedRec": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Rooming": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w1Verify": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Inbox": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Message": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w2Result": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Consult": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6ConsultClose": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Consults": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Discharge": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6OpNote": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Orders": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6PostOp": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6PreOp": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Rounding": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Schedule": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        },
+        "w6Sign": {
+          "source": "runs/rules3-10day-invalid-simloop/reports/screens/P5/v2/88c7464a1fbb2368e784d80a9450d916b6b694ff57bcae1827aa184d0711062b.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.01f0d7a1b1e5fb90bbad41ba11d99b1ac9714093cd7a7d1460b474153d3dcc88/screen-policy.json",
+          "reportSha256": "66d90d39bbec4e7ad4cb519d14d1c866f2a236e59f708763b28771798522e702",
+          "measurementContext": "d30419d75aa131d96ae52081d11ae3cbbbfc4ad2775ea681c7dc87a4b3cb5162",
+          "referenceSource": "release"
+        }
+      }
+    }
+  }
+}

@@ -31,9 +31,10 @@ import path from 'node:path';
 import type { EhrClient,SimulateInput } from './ehr.js';
 import { sha256, stableStringify } from './program.js';
 import { isRecord } from './jsonpatch.js';
-import type { CheckResult, Program, ScreenCheckResult } from './schema.js';
+import type { CheckResult, Program } from './schema.js';
+import type {ScreenCheckResult} from '../../app/src/dashboard/agent-evidence.js';
 
-export type { ScreenCheckResult } from './schema.js';
+export type { ScreenCheckResult } from '../../app/src/dashboard/agent-evidence.js';
 import { programSchema } from './schema.js';
 import { REPO_ROOT, errorMessage, resolveUserPath } from './util.js';
 
@@ -42,7 +43,7 @@ export type ScreenCheckInput = { specVersion: string; program: Program; referenc
 export type ReferenceProvider = (input: ScreenCheckInput) => Promise<Program | null>;
 
 export interface ScreenChecker {
-  readonly mode: 'real' | 'fake';
+  readonly mode: 'real' | 'fake' | 'lean';
   geometry?:GeometryProvider;
   check(input: ScreenCheckInput): Promise<ScreenCheckResult>;
 }
@@ -140,7 +141,7 @@ class CliScreenChecker implements ScreenChecker {
       const release = await releaseReference(input).catch(error=>{if(suppliedReference)return null;throw error;});
       const references = [suppliedReference, release].filter((p):p is Program=>!!p)
         .filter((p,i,all)=>all.findIndex(q=>stableStringify(layoutOf(q))===stableStringify(layoutOf(p)))===i);
-      const reference = references[0]!;
+      const reference = references[0];if(!reference)throw Error('No R5 reference program');
       const referenceSource = [input.referenceProgram ? 'explicit' : suppliedReference ? 'no-agent' : null, release && references.includes(release) ? 'release' : null].filter(Boolean).join('+') || 'release';
       if (references.some(r=>r.role !== input.program.role)) throw Error('R5 reference role mismatch');
       const referenceFiles: string[] = [];
