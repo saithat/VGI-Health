@@ -447,6 +447,10 @@ layoutAccepted_stripLayout (v : Size) (ui : UiScreen) (painted : List Drawn)
 conditions off the placed boxes at scroll offsets `offset`: the strip node's
 box is fixed in the viewport; its text slot is at least 12 px and 4.5:1 and
 holds the node's complete text; no other painted box shares a pixel with it.
+An alert's text is its label; its severity is no longer printed in brackets
+but is the kind and tone of the part emitted with the box (`strip_part`,
+`strip_alert_part`), so the legibility conjunct covers the label and a painter
+is trusted to show the tone.
 `stripEdge` is any view change (scrolling, tabs, navigation, a dialog opening
 or closing) that leads to another accepted layout of a screen with the same
 strip. `shell_stripLayout` and `render_stripLayout` specialise this to the
@@ -582,10 +586,11 @@ repeated on the fifteen release persona programs: 4,314/4,314 class probes,
 279/279 W1 port checks and 279/279 shell geometry checks pass, and every
 probed urgent strip (up to four occurrences) is pinned. The recorded-run
 programs were not audited again. With display parts as occurrences the same
-fifteen programs were audited once more (all screens, all variants), before
-the formatters were added: 4,314/4,314 class probes, 279/279 W1 port checks of
-the family reference layout and 279/279 shell geometry checks pass, every
-probed urgent strip is pinned, and no window shows more than 12 body targets.
+fifteen programs were audited once more (all screens, all variants):
+4,314/4,314 class probes, 279/279 W1 port checks of the family reference
+layout and 279/279 shell geometry checks pass, every probed urgent strip is
+pinned (1,170 probes, up to four occurrences), and no window shows more than
+12 body targets.
 
 The [earlier ordinary-class inventory](../audits/ui-certs-20261107.json)
 records the narrower `repeat-body-v1` implementation. The current fixed-shell
@@ -639,17 +644,18 @@ export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
 (cd lean && lake build && lake build ui-layout ui-port-audit)
 node --test scripts/ui-library/native.test.mjs scripts/ui-library/family.test.mjs \
   scripts/ui-library/structural.test.mjs scripts/ui-library/program.test.mjs \
-  scripts/ui-library/fonts.test.mjs
+  scripts/ui-library/fonts.test.mjs scripts/ui-library/parts.test.mjs
 node scripts/ui-library/port-audit.mjs --all-screens
 pnpm --filter app typecheck
 pnpm --filter app lint
 flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright test --config src/browser/ui-library/playwright.config.ts
 ```
 
-Targeted checks pass 30 native regressions (28 layout/program tests and two
-font tests). The named-declaration audit covers 253 theorems in
-`lean/Ehr/Layout`; each uses at most `propext`, `Classical.choice` and
-`Quot.sound`. The following figures predate the strengthened rules G4, G6,
+Targeted checks pass 34 native regressions (28 layout/program tests, four
+display-part tests and two font tests); the part tests compare the TypeScript
+inventory mirror with Lean on eight P1/P3 screens. The named-declaration audit
+covers 305 theorems in `lean/Ehr/Layout` (16 without axioms); each uses at
+most `propext`, `Classical.choice` and `Quot.sound`. The following figures predate the strengthened rules G4, G6,
 G10 and G11 and the per-link inventory, and were not measured again: seven
 Playwright tests (one worker under the shared lock, after the refreshed port
 audit); a differential of 228 boxes, 153 text lines and 6,861 intrinsic glyph
@@ -670,7 +676,7 @@ The default `lake build` imports the unit tests, closed review-family certificat
 and original family axiom checks; the two UI executables additionally build
 the shell/range proof. The current range inventory embeds the exact axiom-audit
 source used against the compiled modules; explicit source inspection is also available with
-`cd lean && for module in Engine Contrast Check Keyboard Json Semantic Family Examples Structural Shell Range;
+`cd lean && for module in Engine Contrast Check Keyboard Json Format Display Semantic Family Examples Structural Shell Range Parts;
 do lake env lean "Ehr/Layout/$module.lean"; done`.
 
 Source changes require a WASM rebuild and manifest check before app build,

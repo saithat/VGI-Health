@@ -560,7 +560,7 @@ private theorem modal_root_count (screen : UiScreen) (node : UiNode) (hm : scree
 /-- Only the top-level modal grammar is bounded; ordinary generated lists and
 all nested clinical body trees remain unrestricted. -/
 def SmallModal (screen : UiScreen) : Prop :=
-  ∀ node ∈ screen.modal, ∀ cx : DisplayCx, (semanticNodes cx node).length ≤ 2
+  ∀ node ∈ screen.modal, (semanticNodes (screenCx screen) node).length ≤ 2
 
 private theorem modal_small (screen : UiScreen) (small : SmallModal screen) :
     ((screenShape screen).filter (fun s => s.region == .modal)).length ≤ 2 := by
@@ -575,7 +575,7 @@ private theorem modal_small (screen : UiScreen) (small : SmallModal screen) :
       simp [hm] at flags
     rw [empty]; decide
   | some node =>
-    have limited := small node (by simp [hm]) (screenCx screen)
+    have limited := small node (by simp [hm])
     rw [screenShape_normal,List.filter_map,List.length_map]
     apply Nat.le_trans (filter_mono (screenNodes screen)
       (fun e => (entryShape screen e).region == .modal)
@@ -639,8 +639,14 @@ private theorem uiModal_small (cx : Ctx) :
         subst node
         simp [semanticNodes,prefixChildren,partEntries,leafParts,buttonParts,optionList]
 
+/-- The modal is small whatever field metadata its parts are displayed with.
+The urgent strip changes the screen's metadata, not its modal. -/
+private def SmallModalAlways (screen : UiScreen) : Prop :=
+  ∀ node ∈ screen.modal, ∀ cx : DisplayCx, (semanticNodes cx node).length ≤ 2
+
 private theorem strip_small (sp : Ehr.Spec) (facts : Ehr.Facts) (user : Ehr.User) (state : Ehr.State)
-    (base : UiScreen) (small : SmallModal base) : SmallModal (withUrgentStrip sp facts user state base) := by
+    (base : UiScreen) (small : SmallModalAlways base) :
+    SmallModalAlways (withUrgentStrip sp facts user state base) := by
   intro node member
   unfold withUrgentStrip at member
   cases hp : state.popup? with
@@ -657,16 +663,16 @@ theorem strip_range (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
     (display : Display) (user : Ehr.User) (state : Ehr.State) :
     Shell.accepts (screenShape (withUrgentStrip sp facts user state
       (renderUi sp program facts display user state))) = true :=
-  smallModal_fits _ (strip_small sp facts user state _ (uiModal_small
-    {sp,prog := program,facts,disp := display,user,s := state}))
+  smallModal_fits _ (fun node member =>
+    strip_small sp facts user state (renderUi sp program facts display user state) (uiModal_small
+      {sp,prog := program,facts,disp := display,user,s := state}) node member _)
 
-/-- The actual renderer always satisfies the bounded fixed-modal grammar.
-No program well-formedness, clinical acceptance, data or reachability premise. -/
-theorem render_small (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
+private theorem render_small_always (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
     (display : Display) (user : Ehr.User) (state : Ehr.State) :
-    SmallModal (runRenderUi ⟨sp,program,facts,display,user,state⟩) := by
+    SmallModalAlways (runRenderUi ⟨sp,program,facts,display,user,state⟩) := by
   have clinical (effective : Ehr.Facts) :
-      SmallModal (withUrgentStrip sp effective user state (renderUi sp program effective display user state)) :=
+      SmallModalAlways
+        (withUrgentStrip sp effective user state (renderUi sp program effective display user state)) :=
     strip_small sp effective user state _ (uiModal_small
       {sp,prog := program,facts := effective,disp := display,user,s := state})
   unfold runRenderUi renderPatientWorkspace
@@ -676,6 +682,13 @@ theorem render_small (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
     · exact clinical (Ehr.CriticalRuntime.effectiveFacts facts state)
     · intro node member
       simp [patientLandingUi] at member
+
+/-- The actual renderer always satisfies the bounded fixed-modal grammar.
+No program well-formedness, clinical acceptance, data or reachability premise. -/
+theorem render_small (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
+    (display : Display) (user : Ehr.User) (state : Ehr.State) :
+    SmallModal (runRenderUi ⟨sp,program,facts,display,user,state⟩) :=
+  fun node member => render_small_always sp program facts display user state node member _
 
 /-- Sound range over-approximation for every program, including malformed
 programs: clinical admission remains the independent existing checker. -/
@@ -810,6 +823,21 @@ theorem layoutAccepted_program (sp : Ehr.Spec) (program : Ehr.Program)
         Realizes (runRenderUi ⟨sp,program,facts,display,user,state⟩) v painted :=
   layoutAccepted_allPatients sp program Library.fixedShell rfl (checkProgram_sound sp program accepted)
 
+#print axioms plain_nil
+#print axioms plain_single
+#print axioms plain_append
+#print axioms plain_map
+#print axioms plain_flatMap
+#print axioms plain_option
+#print axioms plain_some
+#print axioms pending_plain
+#print axioms field_plain
+#print axioms info_plain
+#print axioms atom_plain
+#print axioms leaf_plain
+#print axioms own_commit
+#print axioms prefix_member
+#print axioms lookup_unique
 #print axioms semanticNodes_all
 #print axioms screenNodes_all
 #print axioms commit_target
@@ -848,6 +876,7 @@ theorem layoutAccepted_program (sp : Ehr.Spec) (program : Ehr.Program)
 #print axioms smallModal_fits
 #print axioms uiModal_small
 #print axioms strip_small
+#print axioms render_small_always
 #print axioms render_small
 #print axioms strip_range
 #print axioms renderer_range

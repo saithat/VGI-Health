@@ -165,6 +165,9 @@ theorem layoutAccepted_reviewAllPayloads_shell
     Range.smallModal_fits _ (by intro node member; simp [reviewScreen] at member)
   exact RenderFamily.sound Range.Library.fixedShell rfl _ covered v hv
 
+#print axioms prefixed
+#print axioms child_entries
+#print axioms nodes_shape
 #print axioms child_nodes
 #print axioms inside_nodes
 #print axioms own_nodes

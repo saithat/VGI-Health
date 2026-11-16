@@ -143,7 +143,8 @@ instance : ToJson Part where
     (if p.unit == "" then [] else [("unit",toJson p.unit)]) ++
     (if p.placeholder == "" then [] else [("placeholder",toJson p.placeholder)]))
 
-/-- Structural line reservation of a part in the reference layouts. -/
+/-- New specification for owner review: the lines a part reserves in the
+reference layouts: two for a control, a button and an alert, one otherwise. -/
 def Part.lines (p : Part) : Nat :=
   match p.role with
   | .control | .button | .alert => 2
@@ -169,7 +170,8 @@ structure DisplayCx where
 /-- The base of a field kind: `code:a|b` is `code`. -/
 def kindBase (kind : String) : String := (kind.splitOn ":").headD ""
 
-/-- Options listed in the kind itself (`code:a|b|c`); the code is the label. -/
+/-- New specification for owner review: options listed in the kind itself
+(`code:a|b|c`); the code is the label. -/
 def kindOptions (kind : String) : List (String × String) :=
   match kind.splitOn ":" with
   | _ :: rest => (((":".intercalate rest).splitOn "|").filter (· != "")).map fun c => (c,c)
@@ -328,8 +330,9 @@ def valueCell (infoId : String) (row : List (String × String)) (r c : Nat) (cel
 def labelCell (r c : Nat) (key : String) : Part :=
   { role := .cellLabel, text := Format.columnCaption key, raw := key, row := some r, col := some c }
 
-/-- All rows carry the same captions in the same order, and there are at
-least two rows: the captions are shown once, as a header. -/
+/-- New specification for owner review: all rows carry the same captions in
+the same order, and there are at least two rows: the captions are shown once,
+as a header. -/
 def uniformRows (rows : List (List (String × String))) : Bool :=
   match rows with
   | first :: second :: rest => (second :: rest).all fun row => row.map Prod.fst == first.map Prod.fst
@@ -351,6 +354,9 @@ def infoParts (infoId display : String) (rows : List (List (String × String))) 
 
 /-! ## Banner -/
 
+/-- New specification for owner review: the role of a banner field by its
+caption: the patient name; date of birth, record number, age and sex; the
+badges (allergies, code status, isolation, weight); any other detail. -/
 def bannerRunRole (key : String) : RunRole :=
   let k := key.toLower
   if k == "patient" || k == "name" || k == "patient name" then .name
@@ -388,8 +394,9 @@ def bannerPart (banner : List (String × String)) (viewer : Option String) : Par
 
 /-! ## Lists a node carries beside its children -/
 
-/-- A board demand: the patient (name and record number when the banner has
-them, otherwise the pane identifier), then the alert. -/
+/-- New specification for owner review: a board demand: the patient (name and
+record number when the banner has them, otherwise the pane identifier), then
+the alert. -/
 def demandPart (d : UiBoardDemand) : Part :=
   let name := (d.banner.lookup "Patient").getD d.patient
   let who := match d.banner.lookup "MRN" with
@@ -398,26 +405,30 @@ def demandPart (d : UiBoardDemand) : Part :=
   { role := .alert, text := who ++ " · " ++ d.label, raw := d.label, comp := d.alertId, kind := d.severity,
     tone := severityTone d.severity }
 
-/-- A dated source: its UTC instant, then the record, field and recorded
-timestamp it was read from. -/
+/-- New specification for owner review: a dated source: its UTC instant, then
+the record, field and recorded timestamp it was read from. -/
 def datedPart (item : UiDatedItem) : Part :=
   { role := .item, kind := "dated", raw := item.source.timestamp,
     text := Format.utcInstant item.utcSecond item.nanosecond.val ++ " · " ++ item.source.resource ++ " · " ++
       item.source.field ++ " · " ++ item.source.timestamp }
 
+/-- New specification for owner review: a source without a usable instant
+says so, then its record, field and recorded timestamp. -/
 def undatedPart (source : UiSourceDate) : Part :=
   { role := .item, kind := "undated", raw := source.timestamp,
     text := "Time or offset unavailable · " ++ source.resource ++ " · " ++ source.field ++ " · " ++ source.timestamp }
 
-/-- A reference curve: what it measures, its percentile, source and
-population, then every sample as age in months and value. -/
+/-- New specification for owner review: a reference curve: what it measures,
+its percentile, source and population, then every sample as age in months and
+value. -/
 def referencePart (ref : UiChartReference) : Part :=
   { role := .item, kind := "reference", raw := ref.measure,
     text := ref.measure ++ " (" ++ ref.unit ++ ") · percentile " ++ ref.percentile ++ " · " ++ ref.source ++ " · " ++
       ref.population ++ " · " ++ "; ".intercalate (ref.points.map fun (month,value) =>
         Format.tenths month ++ " mo: " ++ Format.hundredths value) }
 
-/-- The urgent alerts and acknowledgments a patient pane carries. -/
+/-- New specification for owner review: the urgent alerts and acknowledgments
+a patient pane carries. -/
 def stripAtomPart : UiStripAtom → Part
   | .alert comp _ label severity =>
     { role := .alert, text := label, comp, kind := severity, tone := severityTone severity }
@@ -481,11 +492,13 @@ def semanticText (node : UiNode) : String := (ownPart {} node).text
 theorem ownPart_text (cx : DisplayCx) (node : UiNode) : (ownPart cx node).text = semanticText node := by
   cases node <;> rfl
 
-/-- The context of the nodes inside a value set. -/
+/-- New specification for owner review: the context of the nodes inside a
+value set: its options and whether other codes are accepted. -/
 def DisplayCx.inValueSet (cx : DisplayCx) (options : List UiCodeChoice) (allowCustom : Bool) : DisplayCx :=
   { cx with options := options.map fun o => (o.code,o.label), allowCustom }
 
-/-- The context of the nodes inside a patient pane: the pane's own metadata. -/
+/-- New specification for owner review: the context of the nodes inside a
+patient pane: the pane's own metadata. -/
 def DisplayCx.inPane (cx : DisplayCx) (metadata : UiPaneMetadata) : DisplayCx :=
   { cx with fieldChoices := metadata.fieldChoices, fieldSources := metadata.fieldSources,
             sourceLabels := metadata.sourceLabels, entryHints := metadata.entryHints }
@@ -720,6 +733,9 @@ theorem lists_complete (cx : DisplayCx) :
   · intro patient banner metadata children modal atom member
     exact List.mem_map.mpr ⟨atom,member,rfl⟩
 
+#print axioms zipIdx_at
+#print axioms bannerRunRole_cases
+#print axioms mem_joinRuns
 #print axioms ownPart_text
 #print axioms field_complete
 #print axioms control_shows_choice

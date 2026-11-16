@@ -13,9 +13,15 @@ def hasSub (s pattern : String) : Bool := (s.splitOn pattern).length > 1
 
 def chars (cs : List Char) : String := cs.foldl String.push ""
 
+/-- The characters of a string, built in Lean. `String.toList` is not used: on
+32-bit targets (the WASM build) the runtime ends its list with an allocated
+object instead of the empty list, and compiled code that returns a borrowed
+empty list then frees that object twice. -/
+def listOf (s : String) : List Char := s.foldr (fun c cs => c :: cs) []
+
 /-- The words of a string: maximal runs of letters and digits. -/
 def words (s : String) : List String :=
-  ((s.toList.map fun c => if c.isAlphanum then c else ' ').foldl String.push "").splitOn " " |>.filter (· != "")
+  (((listOf s).map fun c => if c.isAlphanum then c else ' ').foldl String.push "").splitOn " " |>.filter (· != "")
 
 def pad2 (n : Nat) : String := (if n < 10 then "0" else "") ++ toString n
 
@@ -53,8 +59,8 @@ def utcInstant (second : Int) (nanosecond : Nat) : String :=
 /-- The leading state word of a value: up to the first `·` or line break,
 trimmed, lower-cased, with `_` and `-` read as spaces. -/
 def statusWord (value : String) : String :=
-  let head := chars (value.toList.takeWhile fun c => c != '·' && c != '\n')
-  chars (head.trimAscii.toString.toLower.toList.map fun c => if c == '_' || c == '-' then ' ' else c)
+  let head := chars ((listOf value).takeWhile fun c => c != '·' && c != '\n')
+  chars ((listOf head.trimAscii.toString.toLower).map fun c => if c == '_' || c == '-' then ' ' else c)
 
 def leads (s : String) (options : List String) : Bool :=
   options.any fun w => s == w || s.startsWith (w ++ " ") || s.startsWith (w ++ "\t")
@@ -88,7 +94,7 @@ def resultTone (flag : String) : String :=
 
 /-- A caption that starts with a clock time, `7:00` or `07:00`. -/
 def clockCaption (key : String) : Bool :=
-  match key.toList with
+  match (listOf key) with
   | a :: ':' :: b :: c :: _ => a.isDigit && b.isDigit && c.isDigit
   | a :: a' :: ':' :: b :: c :: _ => a.isDigit && a'.isDigit && b.isDigit && c.isDigit
   | _ => false
@@ -167,11 +173,11 @@ def natOf (cs : List Char) : Option Nat :=
 
 /-! ## Terminology -/
 
-private def codeSystems : List (List Char) := ["(loinc)","(icd-10-cm)","(icd-10)","(cpt)"].map String.toList
+private def codeSystems : List (List Char) := ["(loinc)","(icd-10-cm)","(icd-10)","(cpt)"].map listOf
 
 private def snomedTags : List (List Char) :=
   ["(finding)","(disorder)","(situation)","(procedure)","(qualifier value)","(observable entity)",
-   "(organism)","(substance)"].map String.toList
+   "(organism)","(substance)"].map listOf
 
 /-- A terminology tag is removed only at the end of a term: before the end of
 the text, a separator or another parenthesis. -/
@@ -189,8 +195,8 @@ private def spaceUnits : Nat → List Char → List Char
     if c.isDigit then
       let rest := cs.dropWhile Char.isWhitespace
       match ["MG","MCG","ML","KG","CM"].findSome? fun unit =>
-          ((dropPrefix unit.toList rest).filter fun after => !(after.head?.any isWord)).map fun after => (unit,after) with
-      | some (unit,after) => c :: ' ' :: (if unit == "ML" then "mL" else unit.toLower).toList ++ spaceUnits n after
+          ((dropPrefix (listOf unit) rest).filter fun after => !(after.head?.any isWord)).map fun after => (unit,after) with
+      | some (unit,after) => c :: ' ' :: (listOf (if unit == "ML" then "mL" else unit.toLower)) ++ spaceUnits n after
       | none => c :: spaceUnits n cs
     else c :: spaceUnits n cs
 
@@ -201,10 +207,10 @@ private def oralForms : Nat → Bool → List Char → List Char
   | n+1, afterWord, c :: cs =>
     let found := if afterWord then none else
       ["Tablet","Capsule","Solution","Suspension"].findSome? fun form =>
-        ((dropPrefix ("Oral " ++ form).toList (c :: cs)).filter fun after => !(after.head?.any isWord)).map
+        ((dropPrefix (listOf ("Oral " ++ form)) (c :: cs)).filter fun after => !(after.head?.any isWord)).map
           fun after => (form,after)
     match found with
-    | some (form,after) => ("oral " ++ form.toLower).toList ++ oralForms n true after
+    | some (form,after) => (listOf ("oral " ++ form.toLower)) ++ oralForms n true after
     | none => c :: oralForms n (isWord c) cs
 
 /-- Two or more white-space characters read as one space. -/
@@ -219,7 +225,7 @@ Terminology tags such as `(disorder)` at the end of a term are dropped, upper
 case dose units after a number and product forms are written in lower case,
 and repeated white space is collapsed. Other wording is untouched. -/
 def cleanClinicalText (raw : String) : String :=
-  let cs := raw.toList
+  let cs := (listOf raw)
   let n := cs.length + 1
   chars (trimList (collapse (oralForms n false (spaceUnits n (dropTagged snomedTags endsTerm n cs)))))
 
@@ -252,7 +258,7 @@ def clinicalName (raw : String) : String :=
     ["mass","moles"].any fun kind => ["blood","serum or plasma","serum","plasma"].any fun specimen =>
       low == name.toLower ++ " [" ++ kind ++ "/volume] in " ++ specimen
   match analyte with
-  | some name => chars (text.toList.take name.length)
+  | some name => chars ((listOf text).take name.length)
   | none =>
     let peptide := "natriuretic peptide.b prohormone n-terminal"
     if low == peptide || (low.startsWith (peptide ++ " [") &&
@@ -272,7 +278,7 @@ away from zero, on the recorded decimal digits (no floating point); trailing
 zeros are dropped. Doses, inputs, censored results (`<5`) and every other
 value are shown as recorded. -/
 def observationValue (raw : String) : String :=
-  let (negative,body) := match raw.toList with
+  let (negative,body) := match (listOf raw) with
     | '-' :: rest => (true,rest)
     | cs => (false,cs)
   match body.span Char.isDigit with
@@ -301,7 +307,7 @@ def encounterClass (raw : String) : String :=
 
 /-- New specification for owner review: `83 / F` reads `83 y.o. F`. -/
 def ageSex (raw : String) : String :=
-  match raw.toList.span Char.isDigit with
+  match (listOf raw).span Char.isDigit with
   | (age,rest) =>
     match rest.dropWhile Char.isWhitespace with
     | '/' :: after =>
@@ -312,7 +318,7 @@ def ageSex (raw : String) : String :=
 
 /-- New specification for owner review: `165 min` reads `2h 45m`. -/
 def clinicalDuration (raw : String) : String :=
-  match raw.toList.span Char.isDigit with
+  match (listOf raw).span Char.isDigit with
   | (number,[' ','m','i','n']) =>
     match natOf number with
     | some minutes =>
@@ -382,7 +388,7 @@ private def humanStamp (cs : List Char) : Option (List Char) :=
     match monthNames.idxOf? (chars [a,b,c]), rest.span Char.isDigit with
     | some month, (day,',' :: ' ' :: y1 :: y2 :: y3 :: y4 :: ' ' :: h1 :: h2 :: ':' :: n1 :: n2 :: []) =>
       if (day.length == 1 || day.length == 2) && [y1,y2,y3,y4,h1,h2,n1,n2].all Char.isDigit then
-        some ([y1,y2,y3,y4] ++ ['-'] ++ (pad2 (month+1)).toList ++ ['-'] ++
+        some ([y1,y2,y3,y4] ++ ['-'] ++ (listOf (pad2 (month+1))) ++ ['-'] ++
           (if day.length == 1 then '0' :: day else day) ++ ['T',h1,h2,':',n1,n2])
       else none
     | _, _ => none
@@ -398,14 +404,14 @@ private def shortStamp (cs : List Char) : Option String :=
 and a recorded ISO date as `MM/DD`, for shift grids. Anything else, and any
 impossible date or time, is shown as recorded. -/
 def clinicalTime (raw : String) : String :=
-  match humanStamp raw.toList with
+  match humanStamp (listOf raw) with
   | some iso => (shortStamp iso).getD raw
-  | none => (shortStamp raw.toList).getD raw
+  | none => (shortStamp (listOf raw)).getD raw
 
 /-- New specification for owner review: chart history keeps the year:
 `MM/DD/YYYY HHMM`. -/
 def clinicalTimestamp (raw : String) : String :=
-  let stamp := (humanStamp raw.toList).getD raw.toList
+  let stamp := (humanStamp (listOf raw)).getD (listOf raw)
   match parseStamp stamp with
   | some (y,m,d,time) =>
     chars m ++ "/" ++ chars d ++ "/" ++ chars y ++ match time with
@@ -413,7 +419,7 @@ def clinicalTimestamp (raw : String) : String :=
       | none => ""
   | none => raw
 
-/-- An epoch minute in UTC, labelled UTC, in the form of the work lists
+/-- New specification for owner review: an epoch minute in UTC, labelled UTC, in the form of the work lists
 (`Deficiencies.utcText`). Not a number: shown as recorded. -/
 def utcMinute (raw : String) : String :=
   match raw.toInt? with
@@ -450,7 +456,7 @@ private def structuredSig (cs : List Char) : Option String := do
       | (word,tail) => if !ws.isEmpty && !word.isEmpty then (some word,tail) else (none,rest)
   let rest ← dropPrefix [','] rest
   let (frequency,rest) ← (some ((rest.dropWhile Char.isWhitespace).span Char.isDigit)).filter (!·.1.isEmpty)
-  let rest ← dropPrefix "x per ".toList rest
+  let rest ← dropPrefix (listOf "x per ") rest
   let (period,rest) ← number rest
   let per := chars (rest.dropWhile Char.isWhitespace)
   guard (["d","h","wk","mo"].contains per.toLower)
@@ -466,7 +472,7 @@ quantity and frequency form and the listed interval phrases are rephrased;
 they are never rescheduled, and any other direction keeps its wording. -/
 def formatSig (raw : String) : String :=
   let text := cleanClinicalText raw
-  match structuredSig text.toList with
+  match structuredSig (listOf text) with
   | some sig => sig
   | none => (sigIntervals.lookup text.toLower).getD text
 
@@ -482,7 +488,7 @@ private def allergyStates : List String :=
 private def negativeAllergy (text : String) : Option String :=
   ["no known drug allergy","no known drug allergies","no known allergy","no known allergies","nkda","nka"].findSome?
     fun phrase =>
-      match dropPrefixCI phrase.toList text.toList with
+      match dropPrefixCI (listOf phrase) (listOf text) with
       | some rest =>
         let display := if hasSub phrase "drug" || phrase == "nkda" then "No Known Drug Allergies" else "No Known Allergies"
         if rest.isEmpty then some display
@@ -503,8 +509,8 @@ def allergyDisplay (raw : String) : String :=
         "allergies not on file"].contains text.toLower then "Allergies not on file"
     else text
 
-/-- A compact summary line: a negative allergy, a medication with directions
-after ` — `, or directions. -/
+/-- New specification for owner review: a compact summary line: a negative
+allergy, a medication with directions after ` — `, or directions. -/
 def formatClinicalRecord (raw : String) : String :=
   if (negativeAllergy (cleanClinicalText raw)).isSome then allergyDisplay raw else
   match raw.splitOn " — " with
@@ -562,7 +568,7 @@ private def vitalValue (cs : List Char) : Bool :=
 `Name value unit (recorded)` as a short line. Only the listed vital signs. -/
 def compactVitalRecord (raw : String) : Option String :=
   legacyVitalNames.findSome? fun name =>
-    match dropPrefix (name ++ " ").toList raw.toList with
+    match dropPrefix (listOf (name ++ " ")) (listOf raw) with
     | some rest =>
       match rest.span (· != ' ') with
       | (value,' ' :: afterValue) =>
@@ -595,7 +601,7 @@ case. Code-system tags such as `(LOINC)` are dropped; units, acronyms and
 mixed-case words keep their spelling; small words inside the caption are
 lower case. -/
 def sectionCaption (raw : String) : String :=
-  let cs := raw.toList
+  let cs := (listOf raw)
   chars (mapWords (fun first word =>
     if word.length < 2 || !word.all Char.isAlpha then word
     else if unitWords.contains (chars word) || (word.filter Char.isUpper).length ≥ 2 then word
@@ -609,7 +615,7 @@ Code-system tags are dropped; a capitalised word after the first is written in
 lower case; acronyms keep their spelling. -/
 def fieldCaption (raw : String) : String :=
   if equalsCI raw "enter medication" then "Medication" else
-  let cs := raw.toList
+  let cs := (listOf raw)
   chars (mapWords (fun first word =>
     match word with
     | c :: rest => if c.isUpper && !rest.isEmpty && rest.all Char.isLower && !first then c.toLower :: rest else word
@@ -619,14 +625,14 @@ def fieldCaption (raw : String) : String :=
 annotations. -/
 def controlCaption (raw : String) : String :=
   if raw.startsWith "Open chart:" then "Open chart" else
-  let cs := raw.toList
+  let cs := (listOf raw)
   let trimmed := ["(human entry)","(human entry only)"].findSome? fun tag =>
     if (chars (cs.drop (cs.length - tag.length))).toLower == tag then
       some (((cs.take (cs.length - tag.length)).reverse.dropWhile Char.isWhitespace).reverse)
     else none
   let s := chars (trimmed.getD cs)
   let s := if equalsCI s "confirm prefilled value" then "Confirm" else s
-  match dropPrefixCI "template:".toList s.toList with
+  match dropPrefixCI (listOf "template:") (listOf s) with
   | some rest => chars (rest.dropWhile Char.isWhitespace)
   | none => s
 
@@ -634,7 +640,8 @@ def controlCaption (raw : String) : String :=
 def columnCaption (raw : String) : String :=
   if raw == "Entered response" then "Response" else if raw == "Referenced prescription" then "Prescription" else raw
 
-/-- A source text that names an internal binding rather than a clinical source. -/
+/-- New specification for owner review: a source text that names an internal
+binding rather than a clinical source. -/
 def internalSource (raw : String) : Bool :=
   let low := raw.toLower
   ["record:","capture:","macro:","context:","template:"].any (fun head => low.startsWith head) ||
@@ -655,7 +662,7 @@ def displayValue (value : String) : String :=
   match compactVitalRecord value with
   | some caption => caption
   | none =>
-    match value.toList with
+    match (listOf value) with
     | [y1,y2,y3,y4,'-',m1,m2,'-',d1,d2] =>
       match natOf [y1,y2,y3,y4], natOf [m1,m2], natOf [d1,d2] with
       | some y, some m, some d =>
@@ -703,7 +710,7 @@ def fieldPlaceholder (label kind : String) : String :=
   else if hasSub low "substitution" then "Select substitution"
   else
     -- The caption without its parenthesised remarks, in lower case.
-    let plain := ((fieldCaption label).toList.foldl (fun (state : List Char × Bool) c =>
+    let plain := ((listOf (fieldCaption label)).foldl (fun (state : List Char × Bool) c =>
       if state.2 then (state.1,c != ')')
       else if c == '(' then (state.1.dropWhile Char.isWhitespace,true)
       else (c :: state.1,false)) (([] : List Char),false)).1.reverse

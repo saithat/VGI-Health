@@ -72,6 +72,46 @@ def dispatch (json : Json) : Except String Json := do
       ("lineWidths",toJson (data.map drawnLineWidths)),
       ("findings",toJson (findings expected viewport ps ++ densityFindings limit viewport ps ++
         urgentFindings viewport urgent ps ++ errors ++ realizationWarnings data))])
+  else if (json.getObjValAs? String "op").toOption.getD "" == "format" then
+    -- New specification for owner review: the display formatters by name, so
+    -- that native and WASM wording can be compared on any text.
+    let name ← json.getObjValAs? String "name"
+    let args ← json.getObjValAs? (List String) "args"
+    let arg (i : Nat) : String := args.getD i ""
+    let text ← match name with
+      | "cleanClinicalText" => pure (Format.cleanClinicalText (arg 0))
+      | "clinicalName" => pure (Format.clinicalName (arg 0))
+      | "clinicalUnit" => pure (Format.clinicalUnit (arg 0))
+      | "unit" => pure (Format.unit (arg 0))
+      | "observationValue" => pure (Format.observationValue (arg 0))
+      | "clinicalStatus" => pure (Format.clinicalStatus (arg 0))
+      | "encounterClass" => pure (Format.encounterClass (arg 0))
+      | "ageSex" => pure (Format.ageSex (arg 0))
+      | "clinicalDuration" => pure (Format.clinicalDuration (arg 0))
+      | "clinicalTime" => pure (Format.clinicalTime (arg 0))
+      | "clinicalTimestamp" => pure (Format.clinicalTimestamp (arg 0))
+      | "utcMinute" => pure (Format.utcMinute (arg 0))
+      | "formatSig" => pure (Format.formatSig (arg 0))
+      | "formatMedicationLine" => pure (Format.formatMedicationLine (arg 0) (arg 1))
+      | "allergyDisplay" => pure (Format.allergyDisplay (arg 0))
+      | "formatClinicalRecord" => pure (Format.formatClinicalRecord (arg 0))
+      | "compactVitalRecord" => pure ((Format.compactVitalRecord (arg 0)).getD "")
+      | "sectionCaption" => pure (Format.sectionCaption (arg 0))
+      | "fieldCaption" => pure (Format.fieldCaption (arg 0))
+      | "controlCaption" => pure (Format.controlCaption (arg 0))
+      | "columnCaption" => pure (Format.columnCaption (arg 0))
+      | "provenance" => pure (Format.provenance (arg 0))
+      | "displayValue" => pure (Format.displayValue (arg 0))
+      | "cellText" => pure (Format.cellText (arg 0) [] (arg 1) (arg 2))
+      | "fieldValue" => pure (Format.fieldValue (arg 0) (arg 1))
+      | "fieldPlaceholder" => pure (Format.fieldPlaceholder (arg 0) (arg 1))
+      | "bannerField" => pure (Format.bannerField (arg 0) (arg 1))
+      | "statusTone" => pure (Format.statusTone (arg 0))
+      | "resultTone" => pure (Format.resultTone (arg 0))
+      | "sectionTone" => pure (Format.sectionTone (arg 0))
+      | "emptyInfo" => pure (Format.emptyInfo (arg 0))
+      | other => throw s!"unknown formatter: {other}"
+    pure (Json.mkObj [("text",toJson text)])
   else if (json.getObjValAs? String "op").toOption.getD "" == "inventory" then
     -- New specification for owner review: the semantic inventory of a screen:
     -- every display part with its occurrence path, and the erased shape.

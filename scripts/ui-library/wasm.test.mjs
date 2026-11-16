@@ -57,3 +57,34 @@ test('layout errors fail identically, including uncovered custom families and un
   for(const request of [{op:'program-paint',render:{}},{op:'family-paint',references:[],screen:{banner:[],nav:[],title:'Uncovered',workspace:[],side:[],modal:null}},{op:'keyboard',profile:'tabs',state:{},key:'bad'}])
     assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),layout(request));
 });
+test('native and WASM agree on every display formatter over a mixed corpus',()=>{
+  // Wording is decided in Lean; the browser runs the same functions as WASM.
+  const names=['cleanClinicalText','clinicalName','clinicalUnit','unit','observationValue','clinicalStatus','encounterClass','ageSex','clinicalDuration','clinicalTime','clinicalTimestamp','utcMinute','formatSig','allergyDisplay','formatClinicalRecord','compactVitalRecord','sectionCaption','fieldCaption','controlCaption','columnCaption','provenance','displayValue','statusTone','resultTone','sectionTone','emptyInfo'];
+  const corpus=['','1','7','12/','12345678','123456789','47839287','abc','12 min','165 min','83 / F','58 / M','1.5','13.777','0.0123','<0.005','2024-01-05','2026-02-29','2026-11-02T06:00:18-08:00','2026-11-02 06:00 -08:00','Nov 2, 2026 06:00','Feb 29, 2026 06:00','lisinopril 10 MG Oral Tablet — 1, 1x per 1 d','Amoxicillin 250 MG Oral Capsule','1, 2x per 6 h','Twice a day','Body Weight 70.5 kg (Nov 2, 2026 06:00)','BP 136/82 mm[Hg] (today)','No known allergy (situation)','NKDA','Penicillin — anaphylaxis','H&P update (day of surgery)','Visit Diagnosis (ICD-10-CM)','Template: Brief op note (human entry)','Confirm prefilled value','Open chart: Ada','record:weightToday','Completed · 10:00','due-soon','HH','29385581','-5','a/b','/','Hemoglobin [Mass/volume] in Blood','Glucose [Mass/volume] in Serum or Plasma','mm[Hg]','Cel','AMB','Élodie 患者 שלום 🧬','line one\nline two','   spaced   out   '];
+  const requests=names.flatMap(name=>corpus.map(text=>({op:'format',name,args:[text]})));
+  for(const pair of [['Age / sex','83 / F'],['MRN','47839287'],['Allergies','No allergy records on file'],['Language',''],['Weight','93.4 kg · Apr 22, 2026 13:28']]) requests.push({op:'format',name:'bannerField',args:pair});
+  for(const args of [['currentMeds','Instructions','1, 2x per 1 d'],['labs','Value','13.777'],['entryTimes','Observed','29385581'],['notes','Text','active (disorder)']]) requests.push({op:'format',name:'cellText',args});
+  for(const args of [['flag','true'],['observation-time','29385581'],['code','Gingivitis (disorder)'],['text','abc']]) requests.push({op:'format',name:'fieldValue',args});
+  for(const request of requests) assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),layout(request),JSON.stringify(request));
+  assert.equal(JSON.parse(layout({op:'format',name:'ageSex',args:['83 / F']})).text,'83 y.o. F');
+  console.log(`Formatter agreement: ${requests.length} native/WASM comparisons.`);
+});
+test('native and WASM list the same display parts for P1/P3 screens',()=>{
+  const spec=json('releases/v3/spec.json');
+  const file=readdirSync('fixtures/synthea').filter(f=>f.endsWith('.json')&&f!=='index.json').sort()[0];
+  const projection=ehr('facts',{bundle:json('fixtures/synthea/'+file),context:{today:'2026-11-15',now:600,receipts:[],record:[]}});
+  let parts=0;
+  for(const [persona,screens] of [['P1',['home','w1Rooming','w1MedRec','w1Hpi','w1Orders','w1Sign']],['P3',['home','w4Flowsheet']]]) {
+    const program=json(`releases/v3/personas/${persona}.json`),user={id:program.owner,role:program.role};
+    const initial=ehr('init',{spec,program,facts:projection.facts,user});
+    for(const screenId of screens) {
+      const state=screenId==='home'?initial:{...initial,screen:screenId,patientContext:{patient:projection.facts.sourcePatientId,bound:projection.facts.sourcePatientId,activity:'chart',target:screenId,query:''}};
+      const request={op:'inventory',render:{spec,program,...projection,user,state}};
+      const expected=layout(request);
+      assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),expected,`${persona}/${screenId}`);
+      parts+=JSON.parse(expected).inventory.length;
+    }
+  }
+  assert.ok(parts>1500,`compared ${parts} parts`);
+  console.log(`Inventory agreement: ${parts} parts on 8 screens.`);
+});
