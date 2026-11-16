@@ -136,15 +136,8 @@ async function navigate(page: Page, screen: string) {
     }
   }
   if (!path?.length) throw new Error(`No navigation path to ${screen}`);
-  for (const comp of path) {
-    const nav = page.locator('[data-source="2"] select');
-    if (await nav.locator(`option[value=${JSON.stringify(comp)}]`).count()) {
-      await reveal(page, nav);
-      await nav.click();
-      await nav.selectOption(comp);
-      await idle(page);
-    } else await click(page, comp);
-  }
+  // Navigation links are separate Lean target boxes with their own buttons.
+  for (const comp of path) await click(page, comp);
   await expect(page.locator("#root")).toHaveAttribute("data-screen", screen);
 }
 async function values(
@@ -342,10 +335,7 @@ for (const persona of ["P1", "P3"])
       );
       await idle(page);
       await differential(page, `${persona}/landing`);
-      await page
-        .locator('[data-source="2"] select')
-        .selectOption("workspace.lookup");
-      await idle(page);
+      await click(page, "workspace.lookup");
       await enter(page, "workspace.search", "Painter");
       const open = page
         .locator('[data-comp-id^="workspace.open|"][data-event="click"]')

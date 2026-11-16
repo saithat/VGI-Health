@@ -24,6 +24,7 @@ export const leanBoxSchema = z.object({
       interruptive: z.boolean(),
       banner: z.boolean(),
       commit: z.boolean(),
+      urgent: z.boolean().optional(),
       paint: z.boolean(),
       text: z.json().nullable(),
     }),
@@ -50,34 +51,40 @@ export function occurrences(
         : undefined) ??
       d["alert"];
     entries.push({ path, ids: typeof id === "string" ? [id] : [] });
+    // A tabs node lists one target per label before its selected body
+    // (Layout.Semantic.tabNodes). The tabs id stays bound to the wrapper box.
+    const tabs =
+      kind === "tabs" ? z.array(z.string()).parse(d["labels"] ?? []).length : 0;
+    for (let i = 0; i < tabs; i++) entries.push({ path: [...path, i], ids: [] });
     const children = z
       .array(z.unknown())
       .parse(d["children"] ?? d["body"] ?? []);
-    children.forEach((child, i) => visit(child, [...path, i]));
+    children.forEach((child, i) => visit(child, [...path, tabs + i]));
     if (kind === "patientPane")
       z.array(z.unknown())
         .parse(d["modal"] ?? [])
         .forEach((child, i) => visit(child, [...path, children.length + i]));
   }
+  // Layout.Semantic.navNode: a wrapper, a heading per group, a box per link.
+  const nav = z
+    .array(z.tuple([z.string(), z.array(z.tuple([z.string(), z.string()]))]))
+    .parse(screen["nav"]);
   const roots = [
     { text: { s: "" } },
     { text: { s: "" } },
-    { text: { s: "" } },
+    {
+      section: {
+        children: nav.map(([, links]) => ({
+          section: { children: links.map(([comp]) => ({ button: { comp } })) },
+        })),
+      },
+    },
     ...z.array(z.unknown()).parse(screen["workspace"]),
     ...z.array(z.unknown()).parse(screen["side"]),
     ...(screen["modal"] ? [screen["modal"]] : []),
     ...z.array(z.unknown()).parse(screen["urgent"] ?? []),
   ];
   roots.forEach((n, i) => visit(n, [i]));
-  // Navigation is one semantic text card in this research compiler.
-  const nav = z
-    .array(z.tuple([z.string(), z.array(z.tuple([z.string(), z.string()]))]))
-    .parse(screen["nav"]);
-  const navigation = entries.find(
-    (e) => e.path.length === 1 && e.path[0] === 2,
-  );
-  if (navigation)
-    navigation.ids = nav.flatMap(([, xs]) => xs.map(([id]) => id));
   return entries;
 }
 const px = (r: z.infer<typeof rect>) => ({

@@ -6,24 +6,49 @@ export interface Source {
   allowOther: boolean;
   patient?: string;
   paneModal?: boolean;
+  /** Set on the per-tab targets of a tabs node (Layout.Semantic.tabNodes). */
+  tab?: { comp: string; index: number; count: number; selected: number };
 }
+const button = (comp: string, label: string, role: string): UiNode => ({
+  button: {
+    comp,
+    label,
+    role,
+    enabled: true,
+    blockedReason: null,
+    hotkey: null,
+  },
+});
+/** Layout.Semantic.navNode: a wrapper, a heading per group, a target per link. */
+export const navNode = (nav: UiScreen["nav"]): UiNode => ({
+  section: {
+    id: "navigation",
+    title: "Navigation",
+    children: nav.map(([title, items]) => ({
+      section: {
+        id: title,
+        title,
+        children: items.map(([id, label]) => button(id, label, "nav")),
+      },
+    })),
+  },
+});
 /** Same preorder and child ordinals as Layout.Semantic.screenNodes. Wrappers
- * have their own occurrences; patient modal children follow ordinary children. */
+ * have their own occurrences; patient modal children follow ordinary children;
+ * a tabs node lists one target per tab label before its selected body. */
 export function screenSources(screen: UiScreen): Map<string, Source> {
   const result = new Map<string, Source>();
   const roots: UiNode[] = [
-    { text: { s: screen.banner.map(([k, v]) => `${k}: ${v}`).join("  ") } },
-    { text: { s: screen.title } },
     {
       text: {
-        s: screen.nav
-          .map(
-            ([title, items]) =>
-              `${title}: ${items.map((p) => p[1]).join(" | ")}`,
-          )
-          .join("  "),
+        s: [
+          ...screen.banner.map(([k, v]) => `${k}: ${v}`),
+          ...(screen.viewer ? [`Signed in: ${screen.viewer}`] : []),
+        ].join("  "),
       },
     },
+    { text: { s: screen.title } },
+    navNode(screen.nav),
     ...screen.workspace,
     ...screen.side,
     ...(screen.modal ? [screen.modal] : []),
@@ -32,7 +57,8 @@ export function screenSources(screen: UiScreen): Map<string, Source> {
   function visit(
     node: UiNode,
     path: number[],
-    inherited: Omit<Source, "node">,
+    inherited: Omit<Source, "node" | "tab">,
+    tab?: Source["tab"],
   ) {
     let context = inherited;
     if ("valueSet" in node)
@@ -54,19 +80,33 @@ export function screenSources(screen: UiScreen): Map<string, Source> {
     result.set(path.join("."), {
       ...context,
       node,
+      ...(tab ? { tab } : {}),
       ...(choices
         ? { choices: choices.options, allowOther: choices.allowOther }
         : {}),
     });
+    if ("tabs" in node) {
+      const { id, labels, selected, body } = node.tabs;
+      labels.forEach((label, index) =>
+        visit(button(id, label, "tab"), [...path, index], context, {
+          comp: id,
+          index,
+          count: labels.length,
+          selected,
+        }),
+      );
+      body.forEach((child, i) =>
+        visit(child, [...path, labels.length + i], context),
+      );
+      return;
+    }
     const payload = Object.values(node)[0];
     const children: UiNode[] =
       "patientPane" in node
         ? [...node.patientPane.children, ...node.patientPane.modal]
-        : "tabs" in node
-          ? node.tabs.body
-          : "children" in payload
-            ? payload.children
-            : [];
+        : "children" in payload
+          ? payload.children
+          : [];
     children.forEach((child, i) => visit(child, [...path, i], context));
   }
   roots.forEach((node, i) =>

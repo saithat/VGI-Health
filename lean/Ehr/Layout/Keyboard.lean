@@ -67,6 +67,21 @@ def dialog (n : Nat) (s : State) (key : Key) : State := match key with
 def openDialog (invoker : String) : State := { invoker }
 def closeDestination (s : State) : Option String := if s.isOpen then none else some s.invoker
 
+/-- New specification for owner review: the dialog profile of an interruptive
+clinical alert. Tab and Shift+Tab stay inside, exactly as in `dialog`. No key
+closes it: Escape is ignored, because a clinical alert leaves the screen only
+when the interpreter accepts an acknowledgment. `dialog` remains the profile
+of ordinary, dismissible dialogs. -/
+def alertDialog (n : Nat) (s : State) (key : Key) : State := match key with
+  | .tab => { s with focus := next n s.focus }
+  | .shiftTab => { s with focus := prev n s.focus }
+  | _ => s
+
+/-- New specification for owner review: the dialog profile a painter must use
+for a box, chosen by its `interruptive` flag. -/
+def dialogFor (interruptive : Bool) : Nat → State → Key → State :=
+  if interruptive then alertDialog else dialog
+
 theorem next_inside (n i : Nat) (h : 0 < n) : next n i < n := by
   unfold next; split <;> omega
 
@@ -97,6 +112,34 @@ theorem dialog_traps (n s) (h : 0 < n) (hf : s.focus < n) :
   exact ⟨next_inside _ _ h,prev_inside _ _ h hf⟩
 theorem dialog_escape_restores (n s) :
     closeDestination (dialog n s .escape) = some s.invoker := rfl
+
+/-- New specification for owner review: no key changes whether a clinical
+alert dialog is open. -/
+theorem alertDialog_stays_open (n s k) : (alertDialog n s k).isOpen = s.isOpen := by
+  cases k <;> rfl
+/-- New specification for owner review: Escape does nothing to a clinical alert dialog. -/
+theorem alertDialog_escape_ignored (n s) : alertDialog n s .escape = s := rfl
+/-- New specification for owner review: an open clinical alert dialog never
+yields a focus-restoration target, for any key. -/
+theorem alertDialog_never_closes (n s k) (h : s.isOpen = true) :
+    closeDestination (alertDialog n s k) = none := by
+  simp [closeDestination, alertDialog_stays_open, h]
+/-- New specification for owner review: Tab containment is the same as `dialog`. -/
+theorem alertDialog_traps (n s) (h : 0 < n) (hf : s.focus < n) :
+    (alertDialog n s .tab).focus < n ∧ (alertDialog n s .shiftTab).focus < n := by
+  exact ⟨next_inside _ _ h,prev_inside _ _ h hf⟩
+/-- New specification for owner review: the two profiles differ on Escape only. -/
+theorem alertDialog_agrees (n s k) (h : k ≠ .escape) : alertDialog n s k = dialog n s k := by
+  cases k <;> first | rfl | exact absurd rfl h
+/-- New specification for owner review: an interruptive box stays open under
+every key sequence. -/
+theorem interruptive_stays_open (n : Nat) (s : State) (keys : List Key) :
+    (keys.foldl (dialogFor true n) s).isOpen = s.isOpen := by
+  induction keys generalizing s with
+  | nil => rfl
+  | cons k ks ih =>
+    rw [List.foldl_cons, ih]
+    exact alertDialog_stays_open n s k
 
 theorem grid_right_stays_row (rows cols s) (hc : 0 < cols) :
     (grid rows cols s .right).focus / cols = s.focus / cols := by
@@ -149,6 +192,7 @@ def table (profile : String) (rows cols : Nat) : List (Nat × Key × State) :=
       | "tabs" => tabs (rows*cols) s key
       | "listbox" => listbox (rows*cols) s key
       | "dialog" => dialog (rows*cols) s key
+      | "alert-dialog" => alertDialog (rows*cols) s key
       | _ => grid rows cols s key)
 
 #print axioms next_inside
@@ -162,6 +206,12 @@ def table (profile : String) (rows cols : Nat) : List (Nat × Key × State) :=
 #print axioms listbox_preserves
 #print axioms dialog_traps
 #print axioms dialog_escape_restores
+#print axioms alertDialog_stays_open
+#print axioms alertDialog_escape_ignored
+#print axioms alertDialog_never_closes
+#print axioms alertDialog_traps
+#print axioms alertDialog_agrees
+#print axioms interruptive_stays_open
 #print axioms grid_right_stays_row
 #print axioms grid_home
 #print axioms grid_preserves

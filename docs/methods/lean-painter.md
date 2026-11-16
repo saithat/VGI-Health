@@ -45,9 +45,12 @@ Lean changes are API/export routing and narrower runtime imports only. The
 layout types/fonts/keyboard files use `Lean.Data.Json` (and `Std` for keyboard
 proof tactics) instead of the full `Lean` compiler umbrella so Emscripten links
 only runtime dependencies. The font generator emits the same narrower import.
-No rule, specification, theorem statement, proof body or clinical definition is
-changed. The checked API and certificate dependencies use only `propext`,
-`Classical.choice` and `Quot.sound`.
+Introducing the painter changed no rule, specification, theorem statement,
+proof body or clinical definition. The layout rules were strengthened
+afterwards (12 px text, 4.5:1 contrast, fixed targets in the density count,
+the pinned urgent strip, one target per navigation link and tab); the
+[UI library](ui-library.md) page states them. The checked API and certificate
+dependencies use only `propext`, `Classical.choice` and `Quot.sound`.
 
 ## Painting and interaction boundary
 
@@ -79,27 +82,30 @@ completed value. Guard refusals and service feedback appear in a live status
 region. Painting must succeed before a screen enters the command journal;
 layout refusal makes the root inert and blocks queued interactions.
 
-The one tab source rectangle becomes one button: pointer activation cycles
-choices; arrows/Home/End move its candidate and Enter/Space activate through
-`Keyboard.tabs`. This is a simpler chooser, not an APG tablist. Native selects
+Each tab is its own Lean target box and its own button with role `tab`:
+clicking it sends `selectTab` with its index; arrows/Home/End move focus among
+the sibling tabs through `Keyboard.tabs`, and Enter/Space activate the focused
+tab. Tab panels are not yet related to their tabs by ARIA. Each navigation
+link is likewise its own target box and button. Native selects
 use `Keyboard.listbox` for Up/Down/Home/End and retain native popup/type-ahead
-behavior. Dialog Tab/Shift+Tab use `Keyboard.dialog`, block ordinary controls,
-and restore the invoking focus on closure. Clinical interruptive alerts have
-no dismiss event, so Escape cannot apply the profile's close transition to
-bypass acknowledgment. A proper per-cell grid is missing: its cells have no
+behavior. Interruptive alert dialogs use `Keyboard.alertDialog`: Tab/Shift+Tab
+stay inside, ordinary controls are blocked, and the invoking focus is restored
+when Lean removes the alert. Escape is sent to the same profile, which ignores
+it (`alertDialog_stays_open`); the painter swallows the key and there is no
+dismiss event, so acknowledgment cannot be bypassed. `Keyboard.dialog`, which
+closes on Escape, remains for ordinary dismissible dialogs and is not used for
+interruptive boxes. A proper per-cell grid is missing: its cells have no
 separate Lean rectangles. The WASM keyboard API nevertheless exposes and tests
-all four profiles without reimplementing their transitions in TypeScript.
+all five profiles without reimplementing their transitions in TypeScript.
 
-**Admission limitation.** The reference semantic inventory classifies only
-fields and buttons as targets. Its combined navigation string and tabs wrapper
-are text sources. Their single-box native choosers do not obtain target-density
-or APG fidelity guarantees from that existing classification. Likewise an
-implicit pending-field confirmation reuses the field's target rectangle rather
-than inventing another target. Geometry/text agreement does not prove control
-fidelity or accessibility. Resolving navigation/tab target classification,
-separate tab/cell rectangles, nested pane modalities and richer widget geometry
-would require changes beyond API plumbing; none are made here. These are
-cut-over blockers, not grounds for weakening G1–G10.
+**Admission limitation.** The semantic inventory now has one target occurrence
+per navigation link, per tab and per section toggle, so the size, separation
+and density rules see every one of them. An implicit pending-field confirmation
+still reuses the field's target rectangle rather than inventing another
+target, and grid cells have no rectangles of their own. Geometry/text
+agreement does not prove control fidelity or accessibility. Separate cell
+rectangles, nested pane modalities and richer widget geometry remain cut-over
+blockers, not grounds for weakening G1–G11.
 
 ## Widget inventory
 
@@ -114,7 +120,7 @@ covered by the presentation row; their underlying child controls remain present.
 |---|---|---|
 | `section` and collapsible groups | Simpler look | Full heading card; the existing `toggle` child button sends `click`. Lean decides which children remain visible. No host collapse state. |
 | `columns` | Simpler look | Wrapper source and all children retained in Lean's order; no CSS columns. |
-| `tabs` | Simpler look; APG tablist missing | One chooser occupies the supplied rectangle and sends `selectTab`; manual keys call Lean. Separate tab target boxes, roles and panel relationships are required for APG parity. |
+| `tabs` | Works, simpler look | One button per tab in its own Lean target box sends `selectTab` with its index; roles and `aria-selected` are set and arrow keys call Lean. The wrapper card shows all labels and the selection. Panel relationships are still required for APG parity. |
 | `stepper` | Simpler look | Complete steps/current index as Lean semantic text. No invented navigation; current renderer also treats this as a read-only overview. |
 | `field`: text and textarea | Works, simpler look | Native textarea in the field box; typing/composition emits `enter`; full semantic label/value/provenance returns on blur. No auto-growing editor. |
 | `field`: number/quantity/qty and unit | Works, simpler look | Native nonnegative number input, step 0.1; existing unit/tenths conversion. Unit and source remain in the full semantic text. |
@@ -139,9 +145,10 @@ covered by the presentation row; their underlying child controls remain present.
 | `datedTimeline` | Simpler look | Exact dated/undated metadata and children retained; no graphical UTC-aligned axis. |
 | `board` | Missing multi-patient interaction | Urgency metadata and all pane occurrences are readable. No patient-scoped board session/dispatch host is connected; pane controls are disabled to prevent unscoped events. |
 | `patientPane` | Missing interaction | Banner, metadata, ordinary/modal children retained by source path. Needs patient-scoped event transport, per-pane choice metadata, modal ownership and board shell geometry; disabled here. |
-| `UiScreen.banner`, title, side and urgent nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome, separate urgent rail or patient avatar. |
-| `UiScreen.nav` | Simpler look; admitted target classification missing | One native chooser in the combined navigation text box sends existing `click` IDs. Requires explicit Lean navigation targets before G3/G10/APG parity can be claimed. |
-| Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean dialog Tab transitions, inert ordinary controls, initial focus and restoration. Escape cannot dismiss clinical alerts. Board modality remains missing. |
+| `UiScreen.banner`, title and side nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome or patient avatar. |
+| `UiScreen.urgent` nodes | Works, simpler look | Lean pins them in a fixed strip (rule G11): outside every scroller, in the viewport and clear of every other box. The painter keeps strip boxes operable while a modal is open and blocks everything else. A state with more urgent nodes than the layout can pin is refused, not painted. |
+| `UiScreen.nav` | Works, simpler look | A heading card per group and one button per link, each in its own Lean target box, sends the existing `click` IDs. In the reference shell the navigation follows the workspace in the body scroller. |
+| Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean `alertDialog` Tab transitions, inert ordinary controls, initial focus and restoration. Escape is ignored by the Lean profile and swallowed by the painter. Board modality remains missing. |
 | Review/sign persistence and draft restoration | Existing live path | Same `createLiveSession`, native screen comparison, guarded command endpoint and database. No alternate save implementation. |
 
 The stock presentation kinds are fully enumerated below. None introduces a
@@ -201,7 +208,7 @@ page requests its 60,004-byte face. WASM layout timing includes JSON encoding,
 parsing and the boundary call; it is sampled, not a responsiveness guarantee.
 
 Native/WASM paint agreement covers six P1/P3 screens at all three viewports,
-including program and family painting (36 byte comparisons), all 52
+including program and family painting (36 byte comparisons), all 65
 profile/key combinations, and error paths. The browser differential checks
 outer DOM rectangles after clip translations, Lean text line widths and
 independent intrinsic browser glyph advances on the workflow screens. Focused
@@ -211,17 +218,20 @@ Measured results for this implementation:
 
 | Check | Result |
 |---|---|
-| Native/WASM layout and keyboard | 3 tests passed; 36 byte-identical paint requests and 52 keyboard comparisons |
-| Existing native layout regressions | 23 tests passed |
-| App unit tests | 335 passed; 32 existing opt-in/data-dependent skips |
+| Native/WASM layout and keyboard | 3 tests passed; 36 byte-identical paint requests and 65 keyboard comparisons (five profiles) |
+| Existing native layout regressions | 30 tests passed |
+| App unit tests | 337 passed; 32 existing opt-in/data-dependent skips |
 | Browser workflows | P1 note + prescription signed; P3 nursing assessment filed; 2 tests passed, one worker |
 | Browser differential | 10 snapshots, 500 boxes, 586 lines, 32,737 intrinsic glyph advances; rectangle/line worst deviation 0px, glyph worst deviation 0.00005px (tolerance 1/64px) |
 | WASM layout in Chromium | Landing P1 13.5ms / P3 8.9ms; P1 documentation 15.8ms, orders 26.0ms, signing 14.9ms; P3 assessment 13.5ms; other supported-size samples 14.7–18.6ms |
-| WASM layout in Node | Program paint samples 14.36–47.90ms across six screens and three sizes |
+| WASM layout in Node | Program paint samples 14.25–61.37ms across six screens and three sizes |
 | New entry transitive JavaScript | 184,682 bytes raw / 61,143 bytes gzip, with no React/Mantine modules or chunk markers |
 | Existing app, including its lazy routes | 919,978 bytes raw / 305,482 bytes gzip; same emitted build, no duplicate shared chunk counting |
-| Shared WASM asset | 5,027,703 bytes, versus the previous 4,401,917 bytes (+625,786) |
+| Shared WASM asset | 5,061,591 bytes with the strengthened layout rules; 5,027,703 when the layout API was first exported, versus 4,401,917 before it |
 
+The browser rows (workflows, differential, Chromium timing) and the JavaScript
+sizes were measured before navigation links and tabs became separate controls
+and before the urgent strip was pinned; they were not measured again.
 Browser timing includes the render/layout API JSON boundary; ten samples are
 not a benchmark distribution. The unsupported-viewport test checks inert
 refusal and recovery. The P1 task includes real sequential typing and caret
@@ -232,9 +242,10 @@ here. Native service replay and durable command writes are exercised.
 
 ## Cut-over checklist
 
-1. Give navigation links, tab labels/panels, grid cells and any additional
-   native control their own semantic targets and checked rectangles. Keep
-   G1–G10 unchanged and prove/check the corresponding layout families.
+1. Navigation links and tab labels have their own semantic targets and checked
+   rectangles. Give tab panels, grid cells and any additional native control
+   theirs. Keep G1–G11 unchanged and prove/check the corresponding layout
+   families.
 2. Complete the missing inventory rows: patient-scoped board sessions and
    modality, custom code suggestions, rich clinical presentations, implicit
    pending-field editing and structured row/grid interaction. Verify every

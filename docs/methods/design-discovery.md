@@ -1,6 +1,6 @@
 # Nightly design discovery with Lean screens
 
-[Overview](../../README.md) · [UI language and G1–G10](ui-library.md) ·
+[Overview](../../README.md) · [UI language and G1–G11](ui-library.md) ·
 [Agent loop](agent-loop.md) · [Simulated clinicians](simulation.md) ·
 [First local result and verification](../audits/lean-nightly-first-result.md)
 
@@ -81,7 +81,7 @@ repeating large per-state JSON and fits the measured persona requests below
 Codex’s transport character limit without filtering the design space. Each case must supply
 1440×900, 1280×800 and 1920×1080 in integer 1/64-pixel units. Nodes support
 frames, stacks, wrapping rows, weighted/fixed grids, absolute positions, scroll
-viewports, component expansion and arbitrary opaque colors and marks. G1–G10
+viewports, component expansion and arbitrary opaque colors and marks. G1–G11
 are the only layout restrictions. Existing clinical rules still constrain
 Program semantics. The prompt explains every rule and tells the agent to work
 from this persona's logs/traces to reduce clicks and scrolls. Training-only
@@ -177,8 +177,9 @@ bounded memory model still tracks Program slots rather than free coordinates;
 this mode adds no new spatial relearning model.
 
 Limitations inherited from the current physical metric include its viewport
-boundary reveal test (not a complete nested-clip visibility test) and the
-reference compiler's single aggregate navigation text card. List contents in
+boundary reveal test (not a complete nested-clip visibility test). Navigation
+links have their own boxes; a tab selection is still measured at the tabs
+wrapper box, not at the individual tab. List contents in
 safety text scroll independently; bounded interactive lists remain open. Exported
 variants and observed trace replay are finite evidence, not a proof that a
 custom family covers every reachable state. A new shape refuses rather than

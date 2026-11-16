@@ -125,6 +125,10 @@ structure Meta where
   banner : Bool := false
   interruptive : Bool := false
   commit : Bool := false
+  /-- New specification for owner review: the box belongs to the pinned urgent
+  strip. Rule G11 keeps such a box fixed, in the viewport and uncovered, and an
+  open modal does not make it inactive. -/
+  urgent : Bool := false
   paint : Bool := true
   role : String := ""
   mark : Mark := .rect

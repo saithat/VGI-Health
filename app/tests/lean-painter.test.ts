@@ -35,6 +35,7 @@ function drawn(
   options: {
     scroll?: boolean;
     modal?: boolean;
+    urgent?: boolean;
     clip?: boolean;
     original?: string;
   } = {},
@@ -65,6 +66,7 @@ function drawn(
         banner: false,
         interruptive: options.modal ?? false,
         commit: false,
+        urgent: options.urgent ?? false,
         paint: true,
         role: "",
         mark: "rect",
@@ -211,16 +213,167 @@ test("interruptive controls block ordinary actions, trap Tab through Lean, then 
     }),
   );
   expect(keyboard).toHaveBeenCalledWith(
-    "dialog",
+    "alert-dialog",
     1,
     1,
     expect.anything(),
     "tab",
   );
+  // Escape goes to Lean's clinical alert profile and dismisses nothing.
+  const escape = new KeyboardEvent("keydown", {
+    key: "Escape",
+    bubbles: true,
+    cancelable: true,
+  });
+  acknowledgment?.dispatchEvent(escape);
+  expect(keyboard).toHaveBeenLastCalledWith(
+    "alert-dialog",
+    1,
+    1,
+    expect.anything(),
+    "escape",
+  );
+  expect(escape.defaultPrevented).toBe(true);
+  expect(dispatch).not.toHaveBeenCalled();
+  expect(root.querySelector('[data-box="ack"]')).not.toBeNull();
+  expect(sign?.disabled).toBe(true);
   acknowledgment?.click();
   expect(dispatch).toHaveBeenCalledWith({ ack: { alert: "alert" } });
   painter.patch(screen([button]), output([drawn("sign", [3])]));
   expect(document.activeElement).toBe(sign);
+});
+
+test("the pinned urgent strip stays operable beside a modal while ordinary controls are blocked", () => {
+  const { root, painter, dispatch } = setup();
+  const button = (comp: string, role: string): UiNode => ({
+    button: {
+      comp,
+      label: comp,
+      role,
+      enabled: true,
+      blockedReason: null,
+      hotkey: null,
+    },
+  });
+  const s: UiScreen = {
+    ...screen([button("sign", "primary")], button("notice", "ack")),
+    urgent: [button("allergy", "ack")],
+  };
+  painter.patch(
+    s,
+    output([
+      drawn("sign", [3]),
+      drawn("notice", [4], 5000, { modal: true }),
+      drawn("strip", [5], 10000, { urgent: true }),
+    ]),
+  );
+  const control = (box: string) =>
+    root.querySelector<HTMLButtonElement>(`[data-box="${box}"] button`);
+  expect(control("sign")?.disabled).toBe(true);
+  expect(control("sign")?.parentElement?.inert).toBe(true);
+  expect(control("strip")?.disabled).toBe(false);
+  expect(control("strip")?.parentElement?.inert).toBe(false);
+  control("strip")?.click();
+  expect(dispatch).toHaveBeenCalledExactlyOnceWith({
+    ack: { alert: "allergy" },
+  });
+});
+
+test("navigation links and tabs are separate controls bound to their own Lean boxes", () => {
+  const { root, painter, dispatch, keyboard } = setup();
+  const tabs: UiNode = {
+    tabs: { id: "panel", labels: ["Vitals", "Labs", "Notes"], selected: 1, body: [field] },
+  };
+  const s: UiScreen = {
+    ...screen([tabs]),
+    banner: [["Patient", "Synthetic"]],
+    viewer: "Registered nurse",
+    nav: [
+      [
+        "Chart",
+        [
+          ["goOrders", "Orders"],
+          ["goNotes", "Notes"],
+        ],
+      ],
+    ],
+  };
+  const sources = screenSources(s);
+  expect(sources.get("0")?.node).toEqual({
+    text: { s: "Patient: Synthetic  Signed in: Registered nurse" },
+  });
+  expect(Object.keys(sources.get("2")?.node ?? {})).toEqual(["section"]);
+  expect(sources.get("2.0.1")?.node).toMatchObject({
+    button: { comp: "goNotes", label: "Notes", role: "nav" },
+  });
+  expect(sources.get("3.2")?.tab).toEqual({
+    comp: "panel",
+    index: 2,
+    count: 3,
+    selected: 1,
+  });
+  expect(sources.get("3.3")?.node).toBe(field);
+  painter.patch(
+    s,
+    output([
+      drawn("nav", [2]),
+      drawn("group", [2, 0], 3584),
+      drawn("orders", [2, 0, 0], 7168),
+      drawn("notes", [2, 0, 1], 10752),
+      drawn("tabs", [3], 14336),
+      drawn("tab0", [3, 0], 17920),
+      drawn("tab1", [3, 1], 21504),
+      drawn("tab2", [3, 2], 25088),
+      drawn("note", [3, 3], 28672),
+    ]),
+  );
+  const control = (box: string) =>
+    root.querySelector<HTMLButtonElement>(`[data-box="${box}"] button`);
+  // The wrappers carry text only; every link and tab is its own button.
+  expect(control("nav")).toBeNull();
+  expect(control("group")).toBeNull();
+  expect(control("tabs")).toBeNull();
+  expect(root.querySelectorAll("select")).toHaveLength(0);
+  control("notes")?.click();
+  expect(dispatch).toHaveBeenLastCalledWith({ click: { comp: "goNotes" } });
+  expect(control("orders")?.dataset.compId).toBe("goOrders");
+  expect(
+    ["tab0", "tab1", "tab2"].map((id) => [
+      control(id)?.getAttribute("role"),
+      control(id)?.getAttribute("aria-selected"),
+      control(id)?.dataset.event,
+    ]),
+  ).toEqual([
+    ["tab", "false", "selectTab"],
+    ["tab", "true", "selectTab"],
+    ["tab", "false", "selectTab"],
+  ]);
+  control("tab2")?.click();
+  expect(dispatch).toHaveBeenLastCalledWith({
+    selectTab: { comp: "panel", idx: 2 },
+  });
+  // Arrow keys move focus through Lean's manual-activation tabs profile.
+  keyboard.mockImplementationOnce((_profile, _rows, _cols, state) => ({
+    ...state,
+    focus: 2,
+  }));
+  control("tab1")?.focus();
+  control("tab1")?.dispatchEvent(
+    new KeyboardEvent("keydown", {
+      key: "ArrowRight",
+      bubbles: true,
+      cancelable: true,
+    }),
+  );
+  expect(keyboard).toHaveBeenLastCalledWith(
+    "tabs",
+    1,
+    3,
+    { focus: 1, selected: 1, isOpen: true, invoker: "" },
+    "right",
+  );
+  expect(document.activeElement).toBe(control("tab2"));
+  expect(dispatch).toHaveBeenCalledTimes(2);
 });
 
 test("pending fields expose confirmation at the same box and never fabricate clinical values", () => {
