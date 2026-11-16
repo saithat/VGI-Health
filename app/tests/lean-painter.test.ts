@@ -774,6 +774,8 @@ test("the TypeScript mirror lists Lean's occurrences: parts of a node before its
   ).toEqual([
     ["2.0.0", ["goOrders"]],
     ["3", ["panel"]],
+    ["3.0", ["panel#tab:0"]],
+    ["3.1", ["panel#tab:1"]],
     ["3.2.0", ["note"]],
     ["4.0.0", ["esi"]],
     ["5", ["meds"]],

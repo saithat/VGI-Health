@@ -114,7 +114,8 @@ it("lists the same occurrence paths as Lean's inventory, parts before children",
   // The components the mirror binds are the components of Lean's parts.
   const comp = new Map(inventory.map((e) => [e.path.join("."), e.part.comp]));
   for (const o of mirror)
-    for (const id of o.ids) expect(comp.get(o.path.join("."))).toBe(id);
+    for (const id of o.ids)
+      expect(comp.get(o.path.join("."))).toBe(id.replace(/#tab:\d+$/, ""));
   expect(
     mirror.filter((o) => o.ids.length).map((o) => [o.path.join("."), o.ids]),
   ).toEqual([
@@ -123,6 +124,8 @@ it("lists the same occurrence paths as Lean's inventory, parts before children",
     ["4", ["group"]],
     ["4.0.0", ["rate"]],
     ["4.1", ["panel"]],
+    ["4.1.0", ["panel#tab:0"]],
+    ["4.1.1", ["panel#tab:1"]],
     ["4.1.2", ["inside"]],
     ["5", ["meds"]],
     ["6", ["sign"]],

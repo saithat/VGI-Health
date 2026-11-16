@@ -17,8 +17,24 @@ scrolling body, matching the vendor document's coupled scrolling rather than
 introducing independent panes or a fixed navigation row.
 In dense layouts, runtime urgent-strip slots stay fixed above the banner, with a structural
 height reserve shifting the banner, navigation, heading and modal down.
-Collapse controls share their section's heading row; choice wrappers occupy
-field columns. Table reserves grow by 24px per row plus a 22px heading, with a
+Each semantic occurrence is one display part ([display parts](ui-library.md)),
+so the generator places parts, not text cards: a field is its label above its
+control (beside it when the field has the whole row to itself), with its unit,
+code and required marker on the control's row when they fit and its hint,
+source, confirmation and human-entry markers on a line below; fields and
+buttons pack into wrapping rows of up to five and eight cells. A table is its
+caption, then, when two or more records share their captions, one header row
+of captions and the value cells in equal column tracks; a single record (or
+records with different captions) is laid out as caption/value pairs, as many
+pairs per line as fit in 300px each. Tabs share one row of targets and steps
+one row of numbered parts; a button keeps its blocked reason and hotkey on its
+row when the cell is 220px or wider, below otherwise. Structural wrappers
+(tabs, value sets, columns, presentation hints, row-action groups, reference
+curves, boards) have empty text; each takes a 20×18px box in a left gutter at
+the row where its content starts, so it reserves no content row. A commit
+button's own part is fixed at the bottom; its reason and hotkey stay in the
+body where the button was. Collapse controls share their section's heading
+row; choice wrappers occupy field columns. Table reserves grow by 24px per row plus a 22px heading, with a
 36px minimum, rather than capping long tables at a constant height.
 `columns` uses its available width, with two tracks from 768px and three from
 1200px, capped by child count. A current-task commit stays fixed at the bottom;
@@ -43,9 +59,13 @@ const painted = cache.paint(result, screen, viewports[0]);
 Viewport dimensions are in **1/64 CSS pixels**: 1440×900 is `{w:92160,h:57600}`.
 `layoutFor(nativeShape, viewport)` also accepts the bare `SlotShape[]` returned
 by `family-check`; that loses the widget hints used to reconstruct columns.
-`shapeFor(screen)` adds content-free widget kinds, narrative-field classification
-and table row counts to the native slots. It never retains labels, patient
-values or control IDs. Every semantic occurrence, including section, column and
+`shapeFor(screen)` adds content-free hints to the native slots: each part's
+role, each node's kind, narrative-field classification, the row and column of
+table cells and whether a table's records share their captions. It never
+retains labels, patient values or control IDs. `occurrences(screen)` is the
+single JavaScript/TypeScript mirror of Lean's inventory (paths, roles,
+targets, components); the painter's tests, the agent's geometry and this
+generator use it, and tests compare it with Lean's `inventory` operation. Every semantic occurrence, including section, column and
 tab-body wrappers, gets exactly one linked source. Leaf order is sorted by the
 resulting row and column positions for G8. Lean independently derives the
 authoritative semantic shape and checks flags, completeness and G1–G11.
@@ -55,8 +75,9 @@ wrapping bars. Each tab label has its own target before the selected body.
 occurrences use region `urgent` and the `urgent` flag, clear of the banner,
 scroller, footer and modal at every supported viewport.
 
-The native semantic shape erases table row counts. The augmented reference
-shape includes them, so different row counts can receive different geometry.
+Table cells are occurrences, so the native semantic shape includes the number
+of records and cells, which optional field parts are present and whether a
+button is blocked; a table with another number of rows is another shape.
 Order-line controls already introduce different native occurrence paths.
 Unbounded text inside an unchanged row count keeps the same geometry and
 scrolls within its safety slot. Geometry does not depend on character counts.
@@ -64,8 +85,11 @@ scrolls within its safety slot. Geometry does not depend on character counts.
 The cache key binds the generator version, actual generated trees, native
 shape, density limit, and SHA-256 of the native checker binary. Equal native
 shapes and equal geometry can share admission even when authoring hints differ.
-Admission references erase patient strings; their authoritative native shape
-is unchanged, and actual content is bound only for painting. Receipts contain
+Admission references erase patient strings (`eraseContent`) but keep every
+fact the inventory depends on: optional values stay present as empty
+strings, lists keep their lengths, table column captions and coded values
+stay; tests check that Lean's shape of the erased screen equals the original's.
+The authoritative native shape is therefore unchanged, and actual content is bound only for painting. Receipts contain
 no reference patient payload. Writes are atomic and checksummed; incomplete or
 corrupt receipts miss. Accepted and refused dense proposals are both retained.
 In-memory admission and painting caches are bounded to 256 entries; persistent
@@ -211,13 +235,15 @@ Admission establishes the unchanged layout predicates; it does not establish
 visual equivalence or that a text card is a working clinical widget. The
 following adapter/language gaps prevent full vendor fidelity without Lean work:
 
-- A field is one target/text slot. Input, unit, source, confirmation button,
-  checkbox and code-choice targets are not separately represented. Disabled
-  fields/buttons still have `semanticTarget = true`, unlike enabled DOM counts.
-- A table is one unlimited safety-text slot. Cell geometry, column headings,
-  row-action attachment, variable-height rows and conditional presentation
-  structure are absent from its native shape. Row-count hints reserve space but
-  cannot reproduce HTML table layout or content-dependent heights universally.
+- Fields, tables, tabs and buttons are separate parts with their own boxes.
+  Disabled controls and buttons are still targets, unlike enabled DOM counts.
+- The patient banner is one part (rule G1 admits one banner box); its fields
+  are styled runs, not separately placed boxes.
+- Row actions are not attached to their table rows; they stay in the row of
+  buttons after the table. Column tracks are equal width, not content-measured,
+  and every cell is a one-line safety scroller rather than a growing cell.
+- Several records shown on one line in today's application (blood-pressure
+  pairs, same-time vital signs, medication tasks) remain separate rows.
 - The fixed-shell fallback and dense safety cards expose local text scrollers;
   the vendor generally uses a longer document. The metric model does not charge
   reading through the complete contents of every local text scroller.

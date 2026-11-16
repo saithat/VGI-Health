@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,readFileSync,writeFileSync,rmSync,readdirSync} from 'node:fs';
 import {join} from 'node:path';
-import {shapeFor,layoutFor,fixedShellFor,viewports} from './generator.mjs';
+import {shapeFor,layoutFor,fixedShellFor,viewports,eraseContent,occurrences} from './generator.mjs';
 import {ReferenceLayouts,native,limitFor} from './admission.mjs';
 import {familyFile} from './cli.mjs';
 import {geometryFor,GeometryMeter} from './geometry.mjs';
@@ -14,10 +14,14 @@ const screen=()=>({screen:'review',banner:[['Patient','Synthetic']],nav:[],title
     {section:{id:'right',title:'History',children:[{info:{comp:'history',label:'History',infoId:'history',display:'table',rows:[]}}]}}]}},
   {button:{comp:'sign',label:'Sign',role:'primary',enabled:false,blockedReason:'Review',hotkey:null}}],side:[],modal:null});
 test('authoring shape agrees with native; three viewport dense family preserves all sources',()=>{
-  const s=screen(),shape=shapeFor(s),references=[{screen:s,layouts:viewports.map(viewport=>({viewport,tree:layoutFor(shape,viewport)}))}];
+  const s=screen();s.workspace[0].columns.children[1].section.children[0].info.rows=[[['Long','short']]];
+  const shape=shapeFor(s),references=[{screen:eraseContent(s),layouts:viewports.map(viewport=>({viewport,tree:layoutFor(shape,viewport)}))}];
   const check=native({op:'family-check',references});assert.deepEqual(check.shapes[0],shape.slots);assert.equal(check.accepted,true);
   s.workspace[0].columns.children[1].section.children[0].info.rows=[[['Long','🧬'.repeat(3000)]]];
-  const out=native({op:'family-paint',references,screen:s});assert.equal(out.accepted,true);assert.ok(out.boxes.some(b=>b.original?.includes('🧬'.repeat(3000))));
+  const out=native({op:'family-paint',references,screen:s});assert.equal(out.accepted,true);assert.ok(out.boxes.some(b=>b.original==='🧬'.repeat(3000)));
+  // Cells are occurrences: a table with another number of cells is another shape.
+  s.workspace[0].columns.children[1].section.children[0].info.rows.push([['Long','second']]);
+  assert.throws(()=>native({op:'family-paint',references,screen:s}),/semantic shape not in admitted family/);
 });
 test('multi-column geometry and row-count reservations are data-independent',()=>{
   const s=screen(),a=shapeFor(s);s.banner[0][1]='Other patient';s.title='Other title';assert.deepEqual(shapeFor(s),a);
@@ -173,4 +177,33 @@ test('content-free geometry receipts are reused and corrupt geometry is regenera
     writeFileSync(join(dir,'paints',`${r.key}.json`),'{}');
     assert.deepEqual(c.geometryPaints(r),first);assert.equal(calls,initial+2);
   }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+test('display parts: erasure keeps the native shape; parts of a node stay together in vendor rows',()=>{
+  const s=screen();s.fieldChoices=[['route',{options:[['PO','By mouth']],showCode:true,allowOther:false}]];s.entryHints=[['dose','Enter mg']];
+  const f=(comp,extra={})=>({field:{comp,label:comp,kind:'qty',value:'5',unit:'mg',provenance:'macro',pendingConfirm:false,humanOnly:false,required:true,...extra}});
+  s.workspace=[{section:{id:'orders',title:'Orders',children:[f('dose',{pendingConfirm:true,humanOnly:true}),f('route',{kind:'code',value:'PO',unit:null}),f('freq')]}},
+    {tabs:{id:'panel',labels:['A','B','C'],selected:1,body:[{info:{comp:'meds',label:'Meds',infoId:'currentMeds',display:'table',
+      rows:[[['Medication','Aspirin'],['Status','active']],[['Medication','Lisinopril'],['Status','held']]]}}]}},
+    {button:{comp:'sign',label:'Sign',role:'primary',enabled:false,blockedReason:'Review',hotkey:'Ctrl+S'}},
+    {button:{comp:'save',label:'Save',role:'secondary',enabled:false,blockedReason:'Nothing to save',hotkey:'Ctrl+D'}}];
+  const shape=shapeFor(s),erased=eraseContent(s);
+  const lean=native({op:'inventory',screen:s}),leanErased=native({op:'inventory',screen:erased});
+  assert.deepEqual(lean.shape,shape.slots);assert.deepEqual(leanErased.shape,lean.shape);assert.deepEqual(shapeFor(erased),shape);
+  assert.deepEqual(occurrences(s).map(o=>[o.path.join('.'),o.role,o.target]),lean.inventory.map(e=>[e.path.join('.'),e.part.role,e.part.target===true]));
+  const c=new ReferenceLayouts(),r=c.get(s);assert.equal(r.denseAccepted,true,JSON.stringify(r.findings));
+  const out=c.paint(r,s),at=p=>out.boxes.find(d=>d.box.info.source?.join('.')===p).box.rect;
+  assert.equal(out.accepted,true);
+  // Fields share one row; each label sits above its control, unit and required marker beside it.
+  assert.equal(at('3.0').y,at('3.1').y);assert.ok(at('3.0.0').y>at('3.0').y && at('3.0.0').x===at('3.0').x);
+  assert.equal(at('3.0.1').y,at('3.0.0').y);assert.ok(at('3.0.1').x>at('3.0.0').x);
+  // Tabs in one row; table caption, header row and value cells in column tracks.
+  assert.equal(at('4.0').y,at('4.2').y);
+  const table='4.3';assert.ok(at(`${table}.0`).y>at(table).y);assert.equal(at(`${table}.0`).y,at(`${table}.1`).y);
+  assert.equal(at(`${table}.2`).x,at(`${table}.0`).x);assert.equal(at(`${table}.3`).x,at(`${table}.1`).x);assert.ok(at(`${table}.4`).y>at(`${table}.2`).y);
+  // A button keeps its reason and hotkey on its row; the commit's reason stays in the body.
+  assert.equal(at('6.0').y,at('6').y);assert.equal(at('6.1').y,at('6').y);assert.ok(at('6.0').x>at('6').x);
+  assert.deepEqual(out.boxes.find(d=>d.box.info.source?.join('.')==='5.0').box.clips[0][0],'reference-body');
+  const geometry=geometryFor(s,out);assert.deepEqual(geometry.components.dose.center,{x:(at('3.0.0').x+at('3.0.0').w/2)/64,y:(at('3.0.0').y+at('3.0.0').h/2)/64});
+  assert.ok(geometry.components['panel#tab:2']);assert.deepEqual(geometry.components.panel,geometry.components['panel#tab:1']);
 });

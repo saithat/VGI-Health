@@ -26,11 +26,12 @@ export function geometryFor(screen,painted,{state='',sample}={}) {
     }
     return {center,reveal:{x,y},chain,offsets};
   }
+  // A component's click point is the part that operates it: a field's control,
+  // a button, a tab target (`id#tab:i`); a tabs node points at its selected tab.
   for(const entry of occurrences(screen)) {
-    const id=entry.value?.comp??entry.value?.id;
-    if(typeof id==='string') {const box=at(entry.path);if(box) components[entry.value?.role==='tab'?`${id}#tab:${entry.path.at(-1)}`:id]=box;}
+    for(const id of entry.ids) {const box=at(entry.path);if(box) components[id]=box;}
     if(entry.kind==='alert' && entry.value.alertId) components[entry.value.alertId]=at(entry.path);
-    if(entry.kind==='tabs') {const index=entry.value.selected;components[id]=at([...entry.path,index]);}
+    if(entry.kind==='tabs') components[entry.value.id]=at([...entry.path,entry.value.selected]);
   }
   return {screen:screen.screen??'',state,...(sample?{sample}:{}),viewport:{width:painted.viewport.w/64,height:painted.viewport.h/64},components,scrollers,clipRects,approximations};
 }

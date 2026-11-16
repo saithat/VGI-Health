@@ -277,8 +277,11 @@ targets and every row was already counted as if it were one. The fixed commit
 row shows the button's label; its blocked reason and hotkey are body rows at
 the button's place. The body is longer: on six release screens the
 occurrences grew from 70–97 to 324–544 and the body from about 3,800–5,400 px
-to 18,000–30,400 px, with the same 25–50 targets. Still missing: tables as
-grids with shared column tracks, the medication time grid, charts as marks,
+to 18,000–30,400 px, with the same 25–50 targets. That is the fixed shell;
+the dense reference layouts ([reference layouts](reference-layouts.md)) place
+the parts as today's application does: labels above controls in field rows,
+table header rows and column tracks, tabs in one row. Still missing:
+content-measured table grids, the medication time grid, charts as marks,
 the multi-patient board, banner fields as boxes, and grouping of several
 records into one line (blood-pressure pairs, same-time vital signs,
 medication tasks), which today's application does in TypeScript.
