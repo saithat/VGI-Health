@@ -27,11 +27,18 @@ test('native and WASM program/family paint are byte-identical across P1/P3 scree
       const render={spec,program,...projection,user,state};
       const screen=ehr('render-ui',render);
       for(const viewport of [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}]) {
-        for(const request of [{op:'program-paint',render,viewport},{op:'family-paint',screen,references:[{screen}],viewport}]) {
+        // Navigation links and tabs are counted targets. The two-pane family
+        // reference layout shows up to 20 at once on these screens, so its
+        // request names a limit; at the default of 15 it may be refused, by G10 only.
+        for(const request of [{op:'program-paint',render,viewport},{op:'family-paint',screen,references:[{screen}],viewport,maxTargetsPerViewport:57}]) {
           const expected=layout(request),start=performance.now(),actual=wasm.call('ehr_layout',JSON.stringify(request));
           const elapsed=performance.now()-start;
           assert.equal(actual,expected,`${persona}/${screenId}/${request.op}/${viewport.w}`);
           assert.equal(JSON.parse(actual).accepted,true);
+          if(request.op==='family-paint') {
+            const strict=JSON.parse(layout({...request,maxTargetsPerViewport:15}));
+            assert.ok(strict.accepted||strict.findings.filter(f=>!f.warning).every(f=>f.rule==='G10'),`${persona}/${screenId}`);
+          }
           if(request.op==='program-paint') times.push({persona,screen:screenId,width:viewport.w/64,ms:elapsed});
         }
       }

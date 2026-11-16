@@ -722,8 +722,18 @@ private theorem pinnedSlot_true : pinnedSlot true = fun s => s.region == .urgent
 private theorem pinnedSlot_false : pinnedSlot false = fun _ => false := by
   funext s; simp [pinnedSlot]
 
+/-- A body row of the shell: an ordinary occurrence that is not pinned. `side`
+selects the navigation and side occurrences. -/
+def bodySlot (fit side : Bool) (s : SlotShape) : Bool :=
+  ordinaryRegion s && !pinnedSlot fit s && ((s.region == .side) == side)
+
+/-- New specification for owner review: the body lists the title, the
+workspace and any unpinned urgent occurrences first, then the navigation and
+side occurrences. Each navigation link is now a row of its own, so the
+navigation follows the workspace instead of preceding it. -/
 def splitShape (shape : ScreenShape) : Parts :=
-  ⟨shape.headD default,shape.filter (fun s => ordinaryRegion s && !pinnedSlot (stripFits shape) s),
+  ⟨shape.headD default,
+    shape.filter (bodySlot (stripFits shape) false) ++ shape.filter (bodySlot (stripFits shape) true),
     shape.find? (fun s => s.region == .footer),
     shape.filter (fun s => s.region == .modal),shape.filter (pinnedSlot (stripFits shape))⟩
 def Parts.slots (p : Parts) : ScreenShape :=

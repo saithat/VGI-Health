@@ -70,11 +70,9 @@ theorem urgent_entry (screen : UiScreen) (k : Nat) (node : UiNode)
   refine ⟨(semanticNodes node, Range.urgentRoot screen + k), ?_, ?_⟩
   · apply List.mem_zipIdx_iff_getElem?.mpr
     rw [List.getElem?_map]
-    have length : ([UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v)),
-        .text screen.title, .text (String.intercalate "  " (screen.nav.map fun (title,items) =>
-          title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side ++
+    have length : (chromeNodes screen ++ screen.workspace ++ screen.side ++
         screen.modal.toList).length = Range.urgentRoot screen := by
-      simp [Range.urgentRoot]
+      simp [Range.urgentRoot,chromeNodes]
       omega
     rw [List.getElem?_append_right (by rw [length]; omega), length]
     simp [hk]

@@ -83,3 +83,21 @@ test('fixed-shell density counts the commit and pinned strip targets with every 
   for(const r of rows) { const o=r.box.rect.y+r.box.rect.h-1-clip.y; worst=Math.max(worst,rows.filter(q=>q.box.rect.y<clip.y+clip.h+o&&q.box.rect.y+q.box.rect.h>clip.y+o).length); }
   assert.equal(worst,12);assert.ok(worst+fixed.length<=15);
 });
+test('navigation links and tabs are separate target boxes; the signed-in clinician is in the banner',()=>{
+  const chrome={...screen(2),viewer:'Registered nurse',nav:[['Chart',[['goOrders','Orders'],['goNotes','Notes']]],['Tools',[['goSearch','Search']]]]};
+  chrome.workspace.unshift({tabs:{id:'panel',labels:['Vitals','Labs','Notes'],selected:1,body:[{text:{s:'Labs body'}}]}});
+  const out=run(chrome);assert.equal(out.accepted,true,JSON.stringify(out.findings));
+  const at=path=>out.boxes.find(d=>d.box.info.source?.join('.')===path);
+  assert.ok(at('0').original.endsWith('Signed in: Registered nurse'));
+  assert.deepEqual(['2','2.0','2.1'].map(p=>[at(p).box.info.target,at(p).original]),[[false,'Navigation'],[false,'Chart'],[false,'Tools']]);
+  for(const [path,label] of [['2.0.0','Orders'],['2.0.1','Notes'],['2.1.0','Search'],['3.0','Vitals'],['3.1','Labs'],['3.2','Notes']]) {
+    const d=at(path);assert.equal(d.box.info.target,true,path);assert.equal(d.original,label);
+    assert.ok(d.box.rect.w>=1536&&d.box.rect.h>=1536);
+  }
+  assert.equal(at('3').box.info.target,false);assert.equal(at('3.3').original,'Labs body');
+  // Targets do not overlap, and the navigation follows the workspace in the body.
+  const targets=out.boxes.filter(d=>d.box.info.target);
+  for(const a of targets) for(const b of targets) if(a!==b) assert.equal(overlap(a.box.rect,b.box.rect),false);
+  assert.ok(at('2').box.rect.y>at('5').box.rect.y);
+  assert.ok(at('2.0.0').box.rect.y>at('2').box.rect.y);
+});

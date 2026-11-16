@@ -18,7 +18,7 @@ def reviewFamily : Family := [reviewCandidate]
 
 theorem review_shape_payload_independent (banner rows enabled reason) :
     screenShape (reviewScreen banner rows enabled reason) = reviewShape := by
-  simp [reviewShape, screenShape, reviewScreen, screenNodes, prefixChildren, semanticNodes, semanticTarget, semanticCommit]
+  simp [reviewShape, screenShape, reviewScreen, screenNodes, chromeNodes, bannerNode, navNode, prefixChildren, semanticNodes, semanticTarget, semanticCommit]
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 4000000 in

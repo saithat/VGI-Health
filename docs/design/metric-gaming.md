@@ -218,14 +218,15 @@ states; one synthetic patient):
 
 | Programs | First viewport | Densest scroll window with fixed targets |
 |---|---|---|
-| Release personas v1–v3 | 7–10 | 13–14 (12 rows and the commit, or with a strip target) |
+| Release personas v1–v3 | 9–11 | 13–14 (12 rows and the commit, or with a strip target) |
 | Release canonical v1–v3 | 10 | 15 |
 | `runs/core-10day` shipped revisions | 8–11 | 13–15 (P5 `w6Schedule`) |
 | W1 research port (`w1Sign`) | ≤ 10 | ≤ 10 |
 
 The persona row was measured again after scroll windows began to include fixed
-targets and the shell reserved its pinned urgent strip; the other rows are the
-earlier window-only measurements on the taller body.
+targets, the shell reserved its pinned urgent strip, and navigation links and
+tabs became targets of their own; the other rows are the earlier window-only
+measurements on the taller body.
 
 The default is 15, the largest release count. **Finding:** 15 equals the fixed
 shell's capacity, so no program can fail G10 at the default. Density on that

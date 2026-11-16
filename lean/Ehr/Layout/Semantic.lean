@@ -7,13 +7,25 @@ open Lean Ehr.Render
 def prefixChildren (children : List (List (List Nat × UiNode))) : List (List Nat × UiNode) :=
   children.zipIdx.flatMap fun (es,i) => es.map fun (path,node) => (i::path,node)
 
+/-- New specification for owner review: one target occurrence per tab label,
+so each tab has its own box under G3 and counts under G10. The occurrence is
+a button with role `tab` carrying the tabs' component id; its position among
+the children is the tab index. -/
+def tabNodes (id : String) (labels : List String) : List UiNode :=
+  labels.map fun label => .button id label "tab" true none none
+
 /-- Every UiNode occurrence, including wrappers and selected-tab bodies. Paths
-identify occurrences even when two nodes have identical component IDs/text. -/
+identify occurrences even when two nodes have identical component IDs/text.
+
+New specification for owner review: the children of a tabs node are its tab
+targets (`tabNodes`) followed by the selected body. -/
 def semanticNodes (node : UiNode) : List (List Nat × UiNode) :=
   ([],node) :: (match node with
   | .board _ cs | .datedTimeline _ _ _ cs | .timeline _ cs | .presentation _ cs
   | .valueSet _ _ cs | .chartReferences _ cs | .rowAction _ _ cs
-  | .section _ _ cs | .columns cs | .tabs _ _ _ cs => prefixChildren (cs.map semanticNodes)
+  | .section _ _ cs | .columns cs => prefixChildren (cs.map semanticNodes)
+  | .tabs id labels _ cs =>
+    prefixChildren ((tabNodes id labels).map (fun tab => [([],tab)]) ++ cs.map semanticNodes)
   | .patientPane _ _ _ cs modal =>
     prefixChildren (cs.map semanticNodes ++ modal.map semanticNodes)
   | _ => [])
@@ -51,9 +63,27 @@ def semanticCommit : UiNode → Bool
   | .button _ _ "primary" _ _ _ => true
   | _ => false
 
+/-- The banner occurrence: the patient fields and, new specification for owner
+review, the signed-in clinician (`viewer?`), which the application shows in
+the same banner. It was missing from the inventory. -/
+def bannerNode (screen : UiScreen) : UiNode :=
+  .text (String.intercalate "  " ((screen.banner.map fun (k,v) => k ++ ": " ++ v) ++
+    (screen.viewer?.map ("Signed in: " ++ ·)).toList))
+
+/-- New specification for owner review: the navigation as occurrences: one
+wrapper, one heading per group and one target per link (a button with role
+`nav`, as in `uiNavAtoms`). It was one combined text occurrence, so G3 and G10
+never saw the individual links. -/
+def navNode (nav : List (String × List (String × String))) : UiNode :=
+  .section "navigation" "Navigation" (nav.map fun (title,items) =>
+    .section title title (items.map fun (id,label) => .button id label "nav" true none none))
+
+/-- The three roots before the workspace: banner, title, navigation. -/
+def chromeNodes (screen : UiScreen) : List UiNode :=
+  [bannerNode screen, .text screen.title, navNode screen.nav]
+
 def screenNodes (screen : UiScreen) : List (List Nat × UiNode) :=
-  prefixChildren (([UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v)),
-    .text screen.title, .text (String.intercalate "  " (screen.nav.map fun (title,items) => title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side ++
+  prefixChildren ((chromeNodes screen ++ screen.workspace ++ screen.side ++
     screen.modal.toList ++ screen.urgent?.getD []).map semanticNodes)
 
 /-- Erased semantic placement class. Content, labels, values, row counts and
@@ -119,7 +149,7 @@ theorem screenShape_flat_length (n : Nat) : (screenShape (flatScreen n)).length 
     calc
       _ = (((List.replicate n [(([] : List Nat), UiNode.text "")]).zipIdx 3).map Prod.fst).map List.length := by simp only [List.map_map, Function.comp_def]
       _ = _ := by simp [List.zipIdx_map_fst]
-  simp [screenShape, flatScreen, screenNodes, prefixChildren, semanticNodes,
+  simp [screenShape, flatScreen, screenNodes, chromeNodes, bannerNode, navNode, prefixChildren, semanticNodes,
     List.length_flatMap, hm, List.sum_replicate_nat, Nat.add_comm]
   omega
 

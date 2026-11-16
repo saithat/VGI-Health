@@ -153,7 +153,17 @@ clipping, paint and accessibility behavior; the differential validates samples,
 not those assumptions universally.
 
 `Semantic.portScreen` maps every `UiNode` occurrence, including wrappers, to a
-unique path and retains user-facing labels, values and rows in safety-classified text. W1 signing
+unique path and retains user-facing labels, values and rows in safety-classified text.
+*New specification for owner review:* the inventory (`screenNodes`) exposes
+every control the user can operate as an occurrence of its own. The navigation
+root (`navNode`) is a wrapper, one heading per group and one target per link;
+a tabs node lists one target per tab label (`tabNodes`) before its selected
+body; section toggles were already child buttons. Each is therefore a separate
+box under G3 (24×24 px, separated) and counts under G10. The banner occurrence
+(`bannerNode`) also carries the signed-in clinician (`viewer?`), which was
+missing from the inventory. The first three roots are still banner, title and
+navigation, so workspace paths start at `[3]` as before; the body of a tabs
+node now starts after its tab targets. W1 signing
 uses a persistent slate banner, blue commit control, fixed review scroller and
 interruptive layers. It is a semantic prototype: fields/review rows are text
 cards, not a close visual/interactive reproduction of today's EHR widgets.
@@ -274,6 +284,9 @@ occurrences and at most six pinned rows. Its conjunction is G1–G9. `Shell.cert
 current-task source and proves its target, commit and fixed visibility flags at
 1440×900, including under a modal. All strings remain unbounded scroll text.
 
+The body lists the title, the workspace and any unpinned urgent occurrences
+first, then the navigation and side occurrences: with one row per link, the
+navigation follows the workspace instead of preceding it.
 The commit is a fixed 24px row at y=104px, below the banner ending at 104px.
 The band from 128px to 272px holds the pinned urgent strip: six fixed 24px
 rows. The body scroller starts at 272px. The commit meets the unchanged 24px
@@ -434,9 +447,15 @@ limit. `ui-port-audit` reports `firstViewportTargets` and `maxWindowTargets` per
 probed state, and `--all-variants` probes every screen with the group, tab and
 alert variants.
 
-The release programs reach 10 targets in the first viewport and 14 at a scroll
+The release programs reach 11 targets in the first viewport and 14 at a scroll
 position (12 body rows, the fixed commit and a strip target), and the shell's
-proved capacity equals the default limit, so no fixed-shell program can fail it. Density on the fixed shell becomes scrolling. G10 constrains custom
+proved capacity equals the default limit, so no fixed-shell program can fail it.
+Counting each navigation link and tab does not change that bound, because they
+are body rows. The two-pane family reference layout (`compileShape`) has no
+such bound: with its navigation pane beside the review pane it shows 16 to 20
+targets at once on three of six sampled release screens, so `family-paint`
+without explicit layouts refuses those screens at the default limit of 15 and
+needs the screen's own limit. Density on the fixed shell becomes scrolling. G10 constrains custom
 layouts and any lower limit. A limit below 15 refuses every program, since the
 program decision is static.
 

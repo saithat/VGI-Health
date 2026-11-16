@@ -89,7 +89,15 @@ theorem semanticNodes_unique (node : UiNode) : (paths (semanticNodes node)).Nodu
   | rowAction target row cs ih => simpa only [semanticNodes] using wrap_unique (.rowAction target row cs) cs ih
   | «section» id title cs ih => simpa only [semanticNodes] using wrap_unique (.section id title cs) cs ih
   | columns cs ih => simpa only [semanticNodes] using wrap_unique (.columns cs) cs ih
-  | tabs id labels selected cs ih => simpa only [semanticNodes] using wrap_unique (.tabs id labels selected cs) cs ih
+  | tabs id labels selected cs ih =>
+    simp only [semanticNodes]
+    refine List.nodup_cons.mpr ⟨prefix_no_nil 0 _,prefix_unique 0 _ ?_⟩
+    intro es hes
+    rcases List.mem_append.mp hes with tab | body
+    · obtain ⟨node,_,rfl⟩ := List.mem_map.mp tab
+      simp [paths]
+    · obtain ⟨node,member,rfl⟩ := List.mem_map.mp body
+      exact ih node member
   | nil => rename_i child member; cases member
   | cons node cs ih im =>
     rename_i child member
@@ -109,12 +117,13 @@ theorem screenShape_unique (screen : UiScreen) : (shapeSources (screenShape scre
   exact screenNodes_unique screen
 
 
-/-- Body rows, the commit, the modal layer and the pinned strip partition every
-shape without a second banner. `fit` says whether the strip is pinned; an
-unpinned urgent occurrence is a body row. -/
+/-- Body rows (workspace first, then navigation and side), the commit, the
+modal layer and the pinned strip partition every shape without a second
+banner. `fit` says whether the strip is pinned; an unpinned urgent occurrence
+is a body row. -/
 private theorem regions_partition (fit : Bool) (shape : ScreenShape)
     (noBanner : ∀ slot ∈ shape, slot.region ≠ .banner) :
-    shape.Perm (shape.filter (fun s => Shell.ordinaryRegion s && !Shell.pinnedSlot fit s) ++
+    shape.Perm ((shape.filter (Shell.bodySlot fit false) ++ shape.filter (Shell.bodySlot fit true)) ++
       (shape.filter (fun s => s.region == .footer) ++
         (shape.filter (fun s => s.region == .modal) ++ shape.filter (Shell.pinnedSlot fit)))) := by
   apply List.perm_iff_count.mpr
@@ -129,7 +138,8 @@ private theorem regions_partition (fit : Bool) (shape : ScreenShape)
   simp only [List.count_append, key]
   by_cases mem : a ∈ shape
   · have nb := noBanner a mem
-    cases reg : a.region <;> cases fit <;> simp_all [Shell.ordinaryRegion, Shell.pinnedSlot]
+    cases reg : a.region <;> cases fit <;>
+      simp_all [Shell.bodySlot, Shell.ordinaryRegion, Shell.pinnedSlot]
   · simp [List.count_eq_zero.mpr mem]
 
 private theorem filter_find (shape : ScreenShape) (p : SlotShape → Bool)
@@ -153,9 +163,12 @@ private theorem fits_of_shape (b : SlotShape) (rest : ScreenShape)
   · refine ⟨bannerRegion,bannerTarget,?_,?_,?_,modalSmall,?_,(Shell.pinned_small (b::rest)).1,
       (Shell.pinned_small (b::rest)).2⟩
     · intro slot hs
-      have h := (List.mem_filter.mp hs).2
-      simp only [Bool.and_eq_true] at h
-      simpa [Shell.ordinaryRegion,Bool.and_eq_true,and_assoc] using h.1
+      have ordinary : Shell.ordinaryRegion slot = true := by
+        rcases List.mem_append.mp hs with hs | hs <;>
+          · have h := (List.mem_filter.mp hs).2
+            simp only [Shell.bodySlot,Bool.and_eq_true] at h
+            exact h.1.1
+      simpa [Shell.ordinaryRegion,Bool.and_eq_true,and_assoc] using ordinary
     · intro slot hs
       have found : (b::rest).find? (fun s => s.region == .footer) = some slot := Option.mem_def.mp hs
       have member := List.mem_of_find?_eq_some found
@@ -171,8 +184,8 @@ private theorem fits_of_shape (b : SlotShape) (rest : ScreenShape)
     have partition := regions_partition (Shell.stripFits (b::rest)) rest noBanner
     have found := filter_find rest (fun s => s.region == .footer)
       (by simpa [bannerRegion] using footerSmall)
-    simpa [Shell.Parts.slots,Shell.splitShape,List.filter_cons,Shell.ordinaryRegion,Shell.pinnedSlot,
-      bannerRegion,found] using (partition.cons b).symm
+    simpa [Shell.Parts.slots,Shell.splitShape,List.filter_cons,Shell.bodySlot,Shell.ordinaryRegion,
+      Shell.pinnedSlot,bannerRegion,found] using (partition.cons b).symm
 
 /-- A normalization of the existing shape adapter, definitionally equal to it.
 Keeping it here makes every range argument depend on the actual adapter. -/
@@ -325,12 +338,10 @@ private theorem prefix_filter_single (k : Nat) (entries : List Entry) :
   simp [hpath,eq]
 
 def beforeModal (screen : UiScreen) : List UiNode :=
-  [UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v)),
-   .text screen.title,.text (String.intercalate "  " (screen.nav.map fun (title,items) =>
-     title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side
+  chromeNodes screen ++ screen.workspace ++ screen.side
 private theorem before_length (screen : UiScreen) :
     (beforeModal screen).length = 3+screen.workspace.length+screen.side.length := by
-  simp [beforeModal]
+  simp [beforeModal,chromeNodes]
   omega
 
 private theorem screen_parts (screen : UiScreen) (node : UiNode) (hm : screen.modal = some node) :
@@ -339,9 +350,7 @@ private theorem screen_parts (screen : UiScreen) (node : UiNode) (hm : screen.mo
        prefixAt (4+screen.workspace.length+screen.side.length) ((screen.urgent?.getD []).map semanticNodes)) := by
   change prefixAt 0 _ = _
   have listEq :
-      (([UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v)),
-        .text screen.title,.text (String.intercalate "  " (screen.nav.map fun (title,items) =>
-          title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side ++
+      ((chromeNodes screen ++ screen.workspace ++ screen.side ++
         screen.modal.toList ++ screen.urgent?.getD []).map semanticNodes) =
       (beforeModal screen).map semanticNodes ++ ([semanticNodes node] ++ (screen.urgent?.getD []).map semanticNodes) := by
     simp [beforeModal,hm,List.map_append,List.append_assoc]
@@ -396,12 +405,11 @@ private theorem modal_small (screen : UiScreen) (small : SmallModal screen) :
 
 private theorem screen_first (screen : UiScreen) :
     ∃ rest, screenShape screen = ⟨[0],false,.banner,1⟩ :: rest := by
-  let initial := UiNode.text (String.intercalate "  " (screen.banner.map fun (k,v) => k ++ ": " ++ v))
-  let remaining := ([UiNode.text screen.title,.text (String.intercalate "  " (screen.nav.map fun (title,items) =>
-    title ++ ": " ++ String.intercalate " | " (items.map Prod.snd)))] ++ screen.workspace ++ screen.side ++
+  let initial := bannerNode screen
+  let remaining := ([UiNode.text screen.title,navNode screen.nav] ++ screen.workspace ++ screen.side ++
     screen.modal.toList ++ screen.urgent?.getD []).map semanticNodes
   have head : screenNodes screen = ([0],initial) :: prefixAt 1 remaining := by
-    simp [screenNodes,prefixChildren,prefixAt,initial,remaining,List.map_append,
+    simp [screenNodes,chromeNodes,bannerNode,prefixChildren,prefixAt,initial,remaining,List.map_append,
       List.zipIdx_append,List.flatMap_append,List.append_assoc,semanticNodes]
   rw [screenShape_normal,head,List.map_cons]
   exact ⟨_,rfl⟩

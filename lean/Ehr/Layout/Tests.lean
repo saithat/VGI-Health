@@ -139,4 +139,31 @@ private def portAll (screen : Ehr.Render.UiScreen) : Bool := viewports.all fun v
 #guard portAll (urgentScreen 0 true)
 #guard ((boxes desk (portScreen desk (urgentScreen 2 true)).1).filter (·.info.urgent)).all
   fun p => p.clips.isEmpty && p.rect.y ≥ 11264 && p.rect.bottom ≤ 11264 + 3*2048
+
+/-! Navigation links, tabs and the signed-in clinician in the semantic
+inventory; new specification for owner review. -/
+private def chromeScreen : Ehr.Render.UiScreen :=
+  { banner := [("Patient","Synthetic")], viewer? := some "Registered nurse", title := "Visit",
+    nav := [("Chart",[("goOrders","Orders"),("goNotes","Notes")]),("Tools",[("goSearch","Search")])],
+    workspace := [.tabs "panel" ["Vitals","Labs","Notes"] 1 [.field "note" "Note" "text" none none none false false false],
+      .section "group" "Group" [.button "group" "Collapse section" "toggle" true none none]],
+    side := [], modal := none }
+private def slotAt (path : List Nat) : Option SlotShape := (screenShape chromeScreen).find? (·.path == path)
+-- The banner text carries the signed-in clinician.
+#guard sourceValue chromeScreen [0] == "Patient: Synthetic  Signed in: Registered nurse"
+-- Navigation: a wrapper, a heading per group, and one target per link, all in the side region.
+#guard (slotAt [2]).map (fun s => (s.target,s.region)) == some (false,.side)
+#guard (slotAt [2,0]).map (fun s => (s.target,s.region)) == some (false,.side)
+#guard [[2,0,0],[2,0,1],[2,1,0]].all fun path => (slotAt path).map (fun s => (s.target,s.region)) == some (true,.side)
+#guard [[2,0,0],[2,0,1],[2,1,0]].map (sourceValue chromeScreen) == ["Orders","Notes","Search"]
+-- Tabs: the wrapper, then one target per label, then the selected body.
+#guard (slotAt [3]).map (·.target) == some false
+#guard [[3,0],[3,1],[3,2]].all fun path => (slotAt path).map (·.target) == some true
+#guard [[3,0],[3,1],[3,2]].map (sourceValue chromeScreen) == ["Vitals","Labs","Notes"]
+#guard sourceValue chromeScreen [3] == "Vitals | Labs | Notes (selected 2)"
+#guard (sourceValue chromeScreen [3,3]).startsWith "Note:"
+-- A section toggle was already its own target occurrence (a child button).
+#guard (slotAt [4,0]).map (·.target) == some true
+#guard ((screenShape chromeScreen).filter (·.target)).length == 8
+#guard ((screenNodes chromeScreen).map Prod.fst).Nodup
 end Ehr.Layout.Tests

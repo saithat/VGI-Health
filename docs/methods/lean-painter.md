@@ -79,9 +79,11 @@ completed value. Guard refusals and service feedback appear in a live status
 region. Painting must succeed before a screen enters the command journal;
 layout refusal makes the root inert and blocks queued interactions.
 
-The one tab source rectangle becomes one button: pointer activation cycles
-choices; arrows/Home/End move its candidate and Enter/Space activate through
-`Keyboard.tabs`. This is a simpler chooser, not an APG tablist. Native selects
+Each tab is its own Lean target box and its own button with role `tab`:
+clicking it sends `selectTab` with its index; arrows/Home/End move focus among
+the sibling tabs through `Keyboard.tabs`, and Enter/Space activate the focused
+tab. Tab panels are not yet related to their tabs by ARIA. Each navigation
+link is likewise its own target box and button. Native selects
 use `Keyboard.listbox` for Up/Down/Home/End and retain native popup/type-ahead
 behavior. Interruptive alert dialogs use `Keyboard.alertDialog`: Tab/Shift+Tab
 stay inside, ordinary controls are blocked, and the invoking focus is restored
@@ -93,16 +95,14 @@ interruptive boxes. A proper per-cell grid is missing: its cells have no
 separate Lean rectangles. The WASM keyboard API nevertheless exposes and tests
 all five profiles without reimplementing their transitions in TypeScript.
 
-**Admission limitation.** The reference semantic inventory classifies only
-fields and buttons as targets. Its combined navigation string and tabs wrapper
-are text sources. Their single-box native choosers do not obtain target-density
-or APG fidelity guarantees from that existing classification. Likewise an
-implicit pending-field confirmation reuses the field's target rectangle rather
-than inventing another target. Geometry/text agreement does not prove control
-fidelity or accessibility. Resolving navigation/tab target classification,
-separate tab/cell rectangles, nested pane modalities and richer widget geometry
-would require changes beyond API plumbing; none are made here. These are
-cut-over blockers, not grounds for weakening G1–G11.
+**Admission limitation.** The semantic inventory now has one target occurrence
+per navigation link, per tab and per section toggle, so the size, separation
+and density rules see every one of them. An implicit pending-field confirmation
+still reuses the field's target rectangle rather than inventing another
+target, and grid cells have no rectangles of their own. Geometry/text
+agreement does not prove control fidelity or accessibility. Separate cell
+rectangles, nested pane modalities and richer widget geometry remain cut-over
+blockers, not grounds for weakening G1–G11.
 
 ## Widget inventory
 
@@ -117,7 +117,7 @@ covered by the presentation row; their underlying child controls remain present.
 |---|---|---|
 | `section` and collapsible groups | Simpler look | Full heading card; the existing `toggle` child button sends `click`. Lean decides which children remain visible. No host collapse state. |
 | `columns` | Simpler look | Wrapper source and all children retained in Lean's order; no CSS columns. |
-| `tabs` | Simpler look; APG tablist missing | One chooser occupies the supplied rectangle and sends `selectTab`; manual keys call Lean. Separate tab target boxes, roles and panel relationships are required for APG parity. |
+| `tabs` | Works, simpler look | One button per tab in its own Lean target box sends `selectTab` with its index; roles and `aria-selected` are set and arrow keys call Lean. The wrapper card shows all labels and the selection. Panel relationships are still required for APG parity. |
 | `stepper` | Simpler look | Complete steps/current index as Lean semantic text. No invented navigation; current renderer also treats this as a read-only overview. |
 | `field`: text and textarea | Works, simpler look | Native textarea in the field box; typing/composition emits `enter`; full semantic label/value/provenance returns on blur. No auto-growing editor. |
 | `field`: number/quantity/qty and unit | Works, simpler look | Native nonnegative number input, step 0.1; existing unit/tenths conversion. Unit and source remain in the full semantic text. |
@@ -144,7 +144,7 @@ covered by the presentation row; their underlying child controls remain present.
 | `patientPane` | Missing interaction | Banner, metadata, ordinary/modal children retained by source path. Needs patient-scoped event transport, per-pane choice metadata, modal ownership and board shell geometry; disabled here. |
 | `UiScreen.banner`, title and side nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome or patient avatar. |
 | `UiScreen.urgent` nodes | Works, simpler look | Lean pins them in a fixed strip (rule G11): outside every scroller, in the viewport and clear of every other box. The painter keeps strip boxes operable while a modal is open and blocks everything else. A state with more urgent nodes than the layout can pin is refused, not painted. |
-| `UiScreen.nav` | Simpler look; admitted target classification missing | One native chooser in the combined navigation text box sends existing `click` IDs. Requires explicit Lean navigation targets before G3/G10/APG parity can be claimed. |
+| `UiScreen.nav` | Works, simpler look | A heading card per group and one button per link, each in its own Lean target box, sends the existing `click` IDs. In the reference shell the navigation follows the workspace in the body scroller. |
 | Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean `alertDialog` Tab transitions, inert ordinary controls, initial focus and restoration. Escape is ignored by the Lean profile and swallowed by the painter. Board modality remains missing. |
 | Review/sign persistence and draft restoration | Existing live path | Same `createLiveSession`, native screen comparison, guarded command endpoint and database. No alternate save implementation. |
 
@@ -236,9 +236,10 @@ here. Native service replay and durable command writes are exercised.
 
 ## Cut-over checklist
 
-1. Give navigation links, tab labels/panels, grid cells and any additional
-   native control their own semantic targets and checked rectangles. Keep
-   G1–G11 unchanged and prove/check the corresponding layout families.
+1. Navigation links and tab labels have their own semantic targets and checked
+   rectangles. Give tab panels, grid cells and any additional native control
+   theirs. Keep G1–G11 unchanged and prove/check the corresponding layout
+   families.
 2. Complete the missing inventory rows: patient-scoped board sessions and
    modality, custom code suggestions, rich clinical presentations, implicit
    pending-field editing and structured row/grid interaction. Verify every

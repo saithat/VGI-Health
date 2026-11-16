@@ -372,6 +372,42 @@ theorem checkProgramDensity_sound (sp : Ehr.Spec) (program : Ehr.Program)
   refine ⟨painted, paint, realized, ?_⟩
   exact G10_mono (of_decide_eq_true accepted) v _ (render_density sp program facts display user state v painted paint)
 
+/-! Fixed-shell regressions; new specification for owner review. Finite probes
+of the executable definitions; the theorems above are the certificate. -/
+section Regressions
+private def probe (alerts buttons : Nat) (modal : Bool) : UiScreen :=
+  { banner := [("Patient","Synthetic")], viewer? := some "Registered nurse", title := "Orders", side := [],
+    nav := [("Chart",[("goOrders","Orders"),("goNotes","Notes")])],
+    workspace := [.field "dose" "Dose" "text" (some "5") none none false false false,
+      .tabs "panel" ["Vitals","Labs"] 0 [.text "Vitals body"],
+      .button "sign" "Sign" "primary" true none none],
+    modal := if modal then some (.section "notice" "Notice" [.button "notice" "Acknowledge" "ack" true none none]) else none,
+    urgent? := some ((List.range alerts).map (fun i => .alert s!"urgent:{i}" s!"a{i}" s!"Allergy {i}" "interruptive") ++
+      (List.range buttons).map (fun i => .button s!"a{i}" "Acknowledge" "ack" true none none)) }
+private def probeBoxes (screen : UiScreen) : List Placed := Shell.classBoxes desk (screenShape screen)
+private def probeOk (screen : UiScreen) : Bool := viewports.all fun v =>
+  let shape := screenShape screen
+  let ps := Shell.classBoxes v shape
+  Shell.accepts shape && checkAll shellCapacity (shapeSources shape) (urgentPaths shape) v ps &&
+    decide (Linked shape ps)
+-- Up to six urgent occurrences, at most two of them targets, are pinned at every size, also beside a modal.
+#guard probeOk (probe 2 1 false) && probeOk (probe 2 1 true) && probeOk (probe 5 1 true) && probeOk (probe 4 2 false)
+-- Beyond that the shell still satisfies G1–G9 and G10 but not G11.
+#guard !Shell.stripFits (screenShape (probe 6 1 false)) && !Shell.stripFits (screenShape (probe 1 3 false))
+#guard !decide (G11 desk (urgentPaths (screenShape (probe 6 1 false))) (probeBoxes (probe 6 1 false)))
+#guard check (shapeSources (screenShape (probe 6 1 false))) desk (probeBoxes (probe 6 1 false)) &&
+  decide (G10 shellCapacity desk (probeBoxes (probe 6 1 false)))
+-- The strip rows sit between the commit row (104–128 px) and the body (from 272 px).
+#guard ((probeBoxes (probe 2 1 true)).filter (·.info.urgent)).map (fun p => (p.rect.y,p.info.target)) ==
+  [(8192,false),(9728,false),(11264,true)]
+-- Body order: title and workspace first, then the navigation; each link and tab is a target row.
+private def bodyRows (screen : UiScreen) : List (List Nat) :=
+  ((probeBoxes screen).filter (fun p => !p.clips.isEmpty)).filterMap (·.info.source)
+#guard bodyRows (probe 0 0 false) == [[1],[3],[4],[4,0],[4,1],[4,2],[2],[2,0],[2,0,0],[2,0,1]]
+#guard ((probeBoxes (probe 0 0 false)).filter (fun p => p.info.target && !p.clips.isEmpty)).filterMap (·.info.source) ==
+  [[3],[4,0],[4,1],[2,0,0],[2,0,1]]
+end Regressions
+
 #print axioms sorted_window
 #print axioms rows_window
 #print axioms shell_density

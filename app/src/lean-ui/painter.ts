@@ -4,7 +4,6 @@ import { entryEvent } from "../ehr/ui/events";
 import { screenSources, type Source } from "./sources";
 import {
   keyboardKey,
-  type KeyboardState,
   type KeyboardTransition,
   type Drawn,
   type Output,
@@ -23,7 +22,6 @@ interface Entry {
   control?: Control | undefined;
   controlKind?: string;
   textKey?: string;
-  keyboard?: KeyboardState;
 }
 export interface PainterOptions {
   dispatch(event: Event): void;
@@ -38,7 +36,6 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
   let screenId: string | undefined;
   let modalInvoker: HTMLElement | undefined;
   let modalOpen = false;
-  let currentScreen: UiScreen;
   const emit = (event: Event) => options.dispatch(event);
   root.style.position = "relative";
   function place(entry: Entry) {
@@ -87,10 +84,9 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
   }
   function buildControl(entry: Entry, kind: string): Control | undefined {
     let control: Control | undefined;
-    if (kind === "button" || kind === "confirm" || kind === "tabs")
+    if (kind === "button" || kind === "confirm")
       control = document.createElement("button");
-    else if (kind === "select" || kind === "nav")
-      control = document.createElement("select");
+    else if (kind === "select") control = document.createElement("select");
     else if (kind === "textarea") control = document.createElement("textarea");
     else if (kind) {
       const input = document.createElement("input");
@@ -126,11 +122,8 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     };
     control.addEventListener("compositionend", sendValue);
     control.onchange = () => {
-      if (control instanceof HTMLSelectElement) {
-        if (entry.controlKind === "nav") {
-          if (control.value) emit({ click: { comp: control.value } });
-        } else sendValue();
-      } else if (
+      if (control instanceof HTMLSelectElement) sendValue();
+      else if (
         control instanceof HTMLInputElement &&
         control.type === "checkbox"
       )
@@ -139,8 +132,12 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     control.onclick = () => {
       const n = entry.source?.node;
       if (!n || entry.source?.patient) return; // Board dispatch needs a patient-scoped host.
+      const tab = entry.source?.tab;
       if (entry.controlKind === "confirm" && "field" in n)
         emit({ confirm: { comp: n.field.comp } });
+      else if (tab)
+        // Each tab is its own Lean target box; its position is the tab index.
+        emit({ selectTab: { comp: tab.comp, idx: tab.index } });
       else if ("button" in n)
         emit(
           n.button.role === "ack"
@@ -149,59 +146,37 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
               ? { confirm: { comp: n.button.comp } }
               : { click: { comp: n.button.comp } },
         );
-      else if ("tabs" in n) {
-        const state = entry.keyboard ?? {
-          focus: n.tabs.selected,
-          selected: n.tabs.selected,
-          isOpen: true,
-          invoker: "",
-        };
-        // One native button occupies the sole tab source box. Pointer cycles;
-        // arrows + Enter use the manual-activation Lean tabs profile.
-        const next = options.keyboard(
-          "tabs",
-          1,
-          n.tabs.labels.length,
-          state,
-          "right",
-        );
-        entry.keyboard = options.keyboard(
-          "tabs",
-          1,
-          n.tabs.labels.length,
-          next,
-          "enter",
-        );
-        emit({ selectTab: { comp: n.tabs.id, idx: entry.keyboard.selected } });
-      }
     };
     control.onkeydown = (event) => {
       const key = keyboardKey(event),
         n = entry.source?.node;
       if (!key || !n) return;
-      if (
-        "tabs" in n &&
-        ["left", "right", "home", "end", "enter", "space"].includes(key)
-      ) {
+      const tab = entry.source?.tab;
+      if (tab && ["left", "right", "home", "end"].includes(key)) {
+        // Manual activation: arrows move focus among the sibling tab boxes
+        // through the Lean tabs profile; Enter/Space click the focused tab.
         event.preventDefault();
-        const state = entry.keyboard ?? {
-          focus: n.tabs.selected,
-          selected: n.tabs.selected,
-          isOpen: true,
-          invoker: "",
-        };
-        entry.keyboard = options.keyboard(
+        const next = options.keyboard(
           "tabs",
           1,
-          n.tabs.labels.length,
-          state,
+          tab.count,
+          {
+            focus: tab.index,
+            selected: tab.selected,
+            isOpen: true,
+            invoker: "",
+          },
           key,
         );
-        control.title = `${n.tabs.labels[entry.keyboard.focus] ?? ""} (Enter to activate)`;
-        if (key === "enter" || key === "space")
-          emit({
-            selectTab: { comp: n.tabs.id, idx: entry.keyboard.selected },
-          });
+        const parent = entry.drawn.box.info.source?.slice(0, -1).join(".");
+        [...entries.values()]
+          .find(
+            (e) =>
+              e.source?.tab?.comp === tab.comp &&
+              e.source.tab.index === next.focus &&
+              e.drawn.box.info.source?.slice(0, -1).join(".") === parent,
+          )
+          ?.control?.focus({ preventScroll: true });
       } else if (
         control instanceof HTMLSelectElement &&
         ["up", "down", "home", "end"].includes(key) &&
@@ -242,14 +217,6 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       }
       if (!(control instanceof HTMLButtonElement))
         entry.element.dataset.editing = "true";
-      const current = entry.source?.node;
-      if (current && "tabs" in current)
-        entry.keyboard = {
-          focus: current.tabs.selected,
-          selected: current.tabs.selected,
-          isOpen: true,
-          invoker: "",
-        };
     };
     control.onblur = () => {
       delete entry.element.dataset.editing;
@@ -264,13 +231,8 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     const source = entry.source,
       node = source?.node;
     const field = node && "field" in node ? node.field : undefined;
-    const nav =
-      entry.drawn.box.info.source?.join(".") === "2" &&
-      currentScreen.nav.some(([, xs]) => xs.length);
     let kind = "";
     if (node && "button" in node) kind = "button";
-    else if (node && "tabs" in node && node.tabs.labels.length) kind = "tabs";
-    else if (nav) kind = "nav";
     else if (field) {
       const base = field.kind.split(":")[0];
       if (field.pendingConfirm && !explicit.has(field.comp)) kind = "confirm";
@@ -313,25 +275,30 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         ? (node.button.blockedReason ?? original)
         : original;
     control.dataset.compId =
-      field?.comp ??
-      (node && "button" in node
-        ? node.button.comp
-        : node && "tabs" in node
-          ? node.tabs.id
-          : "");
+      field?.comp ?? (node && "button" in node ? node.button.comp : "");
     control.dataset.event = field
       ? kind === "confirm"
         ? "confirm"
         : "enter"
-      : node && "button" in node
-        ? node.button.role === "ack"
+      : source?.tab
+        ? "selectTab"
+        : node && "button" in node && node.button.role === "ack"
           ? "ack"
-          : node.button.role === "confirm"
+          : node && "button" in node && node.button.role === "confirm"
             ? "confirm"
-            : "click"
-        : kind === "tabs"
-          ? "selectTab"
-          : "click";
+            : "click";
+    if (source?.tab) {
+      control.setAttribute("role", "tab");
+      control.setAttribute(
+        "aria-selected",
+        String(source.tab.index === source.tab.selected),
+      );
+      control.dataset.tabIndex = String(source.tab.index);
+    } else {
+      control.removeAttribute("role");
+      control.removeAttribute("aria-selected");
+      delete control.dataset.tabIndex;
+    }
     if (field) {
       control.setAttribute("aria-required", String(field.required));
       if (control instanceof HTMLInputElement && control.type === "checkbox")
@@ -354,24 +321,18 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       }
     }
     if (control instanceof HTMLSelectElement) {
-      const pairs: [string, string][] =
-        kind === "nav"
-          ? [
-              ["", "Choose clinical screen"],
-              ...currentScreen.nav.flatMap(([, xs]) => xs),
-            ]
-          : [
-              ["", "Choose value"],
-              ...(source?.choices.length
-                ? source.choices
-                : (field?.kind
-                    .split(":")
-                    .slice(1)
-                    .join(":")
-                    .split("|")
-                    .filter(Boolean)
-                    .map((s) => [s, s] satisfies [string, string]) ?? [])),
-            ];
+      const pairs: [string, string][] = [
+        ["", "Choose value"],
+        ...(source?.choices.length
+          ? source.choices
+          : (field?.kind
+              .split(":")
+              .slice(1)
+              .join(":")
+              .split("|")
+              .filter(Boolean)
+              .map((s) => [s, s] satisfies [string, string]) ?? [])),
+      ];
       if (field?.value && !pairs.some(([id]) => id === field.value))
         pairs.push([field.value, field.value]);
       const key = JSON.stringify(pairs);
@@ -433,7 +394,6 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
   return {
     patch(screen: UiScreen, output: Output) {
       if (!output.accepted) throw new Error("Lean refused the layout");
-      currentScreen = screen;
       const changed = screenId !== screen.screen;
       if (changed) {
         offsets.clear();
