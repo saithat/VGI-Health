@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "b4a5af8f8216e7246b9bc5bb756ec8e5a8422303d6250fd6805a1eb314444a4e",
+  "leanSourceHash": "7bd2e0034f30b380bd88f21e6c7a729bc6d809a77a71e5149a0164560ae45816",
   "sources": {
     "lean/Audit/SpecSurface.lean": "9149e833ded951dc9aaf66fc8848f2eb3dbe142ec14c885b4d290d8303830cec",
     "lean/CommitProtocol.lean": "5d42e502a3b4016d216becffb7c99bfb2940852167a3948e2273cfea98e295a6",
@@ -155,7 +155,7 @@
     "lean/Ehr/Cli/Commit.lean": "239499c1d694893f4ef1770ffb9f732dc31a7bb51d9737bf46f9e386cce2fb7d",
     "lean/Ehr/Cli/Completion.lean": "725a57cf00700e17ab1b55ab4446eac60bf94346ebbc3ba144077137d058c5e8",
     "lean/Ehr/Cli/Serve.lean": "4822d0e5eed21ff8573ae493843fe8ad054a7c07c7bfe208f9747b7a69123e74",
-    "lean/Ehr/Cli/Sim.lean": "7a00bee4c7bfa4042471c7ba566617a08fd2a5b77a1f182fe1f916aa4be97043",
+    "lean/Ehr/Cli/Sim.lean": "e3329cf1641a31dd3b573133ccd3dbaee2b4fc04919608d9216beba80834edcf",
     "lean/Ehr/Commit/Adt.lean": "25e0cca33f5d170d4cfed0cb75f5e1b3e5ea3a6c73e98e1d2463ea50ee2d6069",
     "lean/Ehr/Commit/AdtTests.lean": "3078fde84818e3777023a984c75a170d93065590ce03d146d6547862cb3068c2",
     "lean/Ehr/Commit/Check.lean": "c96b667b4219f695a8e16512b55de6772260ac7c6f3cefb73bcdd19b7fe6da3b",
@@ -361,9 +361,9 @@
     "lean/Ehr/Sim/Metrics.lean": "d5bd158ee3dc960ed99ce0585cfe50a747465c84c5f1bef384e7b7584ed06e5b",
     "lean/Ehr/Sim/MinClicks.lean": "5e15de9d1f67fb2586ad82731f1ceb7677f317e4c74b7dba31ea5e9a919b5183",
     "lean/Ehr/Sim/MinClicksTests.lean": "e1b89d1b4bc45ec46050a7f8fa972711e397f47b2721aea6839e61251c48c941",
-    "lean/Ehr/Sim/Policy.lean": "608bef92dc88459dc8ccbb1df9d385e63d680b5d060805049c23dacb28f4eb24",
+    "lean/Ehr/Sim/Policy.lean": "658b0f4448d30b4a120dbb9595b32761308ddf9d167ce126e9635254658750b6",
     "lean/Ehr/Sim/PolicyTests.lean": "12328635ba1aebb226beb25d0833cac484c9a7b59404f4322ca50105deeb1e9b",
-    "lean/Ehr/Sim/Resumption/Arrivals.lean": "21f9cdf3b7f12ffab1f8767b372798f5ba0581245d83c4957e6038cb91352cd9",
+    "lean/Ehr/Sim/Resumption/Arrivals.lean": "d26d098c6e40ab3d51f2d8a1215bd35ee42b37a865d59a621fece1eb397a810b",
     "lean/Ehr/Sim/Resumption/Proofs.lean": "6b9992e0c3f3bc368bc26e5f64aa47f22ae0d1150803eee24c7d2cb6cfa1b2f5",
     "lean/Ehr/Sim/Resumption/Tests.lean": "a7beb6e61ebc6ba939882d02beb602751fc3f40ff85c899eb1c8dac93e2c41f2",
     "lean/Ehr/Sim/Resumption/Types.lean": "978e6d3602115048cead97b82986918f6e8fcdab8a6d2a2d2b8b9c30e31ce2ee",
