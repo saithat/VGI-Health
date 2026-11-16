@@ -259,26 +259,24 @@ outer DOM rectangles after clip translations, Lean text line widths and
 independent intrinsic browser glyph advances on the workflow screens. Focused
 native editor glyphs/popups are outside the static-text differential.
 
-Measured results for this implementation, with display parts (each field,
-table and button painted as its parts):
+Measured results for this implementation, with display parts and the dense
+reference layout (v8) on the page:
 
 | Check | Result |
 |---|---|
-| Native/WASM layout, keyboard, formatters and inventory | 5 tests passed; 36 byte-identical paint requests, 65 keyboard comparisons (five profiles), 1,365 formatter comparisons and 2,319 parts on eight P1/P3 screens |
-| Native layout regressions | 34 tests passed, including the TypeScript mirror against Lean's inventory on eight screens |
-| App unit tests | 341 passed; 32 existing opt-in/data-dependent skips |
-| Browser workflows | P1 note + prescription signed; P3 nursing assessment filed; 2 tests passed, one worker, under the shared browser lock |
-| Browser differential | 10 snapshots, 1,698 boxes, 1,722 lines, 26,417 intrinsic glyph advances; rectangle/line worst deviation 0px, glyph worst deviation 0.00005px (tolerance 1/64px) |
-| WASM layout in Chromium | Landing P1 19.3ms / P3 17.8ms; P1 documentation 25.2ms, orders 53.8ms, signing 39.1ms; P3 assessment 31.0ms; other supported-size samples 29.1–38.4ms |
-| WASM layout in Node | Program paint samples 18.59–197.34ms across six screens and three sizes |
-| Lean entry bundle audit | Passed: no React/Mantine modules or chunk markers in the entry's transitive JavaScript |
-| Shared WASM asset | 5,303,436 bytes with display parts and formatters; 5,061,591 with the strengthened layout rules; 4,401,917 before the layout API was exported |
+| Native/WASM layout, keyboard, formatters, inventory, runtime lists | 6 tests passed; 36 byte-identical paint requests, 65 keyboard comparisons, 1,365 formatter comparisons, 2,319 parts on eight P1/P3 screens, wrapped/ellipsis text on twenty strings |
+| Native layout regressions | 34 tests passed; reference generator 21 tests passed |
+| App unit tests | 343 passed; 32 existing opt-in/data-dependent skips |
+| Browser workflows | P1 note + prescription signed; P3 nursing assessment filed; 2 tests passed, one worker; all five page selections used the dense layout |
+| Browser differential | 10 snapshots, 1,718 boxes, 1,922 lines, 26,425 intrinsic glyph advances; rectangle/line worst deviation 0px, glyph worst deviation 1/64px (at the tolerance) |
+| Layout in Chromium (family check on a new shape, then paint) | Landing 30 ms; P1 documentation 62 ms, orders 188 ms, signing 171 ms; P3 assessment 121 ms; other sizes 96–126 ms |
+| Lean entry bundle audit | Passed: no React/Mantine modules or chunk markers |
+| Shared WASM asset | 5,303,396 bytes |
 
-The JavaScript byte sizes of the entry and of the existing app were not
-measured again. Browser timing includes the render/layout API JSON boundary;
-ten samples are not a benchmark distribution. A screen now has four to seven
-times as many boxes as before (one per display part), and layout takes about
-twice as long. The unsupported-viewport test checks inert
+The JavaScript byte sizes were not measured again. Timings are single
+samples. Layout cost grows with the square of the number of boxes; screens
+with very long tables (thousands of parts) were not measured in the browser
+and would take seconds or more. The unsupported-viewport test checks inert
 refusal and recovery. The P1 task includes real sequential typing and caret
 preservation during re-layout. Full React accessibility/screen audits and the
 full Playwright suite were deliberately not run for this separate renderer.

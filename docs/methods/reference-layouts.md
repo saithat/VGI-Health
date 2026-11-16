@@ -272,6 +272,11 @@ would allow a new simulator policy to omit them. No savings from these tables
 should be attributed to a layout agent until these residual differences are
 accounted for.
 
+Checking cost grows with the square of the number of boxes. Screens with long
+tables (the largest retained screen has 10,930 parts) take tens of seconds to
+admit natively; the admission timeout of the report tools can be raised with
+`REFERENCE_NATIVE_TIMEOUT_MS`.
+
 ## Default integration evidence
 
 [Coverage, density, costs, timing and verification](../audits/dense-reference-defaults.md)
