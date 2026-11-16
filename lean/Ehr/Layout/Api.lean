@@ -26,6 +26,8 @@ def dispatch (json : Json) : Except String Json := do
       ("densityTheorem",toJson "Ehr.Layout.Density.checkProgramDensity_sound"),
       ("maxTargetsPerViewport",toJson spec.design.maxTargetsPerViewport),
       ("shellCapacity",toJson Density.shellCapacity),
+      ("stripCapacity",toJson Shell.stripCapacity),
+      ("stripTargetCapacity",toJson Shell.stripTargetCapacity),
       ("findings",toJson (if dense then ([] : List Finding) else
         [{ rule := "G10", metric := "fixed-shell-capacity", actual := Density.shellCapacity,
            required := spec.design.maxTargetsPerViewport,
@@ -44,10 +46,11 @@ def dispatch (json : Json) : Except String Json := do
     let family ← parseFamily refs
     let limit := (json.getObjValAs? Nat "maxTargetsPerViewport").toOption.getD 15
     if (json.getObjValAs? String "op").toOption.getD "" == "family-check" then
-      pure (Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family)),
+      pure (Json.mkObj [("accepted",toJson (Density.acceptFamilyDensity limit family && family.all admitUrgent)),
         ("shapes",toJson (family.map Candidate.shape)),
         ("findings",toJson (family.flatMap fun (c : Candidate) => viewports.flatMap fun (v : Size) =>
-          densityFindings limit v (boxes v (c.tree v))))])
+          densityFindings limit v (boxes v (c.tree v)) ++
+          urgentFindings v (urgentPaths c.shape) (boxes v (c.tree v))))])
     else
       let screen : Ehr.Render.UiScreen ← match json.getObjVal? "render" with
         | .ok r => do pure (Ehr.Render.runRenderUi (← fromJson? r))
@@ -61,11 +64,12 @@ def dispatch (json : Json) : Except String Json := do
     let (n,data,expected) := portScreen viewport screen
     let ps := boxes viewport n
     let errors := contentErrors data ps
-    pure (Json.mkObj [("accepted",toJson (checkDensity limit expected viewport ps && errors.isEmpty)),
+    let urgent := urgentPaths (screenShape screen)
+    pure (Json.mkObj [("accepted",toJson (checkAll limit expected urgent viewport ps && errors.isEmpty)),
       ("viewport",toJson viewport), ("tree",semanticPaintTree screen (layout ⟨{},viewport⟩ n)),
       ("boxes",toJson (ps.map (bindSemantic screen))), ("lineWidths",toJson (ps.map (fun p => drawnLineWidths (bindSemantic screen p)))),
-      ("findings",toJson (findings expected viewport ps ++ densityFindings limit viewport ps ++ errors ++
-        realizationWarnings (ps.map (bindSemantic screen))))])
+      ("findings",toJson (findings expected viewport ps ++ densityFindings limit viewport ps ++
+        urgentFindings viewport urgent ps ++ errors ++ realizationWarnings (ps.map (bindSemantic screen))))])
   else
     let r ← fromJson? json
     runRequest r

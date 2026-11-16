@@ -24,6 +24,7 @@ export const leanBoxSchema = z.object({
       interruptive: z.boolean(),
       banner: z.boolean(),
       commit: z.boolean(),
+      urgent: z.boolean().optional(),
       paint: z.boolean(),
       text: z.json().nullable(),
     }),

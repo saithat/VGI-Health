@@ -26,7 +26,7 @@ A nightly change ships when all of these hold:
    must also complete fully; clicks/scrolls cannot increase and typing/time have
    the same 2% bounds. Popups, overrides, searches and backtracks are not separately gated.
 3. **Formal checks**: properties 1–9 (`lean/Ehr/Props/Properties.lean`), D1–D6
-   (`core-model.md`), the geometry rules G1–G10 (`docs/methods/ui-library.md`),
+   (`core-model.md`), the geometry rules G1–G11 (`docs/methods/ui-library.md`),
    `StabilityBudget`, the R3 copy budget, `AlertBudget` and the identity movement budget.
 4. **Rendered screen gate**: the deployed React painter passes semantic fidelity,
    physical/urgency checks and R5's per-screen vendor-reference target limits at 1440×900.
@@ -203,8 +203,9 @@ below.
   layout requests, ported screens, custom families (`acceptFamilyDensity`) and
   `program-check` (`checkProgramDensity`).
 - The fixed shell that paints every renderer output has a proved capacity of 15
-  (`shell_density`): its 736 px body scroller meets at most 14 rows of 48 px on a
-  56 px pitch, and the fixed commit is counted with every window.
+  (`shell_density`): its 612 px body scroller meets at most 12 rows of 48 px on a
+  56 px pitch, and the fixed commit and up to two pinned urgent-strip targets
+  are counted with every window.
   `checkProgramDensity_sound` gives G10 at the spec's limit, with `Realizes`, for
   every patient, display, user and state.
 - Bad layout: the native test adds 20 buttons to the reference template; it is
@@ -217,13 +218,14 @@ states; one synthetic patient):
 
 | Programs | First viewport | Densest scroll window with fixed targets |
 |---|---|---|
-| Release personas v1–v3 | 10–11 | 13–15 (P5 `w6ConsultClose`, `w6Sign`: 14 rows and the commit) |
+| Release personas v1–v3 | 7–10 | 13–14 (12 rows and the commit, or with a strip target) |
 | Release canonical v1–v3 | 10 | 15 |
 | `runs/core-10day` shipped revisions | 8–11 | 13–15 (P5 `w6Schedule`) |
 | W1 research port (`w1Sign`) | ≤ 10 | ≤ 10 |
 
 The persona row was measured again after scroll windows began to include fixed
-targets; the other rows are the earlier window-only measurements.
+targets and the shell reserved its pinned urgent strip; the other rows are the
+earlier window-only measurements on the taller body.
 
 The default is 15, the largest release count. **Finding:** 15 equals the fixed
 shell's capacity, so no program can fail G10 at the default. Density on that

@@ -109,29 +109,28 @@ theorem screenShape_unique (screen : UiScreen) : (shapeSources (screenShape scre
   exact screenNodes_unique screen
 
 
-private theorem regions_partition (shape : ScreenShape)
+/-- Body rows, the commit, the modal layer and the pinned strip partition every
+shape without a second banner. `fit` says whether the strip is pinned; an
+unpinned urgent occurrence is a body row. -/
+private theorem regions_partition (fit : Bool) (shape : ScreenShape)
     (noBanner : ∀ slot ∈ shape, slot.region ≠ .banner) :
-    shape.Perm (shape.filter Shell.ordinaryRegion ++
-      (shape.filter (fun s => s.region == .footer) ++ shape.filter (fun s => s.region == .modal))) := by
-  induction shape with
-  | nil => simp
-  | cons slot rest ih =>
-    have nb := noBanner slot (by simp)
-    have hr : ∀ s ∈ rest, s.region ≠ .banner := fun s hs => noBanner s (by simp [hs])
-    have h := ih hr
-    cases reg : slot.region with
-    | banner => exact False.elim (nb reg)
-    | title | body | side =>
-      simpa [List.filter_cons,Shell.ordinaryRegion,reg] using h.cons slot
-    | footer =>
-      simpa [List.filter_cons,Shell.ordinaryRegion,reg] using
-        (h.cons slot).trans (List.perm_middle.symm)
-    | modal =>
-      have moved := (List.perm_middle (a := slot)
-        (l₁ := rest.filter Shell.ordinaryRegion ++ rest.filter (fun s => s.region == .footer))
-        (l₂ := rest.filter (fun s => s.region == .modal))).symm
-      simpa [List.filter_cons,Shell.ordinaryRegion,reg,List.append_assoc] using (h.cons slot).trans
-        (by simpa only [List.append_assoc] using moved)
+    shape.Perm (shape.filter (fun s => Shell.ordinaryRegion s && !Shell.pinnedSlot fit s) ++
+      (shape.filter (fun s => s.region == .footer) ++
+        (shape.filter (fun s => s.region == .modal) ++ shape.filter (Shell.pinnedSlot fit)))) := by
+  apply List.perm_iff_count.mpr
+  intro a
+  have key : ∀ p : SlotShape → Bool,
+      List.count a (shape.filter p) = if p a = true then List.count a shape else 0 := by
+    intro p
+    by_cases h : p a = true
+    · rw [ite_eq_left h, List.count_filter h]
+    · rw [ite_eq_right h]
+      exact List.count_eq_zero.mpr (fun m => h (List.mem_filter.mp m).2)
+  simp only [List.count_append, key]
+  by_cases mem : a ∈ shape
+  · have nb := noBanner a mem
+    cases reg : a.region <;> cases fit <;> simp_all [Shell.ordinaryRegion, Shell.pinnedSlot]
+  · simp [List.count_eq_zero.mpr mem]
 
 private theorem filter_find (shape : ScreenShape) (p : SlotShape → Bool)
     (small : (shape.filter p).length ≤ 1) : (shape.find? p).toList = shape.filter p := by
@@ -151,10 +150,12 @@ private theorem fits_of_shape (b : SlotShape) (rest : ScreenShape)
     (modalSmall : ((b::rest).filter (fun s => s.region == .modal)).length ≤ 2)
     (unique : (shapeSources (b::rest)).Nodup) : Shell.Fits (b::rest) := by
   constructor
-  · refine ⟨bannerRegion,bannerTarget,?_,?_,?_,modalSmall⟩
+  · refine ⟨bannerRegion,bannerTarget,?_,?_,?_,modalSmall,?_,(Shell.pinned_small (b::rest)).1,
+      (Shell.pinned_small (b::rest)).2⟩
     · intro slot hs
       have h := (List.mem_filter.mp hs).2
-      simpa [Shell.ordinaryRegion,Bool.and_eq_true,and_assoc] using h
+      simp only [Bool.and_eq_true] at h
+      simpa [Shell.ordinaryRegion,Bool.and_eq_true,and_assoc] using h.1
     · intro slot hs
       have found : (b::rest).find? (fun s => s.region == .footer) = some slot := Option.mem_def.mp hs
       have member := List.mem_of_find?_eq_some found
@@ -162,11 +163,15 @@ private theorem fits_of_shape (b : SlotShape) (rest : ScreenShape)
       exact ⟨reg,footerTarget slot member reg⟩
     · intro slot hs
       simpa using (List.mem_filter.mp hs).2
+    · intro slot hs
+      have h := (List.mem_filter.mp hs).2
+      simp only [Shell.pinnedSlot,Bool.and_eq_true,beq_iff_eq] at h
+      exact h.2
   · refine ⟨?_,unique⟩
-    have partition := regions_partition rest noBanner
+    have partition := regions_partition (Shell.stripFits (b::rest)) rest noBanner
     have found := filter_find rest (fun s => s.region == .footer)
       (by simpa [bannerRegion] using footerSmall)
-    simpa [Shell.Parts.slots,Shell.splitShape,List.filter_cons,Shell.ordinaryRegion,
+    simpa [Shell.Parts.slots,Shell.splitShape,List.filter_cons,Shell.ordinaryRegion,Shell.pinnedSlot,
       bannerRegion,found] using (partition.cons b).symm
 
 /-- A normalization of the existing shape adapter, definitionally equal to it.
@@ -174,8 +179,14 @@ Keeping it here makes every range argument depend on the actual adapter. -/
 def commitPath (screen : UiScreen) : Option (List Nat) :=
   ((screenNodes screen).find? (fun e => semanticCommit e.2)).map Prod.fst
 
+/-- The first root index of `screen.urgent?`: after the banner, title and
+navigation roots, the workspace, the side nodes and the modal. -/
+def urgentRoot (screen : UiScreen) : Nat :=
+  3+screen.workspace.length+screen.side.length+screen.modal.toList.length
+
 def regionOf (screen : UiScreen) (path : List Nat) : Region :=
   if path == [0] then .banner else if path == [1] then .title
+  else if path.head?.getD 0 ≥ urgentRoot screen then .urgent
   else if some path == commitPath screen then .footer
   else if screen.modal.isSome && path.head? == some (3+screen.workspace.length+screen.side.length) then .modal
   else if path.head?.getD 0 == 2 || (path.head?.getD 0 ≥ 3+screen.workspace.length &&
@@ -201,7 +212,9 @@ private theorem region_banner (screen : UiScreen) (path : List Nat) :
         · contradiction
         · split at eq
           · contradiction
-          · split at eq <;> contradiction
+          · split at eq
+            · contradiction
+            · split at eq <;> contradiction
   · intro same; simp [regionOf,same]
 
 private theorem region_footer (screen : UiScreen) (path : List Nat)
@@ -212,10 +225,12 @@ private theorem region_footer (screen : UiScreen) (path : List Nat)
   · split at footer
     · contradiction
     · split at footer
-      · simpa using ‹(some path == commitPath screen) = true›
+      · contradiction
       · split at footer
-        · contradiction
-        · split at footer <;> contradiction
+        · simpa using ‹(some path == commitPath screen) = true›
+        · split at footer
+          · contradiction
+          · split at footer <;> contradiction
 
 private theorem region_modal (screen : UiScreen) (path : List Nat)
     (modal : regionOf screen path = .modal) :
@@ -228,9 +243,11 @@ private theorem region_modal (screen : UiScreen) (path : List Nat)
     · split at modal
       · contradiction
       · split at modal
-        · simpa only [Bool.and_eq_true,beq_iff_eq] using
-            ‹(screen.modal.isSome && path.head? == some (3+screen.workspace.length+screen.side.length)) = true›
-        · split at modal <;> contradiction
+        · contradiction
+        · split at modal
+          · simpa only [Bool.and_eq_true,beq_iff_eq] using
+              ‹(screen.modal.isSome && path.head? == some (3+screen.workspace.length+screen.side.length)) = true›
+          · split at modal <;> contradiction
 
 private theorem entry_unique (entries : List Entry) (unique : (paths entries).Nodup)
     (a b : Entry) (ha : a ∈ entries) (hb : b ∈ entries) (same : a.1 = b.1) : a = b := by
@@ -445,6 +462,15 @@ private theorem strip_small (sp : Ehr.Spec) (facts : Ehr.Facts) (user : Ehr.User
     · simp [hp,urgent] at member
     · exact small node (by simpa [hp,urgent] using member)
 
+/-- The clinical screen with its urgent strip, for any facts, fits the fixed
+shell. This is the screen `Sem.UrgentStrip` reasons about. -/
+theorem strip_range (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
+    (display : Display) (user : Ehr.User) (state : Ehr.State) :
+    Shell.accepts (screenShape (withUrgentStrip sp facts user state
+      (renderUi sp program facts display user state))) = true :=
+  smallModal_fits _ (strip_small sp facts user state _ (uiModal_small
+    {sp,prog := program,facts,disp := display,user,s := state}))
+
 /-- The actual renderer always satisfies the bounded fixed-modal grammar.
 No program well-formedness, clinical acceptance, data or reachability premise. -/
 theorem render_small (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
@@ -564,6 +590,7 @@ theorem layoutAccepted_program (sp : Ehr.Spec) (program : Ehr.Program)
 #print axioms uiModal_small
 #print axioms strip_small
 #print axioms render_small
+#print axioms strip_range
 #print axioms renderer_range
 #print axioms unchecked_sound
 #print axioms checkProgram_accepts

@@ -35,6 +35,7 @@ function drawn(
   options: {
     scroll?: boolean;
     modal?: boolean;
+    urgent?: boolean;
     clip?: boolean;
     original?: string;
   } = {},
@@ -65,6 +66,7 @@ function drawn(
         banner: false,
         interruptive: options.modal ?? false,
         commit: false,
+        urgent: options.urgent ?? false,
         paint: true,
         role: "",
         mark: "rect",
@@ -239,6 +241,42 @@ test("interruptive controls block ordinary actions, trap Tab through Lean, then 
   expect(dispatch).toHaveBeenCalledWith({ ack: { alert: "alert" } });
   painter.patch(screen([button]), output([drawn("sign", [3])]));
   expect(document.activeElement).toBe(sign);
+});
+
+test("the pinned urgent strip stays operable beside a modal while ordinary controls are blocked", () => {
+  const { root, painter, dispatch } = setup();
+  const button = (comp: string, role: string): UiNode => ({
+    button: {
+      comp,
+      label: comp,
+      role,
+      enabled: true,
+      blockedReason: null,
+      hotkey: null,
+    },
+  });
+  const s: UiScreen = {
+    ...screen([button("sign", "primary")], button("notice", "ack")),
+    urgent: [button("allergy", "ack")],
+  };
+  painter.patch(
+    s,
+    output([
+      drawn("sign", [3]),
+      drawn("notice", [4], 5000, { modal: true }),
+      drawn("strip", [5], 10000, { urgent: true }),
+    ]),
+  );
+  const control = (box: string) =>
+    root.querySelector<HTMLButtonElement>(`[data-box="${box}"] button`);
+  expect(control("sign")?.disabled).toBe(true);
+  expect(control("sign")?.parentElement?.inert).toBe(true);
+  expect(control("strip")?.disabled).toBe(false);
+  expect(control("strip")?.parentElement?.inert).toBe(false);
+  control("strip")?.click();
+  expect(dispatch).toHaveBeenCalledExactlyOnceWith({
+    ack: { alert: "allergy" },
+  });
 });
 
 test("pending fields expose confirmation at the same box and never fabricate clinical values", () => {

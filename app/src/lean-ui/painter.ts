@@ -531,7 +531,11 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           element.setAttribute("aria-modal", "true");
           element.tabIndex = -1;
         }
-        element.inert = modal && !drawn.box.info.interruptive;
+        // The pinned urgent strip stays operable beside a modal
+        // (Lean: stripDispatchable, strip_dispatches).
+        const blocked =
+          modal && !drawn.box.info.interruptive && !drawn.box.info.urgent;
+        element.inert = blocked;
         place(entry);
         const textKey = JSON.stringify([
           drawn.lines,
@@ -557,7 +561,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           }
           entry.textKey = textKey;
         }
-        updateControl(entry, modal && !drawn.box.info.interruptive, explicit);
+        updateControl(entry, blocked, explicit);
         element.dataset.interactive = String(Boolean(entry.control));
         if (drawn.box.scroll) {
           let spacer = element.querySelector<HTMLElement>(".lean-spacer");

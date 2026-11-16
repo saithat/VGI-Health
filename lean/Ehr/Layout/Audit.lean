@@ -1,5 +1,6 @@
 import Ehr.Layout.Range
 import Ehr.Layout.Density
+import Ehr.Layout.Strip
 import Ehr.Render.Cli
 namespace Ehr.Layout
 open Lean Ehr Ehr.Render
@@ -38,6 +39,9 @@ def auditProgram (path specPath : String) (facts : Facts) (display : Display) (a
         ("classAccepted",toJson classOk),("classDecline",toJson
           (if classOk then "" else "fixed-shell-invariant-failed")),
         ("targets",toJson (shape.filter (·.target)).length),
+        ("urgent",toJson (Shell.urgentSlots shape).length),
+        ("urgentPinned",toJson (Shell.stripFits shape)),
+        ("urgentG11",toJson (decide (G11 desk (urgentPaths shape) (Shell.classBoxes desk shape)))),
         ("firstViewportTargets",toJson firstTargets),("maxWindowTargets",toJson windowCount),
         ("g10Capacity",toJson Density.shellCapacity)]]
       if sc.id == "w1Sign" then

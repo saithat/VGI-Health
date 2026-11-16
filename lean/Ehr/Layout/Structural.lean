@@ -8,12 +8,14 @@ set_option maxHeartbeats 4000000
 namespace Ehr.Layout.Structural
 open Lean Ehr.Render
 
-/-- The body scroll viewport. At 1440×900 it is 736 px tall, so any scroll
-position meets at most 14 of the 48 px rows on their 56 px pitch. -/
-def clipRect (v : Size) : Rect := ⟨1024,8192,v.w-2048,v.h-10496⟩
+/-- The body scroll viewport. It starts at 272 px, below the banner, the
+commit row and the band the fixed shell reserves for the pinned urgent strip
+(128–272 px). At 1440×900 it is 612 px tall, so any scroll position meets at
+most 12 of the 48 px rows on their 56 px pitch. -/
+def clipRect (v : Size) : Rect := ⟨1024,17408,v.w-2048,v.h-18432⟩
 def slotText : TextSlot := { safety := true, overflow := .scroll, maxLines := 2, lineHeight := 1408 }
 def ordinary (v : Size) (path : List Nat) (target : Bool) (i : Nat) : Placed :=
-  { rect := ⟨1024,8192+i*3584,v.w-2048,3072⟩,
+  { rect := ⟨1024,17408+i*3584,v.w-2048,3072⟩,
     style := { fg := ⟨15,23,42⟩ },
     info := { id := Nat.repr (i+2), source := some path, text := some slotText, target },
     clip := some (clipRect v), clips := [("0",clipRect v)] }
@@ -340,7 +342,7 @@ theorem class_linked (shape : ScreenShape) (accepted : accepts shape = true) (v 
     rcases hp with rfl | rfl | hp
     · simp [SourceLinked,scroller]
     · simp only [SourceLinked,banner]
-      refine ⟨b,by simp,rfl,?_,?_,?_,?_,{slotText with maxLines := 4},by simp,rfl⟩
+      refine ⟨b,by simp,rfl,?_,?_,?_,?_,?_,{slotText with maxLines := 4},by simp,rfl⟩
       all_goals simp [bannerRegion,bannerTarget]
     · obtain ⟨⟨a,i⟩,ha,rfl⟩ := List.mem_map.mp hp
       have member : a ∈ rest.map (fun s => (s.path,s.target)) := by
@@ -348,7 +350,7 @@ theorem class_linked (shape : ScreenShape) (accepted : accepts shape = true) (v 
       obtain ⟨s,hs,rfl⟩ := List.mem_map.mp member
       obtain ⟨nb,nf,nm⟩ := ordinaryRegions s hs
       simp only [SourceLinked,ordinary]
-      exact ⟨s,by simp [hs],rfl,rfl,by simp [nb],by simp [nf],by simp [nm],slotText,by simp,rfl⟩
+      exact ⟨s,by simp [hs],rfl,rfl,by simp [nb],by simp [nf],by simp [nm],by simp,slotText,by simp,rfl⟩
 
 /-- A single kernel-checked certificate for every member of this structural
 class, including unbounded numbers of independently actionable ordinary slots.
@@ -372,7 +374,7 @@ theorem certifiedClass_allScreens (screen : UiScreen)
     have hl := linked p hpMem
     unfold SourceLinked at hl
     rw [hs] at hl
-    obtain ⟨slot,_,_,_,_,_,_,t,ht,hsafe⟩ := hl
+    obtain ⟨slot,_,_,_,_,_,_,_,t,ht,hsafe⟩ := hl
     have htEq : p.info.text = some t := Option.mem_def.mp ht
     have painted := bindSemantic_original screen p path t hs htEq
     exact ⟨t,ht,hsafe,painted.1,painted.2,

@@ -102,7 +102,7 @@ than inventing another target. Geometry/text agreement does not prove control
 fidelity or accessibility. Resolving navigation/tab target classification,
 separate tab/cell rectangles, nested pane modalities and richer widget geometry
 would require changes beyond API plumbing; none are made here. These are
-cut-over blockers, not grounds for weakening G1–G10.
+cut-over blockers, not grounds for weakening G1–G11.
 
 ## Widget inventory
 
@@ -142,7 +142,8 @@ covered by the presentation row; their underlying child controls remain present.
 | `datedTimeline` | Simpler look | Exact dated/undated metadata and children retained; no graphical UTC-aligned axis. |
 | `board` | Missing multi-patient interaction | Urgency metadata and all pane occurrences are readable. No patient-scoped board session/dispatch host is connected; pane controls are disabled to prevent unscoped events. |
 | `patientPane` | Missing interaction | Banner, metadata, ordinary/modal children retained by source path. Needs patient-scoped event transport, per-pane choice metadata, modal ownership and board shell geometry; disabled here. |
-| `UiScreen.banner`, title, side and urgent nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome, separate urgent rail or patient avatar. |
+| `UiScreen.banner`, title and side nodes | Simpler look | Supplied fixed banner, title and child cards; original labels preserved. No recreated clinical chrome or patient avatar. |
+| `UiScreen.urgent` nodes | Works, simpler look | Lean pins them in a fixed strip (rule G11): outside every scroller, in the viewport and clear of every other box. The painter keeps strip boxes operable while a modal is open and blocks everything else. A state with more urgent nodes than the layout can pin is refused, not painted. |
 | `UiScreen.nav` | Simpler look; admitted target classification missing | One native chooser in the combined navigation text box sends existing `click` IDs. Requires explicit Lean navigation targets before G3/G10/APG parity can be claimed. |
 | Interruptive dialog focus | Works for fixed-shell single-patient alerts | Lean `alertDialog` Tab transitions, inert ordinary controls, initial focus and restoration. Escape is ignored by the Lean profile and swallowed by the painter. Board modality remains missing. |
 | Review/sign persistence and draft restoration | Existing live path | Same `createLiveSession`, native screen comparison, guarded command endpoint and database. No alternate save implementation. |
@@ -237,7 +238,7 @@ here. Native service replay and durable command writes are exercised.
 
 1. Give navigation links, tab labels/panels, grid cells and any additional
    native control their own semantic targets and checked rectangles. Keep
-   G1–G10 unchanged and prove/check the corresponding layout families.
+   G1–G11 unchanged and prove/check the corresponding layout families.
 2. Complete the missing inventory rows: patient-scoped board sessions and
    modality, custom code suggestions, rich clinical presentations, implicit
    pending-field editing and structured row/grid interaction. Verify every

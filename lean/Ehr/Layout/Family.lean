@@ -18,13 +18,19 @@ abbrev Family := List Candidate
 
 /-- An untrusted designer cannot omit a real commit flag to claim G9 exemption,
 relabel a target as static, or replace a semantic value by a non-safety slot.
-Nonsemantic ornaments remain free; they cannot invent a patient banner/commit. -/
+Nonsemantic ornaments remain free; they cannot invent a patient banner/commit.
+
+New specification for owner review: only an occurrence of the urgent strip may
+carry the `urgent` flag, which keeps a box active beside a modal. An ornament
+or an ordinary control cannot claim it. Rule G11 separately requires every
+urgent occurrence to carry the flag. -/
 def SourceLinked (shape : ScreenShape) (p : Placed) : Prop :=
   match p.info.source with
-    | none => p.info.banner = false ∧ p.info.commit = false
+    | none => p.info.banner = false ∧ p.info.commit = false ∧ p.info.urgent = false
     | some path => ∃ slot ∈ shape, slot.path = path ∧
         p.info.target = slot.target ∧ p.info.banner = (slot.region == .banner) ∧
         p.info.commit = (slot.region == .footer) ∧ p.info.interruptive = (slot.region == .modal) ∧
+        (p.info.urgent = true → slot.region = .urgent) ∧
         ∃ t ∈ p.info.text, t.safety = true
 instance (shape p) : Decidable (SourceLinked shape p) := by
   unfold SourceLinked
@@ -129,7 +135,7 @@ theorem layoutAccepted_allScreens (family : Family) (h : acceptFamily family = t
     have hl := linked p hpMem
     unfold SourceLinked at hl
     rw [hs] at hl
-    obtain ⟨slot,_,_,_,_,_,_,t,ht,hsafe⟩ := hl
+    obtain ⟨slot,_,_,_,_,_,_,_,t,ht,hsafe⟩ := hl
     have htEq : p.info.text = some t := Option.mem_def.mp ht
     have painted := bindSemantic_original screen p path t hs htEq
     exact ⟨t,ht,hsafe,painted.1,painted.2,layoutAccepted_safety _ _ _ checked p hpMem t ht hsafe _⟩
@@ -171,7 +177,7 @@ theorem realized_currentCommit_visible (screen : UiScreen) (v : Size) (painted :
   have linked := h.2.1 p hp'.1
   unfold SourceLinked at linked
   rw [hs] at linked
-  obtain ⟨other,ho,hpath,_,_,commit,_,_⟩ := linked
+  obtain ⟨other,ho,hpath,_,_,commit,_,_,_⟩ := linked
   have same := shape_path_unique _ paths other slot ho member hpath
   have committed : p.info.commit = true := by simpa [same,current] using commit
   have present : ((painted.map Drawn.box).any (·.info.commit)) = true :=
@@ -272,6 +278,36 @@ theorem layoutAccepted_allPatients_finite (sp : Ehr.Spec) (program : Ehr.Program
         Realizes (runRenderUi ⟨sp,program,facts,display,user,state⟩) v painted :=
   layoutAccepted_allPatients sp program family accepted coverage
 
+/-! ### G11 for custom layout families. New specification for owner review. -/
+
+/-- New specification for owner review: G11 on every supported viewport case. -/
+def admitUrgent (c : Candidate) : Bool :=
+  viewports.all fun v => decide (G11 v (urgentPaths c.shape) (boxes v (c.tree v)))
+
+/-- New specification for owner review: G1–G9 family admission plus G11. -/
+def acceptFamilyUrgent (family : Family) : Bool :=
+  acceptFamily family && family.all admitUrgent
+
+/-- New specification for owner review: family acceptance implies the full
+`Realizes` contract and a pinned urgent strip (G11) for every covered screen. -/
+theorem layoutAccepted_familyUrgent (family : Family) (h : acceptFamilyUrgent family = true)
+    (screen : UiScreen) (covered : Covered family screen) (v : Size) (hv : v ∈ viewports) :
+    ∃ painted, familyPaint family screen v = some painted ∧ Realizes screen v painted ∧
+      G11 v (urgentPaths (screenShape screen)) (painted.map Drawn.box) := by
+  simp only [acceptFamilyUrgent, Bool.and_eq_true] at h
+  obtain ⟨painted, paint, realized⟩ := layoutAccepted_allScreens family h.1 screen covered v hv
+  obtain ⟨c, hc, selected, same⟩ := select_covered family screen covered
+  refine ⟨painted, paint, realized, ?_⟩
+  have painted_eq : painted = (boxes v (c.tree v)).map (bindSemantic screen) := by
+    simp [familyPaint, selected] at paint
+    exact paint.symm
+  have geom : painted.map Drawn.box = boxes v (c.tree v) := by
+    simp [painted_eq, List.map_map, Function.comp_def, bindSemantic_box]
+  rw [geom, ← same]
+  have admitted := List.all_eq_true.mp h.2 c hc
+  exact of_decide_eq_true (List.all_eq_true.mp admitted v hv)
+
+#print axioms layoutAccepted_familyUrgent
 #print axioms RenderCovered_finite_iff
 #print axioms layoutAccepted_allPatients_finite
 

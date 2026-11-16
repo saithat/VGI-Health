@@ -57,8 +57,14 @@ def G2 (v : Size) (ps : List Placed) : Prop :=
   ∀ p ∈ ps, p.info.interruptive = true → visible v p ∧
     ∀ q ∈ ps, q.info.paint = true → q.info.interruptive = false → q.style.z < p.style.z
 
+/-- A target is active unless a modal is open, in which case only the modal's
+own targets are active.
+
+New specification for owner review: targets of the pinned urgent strip also
+stay active beside a modal, so G3 separates them from the modal's targets and
+G10 counts them. -/
 def activeTarget (ps : List Placed) (p : Placed) : Bool :=
-  p.info.target && (!(ps.any (·.info.interruptive)) || p.info.interruptive)
+  p.info.target && (!(ps.any (·.info.interruptive)) || p.info.interruptive || p.info.urgent)
 
 /-- G3 uses content rectangles within a shared scroller, and whole scroll
 viewports across independent scrollers: conservative over every scroll offset. -/
@@ -66,8 +72,11 @@ def G3 (ps : List Placed) : Prop :=
   (∀ p ∈ ps, p.info.target = true → 1536 ≤ p.rect.w ∧ 1536 ≤ p.rect.h) ∧
   ps.Pairwise (fun p q => activeTarget ps p = true → activeTarget ps q = true → separated p q)
 
+/-- New specification for owner review: the pinned urgent strip is active
+paint beside a modal, like the banner, so G4 keeps its text clear of other
+active paint. -/
 def activePaint (ps : List Placed) (p : Placed) : Bool :=
-  !(ps.any (·.info.interruptive)) || p.info.interruptive || p.info.banner
+  !(ps.any (·.info.interruptive)) || p.info.interruptive || p.info.banner || p.info.urgent
 
 /-- New specification for owner review: the smallest admitted font size, in
 1/64 CSS px (12 CSS px = 768 units, `PhysicalBounds.minFontPx`). -/
@@ -299,6 +308,49 @@ theorem G10_mono {small large : Nat} (le : small ≤ large) (v : Size) (ps : Lis
   exact ⟨Nat.le_trans (h hv).1 le, Nat.le_trans (h hv).2.1 le,
     fun n hn => Nat.le_trans ((h hv).2.2 n hn) le⟩
 
+/-! ### G11: pinned urgent strip. New specification for owner review. -/
+
+/-- New specification for owner review: a box that is painted, lies outside
+every scroll viewport, is contained in the page viewport, and is separated
+from every other painted box (a modal included), whatever their stacking
+order. Such a box never moves and no paint can cover it. -/
+def PinnedBox (v : Size) (ps : List Placed) (p : Placed) : Prop :=
+  p.info.paint = true ∧ visible v p ∧
+  ∀ q ∈ ps, q.info.paint = true → q.info.id ≠ p.info.id → separated p q
+instance (v ps p) : Decidable (PinnedBox v ps p) := by unfold PinnedBox; infer_instance
+
+/-- G11, new specification for owner review: every box flagged as part of the
+urgent strip is pinned, and every painted source box of an urgent occurrence
+(`urgent`, taken from the semantic inventory) carries the flag. With G7, each
+urgent occurrence therefore has exactly one box, which is pinned. G4 and G6
+make its text at least 12 px and 4.5:1. This holds at every supported size. -/
+def G11 (v : Size) (urgent : List (List Nat)) (ps : List Placed) : Prop :=
+  (∀ p ∈ ps, p.info.urgent = true → PinnedBox v ps p) ∧
+  ∀ p ∈ ps, ∀ path ∈ p.info.source, path ∈ urgent → p.info.urgent = true
+instance (v urgent ps) : Decidable (G11 v urgent ps) := by unfold G11; infer_instance
+
+/-- New specification for owner review: the pixels of a box outside every
+scroll viewport are those of its rectangle at every scroll position. -/
+theorem fixed_pixels (p : Placed) (fixed : p.clips = []) (offset : String → Int) (x y : Int) :
+    Pixels p offset x y ↔ InRect p.rect x y := by
+  simp [Pixels, scrollAmount, envelope, fixed]
+
+/-- New specification for owner review: under G11 a strip box occupies the
+same pixels, inside the page viewport, at every scroll position. -/
+theorem G11_fixed (v : Size) (urgent : List (List Nat)) (ps : List Placed) (h : G11 v urgent ps)
+    (p : Placed) (hp : p ∈ ps) (flag : p.info.urgent = true) :
+    Contains (viewportRect v) p.rect ∧
+    ∀ (offset : String → Int) (x y : Int), Pixels p offset x y ↔ InRect p.rect x y :=
+  ⟨(h.1 p hp flag).2.1.2, fun offset x y => fixed_pixels p (h.1 p hp flag).2.1.1 offset x y⟩
+
+/-- New specification for owner review: under G11 no other painted box, a
+modal included, shares a pixel with a strip box at any scroll position. -/
+theorem G11_pixels (v : Size) (urgent : List (List Nat)) (ps : List Placed) (h : G11 v urgent ps)
+    (p q : Placed) (hp : p ∈ ps) (hq : q ∈ ps) (flag : p.info.urgent = true)
+    (paint : q.info.paint = true) (different : q.info.id ≠ p.info.id)
+    (offset : String → Int) (x y : Int) : ¬ (Pixels p offset x y ∧ Pixels q offset x y) :=
+  separated_pixels p q ((h.1 p hp flag).2.2 q hq paint different) offset x y
+
 instance (v ps) : Decidable (G1 v ps) := by unfold G1; infer_instance
 instance (v ps) : Decidable (G2 v ps) := by unfold G2; infer_instance
 instance (ps) : Decidable (G3 ps) := by unfold G3; infer_instance
@@ -353,6 +405,18 @@ theorem layoutAccepted_density (limit expected v ps) (h : checkDensity limit exp
     Rules expected v ps ∧ G10 limit v ps := by
   simp only [checkDensity, Bool.and_eq_true, decide_eq_true_eq] at h
   exact ⟨layoutAccepted_rules expected v ps h.1, h.2⟩
+
+/-- New specification for owner review: G1–G9, G10 with a density limit, and
+G11 for the urgent occurrences `urgent`. -/
+def checkAll (limit : Nat) (expected urgent : List (List Nat)) (v : Size) (ps : List Placed) : Bool :=
+  checkDensity limit expected v ps && decide (G11 v urgent ps)
+
+theorem layoutAccepted_all (limit expected urgent v ps)
+    (h : checkAll limit expected urgent v ps = true) :
+    Rules expected v ps ∧ G10 limit v ps ∧ G11 v urgent ps := by
+  simp only [checkAll, Bool.and_eq_true, decide_eq_true_eq] at h
+  exact ⟨(layoutAccepted_density limit expected v ps h.1).1,
+    (layoutAccepted_density limit expected v ps h.1).2, h.2⟩
 
 /-- Universal over bound content for a fixed semantic template. This theorem
 makes no claim that every EHR state has the same tree shape as the template. -/
@@ -433,6 +497,44 @@ theorem modal_blocks (ps : List Placed) (id : String)
   have := ordinary p hp h.1.1
   simp_all
 
+/-- New specification for owner review: dispatch with the pinned urgent strip.
+`dispatchable` above knows only ordinary and modal targets. A painter that
+draws the strip uses this relation instead: a strip target stays operable
+beside a modal, and nothing else gains dispatch. -/
+def stripDispatchable (ps : List Placed) (id : String) : Bool :=
+  ps.any fun p => p.info.id == id && activeTarget ps p
+
+/-- Everything `dispatchable` admits is still admitted. -/
+theorem stripDispatchable_of_dispatchable (ps : List Placed) (id : String)
+    (h : dispatchable ps id = true) : stripDispatchable ps id = true := by
+  obtain ⟨p,hp,h⟩ := List.any_eq_true.mp h
+  apply List.any_eq_true.mpr
+  refine ⟨p,hp,?_⟩
+  simp only [Bool.and_eq_true, beq_iff_eq, Bool.or_eq_true, Bool.not_eq_true'] at h
+  simp only [activeTarget, Bool.and_eq_true, beq_iff_eq, Bool.or_eq_true, Bool.not_eq_true']
+  exact ⟨h.1.1, h.1.2, h.2.elim (fun a => Or.inl (Or.inl a)) (fun a => Or.inl (Or.inr a))⟩
+
+/-- New specification for owner review: with a modal open, a box that is
+neither part of the modal nor part of the urgent strip cannot dispatch. -/
+theorem strip_modal_blocks (ps : List Placed) (id : String)
+    (active : ps.any (·.info.interruptive) = true)
+    (ordinary : ∀ p ∈ ps, p.info.id = id → p.info.interruptive = false ∧ p.info.urgent = false) :
+    stripDispatchable ps id = false := by
+  apply Bool.eq_false_iff.mpr
+  intro h
+  obtain ⟨p,hp,h⟩ := List.any_eq_true.mp h
+  simp only [activeTarget, active, Bool.and_eq_true, beq_iff_eq] at h
+  have := ordinary p hp h.1
+  simp_all
+
+/-- New specification for owner review: a strip target can always dispatch,
+whether or not a modal is open. -/
+theorem strip_dispatches (ps : List Placed) (p : Placed) (hp : p ∈ ps)
+    (flag : p.info.urgent = true) (target : p.info.target = true) :
+    stripDispatchable ps p.info.id = true := by
+  apply List.any_eq_true.mpr
+  exact ⟨p,hp,by simp [activeTarget, flag, target]⟩
+
 structure Finding where
   rule : String
   node : String := ""
@@ -510,6 +612,25 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
       out := out ++ [{ rule := "G9", metric := "current-commit-count", actual := count, required := 1, deficit := (1 : Int)-count }]
   return out
 
+/-- New specification for owner review: G11 diagnostics. A strip box reports
+why it is not pinned; an urgent occurrence painted outside the strip reports
+`urgent-not-pinned`. -/
+def urgentFindings (v : Size) (urgent : List (List Nat)) (ps : List Placed) : List Finding := Id.run do
+  let mut out : List Finding := []
+  for p in ps do
+    if p.info.urgent then
+      if !p.info.paint then
+        out := out ++ [{ rule := "G11", node := p.info.id, metric := "urgent-not-painted" }]
+      if !p.clips.isEmpty then
+        out := out ++ [{ rule := "G11", node := p.info.id, metric := "urgent-scrolls", actual := p.clips.length }]
+      out := out ++ containmentFindings "G11" v p
+      for q in ps do
+        if q.info.paint && q.info.id != p.info.id && !decide (separated p q) then
+          out := out ++ [{ rule := "G11", node := p.info.id, other := q.info.id, metric := "overlap-area", actual := overlapArea (envelope p) (envelope q) }]
+    else if p.info.source.any (urgent.contains ·) then
+      out := out ++ [{ rule := "G11", node := p.info.id, metric := "urgent-not-pinned" }]
+  return out
+
 /-- New specification for owner review: G10 diagnostics with counts. A region
 reports its densest candidate window, counted with the fixed targets;
 `deficit` is the excess over the limit. -/
@@ -556,6 +677,13 @@ def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
 #print axioms layoutAccepted_allViewports
 #print axioms layoutAccepted_textComplete
 #print axioms modal_blocks
+#print axioms fixed_pixels
+#print axioms G11_fixed
+#print axioms G11_pixels
+#print axioms layoutAccepted_all
+#print axioms stripDispatchable_of_dispatchable
+#print axioms strip_modal_blocks
+#print axioms strip_dispatches
 #print axioms G10_window
 #print axioms G10_first
 #print axioms G10_fixed

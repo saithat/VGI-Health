@@ -84,4 +84,59 @@ private def fixedBeside (n : Nat) : Node := .box .absolute { width := .fill, hei
   [("first-viewport-targets",8),("scroll-window-targets",8)]
 #guard !decide (G10 1 desk (boxes desk (fixedBeside 2)))
 #guard (densityFindings 1 desk (boxes desk (fixedBeside 2))).any (·.metric == "fixed-targets")
+
+/-! Pinned urgent strip (G11); new specification for owner review. -/
+private def cardText : TextSlot := { key := "t", safety := true, overflow := .scroll, lineHeight := 1408 }
+private def card (id : String) (y : Int) (z : Int) (m : Meta) (clips : List (String × Rect) := []) : Placed :=
+  ⟨⟨1024,y,40000,1536⟩,{ fg := ⟨15,23,42⟩, z },{ m with id, text := some cardText },
+    clips.head?.map Prod.snd,false,clips,[]⟩
+private def stripCard (clips : List (String × Rect) := []) : Placed :=
+  card "strip" 8192 40 { source := some [5], urgent := true, target := true } clips
+private def modalCard (y : Int) : Placed := card "modal" y 100 { source := some [4], interruptive := true, target := true }
+private def ordinaryCard : Placed := card "ordinary" 30000 0 { source := some [3], target := true }
+-- Fixed, in the viewport and clear of the modal: pinned.
+#guard decide (G11 desk [[5]] [stripCard, modalCard 20000, ordinaryCard])
+#guard (urgentFindings desk [[5]] [stripCard, modalCard 20000, ordinaryCard]).isEmpty
+-- A modal over the strip, a strip inside a scroller, and a strip below the viewport are refused.
+#guard !decide (G11 desk [[5]] [stripCard, modalCard 8192])
+#guard (urgentFindings desk [[5]] [stripCard, modalCard 8192]).map (fun f => (f.metric,f.other)) == [("overlap-area","modal")]
+#guard !decide (G11 desk [[5]] [stripCard [("list",⟨0,0,92160,20000⟩)]])
+#guard (urgentFindings desk [[5]] [stripCard [("list",⟨0,0,92160,20000⟩)]]).map (·.metric) == ["urgent-scrolls"]
+#guard !decide (G11 desk [[5]] [card "strip" 57000 40 { source := some [5], urgent := true }])
+-- An urgent occurrence painted without the flag is refused; the flag alone is not enough either.
+#guard !decide (G11 desk [[5]] [card "strip" 8192 40 { source := some [5] }])
+#guard (urgentFindings desk [[5]] [card "strip" 8192 40 { source := some [5] }]).map (·.metric) == ["urgent-not-pinned"]
+#guard !decide (G11 desk [] [card "ornament" 8192 40 { urgent := true }, card "cover" 8192 50 {}])
+-- Beside a modal the strip target stays active and can dispatch; an ordinary target cannot.
+#guard activeTarget [stripCard, modalCard 20000, ordinaryCard] stripCard
+#guard !activeTarget [stripCard, modalCard 20000, ordinaryCard] ordinaryCard
+#guard stripDispatchable [stripCard, modalCard 20000, ordinaryCard] "strip"
+#guard !stripDispatchable [stripCard, modalCard 20000, ordinaryCard] "ordinary"
+#guard !dispatchable [stripCard, modalCard 20000, ordinaryCard] "ordinary"
+-- Strip targets are fixed targets: they count against G10 with every window.
+#guard (fixedTargets [stripCard, modalCard 20000, ordinaryCard]).length == 2
+-- Only an urgent occurrence may carry the flag.
+#guard decide (SourceLinked [⟨[5],true,.urgent,2⟩] stripCard)
+#guard !decide (SourceLinked [⟨[5],true,.body,2⟩] stripCard)
+#guard !decide (SourceLinked [] (card "ornament" 8192 40 { urgent := true }))
+
+/-- A screen with two urgent alerts, their acknowledgment and an unrelated modal. -/
+private def urgentScreen (alerts : Nat) (modal : Bool) : Ehr.Render.UiScreen :=
+  { banner := [("Patient","Synthetic")], nav := [], title := "Orders", side := [],
+    workspace := [.field "dose" "Dose" "text" (some "5") none none false false false,
+      .button "sign" "Sign" "primary" true none none],
+    modal := if modal then some (.section "notice" "Notice" [.button "notice" "Acknowledge" "ack" true none none]) else none,
+    urgent? := some ((List.range alerts).map (fun i => .alert s!"urgent:{i}" s!"a{i}" s!"Allergy {i}" "interruptive") ++
+      [.button "a0" "Acknowledge" "ack" true none none]) }
+private def portAll (screen : Ehr.Render.UiScreen) : Bool := viewports.all fun v =>
+  let (n,_,e) := portScreen v screen
+  let ps := boxes v n
+  checkAll 15 e (urgentPaths (screenShape screen)) v ps && decide (Linked (screenShape screen) ps)
+-- The family reference layout pins the strip above the review scroller and the modal layer.
+#guard (urgentPaths (screenShape (urgentScreen 2 true))).length == 3
+#guard portAll (urgentScreen 2 false)
+#guard portAll (urgentScreen 2 true)
+#guard portAll (urgentScreen 0 true)
+#guard ((boxes desk (portScreen desk (urgentScreen 2 true)).1).filter (·.info.urgent)).all
+  fun p => p.clips.isEmpty && p.rect.y ≥ 11264 && p.rect.bottom ≤ 11264 + 3*2048
 end Ehr.Layout.Tests
