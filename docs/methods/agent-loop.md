@@ -709,3 +709,12 @@ and results; the original reporter lists only successful complaints.
 **refused**
 
 > spec_rules returned {"error":"token budget exhausted"} after bounded discovery calls. The initial batched source/rule exports exceeded the tool output budget and were truncated by the client; no patch has been certified or measured. Please provide compact addressable rule/source projections or budget-aware bounded exports so 3–5 independent alternatives can be checked and measured within the stated decision budget.
+
+## Recording memory
+
+Long recordings store geometry as immutable per-call snapshots with shared boxes
+and bounded JSON chunks; completed atlases and old training traces stay on disk.
+Lean galleries retain the boxes used by review, one representative per screen
+plus custom shapes. Old atlas recordings remain readable. See
+[recording storage and memory measurements](recording-memory.md) for the format,
+model-free stress harness, limits and measured before/after results.

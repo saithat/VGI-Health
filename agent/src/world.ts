@@ -1,3 +1,4 @@
+import { BoundedMap } from './bounded-map.js';
 /**
  * World directory loader. ASSUMED layout (the world lane has not published
  * one yet; keep in sync with docs/STATUS.md):
@@ -39,7 +40,7 @@ export async function loadWorld(dir: string): Promise<World> {
   for (const id of manifest.personas) {
     personas.set(id, await readJson(path.join(dir, 'personas', `${id}.json`), personaParamsSchema));
   }
-  const cache = new Map<string, DaySchedule | null>();
+  const cache = new BoundedMap<string, DaySchedule | null>(12);
   return {
     dir,
     manifest,

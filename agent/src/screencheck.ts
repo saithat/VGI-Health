@@ -1,3 +1,4 @@
+import { BoundedMap } from './bounded-map.js';
 import {ScreenInfrastructureError} from './errors.js';
 import {geometryProgramHash,geometryCacheKey,geometryComponentsHash,screenGeometrySchema,type GeometryProvider} from './geometry.js';
 import type {GeometryAtlas} from '../../app/src/metrics/geometry.js';
@@ -106,7 +107,7 @@ export function failingFilesFromOutput(output: string, files: readonly string[])
 
 class CliScreenChecker implements ScreenChecker {
   readonly mode = 'real' as const;
-  private readonly atlases=new Map<string,GeometryAtlas>();
+  private readonly atlases=new BoundedMap<string,GeometryAtlas>(2);
   private atlasKey(input:Parameters<GeometryProvider>[0]){return geometryCacheKey(input.program)+(input.schedule&&input.worldDir?`:${sha256(JSON.stringify([input.worldDir,input.schedule]))}`:'');}
   geometry:GeometryProvider=async input=>{const hash=this.atlasKey(input);if(!this.atlases.has(hash)){let result:ScreenCheckResult;try{result=await this.check(input);}catch(error){this.atlases.delete(hash);throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${errorMessage(error)}`);}if(result.status==='error'){this.atlases.delete(hash);throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}}return this.atlases.get(hash)??null;};
   constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string,private readonly preferredBundles:Record<string,number>={},private readonly cacheDir?:string,private readonly workers?:number,private readonly referenceProgram?:ReferenceProvider) {}

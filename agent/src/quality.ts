@@ -129,7 +129,7 @@ export async function frozenTrainAtlases(input:Pick<NightInput,'train'|'programs
   return Promise.all(input.train.map(async day=>{
     const program=input.programs.get(day.result.programVersion);if(!program)throw new Error('Missing train program');
     const hash=geometryProgramHash(program),components=geometryComponentsHash(program);
-    const atlas=await loadGeometry(path.join(geometryDir,'geometry',`${hash}.${components}.json`));
+    const atlas=await loadGeometry(path.join(geometryDir,'geometry',`${hash}.${components}.json`),day.result);
     if(atlas.programHash!==hash||atlas.componentsSha256!==components)throw new Error('Frozen train atlas belongs to different program inputs');
     if(day.result.geometry?.programHash!==hash||day.result.geometry.componentsSha256!==components||day.result.geometry.appSha256!==atlas.appSha256)throw new Error('Frozen train trace and atlas bindings differ');
     return {result:day.result,atlas:{...atlas,aliases:atlas.aliases??{}}};

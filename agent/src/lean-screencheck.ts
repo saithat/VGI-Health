@@ -1,3 +1,4 @@
+import { BoundedMap } from './bounded-map.js';
 import { shapeFor } from "../../scripts/layout-reference/generator.mjs";
 import { LeanReference, referenceGeneratorVersion } from "./lean-reference.js";
 import { createHash } from "node:crypto";
@@ -31,7 +32,7 @@ import {
   occurrences,
 } from "./lean-layout-geometry.js";
 import { traceStates, type LeanScreenState } from "./lean-layout-states.js";
-import { REPO_ROOT, writeJson, errorMessage } from "./util.js";
+import { REPO_ROOT, writeJson, writeJsonCompactAtomic, errorMessage } from "./util.js";
 import { specSchema, type Spec } from "./schema.js";
 import type { ScreenCheckResult } from "../../app/src/dashboard/agent-evidence.js";
 function required<T>(value: T | undefined): T {
@@ -180,8 +181,8 @@ export class LeanScreenChecker implements ScreenChecker {
       )
     );
   }
-  private readonly inventories = new Map<string, string>();
-  private readonly checks = new Map<string, Promise<ScreenCheckResult>>();
+  private readonly inventories = new BoundedMap<string, string>(8);
+  private readonly checks = new BoundedMap<string, Promise<ScreenCheckResult>>(8);
   private readonly runner: LayoutRunner;
   private readonly reference: LeanReference;
   readonly referenceUsage: {
@@ -497,6 +498,11 @@ export class LeanScreenChecker implements ScreenChecker {
         referenceResults[i],
       ]),
     );
+    // Placement depends on the admitted shape and occurrence-to-control map,
+    // not patient text. Share immutable boxes within this call, while keeping
+    // each state's label and event aliases separate and in their original order.
+    const geometryByOccurrences = new Map<string, GeometryAtlas['states'][number]>();
+    const parsedPaints = new Map<LayoutReply, ReturnType<typeof paintSchema.parse>>();
     for (const s of states) {
       const selected = selectedByShape.get(
         stableStringify([s.screen, shapeFor(s.ui)]),
@@ -513,12 +519,15 @@ export class LeanScreenChecker implements ScreenChecker {
         ),
       );
       if (!p.paint.accepted) continue;
-      const state = placedGeometry(
-        paintSchema.parse(p.paint),
-        s.ui,
-        s.screen,
-        `${s.state}-${traceKey}`,
-      );
+      const geometryKey=stableStringify([s.screen,shapeFor(s.ui),occurrences(s.ui)]);
+      let template=geometryByOccurrences.get(geometryKey);
+      if(!template){
+        let paint=parsedPaints.get(p.paint);
+        if(!paint){paint=paintSchema.parse(p.paint);parsedPaints.set(p.paint,paint);}
+        template=placedGeometry(paint,s.ui,s.screen,'');
+        geometryByOccurrences.set(geometryKey,template);
+      }
+      const state={...template,state:`${s.state}-${traceKey}`,components:{...template.components}};
       if (s.sample) state.sample = s.sample;
       if (s.eventIndex !== undefined) {
         const target = `lean-event-${s.eventIndex}-${traceKey}`;
@@ -587,31 +596,31 @@ export class LeanScreenChecker implements ScreenChecker {
         failures,
         rules,
       });
-      // Geometry stays content-free in the hot cache. Gallery artifacts bind
-      // actual source values independently, never a previous patient's text.
-      const galleryPaints = input.result
-        ? []
-        : await this.batch(
-            samples.map((s, i) => ({
-              op: "family-paint",
-              references: families[i],
-              screen: s.ui,
-              viewport,
-              maxTargetsPerViewport: limitFor(s.screen).limit,
-            })),
-          );
-      // One representative real patient per shape; no per-event paint duplication.
-      const saved = new Set<string>();
-      for (const [i, s] of (input.result ? [] : samples).entries()) {
-        const shapeKey = sha256(stableStringify([s.screen, shapes[i]]));
-        if (saved.has(shapeKey)) continue;
-        saved.add(shapeKey);
-        await writeJson(path.join(directory, `${i}.json`), {
-          screen: s.screen,
-          shape: shapes[i],
-          ui: s.ui,
-          paint: galleryPaints[i],
-        });
+      // The gallery paints boxes only. Admission diagnostics remain above;
+      // recursive native trees and the semantic UI duplicate the same text.
+      const gallery = path.join(this.opts.artifactsDir,input.program.owner,
+        `v${input.program.version}`,sha256(stableStringify([atlas.programHash,geometryComponentsHash(input.program)])),"gallery");
+      const {existsSync}=await import('node:fs');
+      if(!input.result&&!failures.length&&!existsSync(path.join(gallery,'coverage.json'))){
+        const saved = new Set<string>(),savedScreens=new Set<string>();
+        for (const [i,s] of samples.entries()) {
+          // The review gallery displays one before/after view per screen.
+          // Retain custom shapes as well; every shape's gate evidence is kept.
+          if(savedScreens.has(s.screen)&&!selections[i])continue;
+          const shapeKey=sha256(stableStringify([s.screen,shapes[i]]));
+          if(saved.has(shapeKey))continue;
+          saved.add(shapeKey);
+          savedScreens.add(s.screen);
+          const [raw]=await this.batch([{op:"family-paint",references:families[i],screen:s.ui,viewport,maxTargetsPerViewport:limitFor(s.screen).limit}]);
+          const paint=z.record(z.string(),z.unknown()).parse(raw);
+          const tree=z.object({drawn:z.unknown()}).parse(paint['tree']);
+          await writeJsonCompactAtomic(path.join(gallery,`${i}.json`),{
+            screen:s.screen,shape:shapes[i],ui:{},
+            paint:{accepted:paint['accepted'],viewport:paint['viewport'],tree:{drawn:tree.drawn,children:[]},boxes:paint['boxes'],lineWidths:[],findings:paint['findings']},
+          });
+        }
+        // This file is also the publication fence: a partial gallery is never indexed.
+        await writeJson(path.join(gallery,'coverage.json'),{screenGate:'lean',browserCertified:false,reportFormatVersion:2,programHash:atlas.programHash,layoutsSha256:sha256(stableStringify(design)),failures:[]});
       }
     }
     return { atlas, failures, rules, pages: states.length, limits: perScreen };
@@ -717,6 +726,8 @@ export class LeanScreenChecker implements ScreenChecker {
   };
   /** The admission inventory has no validation or future trace payload. */
   async promptDesign(program: ScreenCheckInput["program"]): Promise<string> {
+    const key = this.coverageKey({program,specVersion:program.specVersion});
+    if(!this.inventories.has(key))this.checks.delete(key);
     const checked = await this.check({
       program,
       specVersion: program.specVersion,

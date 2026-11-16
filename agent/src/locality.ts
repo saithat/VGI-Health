@@ -214,12 +214,14 @@ const accumulate = (a: PhysicalTotals, b: PhysicalTotals) => {
   a.scrollPx = plus(a.scrollPx,b.scrollPx); a.mouseTravelPx = plus(a.mouseTravelPx,b.mouseTravelPx);
 };
 
-export function localityDigest(days: readonly { result: DayResult; atlas: GeometryAtlas }[], topN = 15) {
+export function createLocalityDigest(topN = 15) {
+  const trainDays:number[]=[];
   const screens = new Map<string, PhysicalTotals>();
   const components = new Map<string, PhysicalTotals & {screen: string; component: string; scrollPast: Map<string, number>}>();
   const sequences = new Map<string, Set<string>>();
   const totals = empty();
-  for (const {result, atlas} of days) {
+  const add=(result:DayResult,atlas:GeometryAtlas)=>{
+    trainDays.push(result.day);
     const completed = new Set(result.tasks.filter(t => t.completed).map(t => t.task));
     const rows = attributeDay(result, atlas).filter(r => completed.has(r.task));
     for (const row of rows) {
@@ -237,17 +239,25 @@ export function localityDigest(days: readonly { result: DayResult; atlas: Geomet
       }
     }
   }
+  const finish=()=>{
   const ranked = [...components.values()].sort((a,b) => b.clicks+b.scrolls-a.clicks-a.scrolls
     || (b.mouseTravelPx??0)-(a.mouseTravelPx??0) || b.keystrokes-a.keystrokes
     || `${a.screen}/${a.component}`.localeCompare(`${b.screen}/${b.component}`));
   const aggregate = (rows: PhysicalTotals[]) => {const out=empty(); rows.forEach(r=>accumulate(out,r)); return out;};
   return {
-    trainDays: days.map(d=>d.result.day), units: 'counts and CSS pixels at 1440×900; completed tasks; share = fraction of activations; scroll-past = component reveal offsets traversed within a container',
+    trainDays, units: 'counts and CSS pixels at 1440×900; completed tasks; share = fraction of activations; scroll-past = component reveal offsets traversed within a container',
     totals:rounded(totals),
     screens:[...screens].sort(([a],[b])=>a.localeCompare(b)).map(([screen,cost])=>({screen,...rounded(cost),share:totals.clicks?cost.clicks/totals.clicks:0})),
     components:ranked.slice(0,topN).map(({scrollPast,...cost})=>({...cost,...rounded(cost),scrollPast:[...scrollPast].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([component,scrolls])=>({component,scrolls}))})),
     otherComponents:rounded(aggregate(ranked.slice(topN))),
     sequences:[...sequences].filter(([,tasks])=>tasks.size>1).sort((a,b)=>b[1].size-a[1].size||a[0].localeCompare(b[0])).slice(0,topN).map(([steps,tasks])=>({steps:JSON.parse(steps),tasks:tasks.size})),
   };
+  };
+  return {add,finish};
+}
+export function localityDigest(days:Iterable<{result:DayResult;atlas:GeometryAtlas}>,topN=15){
+  const digest=createLocalityDigest(topN);
+  for(const {result,atlas}of days)digest.add(result,atlas);
+  return digest.finish();
 }
 export type LocalityDigest = ReturnType<typeof localityDigest>;
