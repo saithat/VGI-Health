@@ -292,6 +292,15 @@ way to drop the cost of records the clinician needs:
   Program's own dense layout (`docs/methods/lean-paged-density.json`), never
   from a candidate's layout.
 
+Simulated evidence (synthetic, `runs/paging-world` copy of the recorded world,
+seed 1, information needs on): over thirty persona-days (P1, P3, P5, days 1–10,
+releases v1–v3) the paged and whole-list runs are identical at the default page
+size of 20, because every record and note the clinician read was on a list's
+first page (results are newest first). With `--page-size 5` as a sensitivity
+setting, P1's note reading pages on days 1, 4 and 6 (25, 22 and 22 page
+actions), and clicks rise by exactly those counts (1,114 → 1,139, 824 → 846,
+881 → 903) with completion unchanged: page actions are paid, not free.
+
 Minimum clicks are unaffected: `MinClicks` searches clinical goal events and
 leaves Back, search and scroll outside its space; no clinical goal requires a
 page action, and its information-reading edges cost no activations, as for

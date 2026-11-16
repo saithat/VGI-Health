@@ -364,6 +364,18 @@ inventory depend on a scroll offset that is not interpreter state. Pages are
 discrete view state, go through the event path, bound the actions to any record
 (one selection) and make the inventory a function of the page size.
 
+*Changed definitions (owner review).* `Ehr.selectTabCore` also accepts a
+shown panel, table, trend or prior-authorization component and records its
+page in `tabSel` (before: tabs only; other kinds ignored); `State.tabSel`'s
+description says so. `UiScreen` gains `pages?` (set by `renderUi`) and
+`windows?` (set by the layout only); `DisplayCx` gains `windows`; an info
+node's `leafParts` are now `windowParts cx comp ++ infoParts …` (before:
+`infoParts …`; unchanged when the list is not paged); `PartRole` gains
+`position`, `pager` and `flagged`. `Parts.ChildOf` now passes the reference
+curves and the pane context exactly as `semanticNodes` does. No theorem
+statement changed; `info_complete`, `info_empty`, `selectTabCore_safe` and
+`leaf_plain` have new proofs.
+
 The layout API windows every screen it reads (`program-paint`,
 `structural-paint`, `family-check`, `family-paint`, `port`, `inventory`; a
 screen that already carries windows is kept) and has a `window` operation;
