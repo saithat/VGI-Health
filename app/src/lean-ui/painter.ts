@@ -693,7 +693,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       }
       // Tables are grids: Lean's cell rows and columns, its grid keyboard
       // profile and each record's single navigation action.
-      const byElement = new Map(
+      const byElement = new Map<HTMLElement, Entry>(
         [...entries.values()].map((e) => [e.element, e]),
       );
       connectGrids(
