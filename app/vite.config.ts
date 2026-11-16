@@ -1,3 +1,4 @@
+import { leanBundlePlugin } from "./scripts/lean-bundle-plugin";
 import { fileURLToPath } from "node:url";
 import { buildBindingPlugin } from "./scripts/build-binding-plugin";
 import { defineConfig } from "vitest/config";
@@ -16,7 +17,6 @@ const commitProxy = {
     changeOrigin: true,
     rewrite: (path: string) => path.replace(/^\/commit/, ""),
   },
-
 };
 
 export default defineConfig({
@@ -44,6 +44,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         app: "index.html",
+        lean: "lean.html",
         screenCheck: "screen-check.html",
         trajectoryFrame: "trajectory-frame.html",
       },
@@ -51,6 +52,7 @@ export default defineConfig({
   },
   plugins: [
     buildBindingPlugin(),
+    leanBundlePlugin(),
     react(),
     runsPlugin(),
     catalogPlugin(),

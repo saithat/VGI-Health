@@ -1,4 +1,5 @@
-import Lean
+import Lean.Data.Json
+import Std
 /-! Single-select, non-editable APG profiles. Optional deletion, popup menus,
 multiselection and editable grid cells are not added by this library.
 Normative profiles: https://www.w3.org/WAI/ARIA/apg/patterns/

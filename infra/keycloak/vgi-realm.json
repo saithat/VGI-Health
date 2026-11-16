@@ -38,6 +38,13 @@
       "directAccessGrantsEnabled": false,
       "implicitFlowEnabled": false,
       "redirectUris": [
+        "http://127.0.0.1:5173/lean.html",
+        "http://localhost:5173/lean.html",
+        "http://127.0.0.1:4173/lean.html",
+        "http://localhost:4173/lean.html",
+        "http://127.0.0.1:4179/lean.html",
+        "http://localhost:4179/lean.html",
+
         "http://127.0.0.1:4179/?workflow=mar",
         "http://127.0.0.1:5173/?workflow=mar",
         "http://localhost:5173/?workflow=mar",
