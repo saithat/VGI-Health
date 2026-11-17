@@ -2,13 +2,14 @@
 
 [Overview](../../README.md) · [Layout contracts](ui-library.md)
 
-`/lean.html?persona=P1` is a separate, experimental live clinical page. The
-existing application, dashboard and replay entry points retain their renderers.
+`/lean.html?persona=P1` is the live clinical page; `/`, `/ehr` and
+`/?workflow=chart` open it, and the MAR dose list opens each dose on it. The
+React encounter/login shell (`/?shell=encounter`), ADT, the dashboard and
+replay entry points retain their renderers ([cut-over](../design/lean-ui-cutover.md)).
 Lean supplies geometry, every displayed text and the role of every part; a
 plain TypeScript painter patches native DOM controls into those rectangles and
 formats nothing. This changes the certified application and
-WASM hashes. Historical certificates must be rebound before deployment; this
-page does not claim that the deployed application has switched.
+WASM hashes. Historical certificates must be rebound before deployment.
 
 Use a supported desktop viewport: 1440×900, 1280×800 or 1920×1080 CSS pixels.
 Other sizes refuse interaction until a supported size is restored. Sign in
@@ -17,9 +18,13 @@ session, screen journal and commit service as the existing page. Patient search,
 chart loading, draft handling, receipts and signing remain in the existing
 session/service code. The painter does not write FHIR or construct clinical
 state. The optional authentication callback argument leaves existing callers'
-URLs unchanged. Existing Keycloak installations need the additional exact
-`/lean.html` callback URLs from `infra/keycloak/vgi-realm.json` provisioned before
-login; no live identity configuration is changed by a build.
+URLs unchanged. The page sends the exact `/lean.html` callback and keeps its own
+address, with its parameters, as the return URL; a host **Sign out** control in
+the reserved bottom margin ends the identity session and returns to
+`/lean.html`. Existing Keycloak installations need the exact `/lean.html`
+callback URLs from `infra/keycloak/vgi-realm.json` provisioned before login
+(`infra/keycloak/provision-adt.mjs` merges them); no live identity
+configuration is changed by a build.
 
 ## WASM interface and layout families
 
@@ -130,8 +135,11 @@ layout refusal makes the root inert and blocks queued interactions.
 Each tab is its own Lean target box and its own button with role `tab`:
 clicking it sends `selectTab` with its index; arrows/Home/End move focus among
 the sibling tabs through `Keyboard.tabs`, and Enter/Space activate the focused
-tab. Tab panels are not yet related to their tabs by ARIA. Each navigation
-link is likewise its own target box and button. Native selects
+tab. The tabs wrapper box holds two accessibility-only children without
+geometry or text: a `tablist` owning the tab buttons and a `tabpanel`
+labelled by the selected tab and owning the boxes of the shown body
+(`aria-owns`, `aria-controls`, `aria-labelledby`); only the selected tab is in
+the Tab order. Each navigation link is likewise its own target box and button. Native selects
 use `Keyboard.listbox` for Up/Down/Home/End and retain native popup/type-ahead
 behavior. Interruptive alert dialogs use `Keyboard.alertDialog`: Tab/Shift+Tab
 stay inside, ordinary controls are blocked, and the invoking focus is restored
@@ -140,11 +148,13 @@ it (`alertDialog_stays_open`); the painter swallows the key and there is no
 dismiss event, so acknowledgment cannot be bypassed. `Keyboard.dialog`, which
 closes on Escape, remains for ordinary dismissible dialogs and is not used for
 interruptive boxes. Rich medication cells have checked rectangles and supplied action
-controls. Table cells are grid cells: arrows, Home/End and
-Control+Home/End call `Keyboard.grid` with the table's rows and columns and
-move a roving focus between the cell boxes (`app/src/lean-ui/grid.ts`). The
-WASM keyboard API exposes and tests all five profiles without reimplementing
-their transitions in TypeScript.
+controls. Table cells are grid cells: arrows, Home/End, Control+Home/End and
+Page Up/Down call `Keyboard.grid` with the table's rows and columns and move a
+roving focus between the cell boxes (`app/src/lean-ui/grid.ts`); Page Up/Down
+keep the column and go to the first/last row shown. In a bounded list, Page
+Up/Down at that edge send the list's own previous/next page event. The WASM
+keyboard API exposes and tests all five profiles without reimplementing their
+transitions in TypeScript.
 
 **Admission boundary.** The semantic inventory has one target occurrence
 per navigation link, per tab, per section toggle, per field control and per
@@ -170,7 +180,7 @@ covered by the presentation row; their underlying child controls remain present.
 |---|---|---|
 | `section` and collapsible groups | Simpler look | Full heading card; the existing `toggle` child button sends `click`. Lean decides which children remain visible. No host collapse state. |
 | `columns` | Simpler look | Wrapper source and all children retained in Lean's order; no CSS columns. |
-| `tabs` | Works, simpler look | One button per tab in its own Lean target box sends `selectTab` with its index; roles and `aria-selected` follow Lean's `selected` flag and arrow keys call Lean. The wrapper prints nothing. Panel relationships are still required for APG parity. |
+| `tabs` | Works, simpler look | One button per tab in its own Lean target box sends `selectTab` with its index; roles and `aria-selected` follow Lean's `selected` flag and arrow keys call Lean. The wrapper prints nothing; an accessibility-only tablist and tabpanel relate the tabs to the shown body, and only the selected tab is in the Tab order. |
 | `stepper` | Simpler look | One numbered part per step from Lean; the current step is flagged (`aria-current`). No invented navigation; current renderer also treats this as a read-only overview. |
 | `field`: text and textarea | Works, simpler look | Lean's label part above Lean's control part; a native textarea in the control box; typing/composition emits `enter`; the value text returns on blur. No auto-growing editor. |
 | `field`: number/quantity/qty and unit | Works, simpler look | Native nonnegative number input, step 0.1, in the control box; existing unit/tenths conversion on the unit Lean sends with the control. The unit is its own part. |
@@ -182,7 +192,7 @@ covered by the presentation row; their underlying child controls remain present.
 | `field`: provenance, required/human-only, pending confirmation | Works, simpler look | Source caption, required marker, human-entry marker and entry hint are parts of their own from Lean. A pending value has a `pending` part: text when an explicit confirm button exists, otherwise a button of its own that sends `confirm`; the field stays editable. |
 | `info`: table/list/summary/document/status/entryTimes | Works, simpler look | Lean's caption and one part per cell with row and column, value text formatted in Lean; state cells and result flags carry a tone; an empty table says so. Uniform tables are a header row and value rows in shared column tracks; cells are grid cells (`role=gridcell`, row and column indexes). No medication cards or document sections. Late-entry times read in UTC. |
 | `info`: bounded lists (pager) | Works | A paged list shows one page (Lean's window): its position ("Records 21–40 of 705") and flagged count are text parts; previous, next and next-flagged are native buttons and the page selector a native select over Lean's page options; each sends `selectTab` with the page Lean gives it. A target that cannot move is disabled. |
-| `info`: structured row actions / keyboard grid | Works, simpler look | Action child buttons stay separate Lean target boxes; the dense layout puts a record's single-button actions in its row. A click or Enter on any cell of a row whose record has one navigation action sends that action's own `click` (no extra target or geometry). Arrow, Home/End and Control+Home/End move a roving focus through `Keyboard.grid` over the cell boxes. Rows with several actions keep their buttons. |
+| `info`: structured row actions / keyboard grid | Works, simpler look | Action child buttons stay separate Lean target boxes; the dense layout puts a record's single-button actions in its row. A click, Enter or Space on any cell of a row whose record has one navigation action sends that action's own `click` (no extra target or geometry). Arrow, Home/End, Control+Home/End and Page Up/Down move a roving focus through `Keyboard.grid` over the cell boxes; in a paged list Page Up/Down at the page edge turn the page. Rows with several actions keep their buttons. |
 | `alert` | Works, simpler look | Lean label, severity tone and a checked geometric severity mark; interruptive placement and inert ordinary controls remain. |
 | `button`: navigation, primary commit, macro, review, toggle, add/remove, reconciliation | Works, simpler look | Native button; `click` unchanged. Enabled state comes from Lean; the complete blocked reason is its own part. Lean step owns every action, including macro confirmations and group visibility. |
 | `button`: acknowledgment / explicit confirmation | Works, simpler look | `ack {alert: comp}` or `confirm {comp}` exactly as the current renderer. No automatic acknowledgment or confirmation. |
@@ -209,7 +219,7 @@ implemented rich encodings from the remaining table/list work.
 
 | Presentation kinds | Current surface and interaction | New painter status / need |
 |---|---|---|
-| `table`, `schedule`, `trackBoard`, `orSchedule`, `worklist`, `flowsheet`, `messages`, `results` | Structured record columns/status styling; supplied row controls; an enabled single navigation row can proxy its button click | Simpler text cards + separate action controls. Whole-row click proxy and column/status presentation missing; needs row/cell geometry. |
+| `table`, `schedule`, `trackBoard`, `orSchedule`, `worklist`, `flowsheet`, `messages`, `results` | Structured record columns/status styling; supplied row controls; an enabled single navigation row can proxy its button click | Works, simpler look: uniform records are grids in shared column tracks with state/flag tones, in-row single-button actions and whole-row navigation (rows above); long lists are paged. |
 | `timeGrid` | MAR day/hour columns, medication rows, due/status cells and supplied action controls | Works: checked row/hour/cell rectangles; supplied controls retain events. Long axes wrap into blocks; complete original values remain available. |
 | `folderList` | Folder names/counts/details and supplied child row controls | Works, simpler look: folder cards retain names/counts/details; supplied controls remain separate. |
 | `notes` | Note metadata/cards and provenance-aware title/body text | Works, simpler look: grouped cards retain complete metadata/body/provenance, with internal text scrolling. |
@@ -293,9 +303,10 @@ multi-patient board interaction. Current rich-widget results are documented in
 
 ## Cut-over
 
-The current [cut-over checklist](../design/lean-ui-cutover.md) records the
-remaining table/list, accessibility, deployment, default-route and certificate
-work. [Rich display methods](painter-parity.md) describe the patient board,
+The [cut-over checklist](../design/lean-ui-cutover.md) records what was
+validated for the default-route switch, the removed obligations and their
+replacements, and the remaining encounter-shell, ADT, deployment and
+certificate work. [Rich display methods](painter-parity.md) describe the patient board,
 scheduled-dose route, new display parts, checked marks and targeted evidence.
 
 ## Dense default verification

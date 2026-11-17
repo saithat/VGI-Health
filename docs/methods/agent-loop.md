@@ -16,7 +16,7 @@ arrive only in tool results. Patch tools and submit use the existing wire patch
 format (`op`, `path`, `from`, `valueJson`); selector segments address IDs or tags.
 Each candidate applies independently to the frozen current program.
 
-The separate `run-days --screens lean` research mode uses the existing JSON
+The `run-days --screens lean` mode (the default screen gate) uses the existing JSON
 proposal/choice loop, with an evidence-first prompt and a mode-only `layout`
 move over the `/layouts` sidecar. It supports declarative rules and existing
 literal trees, expands and admits rules inside the native screen gate, and returns
