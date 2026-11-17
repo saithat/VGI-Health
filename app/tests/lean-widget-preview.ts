@@ -5,6 +5,13 @@ import { createPainter } from "../src/lean-ui/painter";
 import type { UiScreen } from "../src/ehr/ui/types";
 import type { Output } from "../src/lean-ui/layout";
 import "../src/lean-ui/painter.css";
+import {
+  eraseContent,
+  fixedShellFor,
+  layoutFor,
+  shapeFor,
+  viewports,
+} from "../../scripts/layout-reference/generator.mjs";
 declare global {
   interface Window {
     paintLeanWidget?: (screen: UiScreen) => Output;
@@ -47,4 +54,46 @@ window.paintLeanWidget = (screen) => {
   painter.patch(screen, selected.output);
   window.__leanPaint = selected.output;
   return selected.output;
+};
+declare global {
+  interface Window {
+    /** Paints through an explicit family (as `/lean.html?family=`): the dense
+     * generator or the fixed shell, for `shapeOf` (default: this screen's own
+     * shape). Lean revalidates the family; an uncovered shape is refused. */
+    paintLeanFamily?: (
+      screen: UiScreen,
+      generator: "dense" | "fixed-shell",
+      shapeOf?: UiScreen,
+    ) => Output;
+  }
+}
+window.paintLeanFamily = (screen, generator, shapeOf) => {
+  const call = (value: unknown): Output =>
+    JSON.parse(layout(JSON.stringify(value)));
+  const windowed = (s: UiScreen): UiScreen =>
+    JSON.parse(layout(JSON.stringify({ op: "window", screen: s }))).screen;
+  const shown = windowed(screen);
+  const source = windowed(shapeOf ?? screen);
+  const shape = shapeFor(source);
+  const build = generator === "dense" ? layoutFor : fixedShellFor;
+  const references = [
+    {
+      screen: eraseContent(source),
+      layouts: viewports.map((viewport) => ({
+        viewport,
+        tree: build(shape, viewport),
+      })),
+    },
+  ];
+  const output = call({
+    op: "family-paint",
+    references,
+    screen: shown,
+    viewport: { w: innerWidth * 64, h: innerHeight * 64 },
+    maxTargetsPerViewport: 15,
+  });
+  root.dataset.referenceLayout = generator;
+  if (output.accepted) painter.patch(shown, output);
+  window.__leanPaint = output;
+  return output;
 };

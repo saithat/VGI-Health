@@ -1,4 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
+import { z } from "zod";
 import { uiScreenSchema, type UiScreen } from "../ehr/ui/types";
 import type { Output } from "./layout";
 
@@ -658,4 +660,169 @@ test("board fixture at every desktop size: repeated IDs, pane-scoped events, cro
     await paint(page, boardScreen());
     await expect(review("B")).toBeEnabled();
   }
+});
+
+const widgets = z
+  .record(z.string(), z.unknown())
+  .parse(
+    JSON.parse(
+      readFileSync(
+        new URL("../../tests/data/lean-widgets.json", import.meta.url),
+        "utf8",
+      ),
+    ),
+  );
+/** Every complete text a box carries: Lean's display text and, where a
+ * formatter reworded it, the recorded datum. */
+const boxTexts = (page: Page) =>
+  page
+    .locator("#root [data-box]")
+    .evaluateAll((els) =>
+      els.flatMap((e) =>
+        [e.getAttribute("aria-label"), e.getAttribute("title")].filter(
+          (t): t is string => Boolean(t),
+        ),
+      ),
+    );
+/** The info cell values of a fixture, in source order. */
+function cellValues(value: unknown): string[] {
+  if (Array.isArray(value)) return value.flatMap(cellValues);
+  if (!value || typeof value !== "object") return [];
+  const rows = "rows" in value ? value.rows : undefined;
+  const own = Array.isArray(rows)
+    ? rows.flatMap((row: unknown) =>
+        Array.isArray(row)
+          ? row.flatMap((cell: unknown) =>
+              Array.isArray(cell) && typeof cell[1] === "string" && cell[1]
+                ? [cell[1]]
+                : [],
+            )
+          : [],
+      )
+    : [];
+  return [
+    ...own,
+    ...Object.entries(value)
+      .filter(([k]) => k !== "rows")
+      .flatMap(([, v]) => cellValues(v)),
+  ];
+}
+const contains = (texts: string[], value: string) =>
+  texts.some((t) => t === value || t.includes(value));
+
+test("charts and timelines match their complete values; custom families and the fixed shell cover the rich shapes", async ({
+  page,
+}) => {
+  await preview(page);
+  const trend = asScreen(widgets.trend);
+  const growth = asScreen(widgets.growth);
+  const dated = asScreen(widgets.datedTimeline);
+  const plain = asScreen(widgets.timeline);
+  const fallback: string[] = [];
+  for (const viewport of viewports) {
+    await page.setViewportSize(viewport);
+    // Trend: only whole decimal values with explicit-offset times are
+    // plotted, in time order, labelled with their exact source strings.
+    await paint(page, trend);
+    const labels = await page
+      .locator('[data-kind="plotLabel"]')
+      .evaluateAll((els) => els.map((e) => e.getAttribute("aria-label")));
+    expect(labels).toEqual([
+      "1. 2026-11-13T08:00:00Z · 4.1 mmol/L",
+      "2. 2026-11-14T12:00:00Z · 4.6 mmol/L",
+      "3. 2026-11-15T08:00:00Z · 4.3 mmol/L",
+    ]);
+    await expect(page.locator('[data-kind="plotYLow"]')).toHaveAttribute(
+      "aria-label",
+      "4.1",
+    );
+    await expect(page.locator('[data-kind="plotYHigh"]')).toHaveAttribute(
+      "aria-label",
+      "4.6",
+    );
+    // The unplottable record stays readable in the complete table.
+    let texts = await boxTexts(page);
+    for (const value of cellValues(widgets.trend))
+      expect(contains(texts, value), value).toBe(true);
+    // Growth: every point label is a recorded age and measurement.
+    await paint(page, growth);
+    texts = await boxTexts(page);
+    const points = await page
+      .locator('[data-kind="plotLabel"]')
+      .evaluateAll((els) => els.map((e) => e.getAttribute("aria-label") ?? ""));
+    expect(points.length).toBeGreaterThan(0);
+    const recorded = cellValues(widgets.growth);
+    for (const point of points)
+      for (const part of point.replace(/^\d+\. /, "").split(" · "))
+        expect(
+          recorded.some((v) => part.includes(v)),
+          `${point}: ${part}`,
+        ).toBe(true);
+    for (const value of recorded)
+      expect(contains(texts, value), value).toBe(true);
+    // Dated timeline: exact timestamps and sources, undated entries kept.
+    await paint(page, dated);
+    texts = await boxTexts(page);
+    for (const value of [
+      "2026-11-13T08:00:00Z",
+      "2026-11-15T08:00:00Z",
+      "Observation/a",
+      "Observation/b",
+      "Observation/c",
+      "Complete clinical history remains available.",
+    ])
+      expect(contains(texts, value), value).toBe(true);
+    // Plain timeline: source order, no inferred dates.
+    await paint(page, plain);
+    texts = await boxTexts(page);
+    for (const value of cellValues(widgets.timeline))
+      expect(contains(texts, value), value).toBe(true);
+    // Families: an explicit dense family and the fixed shell are each
+    // revalidated by Lean for every rich shape; complete text remains. A
+    // family for another shape is refused (no host fallback).
+    for (const kind of Object.keys(widgets)) {
+      const screen = asScreen(widgets[kind]);
+      const values = cellValues(widgets[kind]);
+      for (const generator of ["dense", "fixed-shell"] as const) {
+        const accepted = await page.evaluate(
+          ([screen, generator]) => {
+            try {
+              return window.paintLeanFamily?.(screen, generator).accepted;
+            } catch (error) {
+              return String(error);
+            }
+          },
+          [screen, generator] as const,
+        );
+        if (accepted !== true) {
+          fallback.push(
+            `${kind}/${generator}/${viewport.width}: ${String(accepted)}`,
+          );
+          continue;
+        }
+        texts = await boxTexts(page);
+        for (const value of values)
+          expect(contains(texts, value), `${kind}/${generator}: ${value}`).toBe(
+            true,
+          );
+      }
+      const other = kind === "trend" ? growth : trend;
+      const uncovered = await page.evaluate(
+        ([screen, other]) => {
+          try {
+            return window.paintLeanFamily?.(screen, "dense", other).accepted;
+          } catch (error) {
+            return String(error);
+          }
+        },
+        [screen, other] as const,
+      );
+      // Refused: either a verdict or Lean's uncovered-shape error.
+      expect(
+        uncovered === false || /not in admitted family/.test(String(uncovered)),
+        `${kind} with another shape's family: ${String(uncovered)}`,
+      ).toBe(true);
+    }
+  }
+  expect(fallback, "families Lean refused").toEqual([]);
 });
