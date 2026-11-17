@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "7aec9deb986290444147ac418d57b5236ca008c6d8cd7670bcb39e3e5fba50b1",
+  "leanSourceHash": "d6468db77b028b79de28bd35f31724f1c21313b321c5f9b07dcff6664ee7be1f",
   "sources": {
     "lean/Audit/SpecSurface.lean": "9149e833ded951dc9aaf66fc8848f2eb3dbe142ec14c885b4d290d8303830cec",
     "lean/CommitProtocol.lean": "5d42e502a3b4016d216becffb7c99bfb2940852167a3948e2273cfea98e295a6",
@@ -211,7 +211,7 @@
     "lean/Ehr/Layout/Fonts.lean": "2cc3a7de5a89c6ffa47cddbeaedc35927400519631e3a38650213593436796c8",
     "lean/Ehr/Layout/Format.lean": "85e5722715d8531d30a828a92445deba46b2f3d93904546d98a85cc6b27a6ae2",
     "lean/Ehr/Layout/Json.lean": "fbf2e20eb2dc3ff8df1d00bda5393403aa7d882405d5dcbf3c9b80cd10b2f9e5",
-    "lean/Ehr/Layout/Keyboard.lean": "8273b5418cc8bbf5b4f685ea148c9ebe8c1cc01f4f36ffafb7ff0b06c14145d8",
+    "lean/Ehr/Layout/Keyboard.lean": "987937163a6ed654f5934993e05b14473047216b10e76c884cf0f57ef4bf055f",
     "lean/Ehr/Layout/Main.lean": "e6e67d20389731bb09c5fed8491cff9d62b0fd4ec93902d0d6b6f1d3d1fc6d44",
     "lean/Ehr/Layout/Parts.lean": "8fad6abc74ec92e19553ae1582934f0040edf3b28726f6f5c457c39bb63535b1",
     "lean/Ehr/Layout/Range.lean": "bcd5b299c59f98bf8c8646e4e834f22322c5bb8dc7db65f8404e8f6428e61654",
@@ -431,7 +431,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "e80a7432df3675d8761fd1c8ba8132e8f647fdc9b80f868eadf03774918ef2c2",
+    "ehr-interp.wasm": "7ec919df127d0d849407e31cc389f9fe57ffe9f7e415fd608d8a37356e1fb5a5",
     "interp-loader.mjs": "97bdde445bef78a3aec9f5664e1274b9399094191d5282a71a656b88713040b7",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

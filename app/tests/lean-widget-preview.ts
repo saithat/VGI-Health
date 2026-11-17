@@ -8,6 +8,8 @@ import "../src/lean-ui/painter.css";
 declare global {
   interface Window {
     paintLeanWidget?: (screen: UiScreen) => Output;
+    /** Events the painter sent, in order; the fixture host applies none. */
+    leanEvents?: { patient?: string; event: unknown }[];
   }
 }
 const root = document.getElementById("root");
@@ -16,9 +18,22 @@ const interp = await loadWasmInterp(),
   layout = interp.layout;
 if (!layout) throw Error("Missing layout API");
 const reference = createReferencePainter(layout);
+const events: { patient?: string; event: unknown }[] = [];
+window.leanEvents = events;
 const painter = createPainter(root, {
-  dispatch() {},
-  keyboard: (_p, _r, _c, s) => s,
+  dispatch(event) {
+    events.push({ event });
+  },
+  dispatchPatient(patient, event) {
+    events.push({ patient, event });
+  },
+  // The proved transitions through the same layout API as the clinical page.
+  keyboard: (profile, rows, cols, state, key) =>
+    JSON.parse(
+      layout(
+        JSON.stringify({ op: "keyboard", profile, rows, cols, state, key }),
+      ),
+    ),
 });
 window.paintLeanWidget = (screen) => {
   const start = performance.now();

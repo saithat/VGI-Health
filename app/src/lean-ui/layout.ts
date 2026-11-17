@@ -13,7 +13,9 @@ export type KeyboardKey =
   | "space"
   | "tab"
   | "shiftTab"
-  | "escape";
+  | "escape"
+  | "pageUp"
+  | "pageDown";
 export interface KeyboardState {
   focus: number;
   selected: number;
@@ -49,6 +51,10 @@ export const keyboardKey = (event: KeyboardEvent): KeyboardKey | undefined => {
       return event.shiftKey ? "shiftTab" : "tab";
     case "Escape":
       return "escape";
+    case "PageUp":
+      return "pageUp";
+    case "PageDown":
+      return "pageDown";
   }
   return undefined;
 };
