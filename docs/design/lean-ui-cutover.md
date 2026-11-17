@@ -86,7 +86,9 @@ in [painter-parity](../methods/painter-parity.md#cut-over-validation).
   `/lean.html` callback, the page address with its parameters restored after
   the callback (also for board and MAR URLs), silent restore on reload, Sign
   out returning to `/lean.html`, and no silent login afterwards (`sign-in,
-  return URL and sign-out`). The realm template lists `/lean.html` for every
+  return URL and sign-out`). Sign out is an admitted Lean navigation target
+  (`Layout.withSession`, New specification for owner review), at least
+  24×24 px, counted by G10, and sends no clinical event. The realm template lists `/lean.html` for every
   local origin. Provisioning deployed identity systems is out of scope.
 - [x] **Viewport contract (decided).** Desktop only: 1440×900, 1280×800 and
   1920×1080. There is no mobile, reflow or 200% text-resize contract; other
@@ -94,10 +96,12 @@ in [painter-parity](../methods/painter-parity.md#cut-over-validation).
 - [ ] **Encounter/login shell and standalone `/adt` (open).** Both stay on
   their current React renderer, unchanged: `/?shell=encounter` and
   `/?workflow=adt`. Shared dashboard/browser UI helpers keep their consumers.
+- The accessibility/screen audit pair currently audits the React screens
+  through the browser gate; the Lean page relies on G1–G11 and its Playwright
+  tests.
 - [ ] **Validate the deployed release and workload through the Lean page.**
   A one-day replay for P1–P5 ran with `run-days --screens lean` and no model
-  call (all tasks completed; P5 needed a separate process after a heap
-  failure), and the full accessibility/screen audit pair ran once with zero
+  call in one process with the default heap (all tasks completed), and the full accessibility/screen audit pair ran once with zero
   findings; details are in [workload through the Lean page](#workload-through-the-lean-page).
   A deployed release was not validated.
 - [x] **Switch the default clinical entry points** (this change); removed
@@ -145,18 +149,40 @@ Results of this change's validation run (see the parity page for commands):
   | P4 | 22/22 | 699 | 943 |
   | P5 | 18/18 | 559 | 955 |
 
-  Failure: the first run, with all five personas in one process and an 8 GB
-  Node heap, completed P1–P4 and then ran out of JavaScript heap during P5's
-  day. P5 was rerun alone (11 GB heap, same command otherwise) and completed.
-  The single-process five-persona run therefore needs more than 8 GB of heap;
-  no limit or rule was changed.
+  The first such run, with all five personas in one process and an 8 GB Node
+  heap, ran out of JavaScript heap during P5's day. The screen gate's memory
+  grew across personas and along long traces (the shape admission cache, full
+  paints and families held for a whole measurement, and every trace event's
+  screen and interpreter state). With those bounded, the same one-process,
+  five-persona replay completed with Node's default heap (2,096 MB in its
+  12 GB unit): the same counts as above, 0 screen assertion failures, 0
+  invalid patches, 0 infrastructure errors, in 79 minutes. Retained heap
+  after a full GC, sampled every 20 s:
+
+  | Phase | Before: max MB | After: max MB |
+  |---|---:|---:|
+  | P1 certification | 783 | 370 |
+  | P2 certification | 755 | 239 |
+  | P3 certification | 984 | 234 |
+  | P4 certification | 1,617 | 422 |
+  | P5 certification | 2,008, then out of heap | 675 |
+  | P1 day 1 | not reached | 615 |
+  | P2 day 1 | not reached | 942 |
+  | P3 day 1 | not reached | 757 |
+  | P4 day 1 | not reached | 673 |
+  | P5 day 1 | not reached | 910 |
+
+  The peak was 1,014 MB retained and 1,978 MB RSS for the run process
+  (2.42 GB maximum RSS of any process in the run, as reported by
+  `/usr/bin/time`). Before the fixes, the same command with the default heap
+  ran out of heap after 10 minutes, during P5's certification.
 - **Accessibility/screen audit pair**, run once, sequentially (templates
   then personas, 44 minutes in total): 1,956 template states (18,774
   measurements) and 1,394 persona states (13,428 measurements), zero
   findings, no failed tests. The pair audits the React screens through the
   browser gate; it is not a Lean-page audit.
-- Application build `appSha256` 683c4c05d3d405efda439ea3e0687774cd2f9b19771e92680fd64f1021ecfb25;
-  WASM Lean sha256 d6468db77b028b79de28bd35f31724f1c21313b321c5f9b07dcff6664ee7be1f.
+- Application build `appSha256` 82df1564b6683d30c926a7ab6efe7cde1f6173bb4e66f4cc6ff2c3ff678db4fa;
+  WASM Lean sha256 550abc1f026cff8127909ccae1a71fc94417cee6cf25e93d9ea25487ef0dc463.
 
 ## Implemented prerequisites
 
