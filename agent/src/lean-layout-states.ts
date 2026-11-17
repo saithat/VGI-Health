@@ -9,6 +9,9 @@ import { expandProgram } from "./composites.js";
 import { EhrSession } from "./lean-layout-native.js";
 import { runNative } from "./native-process.js";
 import { REPO_ROOT, writeJson } from "./util.js";
+import { stableStringify } from "./program.js";
+import { occurrences } from "./lean-layout-geometry.js";
+import { shapeFor } from "../../scripts/layout-reference/generator.mjs";
 import type { DayResult, DaySchedule, Program, Spec } from "./schema.js";
 export interface LeanScreenState {
   screen: string;
@@ -17,6 +20,32 @@ export interface LeanScreenState {
   state: string;
   eventIndex?: number;
   sample?: string;
+}
+/** Appends trace states while retaining only the screens the gate reads.
+ * The gate paints the last state of each erased shape (`[screen, shape]`) and
+ * places boxes from the first state of each `[screen, shape, occurrences]`;
+ * every other state is used only through those keys, so it shares that first
+ * state's screen object. A day's trace holds thousands of full screens, and
+ * keeping all of them (with every interpreter state) exhausted the Node heap.
+ * Results are unchanged: each state keeps its own keys, events and order. */
+export function compactStates(states: LeanScreenState[]) {
+  const lastOfShape = new Map<string, number>(),
+    firstOfPlacement = new Map<string, Record<string, unknown>>(),
+    placementOf: string[] = [];
+  return (state: LeanScreenState) => {
+    const shape = stableStringify([state.screen, shapeFor(state.ui)]),
+      placement = stableStringify([state.screen, shapeFor(state.ui), occurrences(state.ui)]);
+    if (!firstOfPlacement.has(placement)) firstOfPlacement.set(placement, state.ui);
+    const previous = lastOfShape.get(shape);
+    if (previous !== undefined) {
+      const earlier = states[previous],
+        canonical = firstOfPlacement.get(placementOf[previous] ?? "");
+      if (earlier && canonical) earlier.ui = canonical;
+    }
+    lastOfShape.set(shape, states.length);
+    placementOf.push(placement);
+    states.push(state);
+  };
 }
 let contextQueue: Promise<void> = Promise.resolve();
 async function serialContext<T>(work: () => Promise<T>): Promise<T> {
@@ -110,6 +139,7 @@ export async function traceStates(
         ),
       );
     const states: LeanScreenState[] = [];
+    const keep = compactStates(states);
     for (const context of contexts) {
       if (context.nativeMismatch)
         throw Error(
@@ -203,10 +233,9 @@ export async function traceStates(
             !isDeepStrictEqual(after.result, row.event.result)
           )
             throw Error(`Native geometry replay mismatch ${context.id}/${i}`);
-          states.push({
+          keep({
             screen: row.event.screen,
             ui,
-            render,
             state: `trace-${row.index}`,
             eventIndex: row.index,
           });
