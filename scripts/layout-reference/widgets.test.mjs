@@ -122,3 +122,21 @@ test('two long track boards keep each action in its patient row and pin scoped u
     }
   }
 });
+
+test('patientPane roots keep their local table and urgent controls without a board wrapper', async () => {
+  const {boardPatients} = await import('./board-fixture.mjs');
+  const screen = native({op: 'board-screen', panes: boardPatients()});
+  screen.workspace = screen.workspace[0].board.children;
+  const shape = shapeFor(screen);
+  const references = [{screen: eraseContent(screen), layouts: viewports.map(viewport =>
+    ({viewport, tree: layoutFor(shape, viewport)}))}];
+  assert.equal(native({op: 'family-check', references}).accepted, true);
+  const painted = native({op: 'family-paint', references, screen});
+  assert.ok(painted.accepted && painted.linked);
+  const {components} = geometryFor(screen, painted);
+  assert.notDeepEqual(components['Ada::open-19'], components['Blair::open-19']);
+  for (const patient of ['Ada', 'Blair']) {
+    assert.ok(components[patient + '::open-19']);
+    assert.deepEqual(components[patient + '::ack'].chain, []);
+  }
+});

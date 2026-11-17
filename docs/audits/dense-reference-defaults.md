@@ -22,10 +22,11 @@ checks the family with WASM, then paints the actual semantic screen through WASM
 
 ## Dense clinical boards (dense-reference-v12)
 
-The [board report](dense-boards.md) describes the geometry and tests a
-complete live two-patient ED note. The dense
-family places repeated table actions, urgent controls and dialogs in their
-owning pane and checks the same vendor density limits.
+In the live two-patient ED note, dense admission improved from 7/36 to
+36/36 checkpoints. V11 and v12 both admitted all 439 retained ED board
+states, including 29 embedded on landing screens. Neither recording contained
+a composed patient pane. The [board report](dense-boards.md) gives scroll
+and pointer costs for both recordings, plus pane-ownership and viewport tests.
 
 ## Severity marks within one alert occurrence (dense-reference-v11)
 

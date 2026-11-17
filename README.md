@@ -107,7 +107,7 @@ Historical certificates have not been rebound to this runtime.
 | Learnability gate replay | 5 of 28 retained shipped decisions have measured R2 refusals; 9 pass validation, 12 lack full pixel evidence and 2 exceed replay limits. Independent counterfactuals, not a new recording. [Policy and matrix](docs/methods/learnability-validation.md#retained-recording-replay). |
 | Layout optimization pilot | One frozen P1 context accepts B and refuses D after D adds three validation clicks; both selected designs have structural distance 0.004717 and zero native rejection rate. This does not establish improvement or broader exploration. [Discovery policy and pilot](docs/methods/discovery-and-cadence.md). |
 
-The experimental Lean painter keeps dense patient boards within the existing screen limits and aligns each patient’s row actions, urgent controls and dialog with their pane. [Board measurements](docs/audits/dense-boards.md).
+The experimental Lean painter keeps each patient’s row actions, urgent controls and dialog in their pane. A two-patient ED note stayed dense at all 36 checkpoints through signing. [Board measurements](docs/audits/dense-boards.md).
 
 The [EHR scope inventory](docs/methods/ehr-scope.md) lists seven workflows, five
 personas and the simplified or absent departments, interfaces and production
