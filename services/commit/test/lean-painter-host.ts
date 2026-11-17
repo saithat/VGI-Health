@@ -18,6 +18,9 @@ const issuerHost=createServer((_request,response)=>{response.setHeader('Content-
 issuerHost.listen(0,'127.0.0.1');await once(issuerHost,'listening');
 const address=issuerHost.address();if(!address||typeof address==='string')throw Error('Missing issuer port');
 const issuer=`http://127.0.0.1:${address.port}`;
+// New specification for owner review: optional allergy evidence exercises an
+// interruptive alert and its severity plot in one occurrence through real replay.
+const alertFixture=process.env.LEAN_PAINTER_TEST_ALERT === '1';
 const scheduledTime=new Date().toISOString().slice(0,13)+':00:00Z';
 const config=configSchema.parse({tenant:`lean-painter-${randomUUID()}`,
   oidc:{issuer,audience:'vgi-commit',clientId:'vgi-mar'},
@@ -43,7 +46,7 @@ try {
     {resource:{resourceType:'Patient',id,meta:{versionId:'1'},name:[{text:'Alex Painter',given:['Alex'],family:'Painter'}],identifier:[{system:'http://hospital.example/mrn',value:'PAINTER-001'}],birthDate:'1968-01-01',gender:'male'}},
     {resource:{resourceType:'Encounter',id:'painter-enc',meta:{versionId:'1'},status:'in-progress',class:{code:process.env.LEAN_PAINTER_TEST_PERSONA === 'P3' ? 'IMP' : process.env.LEAN_PAINTER_TEST_PERSONA === 'P2' ? 'EMER' : 'AMB'},subject:{reference:`Patient/${id}`},period:{start:'2026-11-15T00:00:00Z'}}},
     {resource:{resourceType:'MedicationRequest',id:'painter-order',meta:{versionId:'1'},status:'active',intent:'order',subject:{reference:`Patient/${id}`},encounter:{reference:'Encounter/painter-enc'},medicationCodeableConcept:{text:'amoxicillin'},dosageInstruction:[{timing:{event:[scheduledTime]},route:{text:'PO'},doseAndRate:[{doseQuantity:{value:500,unit:'mg'}}]}]}},
-    {resource:{resourceType:'AllergyIntolerance',id:'painter-nka',meta:{versionId:'1'},patient:{reference:`Patient/${id}`},code:{coding:[{system:'http://snomed.info/sct',code:'716186003',display:'No known allergy'}]},clinicalStatus:{coding:[{code:'active'}]}}},
+    {resource:{resourceType:'AllergyIntolerance',id:'painter-nka',meta:{versionId:'1'},patient:{reference:`Patient/${id}`},code:{coding:[alertFixture?{system:'http://www.nlm.nih.gov/research/umls/rxnorm',code:'7980',display:'Penicillin'}:{system:'http://snomed.info/sct',code:'716186003',display:'No known allergy'}]},clinicalStatus:{coding:[{code:'active'}]}}},
   ]}});
   await a.store.importPatient({patient:'painter-second',modelId:2,context:{today:'2026-11-15',now:600,receipts:[],record:[],encounterId:'painter-second-enc'},bundle:{resourceType:'Bundle',type:'collection',entry:[
     {resource:{resourceType:'Patient',id:'painter-second',meta:{versionId:'1'},name:[{text:'Blair Painter',given:['Blair'],family:'Painter'}],identifier:[{system:'http://hospital.example/mrn',value:'PAINTER-002'}],birthDate:'1972-01-01',gender:'female'}},

@@ -61,7 +61,7 @@ test('the inventory lists every display part with its role, text and state; no J
     ['8', 'heading', 'Medications'], ['8.0', 'cellLabel', 'Medication'], ['8.1', 'cellLabel', 'Status'],
     ['8.2', 'cellValue', 'Aspirin'], ['8.3', 'status', 'Active'], ['8.4', 'cellValue', 'Lisinopril'], ['8.5', 'status', 'on hold'],
     ['9', 'heading', 'Allergies'], ['9.0', 'empty', 'Allergies not on file'],
-    ['10', 'alert', 'Penicillin allergy'], ['10.0', 'item', ''],
+    ['10', 'alert', 'Penicillin allergy'],
     ['11', 'button', 'Sign'], ['11.0', 'reason', 'Allergies not reviewed'], ['11.1', 'hotkey', 'Ctrl+S'],
   ]);
   for (const { part } of inventory) assert.ok(!/[{}[\]]/.test(part.text), part.text);

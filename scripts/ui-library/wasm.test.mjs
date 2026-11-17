@@ -127,3 +127,20 @@ test('all rich widgets have identical native/WASM inventories, checked boxes and
   }
   writeFileSync(resolve(process.env.TMPDIR??'/home/saithat/Projects/run-tmp','painter-parity-wasm-metrics.json'),JSON.stringify(times,null,2));
 });
+
+test('native and WASM keep five alert severity marks inside five strip occurrences',async()=>{
+  const {shapeFor,layoutFor,fixedShellFor,viewports}=await import('../layout-reference/generator.mjs');
+  const screen=json('app/tests/data/lean-widgets.json').alert;
+  screen.urgent=Array.from({length:5},(_,i)=>({alert:{comp:`urgent:${i}`,alertId:`a${i}`,label:'Review '.repeat(100),severity:'interruptive'}}));
+  screen.urgent.push({button:{comp:'ack',label:'Acknowledge',role:'ack',enabled:true,blockedReason:null,hotkey:null}});
+  for(const viewport of viewports){
+    const requests=[{op:'structural-paint',screen,viewport},...[layoutFor,fixedShellFor].map(generator=>({op:'family-paint',screen,viewport,
+      references:[{screen,layouts:viewports.map(viewport=>({viewport,tree:generator(shapeFor(screen),viewport)}))}]}))];
+    for(const request of requests){
+      const expected=layout(request),actual=wasm.call('ehr_layout',JSON.stringify(request));
+      assert.equal(actual,expected);const out=JSON.parse(actual);assert.equal(out.accepted,true,JSON.stringify(out.findings));
+      const urgent=out.boxes.filter(d=>d.box.info.urgent);assert.equal(urgent.length,6);
+      for(const d of urgent.filter(d=>d.box.info.mark!=='rect'))assert.equal(d.box.info.text.inset,d.box.rect.h);
+    }
+  }
+});

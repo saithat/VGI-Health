@@ -52,3 +52,32 @@ test('explicit confirmation metadata cannot suppress another patient confirmatio
   assert.equal(pending.length,2);assert.equal(pending[0].part.target,undefined);assert.equal(pending[1].part.target,true);
   assert.deepEqual(actual.inventory.map(e=>[e.path,e.part.target===true]),mirror.map(e=>[e.path,e.target]));
 });
+
+test('an alert owns one occurrence, a square plot and disjoint complete text in dense and fixed boxes',async()=>{
+  const {fixedShellFor}=await import('./generator.mjs');
+  const screen=structuredClone(screens.alert);
+  screen.urgent=Array.from({length:5},(_,i)=>({alert:{comp:`urgent:${i}`,alertId:`a${i}`,label:'W'.repeat(500),severity:'interruptive'}}));
+  screen.urgent.push({button:{comp:'ack',label:'Acknowledge',role:'ack',enabled:true,blockedReason:null,hotkey:null}});
+  const inventory=native({op:'inventory',screen}).inventory;
+  assert.equal(inventory.filter(e=>e.part.role==='alert').length,6);
+  assert.ok(inventory.filter(e=>e.part.role==='alert').every(e=>e.part.plot));
+  assert.ok(!inventory.some(e=>e.part.kind==='severityIcon'));
+  for(const generator of [layoutFor,fixedShellFor]) for(const viewport of viewports){
+    const references=[{screen:eraseContent(screen),layouts:viewports.map(viewport=>({viewport,tree:generator(shapeFor(screen),viewport)}))}];
+    const out=native({op:'family-paint',screen,references,viewport});
+    assert.equal(out.accepted,true,JSON.stringify(out.findings));
+    for(const [i,d] of out.boxes.entries())if(out.parts[i]?.role==='alert'){
+      const {w,h}=d.box.rect,plot=d.box.info.mark.plot;
+      assert.equal(d.box.info.text.inset,h);assert.ok(w>h);
+      assert.deepEqual(plot.paths[0][0],{x:Math.floor(5000*h/10000),y:Math.floor(800*h/10000)});
+      assert.ok([...plot.paths.flat(),...plot.dots].every(p=>p.x>=0&&p.x<=h&&p.y>=0&&p.y<=h));
+      assert.ok(out.lineWidths[i].every(width=>width<=w-h));
+      assert.equal(d.lines.join(''),d.original);
+    }
+    const bad=structuredClone(references);
+    const recolor=node=>{if(node.source&&inventory.some(e=>e.part.role==='alert'&&JSON.stringify(e.path)===JSON.stringify(node.source))){node.fg={r:160,g:160,b:160};node.bg='white';}for(const child of node.children??[])recolor(child);};
+    bad[0].layouts.forEach(l=>recolor(l.tree));
+    const refused=native({op:'family-paint',screen,references:bad,viewport});
+    assert.equal(refused.accepted,false);assert.ok(refused.findings.some(f=>f.rule==='G6'));
+  }
+});

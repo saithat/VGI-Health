@@ -1,8 +1,10 @@
+// New specification for owner review: v11 keeps each severity plot in its
+// alert occurrence and reserves its square width in every generated text slot.
 import {widgetParts,placeWidgetParts,numeric,dated} from "./widgets.mjs";
 // Untrusted, content-independent vendor reference geometry. All sizes are 1/64px.
 import {windowOnce} from './window.mjs';
 export const viewports = [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}];
-export const version = 'dense-reference-v10';
+export const version = 'dense-reference-v11';
 const px = n => Math.round(n * 64);
 const key = path => path.join('.');
 const button=(comp,label,role)=>({button:{comp,label,role,enabled:true,blockedReason:null,hotkey:null}});
@@ -43,7 +45,6 @@ function leafParts(cx,kind,v) {
   }
   if(kind==='presentation')return widgetParts(v.kind,v.children,cx.references);
   if(kind==='timeline')return [{role:'item',widget:'timeAxis'}];
-  if(kind==='alert')return [{role:'item',widget:'severityIcon'}];
   if(kind==='board') return v.urgent.map(()=>({role:'alert'}));
   if(kind==='datedTimeline') return [...v.dated,...v.undated].map(()=>({role:'item'})).concat([{role:'item',widget:'timeAxis'}]);
   if(kind==='chartReferences') return v.references.map(()=>({role:'item'}));
@@ -169,14 +170,14 @@ function validate(shape,viewport) {
   const slots=Array.isArray(shape)?shape:shape.slots;
   if (!Array.isArray(slots) || !slots.length || new Set(slots.map(s=>key(s.path))).size!==slots.length)
     throw Error('Expected unique semantic slot paths');
-  return slots;
+  return slots.map(s=>({...s,alert:shape.hints?.[key(s.path)]?.role==='alert'}));
 }
 function card(slot,x,y,w,h,{z=0,font=0,fontSize=12,lines=1,bg='white',fg='slate-900'}={}) {
   return {type:slot.target?'Button':'Text',id:`source-${key(slot.path)}`,source:slot.path,
     target:slot.target,banner:slot.region==='banner',commit:slot.region==='footer',interruptive:slot.region==='modal',urgent:slot.region==='urgent',
     position:{x:px(x),y:px(y)},width:px(w),height:px(h),z,bg,fg,
     text:{key:`source-${key(slot.path)}`,safety:true,overflow:'scroll',maxLines:lines,
-      font,fontSize:px(fontSize),lineHeight:px(fontSize===14?22:18)}};
+      inset:slot.alert?px(Math.min(w,h)):0,font,fontSize:px(fontSize),lineHeight:px(fontSize===14?22:18)}};
 }
 const absolute=(id,x,y,w,h,children)=>({type:'Absolute',id,position:{x:px(x),y:px(y)},width:px(w),height:px(h),children});
 function scroller(id,x,y,w,h,children) {
@@ -365,8 +366,6 @@ export function layoutFor(shape,viewport) {
       const leaves=kids.filter(isLeaf),children=kids.filter(k=>!isLeaf(k));
       if(h.leaf) return lines([node],x,y,w)-2;
       let bottom=y;
-      const icon=leaves.find(l=>hint(l).widget==='severityIcon');
-      if(icon){add(node,x+28,y,w-28,28);add(icon,x,y,24,24);return y+28;}
       const rich=placeWidgetParts(leaves,hint,add,x,y+(h.role==='heading'?24:0),w);
       if(rich!==null){if(h.role==='heading')add(node,x,y,w,20,{bg:'slate-100'});else wrapperBox(node,y);bottom=rich;}
       else switch(h.placement) {

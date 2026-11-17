@@ -473,7 +473,7 @@ it("runs two days through Lean providers with scripted/replay backends and no br
     screenGate: "lean",
     browserCertified: false,
     status: "completed",
-    referenceGeneratorVersion: "dense-reference-v10",
+    referenceGeneratorVersion: "dense-reference-v11",
   });
   expect(
     manifest.referenceUsage.some(

@@ -460,6 +460,11 @@ keeps all of it fixed on screen; its fields are runs of that part. -/
 def bannerPart (banner : List (String × String)) (viewer : Option String) : Part :=
   { role := .banner, text := runsText (bannerRuns banner viewer), runs := bannerRuns banner viewer }
 
+/-- New specification for owner review: the alert's geometric severity symbol. -/
+def severityPlot : Widgets.Plot :=
+  { paths := [[⟨5000,800⟩,⟨9400,9200⟩,⟨600,9200⟩,⟨5000,800⟩],[⟨5000,3500⟩,⟨5000,6200⟩]],
+    dots := [⟨5000,7900⟩] }
+
 /-! ## Lists a node carries beside its children -/
 
 /-- New specification for owner review: a board demand: the patient (name and
@@ -471,7 +476,7 @@ def demandPart (d : UiBoardDemand) : Part :=
     | some mrn => name ++ " · MRN " ++ mrn
     | none => name
   { role := .alert, text := who ++ " · " ++ d.label, raw := d.label, comp := d.alertId, kind := d.severity,
-    tone := severityTone d.severity }
+    tone := severityTone d.severity, plot := some severityPlot }
 
 /-- New specification for owner review: a dated source: its UTC instant, then
 the record, field and recorded timestamp it was read from. -/
@@ -499,7 +504,7 @@ def referencePart (ref : UiChartReference) : Part :=
 a patient pane carries. -/
 def stripAtomPart : UiStripAtom → Part
   | .alert comp _ label severity =>
-    { role := .alert, text := label, comp, kind := severity, tone := severityTone severity }
+    { role := .alert, text := label, comp, kind := severity, tone := severityTone severity, plot := some severityPlot }
   | .button comp label role enabled _ _ =>
     { role := .button, text := Format.controlCaption label, raw := label, target := true, comp, kind := role, enabled }
 
@@ -539,16 +544,11 @@ def ownPart (cx : DisplayCx) : UiNode → Part
     { role := .heading, text := Format.sectionCaption label, raw := label,
       comp := if comp == "" then infoId else comp, kind := display, tone := Format.sectionTone label }
   | .alert comp _ label severity =>
-    { role := .alert, text := label, comp, kind := severity, tone := severityTone severity }
+    { role := .alert, text := label, comp, kind := severity, tone := severityTone severity, plot := some severityPlot }
   | .button comp label role enabled _ _ =>
     { role := .button, text := Format.controlCaption label, raw := label, target := true,
       commit := role == "primary", comp, kind := role, enabled,
       selected := role == "nav" && cx.activeNav == some comp }
-
-/-- New specification for owner review: the alert's geometric severity symbol. -/
-def severityPlot : Widgets.Plot :=
-  { paths := [[⟨5000,800⟩,⟨9400,9200⟩,⟨600,9200⟩,⟨5000,800⟩],[⟨5000,3500⟩,⟨5000,6200⟩]],
-    dots := [⟨5000,7900⟩] }
 
 /-- New specification for owner review: the further parts of a node, in
 reading order, before its child nodes. -/
@@ -559,7 +559,6 @@ def leafParts (cx : DisplayCx) : UiNode → List Part
   | .tabs id labels selected _ => tabParts id labels selected
   | .stepper steps current => stepParts steps current
   | .info comp _ infoId display rows => windowParts cx comp ++ infoParts infoId display rows
-  | .alert _ _ _ _ => [{role := .item, kind := "severityIcon", plot := some severityPlot}]
   | .board urgent _ => urgent.map demandPart
   | .datedTimeline _ dated undated _ => dated.map datedPart ++ undated.map undatedPart ++
       [{role := .item, kind := "timeAxis", plot := some (Widgets.datedPlot dated)}]
@@ -568,6 +567,13 @@ def leafParts (cx : DisplayCx) : UiNode → List Part
   | .presentation kind cs => (Widgets.presentation kind cs cx.references).map widgetPart
   | .timeline _ cs => [{role := .item, kind := "timeAxis", plot := some (Widgets.plot [] (cs.zipIdx.map fun (_,i) => ⟨i,0,""⟩))}]
   | _ => []
+
+/-- New specification for owner review: the label and severity plot share the
+alert's own part; an alert adds no further occurrence. -/
+theorem alert_one_part (cx : DisplayCx) (comp alertId label severity : String) :
+    leafParts cx (.alert comp alertId label severity) = [] ∧
+    (ownPart cx (.alert comp alertId label severity)).plot = some severityPlot := by
+  exact ⟨rfl,rfl⟩
 
 /-- The text of a node's own occurrence. It does not depend on the context. -/
 def semanticText (node : UiNode) : String := (ownPart {} node).text
@@ -826,6 +832,7 @@ theorem lists_complete (cx : DisplayCx) :
 #print axioms zipIdx_at
 #print axioms bannerRunRole_cases
 #print axioms mem_joinRuns
+#print axioms alert_one_part
 #print axioms ownPart_text
 #print axioms field_complete
 #print axioms control_shows_choice

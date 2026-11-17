@@ -140,7 +140,7 @@ test('navigation and tab targets have separate boxes; urgent targets stay pinned
   assert.notDeepEqual(g.components.orders.center,g.components.notes.center);
   assert.notDeepEqual(g.components['panel#tab:0'].center,g.components['panel#tab:1'].center);
   assert.deepEqual(g.approximations,[]);
-  assert.equal(painted.boxes.filter(d=>d.box.info.urgent).length,3);
+  assert.equal(painted.boxes.filter(d=>d.box.info.urgent).length,2);
   assert.deepEqual(r.density,{firstViewport:2,scrollWindow:2,fixed:2});
 });
 

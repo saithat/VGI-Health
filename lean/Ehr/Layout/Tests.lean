@@ -133,12 +133,12 @@ private def portAll (screen : Ehr.Render.UiScreen) : Bool := viewports.all fun v
   let ps := boxes v n
   checkAll 15 e (urgentPaths (screenShape screen)) v ps && decide (Linked (screenShape screen) ps)
 -- The family reference layout pins the strip above the review scroller and the modal layer.
-#guard (urgentPaths (screenShape (urgentScreen 2 true))).length == 5
+#guard (urgentPaths (screenShape (urgentScreen 2 true))).length == 3
 #guard portAll (urgentScreen 2 false)
 #guard portAll (urgentScreen 2 true)
 #guard portAll (urgentScreen 0 true)
 #guard ((boxes desk (portScreen desk (urgentScreen 2 true)).1).filter (·.info.urgent)).all
-  fun p => p.clips.isEmpty && p.rect.y ≥ 11264 && p.rect.bottom ≤ 11264 + 5*2048
+  fun p => p.clips.isEmpty && p.rect.y ≥ 11264 && p.rect.bottom ≤ 11264 + 3*2048
 
 /-! Navigation links, tabs and the signed-in clinician in the semantic
 inventory; new specification for owner review. -/
@@ -215,7 +215,7 @@ private def route : UiNode := .field "route" "Route" "code" (some "PO") none non
 #guard (part (.button "sign" "Sign" "primary" false none none) []).map (fun p => (p.target,p.commit,p.enabled,p.kind)) ==
   some (true,true,false,"primary")
 -- An alert: its label; the severity is kind and tone, not text.
-#guard view (.alert "a" "allergy" "Penicillin allergy" "interruptive") == [([],.alert,"Penicillin allergy"),([0],.item,"")]
+#guard view (.alert "a" "allergy" "Penicillin allergy" "interruptive") == [([],.alert,"Penicillin allergy")]
 #guard (part (.alert "a" "allergy" "Penicillin allergy" "interruptive") []).map (fun p => (p.kind,p.tone)) ==
   some ("interruptive","red")
 #guard view (.section "g" "Vitals" [.text "x"]) == [([],.heading,"Vitals"),([0],.text,"x")]

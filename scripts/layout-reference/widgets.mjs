@@ -1,5 +1,7 @@
 // Structural mirror of Layout.Widgets: roles/counts only. Lean supplies all
 // displayed strings and numeric mark geometry; this module never plots data.
+// New specification for owner review: an alert carries its plot in its own
+// occurrence; severity icons reserve no widget leaf or placement row.
 export const numeric=s=>/^-?\d+(?:\.\d{1,6})?$/.test((s??'').replace(/^[\t\n\v\f\r ]+|[\t\n\v\f\r ]+$/g,''));
 const cell=(r,k)=>r.find(([key])=>key===k)?.[1]??'';
 export const widgetRows=nodes=>nodes.flatMap(n=>{const [k,v]=Object.entries(n)[0];return k==='info'?v.rows:widgetRows(k==='tabs'?v.body:k==='patientPane'?v.children:v.children??[]);});

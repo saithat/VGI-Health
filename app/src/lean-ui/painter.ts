@@ -648,6 +648,10 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
             if (shape) element.append(shape);
             if (drawn.lines.some((line) => line.length > 0)) {
               const lines = paintText(drawn, part);
+              // New specification for owner review: Lean reserves the alert icon width.
+              const inset = drawn.box.info.text?.inset ?? 0;
+              lines.style.left = px(inset);
+              lines.style.width = px(drawn.box.rect.w - inset);
               element.append(lines);
               lines.scrollTop = scroll;
             }
@@ -744,6 +748,20 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
               .join(" "),
           );
       }
+      // New specification for owner review: a retained scroller may be reset
+      // or clamped when its content or modal state changes. Translate from
+      // its actual browser offset even when no scroll event was delivered.
+      let moved = false;
+      for (const entry of entries.values()) {
+        if (!entry.drawn.box.scroll) continue;
+        const id = entry.drawn.box.info.id;
+        const offset = entry.element.scrollTop;
+        if ((offsets.get(id) ?? 0) !== offset) {
+          offsets.set(id, offset);
+          moved = true;
+        }
+      }
+      if (moved) entries.forEach(place);
       modalOpen = modal;
       modalToken = token;
     },
