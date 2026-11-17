@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "d6468db77b028b79de28bd35f31724f1c21313b321c5f9b07dcff6664ee7be1f",
+  "leanSourceHash": "550abc1f026cff8127909ccae1a71fc94417cee6cf25e93d9ea25487ef0dc463",
   "sources": {
     "lean/Audit/SpecSurface.lean": "9149e833ded951dc9aaf66fc8848f2eb3dbe142ec14c885b4d290d8303830cec",
     "lean/CommitProtocol.lean": "5d42e502a3b4016d216becffb7c99bfb2940852167a3948e2273cfea98e295a6",
@@ -197,7 +197,7 @@
     "lean/Ehr/Examples/TwoNightMoveTests.lean": "e6991bf2799a4d4415fed91d93c23bb6ee5f7b02e36a9d67f8a8b52a3aff9229",
     "lean/Ehr/Formulary.lean": "8435e6da3b1365f995bbb1b5314a28900e93281afe819f80324e97908c6dd1c4",
     "lean/Ehr/JsonCompat.lean": "dd8b7847ec7dc49bbe70b28ba325963a523e4d461a0490c4fb34090f888a6f4c",
-    "lean/Ehr/Layout/Api.lean": "30f3223ae47f887f3de4a5102d361cc3948201898f2ccd1aca04dd8b3d6b743a",
+    "lean/Ehr/Layout/Api.lean": "2910703c0e6fccd96802936df8bb9dc7b114e69e570ef29ffdd357e13cd0e642",
     "lean/Ehr/Layout/Audit.lean": "034afc51e3391a4892ce158ad74c02beb8c666c44f409e010813be48a911b04c",
     "lean/Ehr/Layout/BoardScreen.lean": "91601f1585b2a53f68bb2c553479975252cb70715266929ef52ce70dbcc0b4e3",
     "lean/Ehr/Layout/Check.lean": "2250b973459135336bba824b6a2112d3688aff5ec83005a880e49352d8617097",
@@ -216,6 +216,7 @@
     "lean/Ehr/Layout/Parts.lean": "8fad6abc74ec92e19553ae1582934f0040edf3b28726f6f5c457c39bb63535b1",
     "lean/Ehr/Layout/Range.lean": "bcd5b299c59f98bf8c8646e4e834f22322c5bb8dc7db65f8404e8f6428e61654",
     "lean/Ehr/Layout/Semantic.lean": "af0f49fe64d64ab83012fe8133d8d7627a31c911c28bafc1e26e6f6f810a541c",
+    "lean/Ehr/Layout/Session.lean": "498ecc0d84fa1e0df4857a28b56cfe113ed584bbf9d0342a1362ccb28fec494d",
     "lean/Ehr/Layout/Shell.lean": "0af7d52b683c0b838d3e4ffc21174fbf055a306a38c5e38cae66421476eddceb",
     "lean/Ehr/Layout/Strip.lean": "00c9b15e646715edfc89c14c85a71f1d7d2f605e441d7b7995e77d7ed3293130",
     "lean/Ehr/Layout/Structural.lean": "4f63e3355debd0e703981ad2d892b1738e8e695bda394f186d9721d601f001e4",
@@ -431,7 +432,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "7ec919df127d0d849407e31cc389f9fe57ffe9f7e415fd608d8a37356e1fb5a5",
+    "ehr-interp.wasm": "62b8ebfe22a811f0145bd9520bfca46af0e60d5892e12b59f3efc172368ee30f",
     "interp-loader.mjs": "97bdde445bef78a3aec9f5664e1274b9399094191d5282a71a656b88713040b7",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

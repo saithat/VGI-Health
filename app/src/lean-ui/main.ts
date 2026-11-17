@@ -51,14 +51,6 @@ async function main() {
     root.append(login);
     return;
   }
-  // Host session control, outside the admitted clinical layout (like the
-  // status line): ends the identity session and returns to this page.
-  const signOutButton = document.createElement("button");
-  signOutButton.id = "sign-out";
-  signOutButton.type = "button";
-  signOutButton.textContent = "Sign out";
-  signOutButton.onclick = () => signOut(callback);
-  document.body.append(signOutButton);
   const persona = user.persona === "RN2" ? "P3" : user.persona;
   const date = query.get("date") ?? clinicalDate();
   const baseline =
@@ -154,10 +146,22 @@ async function main() {
         }
       : {}),
   });
+  // Sign out is a Lean navigation target (`Layout.withSession`); its click
+  // ends the identity session and never reaches the clinical interpreter.
+  let signOutComp = "";
   function dispatch(
     event: Parameters<typeof session.dispatch>[0],
     patient?: string,
   ) {
+    if (
+      patient === undefined &&
+      signOutComp &&
+      "click" in event &&
+      event.click.comp === signOutComp
+    ) {
+      void signOut(callback);
+      return;
+    }
     const target = patient ? boardSessions.get(patient) : session;
     const generation =
       target && "getGeneration" in target ? target.getGeneration() : undefined;
@@ -211,12 +215,26 @@ async function main() {
       : ordinary;
     if (!snapshot.ui || !snapshot.layout)
       throw new Error("Lean semantic screen/layout API is required");
+    // Layout and painting see the screen with its session group; the journal
+    // keeps the clinical screen.
+    const sessioned = z
+      .object({
+        screen: z.custom<NonNullable<typeof snapshot.ui>>(),
+        signOut: z.string(),
+      })
+      .parse(
+        JSON.parse(
+          layout(JSON.stringify({ op: "session", screen: snapshot.ui })),
+        ),
+      );
+    signOutComp = sessioned.signOut;
+    const shown = sessioned.screen;
     const viewport = { w: window.innerWidth * 64, h: window.innerHeight * 64 };
     const start = performance.now();
     let output: Output;
     if (references === undefined) {
       const selected = referencePaint(
-        snapshot.ui,
+        shown,
         viewport,
         referenceLimit(
           String(content.program.specVersion),
@@ -232,7 +250,7 @@ async function main() {
         JSON.stringify({
           op: "family-paint",
           references,
-          screen: snapshot.ui,
+          screen: shown,
           viewport,
           maxTargetsPerViewport: referenceLimit(
             String(content.program.specVersion),
@@ -255,7 +273,7 @@ async function main() {
       );
     }
     root.inert = false;
-    painter.patch(snapshot.ui, output);
+    painter.patch(shown, output);
     if (board) board.onPaint();
     else session.onPaint(snapshot.ui);
     // Read-only browser evidence; no state/dispatch hook is exposed here.

@@ -19,9 +19,13 @@ chart loading, draft handling, receipts and signing remain in the existing
 session/service code. The painter does not write FHIR or construct clinical
 state. The optional authentication callback argument leaves existing callers'
 URLs unchanged. The page sends the exact `/lean.html` callback and keeps its own
-address, with its parameters, as the return URL; a host **Sign out** control in
-the reserved bottom margin ends the identity session and returns to
-`/lean.html`. Existing Keycloak installations need the exact `/lean.html`
+address, with its parameters, as the return URL. **Sign out** is a Lean
+target: `Layout.withSession` adds a "Session" navigation group with one link
+(`session.signOut`) to the screen used for layout and painting, so the fixed
+shell and the dense reference place it, the target rules size it and G10
+counts it. Its click ends the identity session and returns to `/lean.html`;
+the interpreter never receives it, and the journal keeps the clinical screen.
+Like every ordinary control, it is blocked while an interruptive alert is open. Existing Keycloak installations need the exact `/lean.html`
 callback URLs from `infra/keycloak/vgi-realm.json` provisioned before login
 (`infra/keycloak/provision-adt.mjs` merges them); no live identity
 configuration is changed by a build.

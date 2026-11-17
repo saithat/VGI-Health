@@ -144,3 +144,17 @@ test('native and WASM keep five alert severity marks inside five strip occurrenc
     }
   }
 });
+test('native and WASM add the same session group and paint the sign-out target identically',()=>{
+  const screen={banner:[['Patient','Synthetic Patient']],nav:[['Chart',[['home','Home']]]],title:'Results',side:[],modal:null,
+    workspace:[{button:{comp:'sign',label:'Sign',role:'primary',enabled:true,blockedReason:null,hotkey:null}}]};
+  const request={op:'session',screen};
+  const expected=layout(request);
+  assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),expected);
+  const reply=JSON.parse(expected);
+  assert.equal(reply.signOut,'session.signOut');
+  assert.deepEqual(reply.screen.nav.at(-1),['Session',[['session.signOut','Sign out']]]);
+  const inventory={op:'inventory',screen:reply.screen};
+  const native=layout(inventory);
+  assert.equal(wasm.call('ehr_layout',JSON.stringify(inventory)),native);
+  assert.equal(JSON.parse(native).inventory.filter(e=>e.part.comp==='session.signOut'&&e.part.target).length,1);
+});

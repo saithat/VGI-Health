@@ -109,7 +109,39 @@ test("sign-in, return URL and sign-out on /lean.html", async ({ page }) => {
     );
     // Sign out ends the identity session and returns to the registered page.
     const origin = new URL(page.url()).origin;
-    await page.getByRole("button", { name: "Sign out" }).click();
+    // Sign out is a Lean target: a navigation link in the checked layout,
+    // with its own admitted box, and its click never reaches the session.
+    const signOut = control(page, "session.signOut", "click");
+    await expect(signOut).toHaveCount(1);
+    const box = await signOut.evaluate((e) => {
+      const id = e.closest<HTMLElement>("[data-box]")?.dataset.box;
+      const i = window.__leanPaint?.boxes.findIndex(
+        (d) => d.box.info.id === id,
+      );
+      const part = i === undefined ? undefined : window.__leanPaint?.parts?.[i];
+      const drawn = i === undefined ? undefined : window.__leanPaint?.boxes[i];
+      return {
+        accepted: window.__leanPaint?.accepted,
+        target: part?.target,
+        comp: part?.comp,
+        w: drawn ? drawn.box.rect.w / 64 : 0,
+        h: drawn ? drawn.box.rect.h / 64 : 0,
+      };
+    });
+    expect(box).toMatchObject({
+      accepted: true,
+      target: true,
+      comp: "session.signOut",
+    });
+    expect(box.w).toBeGreaterThanOrEqual(24);
+    expect(box.h).toBeGreaterThanOrEqual(24);
+    await expect(page.locator("#sign-out")).toHaveCount(0);
+    const events: string[] = [];
+    page.on("request", (r) => {
+      if (r.url().includes("/commit/sessions/")) events.push(r.url());
+    });
+    await reveal(page, signOut);
+    await signOut.click();
     await expect(
       page.getByRole("button", { name: "Sign in as P1" }),
     ).toBeVisible();
@@ -117,6 +149,7 @@ test("sign-in, return URL and sign-out on /lean.html", async ({ page }) => {
       `${origin}/lean.html`,
     );
     expect(seen.logout.at(-1)?.get("client_id")).toBe("vgi-mar");
+    expect(events, "sign-out sent no clinical event").toEqual([]);
     expect(
       await page.evaluate(() => sessionStorage.getItem("vgi.oidc.session")),
     ).toBeNull();

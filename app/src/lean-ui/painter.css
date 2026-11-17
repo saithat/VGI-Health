@@ -141,7 +141,7 @@ body {
   left: 0;
   bottom: 0;
   z-index: 1000;
-  max-width: calc(100% - 96px);
+  max-width: 100%;
   max-height: 16px;
   overflow: auto;
   background: #fff;
@@ -241,23 +241,4 @@ input.lean-control[type="checkbox"] {
   height: 0;
   overflow: hidden;
   pointer-events: none;
-}
-/* Host session control in the reserved bottom margin, beside the status line. */
-#sign-out {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  height: 16px;
-  padding: 0 8px;
-  border: 0;
-  background: #fff;
-  color: #1d4ed8;
-  font: 12px/16px "VGI World Sans";
-  text-decoration: underline;
-  cursor: pointer;
-}
-#sign-out:focus-visible {
-  outline: 2px solid #1d4ed8;
-  outline-offset: -2px;
 }
