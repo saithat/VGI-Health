@@ -57,7 +57,13 @@ try {
     if (response.status() >= 400)
       failed.push(`${response.status()} ${response.url()}`);
   });
+  // The default clinical entry opens the Lean page; the React encounter
+  // shell remains selectable.
   await page.goto(`${base}/`);
+  await expect(page).toHaveURL(/\/lean\.html$/);
+  await expect(page.getByRole("button", { name: "Sign in as P1" })).toBeVisible();
+  console.log("Lean clinical sign-in loaded");
+  await page.goto(`${base}/?shell=encounter`);
   await expect(page.getByRole("heading", { name: "Choose a clinician" })).toBeVisible();
   await expect(page.getByRole("button", { name: /^P1 · / })).toBeVisible();
   console.log("Live clinician sign-in loaded");

@@ -8,20 +8,24 @@ import { clinicalCssVariables, clinicalTheme } from "./ehr/ui/theme";
 import { Notifications } from "@mantine/notifications";
 import "./styles.css";
 import "./ehr.css";
+import { leanEntry } from "./entry";
 
-const root = document.getElementById("root");
-if (!root) throw new Error("Missing app root");
+const lean = leanEntry(location.href);
+if (lean) location.replace(lean);
+const root = lean ? null : document.getElementById("root");
+if (!lean && !root) throw new Error("Missing app root");
 Object.entries(clinicalCssVariables).forEach(([name, value]) =>
   document.documentElement.style.setProperty(name, value),
 );
-createRoot(root).render(
-  <React.StrictMode>
-    <MantineProvider theme={clinicalTheme}>
-      <Notifications
-        position="bottom-right"
-        classNames={{ root: "clinical-notifications" }}
-      />
-      <Router />
-    </MantineProvider>
-  </React.StrictMode>,
-);
+if (root)
+  createRoot(root).render(
+    <React.StrictMode>
+      <MantineProvider theme={clinicalTheme}>
+        <Notifications
+          position="bottom-right"
+          classNames={{ root: "clinical-notifications" }}
+        />
+        <Router />
+      </MantineProvider>
+    </React.StrictMode>,
+  );

@@ -10,7 +10,7 @@ import {
 test("default route shows persona sign-in, baseline entry and offline links", async ({
   page,
 }) => {
-  await page.goto("/?audit=buttons");
+  await page.goto("/?shell=encounter&audit=buttons");
   await expect(
     page.getByRole("heading", { name: "Choose a clinician" }),
   ).toBeVisible({ timeout: 30000 });
@@ -40,7 +40,7 @@ for (const baseline of [false, true]) {
     test.skip(!(await backendAvailable()), backendDownReason);
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.goto("/?audit=buttons");
+    await page.goto("/?shell=encounter&audit=buttons");
     if (baseline) await signInBaseline(page, "P1");
     else {
       await page.getByRole("button", { name: /^P1 · / }).click();
@@ -71,7 +71,7 @@ test("baseline entry opens the selected clinician's certified role view", async 
   page,
 }) => {
   test.skip(!(await backendAvailable()), backendDownReason);
-  await page.goto("/?audit=buttons");
+  await page.goto("/?shell=encounter&audit=buttons");
   await page
     .getByLabel("Baseline clinician", { exact: true })
     .selectOption("P3");

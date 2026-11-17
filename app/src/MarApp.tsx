@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Button, Group, Paper, Stack, Text, Title } from "@mantine/core";
-import { UiScreenView } from "./ehr/ui/Screen";
-import { loadWasmInterp } from "./core/wasmInterp";
-import { createLiveSession } from "./core/liveSession";
 import {
   loginMar,
   logoutMar,
@@ -14,76 +11,40 @@ import {
   type MarUser,
 } from "./data/commitService";
 
-type Session = Awaited<ReturnType<typeof createLiveSession>>;
 const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
 let restored: Promise<MarUser | undefined> | undefined;
 
-function administrationLabel(administration: MarItem["administrations"][number]) {
+function administrationLabel(
+  administration: MarItem["administrations"][number],
+) {
   const outcome = administration.statusReason
     ?.flatMap((reason) => reason.coding ?? [])
     .find((coding) => coding.system === "urn:vgi:mar-status")?.code;
   switch (administration.status) {
-    case "completed": return "Given";
-    case "on-hold": return outcome === "delayed" ? "Delayed" : "Held";
+    case "completed":
+      return "Given";
+    case "on-hold":
+      return outcome === "delayed" ? "Delayed" : "Held";
     case "not-done":
-      return outcome === "held" ? "Held" : outcome === "refused" ? "Refused" : "Not given";
-    case "in-progress": return "In progress";
-    default: return administration.status;
+      return outcome === "held"
+        ? "Held"
+        : outcome === "refused"
+          ? "Refused"
+          : "Not given";
+    case "in-progress":
+      return "In progress";
+    default:
+      return administration.status;
   }
-}
-
-function MarChart({ session, viewer }: { session: Session; viewer: string }) {
-  const snapshot = useSyncExternalStore(session.subscribe, session.getSnapshot);
-  const [error, setError] = useState("");
-  const [pending, setPending] = useState(false);
-  const queue = useRef(Promise.resolve());
-  if (!snapshot.ui) return <Alert role="alert">MAR renderer unavailable</Alert>;
-  return (
-    <>
-      {error && (
-        <Alert color="red" role="alert">
-          {error}
-        </Alert>
-      )}
-      <div aria-busy={pending}>
-        <UiScreenView
-          screen={snapshot.ui}
-            onPaint={session.onPaint}
-          viewer={viewer}
-          onEvent={(event) => {
-            setPending(true);
-            const generation =
-              "getGeneration" in session ? session.getGeneration() : undefined;
-            queue.current = queue.current
-              .then(() => {
-                if (
-                  "getGeneration" in session &&
-                  session.getGeneration() !== generation
-                )
-                  throw new Error(
-                    "The chart refreshed. Review the current dose and repeat the action.",
-                  );
-                return session.dispatch(event);
-              })
-              .then(() => setError(""))
-              .catch((error) => setError(messageOf(error)))
-              .finally(() => setPending(false));
-          }}
-        />
-      </div>
-    </>
-  );
 }
 
 /** W4 uses the same authenticated commit authority as every other live workflow. */
 export function MarApp() {
   const [user, setUser] = useState<MarUser>();
   const [items, setItems] = useState<MarItem[]>([]);
-  const [session, setSession] = useState<Session>();
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [pending, setPending] = useState(false);
   useEffect(() => {
     let active = true;
     restored ??= restoreMar();
@@ -137,47 +98,23 @@ export function MarApp() {
       stops.forEach((stop) => stop());
     };
   }, [user]);
-  useEffect(
-    () => () => {
-      if (session && "close" in session) session.close();
-    },
-    [session],
-  );
-  async function open(item: MarItem) {
+  /** The scheduled dose opens on the Lean clinical page, through the same
+   * MAR session and shared dose authority (`marPatient`/`marRelease`/
+   * `marWorkflow`). This list, sign-in and cosigning stay here. */
+  function open(item: MarItem) {
     if (!user) return;
     if (user.user.role !== "rn") {
       setError("MAR requires the RN role.");
       return;
     }
-    setPending(true);
-    setError("");
-    try {
-      const interp = await loadWasmInterp();
-      const next = await createLiveSession(
-        interp,
-        {},
-        {},
-        { resourceType: "Bundle", type: "collection", entry: [] },
-        {
-          practitioner: { resourceType: "Practitioner", id: user.user.id },
-          persona: user.persona ?? "P3",
-          role: user.user.role,
-        },
-        undefined,
-        undefined,
-        {
-          patient: item.patient,
-          release: item.release,
-          workflow: item.workflow,
-          onUpdate: setMessage,
-        },
-      );
-      setSession(next);
-    } catch (error) {
-      setError(messageOf(error));
-    } finally {
-      setPending(false);
-    }
+    location.assign(
+      `/lean.html?${new URLSearchParams({
+        persona: user.persona ?? "P3",
+        marPatient: item.patient,
+        marRelease: item.release,
+        marWorkflow: item.workflow,
+      })}`,
+    );
   }
   return (
     <main>
@@ -232,8 +169,8 @@ export function MarApp() {
                 {item.administrations.length ? (
                   item.administrations.map((administration) => (
                     <Text key={administration.id}>
-                      {administrationLabel(administration)}{" "}
-                      · {administration.effectiveDateTime}
+                      {administrationLabel(administration)} ·{" "}
+                      {administration.effectiveDateTime}
                       {administration.statusReason
                         ?.map((reason) => reason.text)
                         .join("; ")}
@@ -245,7 +182,6 @@ export function MarApp() {
               </div>
               <Group mt="sm">
                 <Button
-                  disabled={pending}
                   onClick={() => {
                     void open(item);
                   }}
@@ -269,12 +205,6 @@ export function MarApp() {
               </Group>
             </Paper>
           ))}
-          {session && (
-            <MarChart
-              session={session}
-              viewer={`${user.name ?? user.persona} · Inpatient RN`}
-            />
-          )}
         </Stack>
       )}
     </main>

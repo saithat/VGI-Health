@@ -45,6 +45,7 @@ import { SEED_POLICIES, type SeedPolicy } from './seeded.js';
 import { createScreenChecker } from './screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, readJson, resolveUserPath } from './util.js';
+import { defaultScreenMode, recordedScreenGate } from './screen-mode.js';
 import { loadWorld } from './world.js';
 import { evaluateQuality, historicalDecisions } from './quality.js';
 import type { QualityArm } from './quality-report.js';
@@ -98,7 +99,10 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const offlineArchive=values['offline-archive']?await readJson(resolveUserPath(values['offline-archive']),z.object({programs:z.array(programSchema)})):undefined;
   const simulationModes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork',simModel:values['sim-model']??'wave3',textCost:values['text-cost']??'length'});
   if(values.screens&&!['lean','browser'].includes(values.screens))throw Error('--screens must be lean or browser');
-  const summary = await runDays({ ...(values.screens?{screenMode:z.enum(['lean','browser']).parse(values.screens)}:{}),simulationModes,structurePolicy,...(values['incomplete-penalty']!==undefined?{incompletePenalty:Number(values['incomplete-penalty'])}:{}),...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
+  const runsRoot=values['runs-root']?resolveUserPath(values['runs-root']):path.join(REPO_ROOT,'runs');
+  const screenMode=defaultScreenMode({screens:values.screens,resume:values.resume,archive:useArchive,generatorOnly:values['generator-only'],
+    recordedGate:values.resume&&values['run-id']?await recordedScreenGate(path.join(runsRoot,values['run-id'],'manifest.json')):undefined});
+  const summary = await runDays({ screenMode,simulationModes,structurePolicy,...(values['incomplete-penalty']!==undefined?{incompletePenalty:Number(values['incomplete-penalty'])}:{}),...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
     ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
     ...(values['generator-only'] ? {generatorOnly:true}:{}),
     ...(values['discovery-nights'] ? {discoveryNights:intArg(values['discovery-nights'],'discovery-nights',3)}:{}),

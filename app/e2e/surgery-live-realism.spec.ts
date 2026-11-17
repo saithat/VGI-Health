@@ -15,7 +15,7 @@ async function openClinic(
   name: "Aaron" | "Terrance",
   inspect: boolean,
 ) {
-  await page.goto(`/?audit=buttons${inspect ? "&inspect=1" : ""}`);
+  await page.goto(`/?shell=encounter&audit=buttons${inspect ? "&inspect=1" : ""}`);
   await page.getByRole("button", { name: /^P5 · / }).click();
   await completeKeycloakLogin(page, "P5");
   await enterPatientChart(page, name);

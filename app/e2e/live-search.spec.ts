@@ -10,7 +10,7 @@ for (const name of ["Aaron", "Terrance"]) {
     page,
   }) => {
     test.skip(!(await backendAvailable()), backendDownReason);
-    await page.goto("/?audit=buttons");
+    await page.goto("/?shell=encounter&audit=buttons");
     await page.getByRole("button", { name: /^P1 · / }).click();
     await completeKeycloakLogin(page, "P1");
     await enterPatientChart(page, name);
