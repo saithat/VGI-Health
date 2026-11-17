@@ -47,6 +47,12 @@ unlimited content through its own wrapping text scroller. No clinical text is
 truncated to achieve admission. The typography uses the research painter's
 pinned 12px/18px metrics, with 14px/22px headings.
 
+On clinical boards, each patient pane owns its table index and action column.
+Narrow records occupy several aligned bands. The shared body makes room for
+crowded control rows at the supplied screen limit. Pinned pane controls stay
+within the horizontal track of the patient they operate on.
+[Board geometry and measurements](../audits/dense-boards.md).
+
 ## API and admission
 
 ```js
@@ -54,7 +60,7 @@ import {layoutFor, shapeFor, viewports} from '../../scripts/layout-reference/gen
 import {ReferenceLayouts} from '../../scripts/layout-reference/admission.mjs';
 
 const shape = shapeFor(screen);
-const tree = layoutFor(shape, viewports[0]); // authoring only; not admitted
+const tree = layoutFor(shape, viewports[0], measuredLimit); // board spacing uses this limit
 const cache = new ReferenceLayouts({cacheDir: process.env.TMPDIR + '/reference-cache'});
 const result = cache.get(screen, {maxTargetsPerViewport: measuredLimit});
 const painted = cache.paint(result, screen, viewports[0]);
@@ -65,8 +71,8 @@ Viewport dimensions are in **1/64 CSS pixels**: 1440×900 is `{w:92160,h:57600}`
 by `family-check`; that loses the widget hints used to reconstruct columns.
 `shapeFor(screen)` adds content-free hints to the native slots: each part's
 role, each node's kind, narrative-field classification, the row and column of
-table cells and whether a table's records share their captions. It never
-retains labels, patient values or control IDs. `occurrences(screen)` is the
+table cells and whether a table's records share their captions. It includes
+structural table and row-action keys and the patient namespace for scoped parts. `occurrences(screen)` is the
 single JavaScript/TypeScript mirror of Lean's inventory (paths, roles,
 targets, components); the painter's tests, the agent's geometry and this
 generator use it, and tests compare it with Lean's `inventory` operation. Every semantic occurrence, including section, column and

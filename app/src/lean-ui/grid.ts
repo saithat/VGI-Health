@@ -25,6 +25,11 @@ export function tableCells(boxes: GridBox[]): Map<string, GridBox[]> {
   return tables;
 }
 
+// Row component IDs repeat across sessions. The painter sets data-patient
+// from the enclosing Lean source path before connecting the grid.
+const tableKey = (box: GridBox) =>
+  JSON.stringify([box.element.dataset.patient ?? "", box.part?.comp ?? ""]);
+
 /** A record row's single navigation action: the one button of the row-action
  * group that Lean attaches to that table row (`rowAction target row`). */
 export function rowActions(boxes: GridBox[]): Map<string, GridBox> {
@@ -40,9 +45,11 @@ export function rowActions(boxes: GridBox[]): Map<string, GridBox> {
         parent(b.source) === wrapper.source &&
         b.part?.target,
     );
-    const table = wrapper.part?.comp ?? "";
+    const table = tableKey(wrapper);
     if (!byTable.has(table)) byTable.set(table, new Map());
-    byTable.get(table)?.set(wrapper.part?.row ?? 0, buttons);
+    const rows = byTable.get(table);
+    const row = wrapper.part?.row ?? 0;
+    rows?.set(row, [...(rows.get(row) ?? []), ...buttons]);
   }
   const actions = new Map<string, GridBox>();
   for (const [table, rows] of byTable)
@@ -73,7 +80,7 @@ export function connectGrids(
   for (const [table, cells] of tableCells(boxes)) {
     const rows = Math.max(...cells.map((c) => (c.part?.row ?? 0) + 1));
     const cols = Math.max(...cells.map((c) => (c.part?.col ?? 0) + 1));
-    const comp = headings.get(table)?.part?.comp ?? "";
+    const heading = headings.get(table);
     const at = (focus: number) =>
       cells.find(
         (c) =>
@@ -88,9 +95,9 @@ export function connectGrids(
       element.setAttribute("aria-colindex", String(col + 1));
       if (!element.hasAttribute("tabindex") || element.tabIndex >= 0)
         element.tabIndex = i === 0 ? 0 : -1;
-      const action = actions.get(`${comp}|${row}`);
+      const action = heading && actions.get(`${tableKey(heading)}|${row}`);
       const click = () => {
-        if (action && !blocked(cell))
+        if (action && !blocked(cell) && !blocked(action))
           emit(action, { click: { comp: action.part?.comp ?? "" } });
       };
       if (action) element.dataset.rowAction = action.part?.comp ?? "";

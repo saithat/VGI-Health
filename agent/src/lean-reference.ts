@@ -31,7 +31,7 @@ export class LeanReference {
         screen = eraseContent(ui);
       let layouts = viewports.map((viewport) => ({
         viewport,
-        tree: layoutFor(shape, viewport),
+        tree: layoutFor(shape, viewport, limit),
       }));
       const check = async () => {
         const [reply] = await this.runner([

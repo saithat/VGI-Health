@@ -72,7 +72,7 @@ export function createReferencePainter(call: (request: string) => string) {
           screen: erased,
           layouts: viewports.map((viewport) => ({
             viewport,
-            tree: generator(shape, viewport),
+            tree: generator(shape, viewport, limit),
           })),
         },
       ];

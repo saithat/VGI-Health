@@ -36,7 +36,7 @@ export class ReferenceLayouts {
     if(known && (allowRefused || known.fallbackAccepted!==false)) {
       this.stats.hits++;return {...known,shape,screen,cacheHit:true};
     }
-    const layouts=viewports.map(viewport=>({viewport,tree:this.generator(shape,viewport)}));
+    const layouts=viewports.map(viewport=>({viewport,tree:this.generator(shape,viewport,maxTargetsPerViewport)}));
     // Bind actual trees as well as generator version: a changed/custom generator
     // cannot accidentally reuse an earlier admission. No clinical values in key.
     const key=digest({version,binary:this.binding,slots:shape.slots,layouts,maxTargetsPerViewport});

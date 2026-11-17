@@ -81,3 +81,44 @@ test('an alert owns one occurrence, a square plot and disjoint complete text in 
     assert.equal(refused.accepted,false);assert.ok(refused.findings.some(f=>f.rule==='G6'));
   }
 });
+
+test('two long track boards keep each action in its patient row and pin scoped urgency and modal controls', async () => {
+  const {boardPatients} = await import('./board-fixture.mjs');
+  for (const modal of [false, true]) {
+    const screen = native({op: 'board-screen', panes: boardPatients({modal})});
+    const shape = shapeFor(screen), parts = occurrences(screen);
+    assert.deepEqual(shape.slots, native({op: 'inventory', screen}).shape);
+    const references = [{screen: eraseContent(screen), layouts: viewports.map(viewport =>
+      ({viewport, tree: layoutFor(shape, viewport)}))}];
+    assert.equal(native({op: 'family-check', references}).accepted, true);
+    for (const viewport of viewports) {
+      const out = native({op: 'family-paint', screen, references, viewport});
+      assert.ok(out.accepted && out.linked, JSON.stringify(out.findings));
+      const byPath = new Map(out.boxes.map(({box}) => [box.info.source?.join('.'), box]));
+      const boxOf = part => byPath.get(part.path.join('.'));
+      const geometry = geometryFor(screen, out);
+      for (const patient of ['Ada', 'Blair']) {
+        const pane = boxOf(parts.find(p => p.kind === 'patientPane' && p.comp === patient)).rect;
+        const owned = parts.filter(p => p.patient === patient);
+        for (const p of owned.filter(p => p.target)) {
+          const {rect} = boxOf(p);
+          assert.ok(rect.x >= pane.x && rect.x + rect.w <= pane.x + pane.w, patient + '/' + p.comp);
+        }
+        for (const row of [0, 8, 19]) {
+          const cell = owned.find(p => p.role === 'cellValue' && p.row === row && p.col === 0);
+          const action = owned.find(p => p.comp === 'open-' + row);
+          assert.equal(boxOf(cell).rect.y, boxOf(action).rect.y);
+          assert.ok(geometry.components[patient + '::open-' + row]);
+        }
+        assert.deepEqual(geometry.components[patient + '::ack'].chain, []);
+        assert.deepEqual(geometry.components[patient + '::urgent-result'].chain, []);
+      }
+      const urgent = out.boxes.filter(d => d.box.info.urgent);
+      assert.equal(urgent.length, 6);
+      assert.ok(urgent.every(d => !d.box.clips.length && d.box.rect.y+d.box.rect.h <= viewport.h));
+      const modalParts = parts.filter(p => boxOf(p).info.interruptive);
+      assert.equal(modalParts.length, modal ? 3 : 0);
+      assert.ok(modalParts.every(p => p.patient === 'Blair'));
+    }
+  }
+});

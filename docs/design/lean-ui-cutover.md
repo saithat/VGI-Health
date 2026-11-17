@@ -13,9 +13,9 @@ hashes have changed; retained certificates are historical until rebound.
 - [ ] Finish the structured list/table work: bounded paging, table and row-action
   placement, whole-row navigation, and the proved grid keyboard transitions.
   Keep complete source values and separate confirmation/acknowledgment events.
-- [ ] Improve dense geometry for large clinical boards. The complete two-patient
-  note task can use the checked fixed-shell fallback; interaction works, while
-  the large-board appearance remains simpler. Keep the existing admission limits.
+- [x] Improve dense geometry for large clinical boards. The two-patient ED note
+  workflow uses the admitted dense family through signing. [Retained board
+  measurements and live workflow](../audits/dense-boards.md).
 - [ ] Relate tabs and their visible panels with the appropriate ARIA references;
   verify focus, arrow navigation and activation across patches.
 - [ ] Validate board tasks with repeated component IDs and separate patient

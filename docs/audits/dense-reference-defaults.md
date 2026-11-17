@@ -1,6 +1,6 @@
 # Dense reference defaults
 
-The shared `dense-reference-v11` generator supplies default geometry to the
+The shared `dense-reference-v12` generator supplies default geometry to the
 opt-in Lean nightly mode and the experimental `/lean.html` page. Missing custom
 shape cases receive this default; matching custom cases must pass independently.
 Dense refusal tries the fixed shell at the same unchanged vendor screen limit.
@@ -19,6 +19,13 @@ nightly admission/geometry and the browser bundle import the same plain
 JavaScript module. Agent admission is bounded and cached by augmented shape and
 limit; a thousand changing-value states require one family admission. The page
 checks the family with WASM, then paints the actual semantic screen through WASM.
+
+## Dense clinical boards (dense-reference-v12)
+
+The [board report](dense-boards.md) describes the geometry and tests a
+complete live two-patient ED note. The dense
+family places repeated table actions, urgent controls and dialogs in their
+owning pane and checks the same vendor density limits.
 
 ## Severity marks within one alert occurrence (dense-reference-v11)
 

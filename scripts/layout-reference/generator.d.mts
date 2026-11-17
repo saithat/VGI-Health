@@ -7,6 +7,6 @@ export interface Occurrence {path:number[];role:string;target:boolean;commit:boo
   kind?:string;value?:Record<string,unknown>;leaf?:boolean;of?:string;row?:number;col?:number;narrative?:boolean;patient?:string;widget?:string;nestedRegion?:string}
 export function occurrences(screen:unknown):Occurrence[];
 export function shapeFor(screen:unknown):Shape;
-export function layoutFor(shape:Shape|Slot[],viewport:Viewport):unknown;
+export function layoutFor(shape:Shape|Slot[],viewport:Viewport,maxTargetsPerViewport?:number):unknown;
 export function fixedShellFor(shape:Shape|Slot[],viewport:Viewport):unknown;
 export function eraseContent<T>(screen:T):T;

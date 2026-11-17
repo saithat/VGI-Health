@@ -144,3 +144,20 @@ test('native and WASM keep five alert severity marks inside five strip occurrenc
     }
   }
 });
+
+test('large two-patient board has byte-identical admitted dense geometry at all three viewports', async () => {
+  const {boardPatients} = await import('../layout-reference/board-fixture.mjs');
+  const {shapeFor, layoutFor, eraseContent, viewports} = await import('../layout-reference/generator.mjs');
+  const board = {op: 'board-screen', panes: boardPatients()};
+  const bytes = layout(board);
+  assert.equal(wasm.call('ehr_layout', JSON.stringify(board)), bytes);
+  const screen = JSON.parse(bytes), shape = shapeFor(screen);
+  const references = [{screen: eraseContent(screen), layouts: viewports.map(viewport =>
+    ({viewport, tree: layoutFor(shape, viewport)}))}];
+  for (const request of [{op:'family-check', references}, ...viewports.map(viewport =>
+    ({op: 'family-paint', screen, references, viewport}))]) {
+    const expected = layout(request);
+    assert.equal(JSON.parse(expected).accepted, true);
+    assert.equal(wasm.call('ehr_layout', JSON.stringify(request)), expected);
+  }
+});
