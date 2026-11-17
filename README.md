@@ -247,6 +247,9 @@ The agent is untrusted and only accepted programs deploy.
 [ADT](docs/methods/adt.md), [completion checker](docs/methods/completion-checker.md)
 and [UI-library methods](docs/methods/ui-library.md) state the precise assumptions,
 quantifiers, bounded checks and outstanding proof work.
+Lean alert severity marks share the alert’s own occurrence, preserving urgent-strip
+capacity; Lean checks their square geometry, text inset and contrast
+([alert geometry](docs/methods/alert-occurrence.md)).
 The generated [proof map](docs/proof-map.md) includes all headline dependency
 charts; CI enforces freshness with `scripts/proof-map/build.sh --check-readme`.
 Regenerate it with `scripts/proof-map/build.sh --readme` after building the

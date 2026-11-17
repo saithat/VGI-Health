@@ -169,6 +169,13 @@ async function sign(page: Page, screen: string, commit: string) {
     await idle(page);
     const ack = page.locator('[data-event="ack"]');
     if (await ack.count()) {
+      await differential(page, `alert/${attempt}`);
+      await expect(
+        page.locator('[data-role="alert"] > svg').first(),
+      ).toBeVisible();
+      await page.screenshot({
+        path: process.env.TMPDIR + `/lean-alert-${attempt}.png`,
+      });
       await ack.first().click();
       await idle(page);
       continue;
@@ -227,6 +234,17 @@ async function differential(page: Page, label: string) {
       );
       boxes++;
       const svg = element.querySelector("svg");
+      const text = element.querySelector<HTMLElement>(":scope > .lean-lines");
+      if (text) {
+        const inset = d.box.info.text?.inset ?? 0;
+        lineWorst = Math.max(
+          lineWorst,
+          Math.abs(text.getBoundingClientRect().x - rect.x - inset / 64),
+          Math.abs(
+            text.getBoundingClientRect().width - (expected.w - inset) / 64,
+          ),
+        );
+      }
       const mark = d.box.info.mark;
       if (svg && typeof mark === "object" && "plot" in mark) {
         const matrix = svg.getScreenCTM();
@@ -474,7 +492,12 @@ for (const persona of ["P1", "P3"])
         });
         await sign(page, "w1Close", "signNote");
         await navigate(page, "w1Orders");
-        await click(page, "w1Orders.prefLisinopril");
+        await click(
+          page,
+          process.env.LEAN_PAINTER_TEST_ALERT === "1"
+            ? "w1Orders.prefAmoxicillin"
+            : "w1Orders.prefLisinopril",
+        );
         for (let n = 0; n < 30; n++) {
           const confirm = page.locator('[data-event="confirm"]');
           if (!(await confirm.count())) break;
@@ -563,6 +586,32 @@ test("rich widgets: WASM geometry and text agree with DOM at every desktop viewp
         ),
       ),
     );
+  // New specification for owner review: five alerts plus an acknowledgment
+  // occupy six strip occurrences, including their Lean-bound severity plots.
+  const strip = z
+    .object({})
+    .passthrough()
+    .parse(structuredClone(fixtures.alert));
+  const urgent: unknown[] = Array.from({ length: 5 }, (_, i) => ({
+    alert: {
+      comp: `urgent:${i}`,
+      alertId: `a${i}`,
+      label: "Review recorded allergy ".repeat(30),
+      severity: "interruptive",
+    },
+  }));
+  urgent.push({
+    button: {
+      comp: "ack",
+      label: "Acknowledge",
+      role: "ack",
+      enabled: true,
+      blockedReason: null,
+      hotkey: null,
+    },
+  });
+  strip.urgent = urgent;
+  fixtures["alert-strip"] = strip;
   const { uiScreenSchema } = await import("../ehr/ui/types");
   const directory = process.env.TMPDIR + "/painter-parity";
   mkdirSync(directory, { recursive: true });

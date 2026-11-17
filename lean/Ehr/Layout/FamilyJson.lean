@@ -38,6 +38,7 @@ def shellStripFindings (shape : ScreenShape) : List Finding :=
     [{ rule := "G11", metric := "urgent-strip-targets", actual := t, required := Shell.stripTargetCapacity,
        deficit := (t : Int) - Shell.stripTargetCapacity }] else [])
 
+/-- New specification for owner review: check marks and inset text after binding. -/
 def familyOutput (family : Family) (screen : UiScreen) (v : Size) (limit : Nat := 15) : Json :=
   match family.find? (fun c => c.shape == widgetShape screen) with
   | none => Json.mkObj [("accepted",toJson false),("uncoveredShape",toJson (screenShape screen)),
@@ -57,35 +58,38 @@ def familyOutput (family : Family) (screen : UiScreen) (v : Size) (limit : Nat :
       ("findings",toJson (findings (shapeSources c.shape) v ps ++ densityFindings limit v ps ++
         urgentFindings v (urgentPaths c.shape) ps ++ realizationWarnings data)),
       ("layoutOk",toJson layoutOk),("linked",toJson (decide (Linked c.shape ps)))]
-/-- Research-only class painter: runtime checks structural membership and the
-viewport, not geometry, record lengths or glyph/string limits. -/
+/-- New specification for owner review: research-only class painter:
+check structural membership, then G1–G11 again on bound marks and inset text. -/
 def structuralOutput (screen : UiScreen) (v : Size) : Json :=
   let shape := screenShape screen
   if !Shell.accepts shape then
     Json.mkObj [("accepted",toJson false),("uncoveredShape",toJson shape),
       ("error",toJson "fixed-shell class requires one banner, at most one commit, at most two modal occurrences and unique sources")]
   else
-    let data := bindAll screen (Shell.classBoxes v shape)
+    let ps := widgetBoxes screen (Shell.classBoxes v shape)
+    let data := bindAll screen ps
     let tree := match data with
       | [] => Json.null
       | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
           (rest.map fun d => Json.mkObj [("drawn",toJson d),("children",toJson ([] : List Json))]))]
     -- New specification for owner review: a screen whose urgent strip does not
     -- fit the pinned band is refused (G11); `Shell.class_urgent` covers the rest.
-    Json.mkObj [("accepted",toJson (viewports.contains v && Shell.stripFits shape)),("viewport",toJson v),
-      ("boxes",toJson data),("parts",boxPartsJson screen (Shell.classBoxes v shape)),
+    Json.mkObj [("accepted",toJson (viewports.contains v && Shell.stripFits shape &&
+        checkAll Density.shellCapacity (shapeSources shape) (urgentPaths shape) v ps)),("viewport",toJson v),
+      ("boxes",toJson data),("parts",boxPartsJson screen ps),
       ("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
-      ("findings",toJson (realizationWarnings data ++ shellStripFindings shape)),
+      ("findings",toJson (findings (shapeSources shape) v ps ++ realizationWarnings data ++ shellStripFindings shape)),
       ("urgentPinned",toJson (Shell.stripFits shape)),("structuralClass",toJson "fixed-shell-v2")]
 
-/-- Runtime path after a program/class certificate: bind the actual native
-render without repeating per-patient class/geometry/content admission. -/
+/-- New specification for owner review: runtime path after a program/class
+certificate: bind the actual render and check G1–G11 on its marks and inset text. -/
 def programOutput (input : RenderInput) (v : Size) (window : UiScreen → UiScreen := id) : Json :=
   if !viewports.contains v then Json.mkObj [("accepted",toJson false),("error",toJson "unsupported viewport")]
   else
     let screen := window (runRenderUi input)
     -- `Range.uncheckedPaint` with the inventory computed once (`Range.uncheckedPaint_bound`).
-    let data := bindAll screen (Shell.classBoxes v (screenShape screen))
+    let ps := widgetBoxes screen (Shell.classBoxes v (screenShape screen))
+    let data := bindAll screen ps
     let tree := match data with
       | [] => Json.null
       | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
@@ -94,8 +98,9 @@ def programOutput (input : RenderInput) (v : Size) (window : UiScreen → UiScre
     -- the urgent strip is decided per state (`Density.render_urgent`).
     let shape := screenShape screen
     Json.mkObj [("accepted",toJson (Range.checkProgram input.spec input.program &&
-        Density.checkProgramDensity input.spec input.program && Shell.stripFits shape)),("viewport",toJson v),
-      ("boxes",toJson data),("parts",boxPartsJson screen (Shell.classBoxes v shape)),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
+        Density.checkProgramDensity input.spec input.program && Shell.stripFits shape &&
+        checkAll input.spec.design.maxTargetsPerViewport (shapeSources shape) (urgentPaths shape) v ps)),("viewport",toJson v),
+      ("boxes",toJson data),("parts",boxPartsJson screen ps),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
       ("structuralClass",toJson "fixed-shell-v2"),
       ("rangeTheorem",toJson "Ehr.Layout.Range.layoutAccepted_program"),
       ("densityTheorem",toJson "Ehr.Layout.Density.checkProgramDensity_sound"),

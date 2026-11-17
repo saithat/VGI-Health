@@ -35,13 +35,14 @@ private def color (j : Json) (key : String) (fallback : Color) : Except String C
     | none => throw s!"{key}: unknown palette token {name}"
   | .error _ => fromJson? value
 
+/-- New specification for owner review: parse the reserved leading text width. -/
 private def textSlot (j : Json) : Except String (Option TextSlot) := do
   let value ← field j "text" Json.null
   if value == Json.null then return none
   let scaleName ← field value "typeScale" "text-sm"
   let some scale := typeScale.lookup scaleName | throw s!"text.typeScale: unknown token {scaleName}"
   let font ← tokenNat fontNames value "font" 0
-  return some { key := ← field value "key" "", maxLength := ← field value "maxLength" 0, maxLines := ← field value "maxLines" 1, overflow := ← field value "overflow" .wrap, safety := ← field value "safety" false, font, fontSize := ← field value "fontSize" scale.1, lineHeight := ← field value "lineHeight" scale.2 }
+  return some { key := ← field value "key" "", maxLength := ← field value "maxLength" 0, maxLines := ← field value "maxLines" 1, overflow := ← field value "overflow" .wrap, safety := ← field value "safety" false, font, inset := ← field value "inset" 0, fontSize := ← field value "fontSize" scale.1, lineHeight := ← field value "lineHeight" scale.2 }
 
 private def parseTracks (j : Json) : Except String (List Track) := do
   let tracks ← field j "tracks" ([] : List Json)

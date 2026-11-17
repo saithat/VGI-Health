@@ -1,11 +1,11 @@
 # Dense reference defaults
 
-The shared `dense-reference-v8` generator supplies default geometry to the
+The shared `dense-reference-v11` generator supplies default geometry to the
 opt-in Lean nightly mode and the experimental `/lean.html` page. Missing custom
 shape cases receive this default; matching custom cases must pass independently.
 Dense refusal tries the fixed shell at the same unchanged vendor screen limit.
 Neither a transport error nor refusal of both families becomes successful
-fallback. No rule, theorem statement, density limit or default was changed; v8
+fallback. The earlier v8 measurements below changed no rule, theorem statement or density limit; v8
 follows the display-part inventory (one occurrence per field label, control,
 annotation, table cell, tab and button reason) and the faster G3/G4 decision
 procedures of the layout checker.
@@ -19,6 +19,55 @@ nightly admission/geometry and the browser bundle import the same plain
 JavaScript module. Agent admission is bounded and cached by augmented shape and
 limit; a thousand changing-value states require one family admission. The page
 checks the family with WASM, then paints the actual semantic screen through WASM.
+
+## Severity marks within one alert occurrence (dense-reference-v11)
+
+New specification for owner review: an alert's own part carries its severity
+plot. Lean binds it into a leading square, reserves that square's width in
+text wrapping, and checks the bound text and mark. The fixed shell and dense
+generator both retain one occurrence per alert. The strip's capacities and
+`lean-paged-density.json` remain unchanged. See the
+[definition and proof inventory](../methods/alert-occurrence.md) and
+[verification report](alert-occurrence.md).
+
+P5 now initializes in a one-day `run-days --screens lean` replay with no model
+call: all 547 initial screen states pass G1–G11. The day-context exports of 565
+and 560 states pass too, and both arms complete 18/18 tasks over 1,309 events.
+P1's control passes all 375 initial states and both day-context corpora (380
+and 379), completing 42/42 tasks over 2,377 events in each arm. The final runs
+use separate personas and a bounded 6 GB Node heap; earlier combined runs
+exhausted the default 2 GB heap after initial screen admission.
+
+The four `w2Result`/`w6Consult` interaction-popup repro states still exceed G10
+in dense layouts (21 > 20 and 31 > 25); their fixed-shell fallback now passes
+G1–G11 because three alerts plus one acknowledgment occupy four rows.
+
+The regenerated evidence covers all 34 retained P1/P5 persona-days (50,896
+states): zero mismatches, zero missing targets and zero states refusing both
+families. The other personas' v10 figures below remain historical.
+
+| Recording | Persona | Dense / states (v11) | v10 scrolls / scroll px / travel px | v11 scrolls / scroll px / travel px |
+|---|---|---:|---|---|
+| core-10day | P1 | 15,753/15,753 | 9,894 / 7,261,388 / 4,040,414 | 9,901 / 7,313,140 / 4,049,937 |
+| core-10day | P5 | 13,119/13,122 | 10,435 / 8,242,534 / 2,250,692 | 10,412 / 8,305,780 / 2,262,997 |
+| rules3-10day-invalid-simloop | P1 | 12,183/12,183 | 7,687 / 5,753,130 / 2,879,611 | 7,686 / 5,792,770 / 2,886,752 |
+| rules3-10day-invalid-simloop | P5 | 9,836/9,838 | 7,618 / 5,963,434 / 1,635,106 | 7,598 / 5,983,894 / 1,641,064 |
+
+Across these traces P1 adds 6 scrolls, 91,392 scroll pixels and 16,664 pointer
+pixels; P5 removes 43 scrolls but adds 83,706 scroll pixels and 18,263 pointer
+pixels. Five P5 states now use fixed fallback after dense G10 refusal: three
+core day-10 `w1Close` states (35 > 31), and two rules3 day-6 `w6Sign` states
+(35 > 34). The smaller strip exposes more body targets. The frozen limits were
+retained, and both families' actual selected geometry is charged. These are
+re-layouts of the same retained traces, with no added page actions, not an
+estimate of clinician benefit. The final Lean build/axiom audit, WASM checks,
+83 Node tests, app/agent typecheck and lint, 390 agent unit tests, and the six
+single-worker Lean UI workflows passed. App unit tests pass 379 with two skips;
+one catalog-count assertion fails because 1,118 Synthetic Hospital fixture
+records are absent locally. The full sequential browser audit pair covers all
+1,956 template and 1,394 persona states with zero findings. The app build hash
+changed; historical certificates were not rebound.
+[Exact commands, results and scope](alert-occurrence.md).
 
 ## Bounded lists (dense-reference-v10)
 
@@ -91,7 +140,7 @@ them. None of the 84 retained no-agent Programs equals today's release export
 byte for byte (later vendor fixes); the limits are those of the recorded vendor
 layouts.
 
-**Lean-mode initialization.** A one-day replayed run (`run-days --screens
+**v10 Lean-mode initialization (before the alert occurrence fix).** A one-day replayed run (`run-days --screens
 lean --backend replay --days 1 --personas P1,P5 --seed-policy none`, no model
 call) initializes **P1** (all 375 exported screen states admitted under Lean
 G1–G11 in 141 s, the limit and its source recorded per screen, the frozen file
@@ -102,7 +151,8 @@ view in the dense layout, above the frozen limits 20 and 25, and the fixed
 shell then fails G11 (the alerts and their severity marks are more urgent
 occurrences than its pinned strip holds; the same with lists unbounded). The retained no-agent recordings never
 show those alert states on those screens, so the rule's baseline does not cover
-them. Changing the rule's state set or the strip is an owner decision.
+them. The v11 alert-occurrence correction fixes the strip regression without changing
+the rule's state set or the strip capacity.
 
 **Verification (v10, once after the merge).** `lake build` of the libraries,
 `ehr`, `ui-layout`, `ui-port-audit` and `gents` (generated types unchanged);

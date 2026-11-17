@@ -372,7 +372,7 @@ private theorem leaf_plain (cx : DisplayCx) (node : UiNode) : Plain (leafParts c
   | datedTimeline title dated undated children =>
     exact plain_append (plain_append (plain_map _ _ fun _ => rfl) (plain_map _ _ fun _ => rfl))
       (plain_single _ rfl)
-  | alert _ _ _ _ => exact plain_single _ rfl
+  | alert _ _ _ _ => exact plain_nil
   | timeline _ _ => exact plain_single _ rfl
   | presentation _ _ => exact plain_map _ _ fun _ => rfl
   | chartReferences references children => exact plain_map _ _ fun _ => rfl

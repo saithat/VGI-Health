@@ -72,6 +72,8 @@ structure TextSlot where
   safety : Bool := false
   font : Nat := 0
   fontSize : Nat := 896
+  /-- New specification for owner review: reserved leading width, excluded from text wrapping. -/
+  inset : Nat := 0
   lineHeight : Nat := 1280
   deriving Repr, Inhabited, DecidableEq, ToJson, FromJson
 

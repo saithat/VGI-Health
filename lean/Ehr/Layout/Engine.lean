@@ -129,7 +129,8 @@ theorem advance_le_cell (t : TextSlot) (ch : Char) : advance t ch ≤ cell t := 
     (Nat.min_le_left (Fonts.maxAdvance[t.font]?.getD 0) ((pinnedWidth t ch).getD 0))
   omega
 
-def capacity (t : TextSlot) (w : Nat) : Nat := w / max 1 (cell t)
+/-- New specification for owner review: text capacity excludes the reserved leading width. -/
+def capacity (t : TextSlot) (w : Nat) : Nat := (w - t.inset) / max 1 (cell t)
 
 /-- Total chunking with an explicit line budget. -/
 def chunks (cols : Nat) : Nat → List Char → List (List Char)
@@ -170,13 +171,13 @@ theorem greedy_complete (t w chars line used) :
 def scrollParagraphs (t : TextSlot) (w : Nat) (s : String) : List (List String) :=
   (s.splitOn "\n").map fun paragraph => (greedyLines t w paragraph.toList [] 0).map String.ofList
 
-/-- Character wrapping also handles unbroken drug names. Truncation is explicit;
+/-- New specification for owner review: character wrapping also handles unbroken drug names. Truncation is explicit;
 scroll preserves all characters and reserves only a fixed viewport. -/
 def textLines (t : TextSlot) (w : Nat) (s : String) : List String :=
   let cols := max 1 (capacity t w)
   let chars := s.toList
   if t.overflow == .scroll then
-    (scrollParagraphs t w s).flatten
+    (scrollParagraphs t (w - t.inset) s).flatten
   else
   let count := t.maxLines
   if t.overflow == .ellipsis then
@@ -259,26 +260,32 @@ theorem wrap_line_width (t : TextSlot) (w : Nat) (s line : String)
   have adv := textAdvance_bound t chars
   have mulBound := Nat.mul_le_mul_right (cell t) lengthBound
   have cellBound := Nat.mul_le_mul_left (capacity t w) (Nat.le_max_right 1 (cell t))
-  have divBound := Nat.div_mul_le_self w (max 1 (cell t))
+  have divBound := Nat.div_mul_le_self (w - t.inset) (max 1 (cell t))
   simp only [String.toList_ofList]
-  change capacity t w * max 1 (cell t) ≤ w at divBound
+  change capacity t w * max 1 (cell t) ≤ w - t.inset at divBound
   omega
 
-theorem scroll_line_width (t : TextSlot) (w : Nat) (s line : String)
+/-- New specification for owner review: scroll text stays beyond its inset. -/
+theorem scroll_line_width_inset (t : TextSlot) (w : Nat) (s line : String)
     (policy : t.overflow = .scroll) (nonzero : 0 < capacity t w)
-    (member : line ∈ textLines t w s) : textAdvance t line.toList ≤ w := by
-  have denBound : max 1 (cell t) ≤ w := by
-    by_cases h : max 1 (cell t) ≤ w
-    · exact h
-    · have hz : w / max 1 (cell t) = 0 := Nat.div_eq_of_lt (by omega)
-      simp [capacity, hz] at nonzero
-  have hg : ∀ ch : Char, advance t ch ≤ w := fun ch => Nat.le_trans (advance_le_cell t ch) (by omega)
+    (member : line ∈ textLines t w s) : textAdvance t line.toList ≤ w - t.inset := by
+  have denBound : max 1 (cell t) ≤ w - t.inset := by
+    have := (Nat.div_pos_iff.mp nonzero).2
+    exact this
+  have hg : ∀ ch : Char, advance t ch ≤ w - t.inset :=
+    fun ch => Nat.le_trans (advance_le_cell t ch) (by omega)
   simp only [textLines, policy, beq_self_eq_true, ↓reduceIte] at member
   obtain ⟨paragraphLines,hp,hl⟩ := List.mem_flatten.mp member
   obtain ⟨paragraph,_,rfl⟩ := List.mem_map.mp hp
   obtain ⟨chars,hc,rfl⟩ := List.mem_map.mp hl
   simpa only [String.toList_ofList] using
-    greedy_width t w paragraph.toList [] 0 (by simp [textAdvance]) (by omega) (fun ch _ => hg ch) chars hc
+    greedy_width t (w - t.inset) paragraph.toList [] 0 (by simp [textAdvance]) (by omega) (fun ch _ => hg ch) chars hc
+
+theorem scroll_line_width (t : TextSlot) (w : Nat) (s line : String)
+    (policy : t.overflow = .scroll) (nonzero : 0 < capacity t w)
+    (member : line ∈ textLines t w s) : textAdvance t line.toList ≤ w := by
+  have := scroll_line_width_inset t w s line policy nonzero member
+  omega
 
 def wanted (s : Sizing) (limit natural : Nat) : Nat := match s with
   | .hug => natural | .fill => limit | .fixed n => n
@@ -482,3 +489,5 @@ theorem scroll_apart (a b : Rect) (dx dy : Int) (h : Apart a b) :
 #print axioms geometry_independent
 #print axioms scroll_apart
 end Ehr.Layout
+
+#print axioms Ehr.Layout.scroll_line_width_inset

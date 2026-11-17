@@ -31,6 +31,7 @@ function Shape({drawn}:{drawn:Drawn}) {
   const x1=w/2+w/2*Math.cos(a),y1=h/2+h/2*Math.sin(a),x2=w/2+w/2*Math.cos(b),y2=h/2+h/2*Math.sin(b);
   return <svg viewBox={`0 0 ${w} ${h}`} aria-hidden="true"><path d={`M ${w/2} ${h/2} L ${x1} ${y1} A ${w/2} ${h/2} 0 ${2*sweepNum>denominator?1:0} 1 ${x2} ${y2} Z`} {...common}/></svg>;
 }
+// New specification for owner review: text starts after Lean’s reserved leading width.
 export function Painter({boxes}:{boxes:Drawn[]}) {
   const [offsets,setOffsets]=useState<Record<string,number>>({});
   const blocked=boxes.some(d=>d.box.info.interruptive);
@@ -60,7 +61,7 @@ export function Painter({boxes}:{boxes:Drawn[]}) {
     const children=<>
       {info.paint&&<Shape drawn={drawn}/>}
       {box.scroll&&<div style={{position:'absolute',width:1,height:contentHeight,pointerEvents:'none'}}/>}
-      {info.paint&&lines.length>0&&<div className="lean-lines" style={{background:rgb(style.bg),position:'absolute',inset:0,overflowY:t?.overflow==='scroll'?'auto':'visible',overflowX:'hidden'}}>
+      {info.paint&&lines.length>0&&<div className="lean-lines" style={{background:rgb(style.bg),position:'absolute',inset:0,left:px(t?.inset??0),overflowY:t?.overflow==='scroll'?'auto':'visible',overflowX:'hidden'}}>
         {lines.map((line,i)=><span key={i} data-line={i} style={{position:'absolute',left:0,top:t?px(i*t.lineHeight):0,whiteSpace:'pre',direction:'ltr',unicodeBidi:'isolate'}}>{lineRuns(line,drawn.glyphWidths[i]??[]).map((run,j)=><span key={j} data-run={run.rtl?'rtl':'ltr'} style={{display:'inline-flex',flexDirection:run.rtl?'row-reverse':'row',direction:'ltr',unicodeBidi:'isolate'}}>{run.cells.map((cell,k)=><span key={k} data-glyph style={{display:'inline-block',width:px(cell.width),flexShrink:0}}>{cell.ch}</span>)}</span>)}</span>)}
       </div>}
     </>;
