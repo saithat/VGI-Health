@@ -96,14 +96,15 @@ in [painter-parity](../methods/painter-parity.md#cut-over-validation).
   `/?workflow=adt`. Shared dashboard/browser UI helpers keep their consumers.
 - [ ] **Validate the deployed release and workload through the Lean page.**
   A one-day replay for P1–P5 ran with `run-days --screens lean` and no model
-  call, and the full accessibility/screen audit pair ran once; results and
-  failures are in [workload through the Lean page](#workload-through-the-lean-page).
+  call (all tasks completed; P5 needed a separate process after a heap
+  failure), and the full accessibility/screen audit pair ran once with zero
+  findings; details are in [workload through the Lean page](#workload-through-the-lean-page).
   A deployed release was not validated.
 - [x] **Switch the default clinical entry points** (this change); removed
   obligations and their replacements are [listed below](#removed-and-retained).
 - [ ] Rebuild the application and WASM, record the new hashes, and rebind the
-  retained run evidence against the final implementation. The WASM is
-  rebuilt; recertification and rebinding follow a fresh recording and are not
+  retained run evidence against the final implementation. The WASM and
+  application are rebuilt and their hashes recorded below; recertification and rebinding follow a fresh recording and are not
   part of this change. Do not overwrite historical certificates or claim they
   certify this implementation.
 
@@ -132,8 +133,30 @@ Retained, because they still have consumers:
 
 Results of this change's validation run (see the parity page for commands):
 
-- One-day replay, P1–P5, `--screens lean`, replay backend: _pending_.
-- Accessibility/screen audit pair (templates, then personas): _pending_.
+- **One-day replay**, `run-days --screens lean`, replay backend, no model
+  call, world 2, day 1. All five personas ran with their vendor layouts and
+  zero screen assertion failures or invalid patches:
+
+  | Persona | Tasks completed | Clicks | Scrolls |
+  |---|---:|---:|---:|
+  | P1 | 42/42 | 1,180 | 1,496 |
+  | P2 | 22/22 | 1,702 | 2,716 |
+  | P3 | 38/38 | 482 | 604 |
+  | P4 | 22/22 | 699 | 943 |
+  | P5 | 18/18 | 559 | 955 |
+
+  Failure: the first run, with all five personas in one process and an 8 GB
+  Node heap, completed P1–P4 and then ran out of JavaScript heap during P5's
+  day. P5 was rerun alone (11 GB heap, same command otherwise) and completed.
+  The single-process five-persona run therefore needs more than 8 GB of heap;
+  no limit or rule was changed.
+- **Accessibility/screen audit pair**, run once, sequentially (templates
+  then personas, 44 minutes in total): 1,956 template states (18,774
+  measurements) and 1,394 persona states (13,428 measurements), zero
+  findings, no failed tests. The pair audits the React screens through the
+  browser gate; it is not a Lean-page audit.
+- Application build `appSha256` 683c4c05d3d405efda439ea3e0687774cd2f9b19771e92680fd64f1021ecfb25;
+  WASM Lean sha256 d6468db77b028b79de28bd35f31724f1c21313b321c5f9b07dcff6664ee7be1f.
 
 ## Implemented prerequisites
 
