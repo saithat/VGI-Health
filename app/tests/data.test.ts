@@ -9,6 +9,7 @@ vi.mock("../src/data/commitService", () => ({
   })),
   loginMar: vi.fn(),
   logoutMar: vi.fn(),
+  logoutMarTo: vi.fn(),
 }));
 import { loadChart, restoreUser } from "../src/data/liveStore";
 beforeEach(async () => {

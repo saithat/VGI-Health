@@ -136,10 +136,14 @@ export async function restoreMar(
   return tokens ? userSchema.parse(await marRequest("/me")) : undefined;
 }
 export function logoutMar() {
+  logoutMarTo(callback());
+}
+/** Ends the identity session and returns to an exact registered page. */
+export function logoutMarTo(redirectUri: string) {
   sessionStorage.removeItem("vgi.oidc.session");
   tokens = undefined;
   location.assign(
-    `${issuer}/protocol/openid-connect/logout?${new URLSearchParams({ client_id: clientId, post_logout_redirect_uri: callback() })}`,
+    `${issuer}/protocol/openid-connect/logout?${new URLSearchParams({ client_id: clientId, post_logout_redirect_uri: redirectUri })}`,
   );
 }
 async function accessToken() {

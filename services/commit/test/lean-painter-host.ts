@@ -24,9 +24,12 @@ const alertFixture=process.env.LEAN_PAINTER_TEST_ALERT === '1';
 const scheduledTime=new Date().toISOString().slice(0,13)+':00:00Z';
 const config=configSchema.parse({tenant:`lean-painter-${randomUUID()}`,
   oidc:{issuer,audience:'vgi-commit',clientId:'vgi-mar'},
-  actors:['P1','P2','P3'].map((persona,i)=>({subject:persona,persona,user:{id:persona,role:persona==='P3'?'rn':'physician'},modelId:i+1,patients:['painter-patient','painter-second']})),
+  // New specification for owner review: a second, independently authenticated
+  // nurse (RN2) and a high-alert dose on its own patient exercise cosigning.
+  actors:['P1','P2','P3','RN2'].map((persona,i)=>({subject:persona,persona,user:{id:persona,role:persona==='P3'||persona==='RN2'?'rn':'physician'},modelId:i+1,patients:['painter-patient','painter-second','painter-high']})),
   releases:{...Object.fromEntries(['P1','P2','P3'].map(persona=>[persona,{spec,program:{...read(`../../../releases/v3/personas/${persona}.json`),patientSelection:true},workflows:{chart:{commit:persona==='P3'?'chartAssessment':'signNote',commits:['signOrders','markReviewed','chartAssessment'],project:true}}}])),
-    ...(process.env.LEAN_PAINTER_TEST_PERSONA === 'P3' ? {mar:{spec,program:{...read('../../../releases/v3/personas/P3.json'),patientSelection:false},workflows:{dose:{commit:'administerMed',shared:{kind:'dose',order:9,occurrence:600},mar:{patient:'painter-patient',medicationRequest:'painter-order',encounter:'painter-enc',scheduledTime}}}}} : {})
+    ...(process.env.LEAN_PAINTER_TEST_PERSONA === 'P3' ? {mar:{spec,program:{...read('../../../releases/v3/personas/P3.json'),patientSelection:false},workflows:{dose:{commit:'administerMed',shared:{kind:'dose',order:9,occurrence:600},mar:{patient:'painter-patient',medicationRequest:'painter-order',encounter:'painter-enc',scheduledTime}},
+      high:{commit:'administerMed',shared:{kind:'dose',order:10,occurrence:600},mar:{patient:'painter-high',medicationRequest:'painter-insulin',encounter:'painter-high-enc',scheduledTime}}}}} : {})
   }});
 const tokens=Object.fromEntries(await Promise.all(config.actors.map(async actor=>[actor.persona,await new SignJWT({typ:'Bearer',azp:'vgi-mar',sid:`painter-${actor.persona}`,persona:actor.persona,name:`Painter ${actor.persona}`,realm_access:{roles:[actor.user.role]}}).setProtectedHeader({alg:'RS256',kid:'painter-test'}).setSubject(actor.user.id).setIssuer(issuer).setAudience('vgi-commit').setIssuedAt().setExpirationTime('30m').sign(privateKey)])));
 
@@ -34,7 +37,7 @@ const a=await host(url,config);
 let closing=false;
 async function close() {
   if (closing) return;closing=true;
-  for (const table of ['commit_draft_checkpoints','commit_requests','commit_sessions','commit_events','commit_streams']) await a.db.query(`DELETE FROM ${table} WHERE tenant=$1`,[config.tenant]);
+  for (const table of ['commit_mar_cosigns','commit_draft_checkpoints','commit_requests','commit_sessions','commit_events','commit_streams']) await a.db.query(`DELETE FROM ${table} WHERE tenant=$1`,[config.tenant]);
   await a.close();
   await new Promise<void>((resolve,reject)=>issuerHost.close(error=>error?reject(error):resolve()));
 }
@@ -51,6 +54,12 @@ try {
   await a.store.importPatient({patient:'painter-second',modelId:2,context:{today:'2026-11-15',now:600,receipts:[],record:[],encounterId:'painter-second-enc'},bundle:{resourceType:'Bundle',type:'collection',entry:[
     {resource:{resourceType:'Patient',id:'painter-second',meta:{versionId:'1'},name:[{text:'Blair Painter',given:['Blair'],family:'Painter'}],identifier:[{system:'http://hospital.example/mrn',value:'PAINTER-002'}],birthDate:'1972-01-01',gender:'female'}},
     {resource:{resourceType:'Encounter',id:'painter-second-enc',meta:{versionId:'1'},status:'in-progress',class:{code:'EMER'},subject:{reference:'Patient/painter-second'},period:{start:'2026-11-15T00:00:00Z'}}}
+  ]}});
+  if (process.env.LEAN_PAINTER_TEST_PERSONA === 'P3') await a.store.importPatient({patient:'painter-high',modelId:3,context:{today:'2026-11-15',now:600,receipts:[],record:[],encounterId:'painter-high-enc'},bundle:{resourceType:'Bundle',type:'collection',entry:[
+    {resource:{resourceType:'Patient',id:'painter-high',meta:{versionId:'1'},name:[{text:'Casey Painter',given:['Casey'],family:'Painter'}],identifier:[{system:'http://hospital.example/mrn',value:'PAINTER-003'}],birthDate:'1960-01-01',gender:'female'}},
+    {resource:{resourceType:'Encounter',id:'painter-high-enc',meta:{versionId:'1'},status:'in-progress',class:{code:'IMP'},subject:{reference:'Patient/painter-high'},period:{start:'2026-11-15T00:00:00Z'}}},
+    {resource:{resourceType:'MedicationRequest',id:'painter-insulin',meta:{versionId:'1'},status:'active',intent:'order',subject:{reference:'Patient/painter-high'},encounter:{reference:'Encounter/painter-high-enc'},medicationCodeableConcept:{text:'insulin lispro'},dosageInstruction:[{timing:{event:[scheduledTime]},route:{text:'SC'},doseAndRate:[{doseQuantity:{value:4,unit:'units'}}]}]}},
+    {resource:{resourceType:'AllergyIntolerance',id:'painter-high-nka',meta:{versionId:'1'},patient:{reference:'Patient/painter-high'},code:{coding:[{system:'http://snomed.info/sct',code:'716186003',display:'No known allergy'}]},clinicalStatus:{coding:[{code:'active'}]}}},
   ]}});
   process.stdout.write(JSON.stringify({base:a.base,tokens,users:Object.fromEntries(config.actors.map(actor=>[actor.persona,{user:actor.user,persona:actor.persona,name:`Painter ${actor.persona}`}]))})+'\n');
 } catch (error) {await close();throw error;}

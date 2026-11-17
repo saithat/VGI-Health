@@ -8,6 +8,7 @@ import {
   loadListContext,
   restoreUser,
   searchPatients,
+  signOut,
   type Bundle,
 } from "../data/liveStore";
 import { loginMar, marRequest } from "../data/commitService";
@@ -29,24 +30,35 @@ async function main() {
   const report = (value: unknown) => {
     status.textContent = value instanceof Error ? value.message : String(value);
   };
-  const query = new URLSearchParams(location.search);
+  // The exact registered callback has no query; the page's own address,
+  // with its patient/MAR/board parameters, is the return URL kept across the
+  // identity provider's redirect (`returnTo`).
   const callback = new URL("lean.html", location.href).href;
   const user = await restoreUser(callback);
+  // After a callback the address is the return URL again (restoreMar).
+  const query = new URLSearchParams(location.search);
   if (!user) {
     status.textContent = "";
     const login = document.createElement("button");
+    login.className = "lean-host-login";
     login.textContent = `Sign in as ${query.get("persona") ?? "P1"}`;
     login.onclick = () => {
-      const target = new URL(location.href);
-      target.hash = "";
       void loginMar(
         query.get("persona")?.toLowerCase() ?? "p1",
-        target.href,
+        callback,
       ).catch(report);
     };
     root.append(login);
     return;
   }
+  // Host session control, outside the admitted clinical layout (like the
+  // status line): ends the identity session and returns to this page.
+  const signOutButton = document.createElement("button");
+  signOutButton.id = "sign-out";
+  signOutButton.type = "button";
+  signOutButton.textContent = "Sign out";
+  signOutButton.onclick = () => signOut(callback);
+  document.body.append(signOutButton);
   const persona = user.persona === "RN2" ? "P3" : user.persona;
   const date = query.get("date") ?? clinicalDate();
   const baseline =

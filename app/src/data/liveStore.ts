@@ -24,6 +24,7 @@ import {
   restoreMar,
   loginMar,
   logoutMar,
+  logoutMarTo,
   type MarUser,
 } from "./commitService";
 
@@ -71,9 +72,10 @@ export async function quickSignIn(persona: string): Promise<LiveUser> {
   await loginMar(persona.toLowerCase());
   throw new Error("Redirecting to Keycloak");
 }
-export async function signOut() {
+export async function signOut(redirectUri?: string) {
   identity = undefined;
-  logoutMar();
+  if (redirectUri) logoutMarTo(redirectUri);
+  else logoutMar();
 }
 export async function loadPatientBundle(patientId: string): Promise<Bundle> {
   const snapshot = z
