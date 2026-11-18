@@ -27,7 +27,7 @@ describe.skipIf(!available)('native section authoring',()=>{
       const result=await ehr.simulate({specVersion:'v3',program,persona:{...persona,policy},schedule,worldDir,seed:17,
         interruptions:'fixedCost',simModel:'wave3',textCost:'length'});
       expect(result.tasks[0]?.completed).toBe(true);
-      expect(result.trace.filter(t=>'enter' in t.event&&'text' in t.event.enter.value&&t.event.enter.value.text.s===text)).toHaveLength(2);
+      expect(result.trace.filter(t=>'enter' in t.event&&t.event.enter.value!=='cleared'&&'text' in t.event.enter.value&&t.event.enter.value.text.s===text)).toHaveLength(2);
       results.push(result.tasks[0]);
     }
     const [full,template,copied]=results;
@@ -55,7 +55,7 @@ describe.skipIf(!available)('native section authoring',()=>{
       const result=await createEhr({fake:false}).simulate({specVersion:version,program,persona,schedule,worldDir,
         seed:17,interruptions:'fixedCost'});
       expect(result.tasks[0]?.completed).toBe(true);
-      expect(result.trace.some(t=>'enter' in t.event&&'code' in t.event.enter.value&&t.event.enter.value.code.c==='stat')).toBe(true);
+      expect(result.trace.some(t=>'enter' in t.event&&t.event.enter.value!=='cleared'&&'code' in t.event.enter.value&&t.event.enter.value.code.c==='stat')).toBe(true);
       expect(result.trace.some(t=>t.result==='ok'&&JSON.stringify(t.event).includes('commit.signOrders'))).toBe(true);
     }
   },60000);

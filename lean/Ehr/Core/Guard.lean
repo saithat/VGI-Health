@@ -106,6 +106,8 @@ def entryMet (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : EntryRe
 /-- A value is non-empty: a non-empty code, text, or user; a checked flag; or
 any quantity. -/
 def Value.nonEmpty : Value → Bool
+  -- New specification for owner review.
+  | .cleared => false
   | .qty _ _ => true
   | .code c => !c.isEmpty
   | .text t => !t.isEmpty

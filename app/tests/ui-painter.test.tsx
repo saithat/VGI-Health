@@ -4,7 +4,7 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Event } from "../../lean/generated/ehr-types";
 import { UiScreenView } from "../src/ehr/ui/Screen";
 import { UiChildren, UiNodeView } from "../src/ehr/ui/nodes";
-import { entryEvent } from "../src/ehr/ui/events";
+import { entryEvent, fieldValue } from "../src/ehr/ui/events";
 import {
   formatDisplayValue,
   severityTone,
@@ -851,6 +851,21 @@ describe("semantic EHR painter", () => {
       });
     },
   );
+  it.each(["number", "quantity", "qty", "text", "identity", "coded", "code", "scan", "cosign", "user"])(
+    "clears a previously filled %s field and ignores unchanged emptiness",
+    (kind) => {
+      const editor = { ...field, kind, value: "previous" };
+      expect(fieldValue(editor, "")).toBe("cleared");
+      expect(entryEvent(editor, "")).toEqual({ enter: { comp: field.comp, value: "cleared" } });
+      expect(entryEvent({ ...editor, value: null }, "")).toBeUndefined();
+    },
+  );
+  it("keeps unchecked flags explicit and resets a search with its text event", () => {
+    expect(fieldValue({ ...field, kind: "flag" }, false)).toEqual({ flag: { b: false } });
+    expect(entryEvent({ ...field, kind: "search", value: "aspirin" }, "")).toEqual({
+      enter: { comp: field.comp, value: { text: { s: "" } } },
+    });
+  });
   it("refuses invalid quantities and addresses search entry by component", () => {
     for (const value of ["", "-1", "abc", "Infinity"])
       expect(
@@ -1851,7 +1866,7 @@ it("paints Time taken as local date/time and dispatches UTC minutes or a human r
   });
   fireEvent.change(input, { target: { value: "" } });
   expect(onEvent).toHaveBeenLastCalledWith({
-    enter: { comp: "weight.observedAt", value: { text: { s: "" } } },
+    enter: { comp: "weight.observedAt", value: "cleared" },
   });
 });
 

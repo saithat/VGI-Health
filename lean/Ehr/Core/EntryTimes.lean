@@ -96,7 +96,7 @@ theorem enter_new_enteredAt (sp : Spec) (prog : Program) (facts : Facts) (user :
     (hc : c ∈ (enterCore sp prog facts user actor s cid v).1.captured) :
     c ∈ s.captured ∨ c.enteredAt? = epochNow facts s := by
   unfold enterCore at hc
-  repeat' (first | exact Or.inl hc | split at hc | dsimp only at hc)
+  repeat' (first | exact Or.inl hc | exact Or.inl (List.mem_filter.mp hc).1 | split at hc | dsimp only at hc)
   all_goals
     simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hc
     rcases hc with ⟨hc, _⟩ | rfl

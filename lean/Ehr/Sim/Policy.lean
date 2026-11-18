@@ -155,6 +155,8 @@ def actionOps (ctx : Context) (params : PersonaParams) (s : State) (e : Event)
       mouse := n ≥ params.keyboardShare
   let activate : List Op := if mouse then [.point, .click] else [.key]
   match e with
+  -- New specification for owner review. Deleting a field costs one edit key.
+  | .enter _ .cleared => return ([.think] ++ activate ++ [.key], seed)
   | .enter c v =>
     let el := (shownComp? ctx.sp ctx.prog ctx.facts s c).bind fun c => match c.kind with
       | .field id _ _ => ctx.sp.element? id | _ => none

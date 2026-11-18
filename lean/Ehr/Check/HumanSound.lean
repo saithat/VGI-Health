@@ -120,6 +120,7 @@ private theorem enterCore_human_quality (sp p f u s cid v) (hi : HumanCaptured s
   split
   · exact hi
   repeat' (first | contradiction | exact hi | split | dsimp only)
+  all_goals try exact fun x hx => hi x (List.mem_filter.mp hx).1
   all_goals
     intro x hx el hel hh
     simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hx

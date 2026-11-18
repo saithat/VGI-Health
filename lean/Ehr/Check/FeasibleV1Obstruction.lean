@@ -220,19 +220,31 @@ theorem inboxTrap_step (sp : Spec) (f : Facts) (u : User)
           · rename_i el hel; split
             · exact ⟨hscr, hunit, hdrug, hprov⟩
             · split
-              · exact ⟨hscr, hunit, hdrug, hprov⟩
-              · have hlf : el.linkedFrom? = none := by rw [hel] at hact; exact Option.some.inj hact
-                exact ⟨hscr, setCaptured_preserves_trap hunit hdrug hprov
-                  (by dsimp only; decide) (by dsimp only; decide) (by simp only [show ".observedAt".toList.isSuffixOf "resultAction".toList = false from by decide]; simp [hlf])⟩
+              · repeat' (first | exact ⟨hscr, hunit, hdrug, hprov⟩ | split)
+                refine ⟨hscr, ?_, fun x hx => hdrug x (List.mem_filter.mp hx).1,
+                  fun x hx => hprov x (List.mem_filter.mp hx).1⟩
+                exact List.mem_filter.mpr ⟨hunit, by
+                  simp [linkedClosure_of_noProvenance hprov, trappedDoseUnit]⟩
+              · split
+                · exact ⟨hscr, hunit, hdrug, hprov⟩
+                · have hlf : el.linkedFrom? = none := by rw [hel] at hact; exact Option.some.inj hact
+                  exact ⟨hscr, setCaptured_preserves_trap hunit hdrug hprov
+                    (by dsimp only; decide) (by dsimp only; decide) (by simp only [show ".observedAt".toList.isSuffixOf "resultAction".toList = false from by decide]; simp [hlf])⟩
         · simp only [hk]; split
           · exact ⟨hscr, hunit, hdrug, hprov⟩
           · rename_i el hel; split
             · exact ⟨hscr, hunit, hdrug, hprov⟩
             · split
-              · exact ⟨hscr, hunit, hdrug, hprov⟩
-              · have hlf : el.linkedFrom? = none := by rw [hel] at hmsg; exact Option.some.inj hmsg
-                exact ⟨hscr, setCaptured_preserves_trap hunit hdrug hprov
-                  (by dsimp only; decide) (by dsimp only; decide) (by simp only [show ".observedAt".toList.isSuffixOf "patientMessage".toList = false from by decide]; simp [hlf])⟩
+              · repeat' (first | exact ⟨hscr, hunit, hdrug, hprov⟩ | split)
+                refine ⟨hscr, ?_, fun x hx => hdrug x (List.mem_filter.mp hx).1,
+                  fun x hx => hprov x (List.mem_filter.mp hx).1⟩
+                exact List.mem_filter.mpr ⟨hunit, by
+                  simp [linkedClosure_of_noProvenance hprov, trappedDoseUnit]⟩
+              · split
+                · exact ⟨hscr, hunit, hdrug, hprov⟩
+                · have hlf : el.linkedFrom? = none := by rw [hel] at hmsg; exact Option.some.inj hmsg
+                  exact ⟨hscr, setCaptured_preserves_trap hunit hdrug hprov
+                    (by dsimp only; decide) (by dsimp only; decide) (by simp only [show ".observedAt".toList.isSuffixOf "patientMessage".toList = false from by decide]; simp [hlf])⟩
         · simp only [hk]; exact ⟨hscr, hunit, hdrug, hprov⟩
     | confirm cid =>
       simp only [stepEvent, confirmCore]; split

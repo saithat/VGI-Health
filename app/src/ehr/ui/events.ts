@@ -6,13 +6,17 @@ import {
 import type { NodeOf } from "./types";
 
 /** Same Value constructors and tenths rounding as the original Html painter. */
-type EntryField = Pick<NodeOf<"field">, "comp" | "kind" | "unit">;
+type EntryField = Pick<NodeOf<"field">, "comp" | "kind" | "unit"> &
+  Partial<Pick<NodeOf<"field">, "value">>;
 export function fieldValue(
   field: EntryField,
   raw: string | number | boolean,
 ): Value | undefined {
   const kind = field.kind.split(":")[0];
   if (kind === "flag") return { flag: { b: raw === true || raw === "true" } };
+  // Search and the critical-action draft have dedicated text handlers in Lean.
+  if (raw === "" && kind !== "search" && !field.comp.startsWith("critical.action:"))
+    return "cleared";
   if (kind === "quantity" || kind === "qty" || kind === "number") {
     // Lean omits the optional display unit for dimensionless quantities.
     const unit =
@@ -35,7 +39,9 @@ export function fieldValue(
 export function entryEvent(
   field: EntryField,
   raw: string | number | boolean,
+  hadValue = Boolean(field.value),
 ): Event | undefined {
+  if (raw === "" && !hadValue) return undefined;
   const value = fieldValue(field, raw);
   return value ? { enter: { comp: field.comp, value } } : undefined;
 }

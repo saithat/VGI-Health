@@ -114,7 +114,7 @@ private theorem enterCore_slots (sp p f u actor s cid v slots)
           rw [ee] at hk
           exact field_slot p slots bound s comp member slot pf hk
       repeat' (first | exact h | split | dsimp only)
-      all_goals exact store _ _ _
+      all_goals first | exact store _ _ _ | exact fun x hx => h x (List.mem_filter.mp hx).1
     · cases v <;> exact h
     · exact h
 

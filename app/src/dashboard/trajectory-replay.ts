@@ -139,6 +139,7 @@ export function entryText(event: TrajectoryEvent["event"]): string | null {
   if ("search" in event) return event.search.query;
   if (!("enter" in event)) return null;
   const value = event.enter.value;
+  if (value === "cleared") return "";
   if ("text" in value) return value.text.s;
   if ("code" in value) return value.code.c;
   if ("user" in value) return value.user.u;

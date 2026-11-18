@@ -210,8 +210,10 @@ acknowledgments and order-reconciliation decisions, and no patient data is shown
 (`unselected_view`). Properties 1 and 9 keep their global counterexamples on
 the landing view; the global form of the other four is not stated. The live
 app keeps unsigned drafts across charts after long visits and changes to other
-patients' records ([drafts and signing](docs/methods/live-drafts.md)). Observation
-fields offer “Time taken”; entry, observation and signing times stay separate.
+patients' records ([drafts and signing](docs/methods/live-drafts.md)). Clearing
+a field removes its value and linked copies. If the field is required, signing
+stays blocked until the requirement is met again. Observation fields offer
+“Time taken”; entry, observation and signing times stay separate.
 “Late entry” is informational, using a configurable 24-hour local policy default
 ([timing](docs/design/chart-timing.md)). A
 "Deficiencies" work list shows each clinician's latest unsigned drafts and overdue

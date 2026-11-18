@@ -915,6 +915,8 @@ inductive Value
   | text (s : String)
   | flag (b : Bool)
   | user (u : UserId)
+  /-- New specification for owner review. An explicit field deletion in an enter event. -/
+  | cleared
   deriving DecidableEq, Repr, Inhabited
 
 /-- Who performs an event: a human, or a macro on the human's behalf. -/

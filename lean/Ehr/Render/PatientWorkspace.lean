@@ -32,6 +32,8 @@ def patientLandingUi (p : Program) (f : Facts) (u : User) (s : State) : UiScreen
 
 /-- New specification for owner review: a value as plain text. -/
 def reconcileValueText : Value → String
+  -- New specification for owner review.
+  | .cleared => ""
   | .code c | .text c | .user c => c
   | .qty t _ => toString (t / 10) ++ "." ++ toString (t % 10)
   | .flag b => if b then "yes" else "no"

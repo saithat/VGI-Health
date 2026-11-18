@@ -20,6 +20,8 @@ inductive Objective | clicks | keystrokes
 
 /-- A scan is an entry whose spec kind is scan, on the actual shown field. -/
 def isScanEvent (ctx : Context) (s : State) : Event → Bool
+  -- New specification for owner review. Clearing a scanned code is a keyboard edit.
+  | .enter _ .cleared => false
   | .enter c _ => ((shownComp? ctx.sp ctx.prog ctx.facts s c).bind fun c =>
       match c.kind with | .field e _ _ => ctx.sp.element? e | _ => none).any fun el =>
         match el.kind with | .scan _ => true | _ => false
@@ -100,6 +102,8 @@ def mix (a b : Nat) : Nat := (a * 1099511628211 + b) % 18446744073709551616
 
 /-- Hash a value together with its kind and unit. -/
 def hashValue : Value → Nat
+  -- New specification for owner review.
+  | .cleared => 6
   | .qty n u => mix n (hashString u.name)
   | .text s => mix 1 (hashString s)
   | .code s => mix 2 (hashString s)

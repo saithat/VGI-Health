@@ -5,7 +5,7 @@ export function typingCost(event: Event, keyboard: boolean, palette: boolean): n
   let typed = 0;
   if ('enter' in event) {
     const v = event.enter.value;
-    typed = 'text' in v ? v.text.s.length : 'code' in v ? v.code.c.length :
+    typed = v === 'cleared' ? 1 : 'text' in v ? v.text.s.length : 'code' in v ? v.code.c.length :
       'qty' in v ? String(v.qty.tenths / 10).length : 'user' in v ? v.user.u.length : 1;
   }
   return typed + (keyboard ? palette && 'click' in event ? event.click.comp.length + 2 : 1 : 0);

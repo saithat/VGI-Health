@@ -22,6 +22,24 @@ def observed := step timedSpec timedProgram timedFacts user .human entered (.ent
 #guard (step timedSpec timedProgram timedFacts user .human entered (.enter "timeTaken" (.text "1000"))).2 == .ok
 #guard (step timedSpec timedProgram timedFacts user .«macro» entered (.enter "timeTaken" (.text "950"))).1 == entered
 #guard (step timedSpec timedProgram timedFacts user .human observed.1 (.enter "weightField" (.qty 701 .kg))).1.captured.all (fun c => c.element != "weight.observedAt")
+-- New specification for owner review. A missing weight fails its requirement again.
+#guard roundTrips (Event.enter "weightField" .cleared)
+#guard Id.run do
+  let rq : EntryReq := { commit := "signOrders", element := "weight" }
+  let clear := Event.enter "weightField" .cleared
+  let (after, result) := step timedSpec timedProgram timedFacts user .human observed.1 clear
+  return entryMet timedSpec timedFacts user observed.1 rq && result == .ok &&
+    !entryMet timedSpec timedFacts user after rq &&
+    !(hasEntry after "weight" 0 || hasEntry after "weight.observedAt" 0) &&
+    step timedSpec timedProgram timedFacts user .human after clear == (after, .ignored) &&
+    (step timedSpec timedProgram timedFacts user .«macro» observed.1 clear).1 == observed.1
+#guard Id.run do
+  let flags := { timedSpec with elements := timedSpec.elements.map fun el =>
+    if el.id == "weight" then { el with kind := .flag } else el }
+  let checked := (step flags timedProgram timedFacts user .human start (.enter "weightField" (.flag true))).1
+  let result := step flags timedProgram timedFacts user .human checked (.enter "weightField" .cleared)
+  return result == (checked, .blocked "flags require an explicit choice") &&
+    (step flags timedProgram timedFacts user .human checked (.enter "weightField" (.flag false))).2 == .ok
 #guard !late timedSpec.design 0 1440
 #guard late timedSpec.design 0 1441
 #guard !late { timedSpec.design with lateEntryMinutes? := some 60 } 100 160
