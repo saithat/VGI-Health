@@ -54,12 +54,27 @@ export function rowActions(boxes: GridBox[]): Map<string, GridBox> {
   return actions;
 }
 
+/** The previous/next page targets of a bounded list, by list component. */
+function pagers(boxes: GridBox[]): Map<string, Map<string, GridBox>> {
+  const out = new Map<string, Map<string, GridBox>>();
+  for (const box of boxes) {
+    const part = box.part;
+    if (part?.role !== "pager" || !part.comp || !part.kind) continue;
+    if (!out.has(part.comp)) out.set(part.comp, new Map());
+    out.get(part.comp)?.set(part.kind, box);
+  }
+  return out;
+}
+
 /** Connects every painted table to Lean's grid profile and its rows to their
- * single navigation action. Arrow, Home/End and Control+Home/End move a roving
- * focus through `Keyboard.grid` (the proved transitions, called through the
- * layout API); a click on a row whose record has one navigation action sends
- * that action's own click, the same event as its button. No target, text or
- * geometry is added: the row's action stays the Lean target box it is. */
+ * single navigation action. Arrow, Home/End, Control+Home/End and Page Up/Down
+ * move a roving focus through `Keyboard.grid` (the proved transitions, called
+ * through the layout API). In a bounded list, Page Up/Down at the first/last
+ * row of the page shown send the list's own previous/next page event (the
+ * same event as its pager button); focus keeps its cell. A click on a row
+ * whose record has one navigation action sends that action's own click, the
+ * same event as its button. No target, text or geometry is added: the row's
+ * action stays the Lean target box it is. */
 export function connectGrids(
   boxes: GridBox[],
   emit: (box: GridBox, event: Event) => void,
@@ -70,14 +85,14 @@ export function connectGrids(
     boxes.filter((b) => b.source).map((b) => [b.source ?? "", b]),
   );
   const actions = rowActions(boxes);
+  const pages = pagers(boxes);
   for (const [table, cells] of tableCells(boxes)) {
     const rows = Math.max(...cells.map((c) => (c.part?.row ?? 0) + 1));
     const cols = Math.max(...cells.map((c) => (c.part?.col ?? 0) + 1));
     const comp = headings.get(table)?.part?.comp ?? "";
     const at = (focus: number) =>
       cells.find(
-        (c) =>
-          (c.part?.row ?? 0) * cols + (c.part?.col ?? 0) === focus,
+        (c) => (c.part?.row ?? 0) * cols + (c.part?.col ?? 0) === focus,
       );
     cells.forEach((cell, i) => {
       const { element, part } = cell;
@@ -112,6 +127,18 @@ export function connectGrids(
           key,
         );
         const target = at(next.focus);
+        if (key === "pageUp" || key === "pageDown") {
+          event.preventDefault();
+          if (!target || target === cell) {
+            // Already at the edge of the page shown: turn the page.
+            const pager = pages
+              .get(comp)
+              ?.get(key === "pageUp" ? "previous" : "next");
+            const turn = pager?.part && pagerEvent(pager.part);
+            if (pager && turn && !blocked(pager)) emit(pager, turn);
+            return;
+          }
+        }
         if (!target || target === cell) return;
         event.preventDefault();
         element.tabIndex = -1;

@@ -22,7 +22,7 @@ for (const [persona, screen] of [
   }) => {
     test.setTimeout(90000);
     test.skip(!(await backendAvailable()), backendDownReason);
-    await page.goto("/?audit=buttons&inspect=1");
+    await page.goto("/?shell=encounter&audit=buttons&inspect=1");
     if (persona === "RN2") await signInPersona(page, persona);
     else await signInBaseline(page, persona);
     await enterPatientChart(page, "47466339");

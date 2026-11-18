@@ -83,7 +83,7 @@ async function save(page: Page, screen: string, commit: string) {
 }
 async function open(page: Page, persona: string, query = "Aaron") {
   test.skip(!(await backendAvailable()), backendDownReason);
-  await page.goto("/?audit=buttons&inspect=1");
+  await page.goto("/?shell=encounter&audit=buttons&inspect=1");
   await signInBaseline(page, persona);
   await enterPatientChart(page, query);
 }
@@ -219,7 +219,7 @@ for (const decision of ["approve", "deny"])
   test(`W7: ${decision} refill from the selected request`, async ({ page }) => {
     test.setTimeout(90000);
     test.skip(!(await backendAvailable()), backendDownReason);
-    await page.goto("/?audit=buttons&inspect=1");
+    await page.goto("/?shell=encounter&audit=buttons&inspect=1");
     await signInBaseline(page, "P1");
     const folder = page.locator(
       '[data-comp-id="workspace.activity|inboxRxRequests"]',
@@ -260,7 +260,7 @@ test("W2: result acknowledgment completes the selected task and files its patien
 }) => {
   test.setTimeout(90000);
   test.skip(!(await backendAvailable()), backendDownReason);
-  await page.goto("/?audit=buttons&inspect=1");
+  await page.goto("/?shell=encounter&audit=buttons&inspect=1");
   await signInBaseline(page, "P1");
   await page
     .locator('[data-comp-id="workspace.activity|inboxResults"]')
@@ -316,7 +316,7 @@ test("ED admission and surgical discharge update the same guarded bed board", as
   test.setTimeout(150000);
   if (!baseURL) throw new Error("Playwright baseURL missing");
   test.skip(!(await backendAvailable()), backendDownReason);
-  await page.goto("/?audit=buttons&inspect=1");
+  await page.goto("/?shell=encounter&audit=buttons&inspect=1");
   await signInBaseline(page, "P2");
   const row = page.getByRole("button", { name: /^Open chart:/ }).first();
   await expect(row).toBeVisible();

@@ -31,6 +31,7 @@ import {
   paintSchema,
   placedGeometry,
   occurrences,
+  type Paint,
 } from "./lean-layout-geometry.js";
 import { traceStates, type LeanScreenState } from "./lean-layout-states.js";
 import { REPO_ROOT, writeJson, writeJsonCompactAtomic, errorMessage } from "./util.js";
@@ -192,6 +193,24 @@ export interface LeanCheckerOptions {
   ) => Promise<Record<string, DensityLimit>>;
   bundles?: string[];
 }
+/** The admission verdict of a paint: what failure reporting reads. */
+type Verdict = Pick<LayoutReply, "accepted" | "linked" | "findings" | "error">;
+const verdictOf = (reply: LayoutReply): Verdict => ({
+  ...(reply.accepted !== undefined ? { accepted: reply.accepted } : {}),
+  ...(reply.linked !== undefined ? { linked: reply.linked } : {}),
+  ...(reply.findings !== undefined ? { findings: reply.findings } : {}),
+  ...(reply.error !== undefined ? { error: reply.error } : {}),
+});
+/** The placed boxes of an accepted paint: all `placedGeometry` reads. */
+function compactPaint(reply: LayoutReply): Paint | undefined {
+  if (!reply.accepted) return undefined;
+  const parsed = paintSchema.parse(reply);
+  return {
+    accepted: parsed.accepted,
+    boxes: parsed.boxes,
+    ...(parsed.viewport ? { viewport: parsed.viewport } : {}),
+  };
+}
 export class LeanScreenChecker implements ScreenChecker {
   readonly mode = "lean" as const;
   private trainingWorkspace:
@@ -323,8 +342,31 @@ export class LeanScreenChecker implements ScreenChecker {
       out.push(...(await this.runner(requests.slice(i, i + 32))));
     return out;
   }
+  /** The screens as the clinical page lays them out and paints them: with
+   * the host session group (`Layout.withSession`, through the same native
+   * `session` operation as the page). Only admission, painting and geometry
+   * read these; trace identities and recorded results keep the clinical
+   * screen. Screens shared by several states stay shared. */
+  private async sessioned(states: LeanScreenState[]): Promise<LeanScreenState[]> {
+    const distinct = [...new Set(states.map((s) => s.ui))];
+    const replies = await this.batch(
+      distinct.map((screen) => ({ op: "session", screen })),
+    );
+    const shown = new Map(
+      distinct.map((ui, i) => {
+        const reply = replies[i];
+        if (reply?.error) throw Error(reply.error);
+        return [
+          ui,
+          z.object({ screen: z.record(z.string(), z.unknown()) }).parse(reply)
+            .screen,
+        ] as const;
+      }),
+    );
+    return states.map((s) => ({ ...s, ui: required(shown.get(s.ui)) }));
+  }
   private async measure(input: Parameters<GeometryProvider>[0], spec: Spec) {
-    const states = await this.states(input, spec),
+    const states = await this.sessioned(await this.states(input, spec)),
       design = designOf(input.program) ?? [];
     const limits = await (this.opts.limits ?? vendorDensityLimits)(
       input.program.specVersion,
@@ -336,7 +378,7 @@ export class LeanScreenChecker implements ScreenChecker {
     for (const s of states)
       unique.set(stableStringify([s.screen, shapeFor(s.ui)]), s);
     const observed = [...unique.values()];
-    const shapeRows = await this.batch(
+    const shapeRows = (await this.batch(
       observed.map((s) => ({
         // Empty-family diagnostics expose the exact native erased shape,
         // without rechecking a reference family for every value change.
@@ -345,7 +387,7 @@ export class LeanScreenChecker implements ScreenChecker {
         references: [],
         screen: s.ui,
       })),
-    );
+    )).map((r) => ({ uncoveredShape: r.uncoveredShape }));
     const representatives = new Map<
       string,
       { state: LeanScreenState; shape: LayoutDesign[number]["shape"] }
@@ -384,8 +426,38 @@ export class LeanScreenChecker implements ScreenChecker {
     }
     const referenceResults: ("dense" | "fallback" | "custom" | "refused")[] =
       [];
-    const paints: LayoutReply[] = [];
+    // Only each sample's verdict and its placed boxes are kept for the rest of
+    // the call; the full paint (lines, glyph advances, trees) and, for trace
+    // measurements, the family are dropped as soon as they are read. Holding
+    // them for every distinct shape of a day's trace exhausted the Node heap.
+    // The first state of each placement (`[screen, shape, occurrences]`) is
+    // placed as soon as its shape's paint is read; the paint is then dropped.
+    const placementsByShape = new Map<string, { key: string; s: LeanScreenState }[]>();
+    {
+      const seen = new Set<string>();
+      for (const s of states) {
+        const shapeKey = stableStringify([s.screen, shapeFor(s.ui)]);
+        const key = stableStringify([s.screen, shapeFor(s.ui), occurrences(s.ui)]);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const list = placementsByShape.get(shapeKey) ?? [];
+        list.push({ key, s });
+        placementsByShape.set(shapeKey, list);
+      }
+    }
+    const geometryByOccurrences = new Map<string, GeometryAtlas['states'][number]>();
+    const paints: Verdict[] = [];
     const families: unknown[] = [];
+    const keep = (reply: LayoutReply, references: unknown, sample: LeanScreenState) => {
+      paints.push(verdictOf(reply));
+      const geometry = compactPaint(reply);
+      if (geometry)
+        for (const { key, s } of placementsByShape.get(
+          stableStringify([sample.screen, shapeFor(sample.ui)]),
+        ) ?? [])
+          geometryByOccurrences.set(key, placedGeometry(geometry, s.ui, s.screen, ""));
+      families.push(input.result ? undefined : references);
+    };
     const extra: { index: number; requests: unknown[] }[] = [];
     for (const [i, s] of samples.entries()) {
       let selected = selections[i];
@@ -412,8 +484,7 @@ export class LeanScreenChecker implements ScreenChecker {
       }
       if (selected) {
         const references = [{ screen: s.ui, layouts: selected.layouts }];
-        families.push(references);
-        paints.push(
+        keep(
           required(
             (
               await this.batch([
@@ -427,6 +498,8 @@ export class LeanScreenChecker implements ScreenChecker {
               ])
             )[0],
           ),
+          references,
+          s,
         );
         referenceResults.push("custom");
         extra.push({
@@ -435,8 +508,7 @@ export class LeanScreenChecker implements ScreenChecker {
         });
       } else {
         const result = await this.reference.get(s.ui, maxTargetsPerViewport);
-        paints.push(result.paint);
-        families.push(result.references);
+        keep(result.paint, result.references, s);
         referenceResults.push(
           result.dense
             ? "dense"
@@ -567,8 +639,6 @@ export class LeanScreenChecker implements ScreenChecker {
     // Placement depends on the admitted shape and occurrence-to-control map,
     // not patient text. Share immutable boxes within this call, while keeping
     // each state's label and event aliases separate and in their original order.
-    const geometryByOccurrences = new Map<string, GeometryAtlas['states'][number]>();
-    const parsedPaints = new Map<LayoutReply, ReturnType<typeof paintSchema.parse>>();
     for (const s of states) {
       const selected = selectedByShape.get(
         stableStringify([s.screen, shapeFor(s.ui)]),
@@ -586,13 +656,8 @@ export class LeanScreenChecker implements ScreenChecker {
       );
       if (!p.paint.accepted) continue;
       const geometryKey=stableStringify([s.screen,shapeFor(s.ui),occurrences(s.ui)]);
-      let template=geometryByOccurrences.get(geometryKey);
-      if(!template){
-        let paint=parsedPaints.get(p.paint);
-        if(!paint){paint=paintSchema.parse(p.paint);parsedPaints.set(p.paint,paint);}
-        template=placedGeometry(paint,s.ui,s.screen,'');
-        geometryByOccurrences.set(geometryKey,template);
-      }
+      const template=geometryByOccurrences.get(geometryKey);
+      if(!template)throw Error(`Missing Lean placement for ${s.screen}`);
       const state={...template,state:`${s.state}-${traceKey}`,components:{...template.components}};
       if (s.sample) state.sample = s.sample;
       if (s.eventIndex !== undefined) {

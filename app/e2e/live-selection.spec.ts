@@ -35,7 +35,7 @@ for (const [persona, activity, caption] of [
       )
         writes.push(`${request.method()} ${new URL(request.url()).pathname}`);
     });
-    await page.goto("/?audit=buttons");
+    await page.goto("/?shell=encounter&audit=buttons");
     await page
       .getByRole("button", { name: new RegExp(`^${persona} ·`) })
       .click();

@@ -395,7 +395,7 @@ for (const persona of ["P1", "P3"])
       }
       export const openMar=body=>marRequest('/sessions',body);
       export const marEvent=(s,event)=>marRequest('/sessions/'+s.sessionId+'/events',{revision:s.revision,event});
-      export const restoreMar=()=>marRequest('/me'); export const loginMar=()=>{}; export const logoutMar=()=>{};
+      export const restoreMar=()=>marRequest('/me'); export const loginMar=()=>{}; export const logoutMar=()=>{}; export const logoutMarTo=()=>{};
       export const marCommit=()=>{throw new Error('Unexpected MAR command')};export const subscribeMar=()=>()=>{};
     `,
         }),

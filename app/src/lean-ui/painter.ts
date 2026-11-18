@@ -158,7 +158,10 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     };
     control.addEventListener("compositionend", sendValue);
     control.onchange = () => {
-      if (control instanceof HTMLSelectElement && entry.part?.role === "pager") {
+      if (
+        control instanceof HTMLSelectElement &&
+        entry.part?.role === "pager"
+      ) {
         const event = pagerEvent(entry.part, control.value);
         if (event) emit(entry, event);
       } else if (control instanceof HTMLSelectElement) sendValue();
@@ -174,7 +177,8 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       const comp = part.comp ?? "";
       if (part.role === "pager") {
         // The pager's targets select their page of the list (selectTab).
-        const event = control instanceof HTMLSelectElement ? undefined : pagerEvent(part);
+        const event =
+          control instanceof HTMLSelectElement ? undefined : pagerEvent(part);
         if (event) emit(entry, event);
       } else if (part.role === "pending") emit(entry, { confirm: { comp } });
       else if (part.role === "tab")
@@ -342,7 +346,9 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
       const key = JSON.stringify(part.options ?? []);
       if (control.dataset.options !== key) {
         control.replaceChildren(
-          ...(part.options ?? []).map(([value, label]) => new Option(label, value)),
+          ...(part.options ?? []).map(
+            ([value, label]) => new Option(label, value),
+          ),
         );
         control.dataset.options = key;
       }
@@ -477,6 +483,94 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     event.preventDefault();
     candidates[0]?.control?.click();
   };
+  /** Relates every tabs node to its tabs and visible panel (APG tabs). The
+   * boxes stay flat and positioned by Lean; the tabs wrapper box holds two
+   * accessibility-only children without geometry or text: a `tablist` that
+   * owns the tab buttons and a `tabpanel` labelled by the selected tab that
+   * owns the boxes of the shown body. A box belongs to its innermost tabs
+   * node. Only the selected tab is in the Tab order and controls the panel.
+   * Returns the elements now owned, so a dialog does not claim them twice. */
+  function relateTabs(): Set<HTMLElement> {
+    const owned = new Set<HTMLElement>();
+    const wrappers = [...entries.values()].filter(
+      (e) =>
+        e.part?.role === "wrapper" &&
+        e.part.kind === "tabs" &&
+        sourceKey(e.drawn) !== undefined,
+    );
+    const lists = new Map<Entry, Entry[]>(),
+      bodies = new Map<Entry, HTMLElement[]>();
+    for (const wrapper of wrappers) {
+      lists.set(wrapper, []);
+      bodies.set(wrapper, []);
+    }
+    for (const entry of entries.values()) {
+      const path = sourceKey(entry.drawn);
+      if (path === undefined) continue;
+      let owner: Entry | undefined,
+        length = -1;
+      for (const wrapper of wrappers) {
+        const prefix = `${sourceKey(wrapper.drawn)}.`;
+        if (path.startsWith(prefix) && prefix.length > length) {
+          owner = wrapper;
+          length = prefix.length;
+        }
+      }
+      if (!owner) continue;
+      if (
+        entry.part?.role === "tab" &&
+        parentKey(entry.drawn) === sourceKey(owner.drawn)
+      )
+        lists.get(owner)?.push(entry);
+      else bodies.get(owner)?.push(entry.element);
+    }
+    for (const wrapper of wrappers) {
+      const tabs = lists.get(wrapper) ?? [];
+      const body = bodies.get(wrapper) ?? [];
+      let list = wrapper.element.querySelector<HTMLElement>(
+          ":scope > .lean-tablist",
+        ),
+        panel = wrapper.element.querySelector<HTMLElement>(
+          ":scope > .lean-tabpanel",
+        );
+      if (!list) {
+        list = document.createElement("div");
+        list.className = "lean-tablist";
+        list.setAttribute("role", "tablist");
+        wrapper.element.append(list);
+      }
+      if (!panel) {
+        panel = document.createElement("div");
+        panel.className = "lean-tabpanel";
+        panel.setAttribute("role", "tabpanel");
+        wrapper.element.append(panel);
+      }
+      wrapper.element.setAttribute("role", "none");
+      wrapper.element.removeAttribute("aria-label");
+      list.id = `${wrapper.element.id}-tablist`;
+      panel.id = `${wrapper.element.id}-panel`;
+      const selected = tabs.find((t) => t.part?.selected);
+      for (const tab of tabs) {
+        const control = tab.control;
+        if (!control) continue;
+        control.id = `${tab.element.id}-tab`;
+        owned.add(tab.element);
+        if (tab === selected) control.setAttribute("aria-controls", panel.id);
+        else control.removeAttribute("aria-controls");
+        control.tabIndex = tab === (selected ?? tabs[0]) ? 0 : -1;
+      }
+      list.setAttribute(
+        "aria-owns",
+        tabs.flatMap((t) => (t.control ? [t.control.id] : [])).join(" "),
+      );
+      if (selected?.control)
+        panel.setAttribute("aria-labelledby", selected.control.id);
+      else panel.removeAttribute("aria-labelledby");
+      panel.setAttribute("aria-owns", body.map((e) => e.id).join(" "));
+      for (const element of body) owned.add(element);
+    }
+    return owned;
+  }
   root.addEventListener("keydown", dialogKeys);
   document.addEventListener("keydown", hotkeys);
   return {
@@ -695,6 +789,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         updateControl(entry, blockedByModal(entry));
         entry.element.dataset.interactive = String(Boolean(entry.control));
       }
+      const owned = relateTabs();
       // Tables are grids: Lean's cell rows and columns, its grid keyboard
       // profile and each record's single navigation action.
       const byElement = new Map<HTMLElement, Entry>(
@@ -743,7 +838,12 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
           entry.element.setAttribute(
             "aria-owns",
             [...entries.values()]
-              .filter((e) => e !== entry && e.drawn.box.info.interruptive)
+              .filter(
+                (e) =>
+                  e !== entry &&
+                  e.drawn.box.info.interruptive &&
+                  !owned.has(e.element),
+              )
               .map((e) => e.element.id)
               .join(" "),
           );

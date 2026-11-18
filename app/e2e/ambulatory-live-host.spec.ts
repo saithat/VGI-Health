@@ -19,7 +19,7 @@ for (const [persona, screen] of [
     }) => {
       test.setTimeout(90000);
       test.skip(!(await backendAvailable()), backendDownReason);
-      await page.goto(`/?audit=buttons${inspecting ? "&inspect=1" : ""}`);
+      await page.goto(`/?shell=encounter&audit=buttons${inspecting ? "&inspect=1" : ""}`);
       await signInBaseline(page, persona);
       await enterPatientChart(page, inspecting ? "Terrance" : "Aaron");
       await navigateClinicalScreen(

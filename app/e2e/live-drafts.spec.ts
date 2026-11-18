@@ -42,7 +42,7 @@ test("live drafts A/B/A restore entries and acknowledged alerts, then sign throu
       export const marEvent = (s,event) => marRequest('/sessions/'+s.sessionId+'/events', {revision:s.revision,event});
       export const marCommit = () => {throw new Error('Unexpected MAR command')};
       export const subscribeMar = () => () => {}; export const restoreMar = async () => undefined;
-      export const loginMar = () => {}; export const logoutMar = () => {};
+      export const loginMar = () => {}; export const logoutMar = () => {}; export const logoutMarTo = () => {};
     `,
       }),
     );

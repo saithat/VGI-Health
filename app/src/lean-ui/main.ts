@@ -8,6 +8,7 @@ import {
   loadListContext,
   restoreUser,
   searchPatients,
+  signOut,
   type Bundle,
 } from "../data/liveStore";
 import { loginMar, marRequest } from "../data/commitService";
@@ -29,19 +30,22 @@ async function main() {
   const report = (value: unknown) => {
     status.textContent = value instanceof Error ? value.message : String(value);
   };
-  const query = new URLSearchParams(location.search);
+  // The exact registered callback has no query; the page's own address,
+  // with its patient/MAR/board parameters, is the return URL kept across the
+  // identity provider's redirect (`returnTo`).
   const callback = new URL("lean.html", location.href).href;
   const user = await restoreUser(callback);
+  // After a callback the address is the return URL again (restoreMar).
+  const query = new URLSearchParams(location.search);
   if (!user) {
     status.textContent = "";
     const login = document.createElement("button");
+    login.className = "lean-host-login";
     login.textContent = `Sign in as ${query.get("persona") ?? "P1"}`;
     login.onclick = () => {
-      const target = new URL(location.href);
-      target.hash = "";
       void loginMar(
         query.get("persona")?.toLowerCase() ?? "p1",
-        target.href,
+        callback,
       ).catch(report);
     };
     root.append(login);
@@ -142,10 +146,22 @@ async function main() {
         }
       : {}),
   });
+  // Sign out is a Lean navigation target (`Layout.withSession`); its click
+  // ends the identity session and never reaches the clinical interpreter.
+  let signOutComp = "";
   function dispatch(
     event: Parameters<typeof session.dispatch>[0],
     patient?: string,
   ) {
+    if (
+      patient === undefined &&
+      signOutComp &&
+      "click" in event &&
+      event.click.comp === signOutComp
+    ) {
+      void signOut(callback);
+      return;
+    }
     const target = patient ? boardSessions.get(patient) : session;
     const generation =
       target && "getGeneration" in target ? target.getGeneration() : undefined;
@@ -199,12 +215,26 @@ async function main() {
       : ordinary;
     if (!snapshot.ui || !snapshot.layout)
       throw new Error("Lean semantic screen/layout API is required");
+    // Layout and painting see the screen with its session group; the journal
+    // keeps the clinical screen.
+    const sessioned = z
+      .object({
+        screen: z.custom<NonNullable<typeof snapshot.ui>>(),
+        signOut: z.string(),
+      })
+      .parse(
+        JSON.parse(
+          layout(JSON.stringify({ op: "session", screen: snapshot.ui })),
+        ),
+      );
+    signOutComp = sessioned.signOut;
+    const shown = sessioned.screen;
     const viewport = { w: window.innerWidth * 64, h: window.innerHeight * 64 };
     const start = performance.now();
     let output: Output;
     if (references === undefined) {
       const selected = referencePaint(
-        snapshot.ui,
+        shown,
         viewport,
         referenceLimit(
           String(content.program.specVersion),
@@ -220,7 +250,7 @@ async function main() {
         JSON.stringify({
           op: "family-paint",
           references,
-          screen: snapshot.ui,
+          screen: shown,
           viewport,
           maxTargetsPerViewport: referenceLimit(
             String(content.program.specVersion),
@@ -243,7 +273,7 @@ async function main() {
       );
     }
     root.inert = false;
-    painter.patch(snapshot.ui, output);
+    painter.patch(shown, output);
     if (board) board.onPaint();
     else session.onPaint(snapshot.ui);
     // Read-only browser evidence; no state/dispatch hook is exposed here.

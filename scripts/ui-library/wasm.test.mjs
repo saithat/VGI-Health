@@ -48,7 +48,7 @@ test('native and WASM program/family paint are byte-identical across P1/P3 scree
   console.log(`Byte agreement: 36 paint requests; program-paint ${Math.min(...times.map(t=>t.ms)).toFixed(2)}–${Math.max(...times.map(t=>t.ms)).toFixed(2)} ms (Node WASM, includes JSON).`);
 });
 test('WASM uses the native proved keyboard transitions, including manual activation and dialog close',()=>{
-  for(const profile of ['tabs','listbox','dialog','alert-dialog','grid']) for(const key of ['left','right','up','down','home','end','ctrlHome','ctrlEnd','enter','space','tab','shiftTab','escape']) {
+  for(const profile of ['tabs','listbox','dialog','alert-dialog','grid']) for(const key of ['left','right','up','down','home','end','ctrlHome','ctrlEnd','enter','space','tab','shiftTab','escape','pageUp','pageDown']) {
     const input={op:'keyboard',profile,key,rows:2,cols:3,state:{focus:4,selected:1,isOpen:true,invoker:'sign'}};
     assert.equal(wasm.call('ehr_layout',JSON.stringify(input)),layout(input));
   }
@@ -143,4 +143,23 @@ test('native and WASM keep five alert severity marks inside five strip occurrenc
       for(const d of urgent.filter(d=>d.box.info.mark!=='rect'))assert.equal(d.box.info.text.inset,d.box.rect.h);
     }
   }
+});
+test('native and WASM add the same session group and paint the sign-out target identically',()=>{
+  const screen={screen:'home',banner:[['Patient','Synthetic Patient']],nav:[['Chart',[['home','Home']]]],title:'Results',side:[],modal:null,
+    workspace:[{button:{comp:'sign',label:'Sign',role:'primary',enabled:true,blockedReason:null,hotkey:null}}]};
+  // A deep clinical screen is returned unchanged (Layout.withSession_not_home).
+  const deep={op:'session',screen:{...screen,screen:'w1Orders'}};
+  const deepReply=layout(deep);
+  assert.equal(wasm.call('ehr_layout',JSON.stringify(deep)),deepReply);
+  assert.deepEqual(JSON.parse(deepReply).screen.nav,screen.nav);
+  const request={op:'session',screen};
+  const expected=layout(request);
+  assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),expected);
+  const reply=JSON.parse(expected);
+  assert.equal(reply.signOut,'session.signOut');
+  assert.deepEqual(reply.screen.nav.at(-1),['Session',[['session.signOut','Sign out']]]);
+  const inventory={op:'inventory',screen:reply.screen};
+  const native=layout(inventory);
+  assert.equal(wasm.call('ehr_layout',JSON.stringify(inventory)),native);
+  assert.equal(JSON.parse(native).inventory.filter(e=>e.part.comp==='session.signOut'&&e.part.target).length,1);
 });

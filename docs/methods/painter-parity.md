@@ -2,10 +2,12 @@
 
 [Painter inventory](lean-painter.md) · [Remaining cut-over checks](../design/lean-ui-cutover.md)
 
-The experimental page paints patient boards, medication time grids, note and
+The Lean clinical page paints patient boards, medication time grids, note and
 folder cards, trend/growth plots and timeline axes using Lean display parts.
 It retains the original info children and complete values below the rich view.
-Default entry points and the React clinical renderer remain present.
+It is the default clinical entry point; the React renderer remains for the
+encounter shell, ADT, replay, the dashboard and the browser
+([cut-over](../design/lean-ui-cutover.md)).
 
 ## Patient and dose transport
 
@@ -22,9 +24,10 @@ owns interaction; urgent information remains visible for the whole board.
 `/lean.html?persona=P3&marPatient=<Patient.id>&marRelease=mar&marWorkflow=<dose>`
 uses the existing MAR connection and shared scheduled-dose authority. These
 parameters identify a service-provisioned dose; the browser supplies no clinical
-state or new authority. The page uses the same Keycloak login and preserves
-these return parameters. Real identity deployments still need their exact
-`/lean.html` callback provisioned.
+state or new authority. The MAR dose list (`/?workflow=mar`) opens each dose
+here and keeps its sign-in and cosign button. The page uses the same Keycloak
+login and preserves these return parameters. Real identity deployments still
+need their exact `/lean.html` callback provisioned.
 
 ## Display and geometry
 
@@ -129,3 +132,23 @@ passed at the 1/64 px tolerance. Recorded live snapshots had zero rectangle,
 text-line-width and vector-stroke deviation; intrinsic glyph deviation was at
 most 1/64 px. Failed harness attempts were corrected and only affected tests
 were repeated; no full browser suite or accessibility/screen audit pair ran.
+
+## Cut-over validation
+
+The cut-over regressions add two files to the same configuration:
+`cutover.pw.ts` runs on the widget fixture host (which records the events the
+painter sends and uses the WASM keyboard) and `cutover-live.pw.ts` on the
+isolated service. The service host adds an independently authenticated second
+nurse (RN2) and a high-alert insulin dose on its own patient (New
+specification for owner review). The [checklist](../design/lean-ui-cutover.md)
+lists what each test establishes.
+
+```sh
+# Disposable Postgres in DATABASE_URL; one worker under the shared lock.
+flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright test \
+  --config src/lean-ui/playwright.config.ts --workers=1
+# One-day Lean replay for every persona, no model call.
+EHR_FAKE=0 pnpm --filter agent run-days --screens lean --backend replay \
+  --replay-from runs/<recorded lean run> --days 1 --personas P1,P2,P3,P4,P5 \
+  --world runs/world/2 --run-id <new id> --seed-policy none
+```

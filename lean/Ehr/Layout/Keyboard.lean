@@ -8,6 +8,8 @@ namespace Ehr.Layout.Keyboard
 open Lean
 inductive Key | left | right | up | down | home | «end» | ctrlHome | ctrlEnd
   | enter | space | tab | shiftTab | escape
+  /-- New specification for owner review: Page Up and Page Down. -/
+  | pageUp | pageDown
   deriving Repr, DecidableEq, ToJson, FromJson, Inhabited
 
 def next (n i : Nat) := if i+1 < n then i+1 else 0
@@ -41,7 +43,10 @@ def listbox (n : Nat) (s : State) (key : Key) : State :=
   { s with focus := f, selected := f }
 
 /-- Rectangular data grid: row edges do not wrap; Home/End act within a row;
-Control+Home/End address the entire grid. Tab exits the one-tab-stop grid. -/
+Control+Home/End address the entire grid. Tab exits the one-tab-stop grid.
+New specification for owner review: Page Up and Page Down keep the column and
+move to the first and last row of the rows shown (a bounded list shows one
+page, so these are the first and last rows of that page). -/
 def grid (rows cols : Nat) (s : State) (key : Key) : State :=
   let c := max 1 cols
   let row := s.focus / c
@@ -53,6 +58,7 @@ def grid (rows cols : Nat) (s : State) (key : Key) : State :=
     | .down => min (rows-1) (row+1)*c+col
     | .home => row*c | .end => row*c+c-1
     | .ctrlHome => 0 | .ctrlEnd => rows*c-1
+    | .pageUp => col | .pageDown => (rows-1)*c+col
     | _ => s.focus
   { s with focus := f }
 
@@ -152,6 +158,16 @@ theorem grid_right_stays_row (rows cols s) (hc : 0 < cols) :
 theorem grid_home (rows cols s) :
     (grid rows cols s .ctrlHome).focus = 0 := rfl
 
+/-- New specification for owner review: Page Up and Page Down keep the column. -/
+theorem grid_page_keeps_column (rows cols s) (hc : 0 < cols) :
+    (grid rows cols s .pageUp).focus % cols = s.focus % cols ∧
+    (grid rows cols s .pageDown).focus % cols = s.focus % cols := by
+  have hc' : max 1 cols = cols := by omega
+  have hm := Nat.mod_lt s.focus hc
+  simp only [grid, hc']
+  refine ⟨Nat.mod_eq_of_lt hm, ?_⟩
+  rw [Nat.mul_comm, Nat.mul_add_mod, Nat.mod_eq_of_lt hm]
+
 private theorem cell_inside (rows cols r c : Nat) (hr : r < rows) (hc : c < cols) :
     r*cols+c < rows*cols := by
   have hm := Nat.mul_le_mul_right cols (Nat.succ_le_of_lt hr)
@@ -175,13 +191,17 @@ theorem grid_preserves (rows cols s k) (hr : 0 < rows) (hc : 0 < cols)
     omega
   · exact positive
   · omega
-  all_goals exact hf
+  all_goals first
+    | exact hf
+    | (have := cell_inside rows cols 0 (s.focus % cols) hr colBound
+       simpa using this)
+    | exact cell_inside rows cols (rows-1) (s.focus % cols) (by omega) colBound
 
 theorem dialog_opens_inside (invoker) : (openDialog invoker).focus = 0 ∧
     (openDialog invoker).isOpen = true := ⟨rfl,rfl⟩
 
 
-def keys : List Key := [.left,.right,.up,.down,.home,.end,.ctrlHome,.ctrlEnd,.enter,.space,.tab,.shiftTab,.escape]
+def keys : List Key := [.left,.right,.up,.down,.home,.end,.ctrlHome,.ctrlEnd,.enter,.space,.tab,.shiftTab,.escape,.pageUp,.pageDown]
 
 /-- Native transition tables can be consumed by a painter without duplicating
 these semantics in JavaScript. -/
@@ -214,6 +234,7 @@ def table (profile : String) (rows cols : Nat) : List (Nat × Key × State) :=
 #print axioms interruptive_stays_open
 #print axioms grid_right_stays_row
 #print axioms grid_home
+#print axioms grid_page_keeps_column
 #print axioms grid_preserves
 #print axioms dialog_opens_inside
 end Ehr.Layout.Keyboard

@@ -5,8 +5,9 @@
 [First local result and verification](../audits/lean-nightly-first-result.md) ·
 [Layout-rule and prompt measurements](../audits/layout-rules-discovery.md)
 
-`run-days --screens lean` is an opt-in research mode of the existing nightly
-loop. The agent reads one simulated persona's training evidence and proposes
+`run-days --screens lean` is the default screen gate of the existing nightly
+loop (`--screens browser` selects the browser gate, which archive/cadence and
+generator-only runs require explicitly; a resumed run keeps its recorded gate). The agent reads one simulated persona's training evidence and proposes
 Program edits and optional layout rules or literal layouts together. The objective is clicks plus
 scrolls saved on that persona's traces. Completion, clinical admission,
 learnability and physical-interaction validation still gate each release.

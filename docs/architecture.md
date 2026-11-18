@@ -44,8 +44,10 @@ flowchart LR
 
 One Lean code base is the single source of truth. It is compiled natively (the
 `ehr` binary: checker, simulator, deploy, commit server) and, through
-Lean → C → Emscripten, to WebAssembly that the browser runs. React only paints
-the screen tree Lean returns; it holds no clinical logic.
+Lean → C → Emscripten, to WebAssembly that the browser runs. The clinical page
+(`/lean.html`) paints Lean's checked layout with plain DOM controls; React
+paints the encounter shell, ADT, replay, dashboard and browser. Neither holds
+clinical logic.
 
 ```mermaid
 flowchart TB
@@ -74,8 +76,8 @@ flowchart TB
   LEAN --> NATIVE
   LEAN --> WASM
 
-  subgraph BROWSER["app/ (React)"]
-    PAINTER["Painter: draws the<br/>Lean screen tree"]:::checked
+  subgraph BROWSER["app/"]
+    PAINTER["Clinical page: plain DOM<br/>painter of Lean layout"]:::checked
     DASH["Replay, dashboard,<br/>UI version browser"]:::checked
   end
   WASM --> PAINTER
@@ -127,7 +129,7 @@ any of these effects. There is no browser FHIR writer.
 Noncommitting interactions preview locally and are submitted as an ordered
 human-event journal before the next command; every field edit retains its
 position and displayed evidence. Each native ready screen since the previous
-successful command is mandatory. Loading screens are compared when React
+successful command is mandatory. Loading screens are compared when the page
 actually paints them; batched-away loading frames require no evidence. Returning
 to the directory keeps unsigned patient drafts and acknowledgments in Lean's
 navigation state. At departure, the host flushes the outgoing journal and the
@@ -187,7 +189,7 @@ sequenceDiagram
 | Directory | Contents |
 |---|---|
 | `lean/` | Rulebook, interpreter, checker, renderer, simulator and all proofs. |
-| `app/` | React app: clinical painter, live and replay modes, dashboard. |
+| `app/` | Plain DOM clinical page (`/lean.html`); React encounter shell, ADT, replay, dashboard and browser. |
 | `agent/` | Nightly discovery, certified design archives, configurable release cadence and a typed review gate; simulator-only off-shift tailoring sessions (`session*.ts`). Historical nightly protocols remain available. The offline `proposal-quality` harness compares recorded prompt variants without deploying. |
 | `services/commit/` | Sole live store/writer: native guard, versioned patient event logs, chart/worklist projections, MAR and ADT; offline FHIR bootstrap. |
 | `wasm/` | Lean → C → Emscripten build. |

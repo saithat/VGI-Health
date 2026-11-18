@@ -36,6 +36,7 @@ import { loadRelease } from './releases.js';
 import { historyItem } from './run.js';
 import {noAgentReference} from './vendor-reference.js';
 import { createScreenChecker, type ScreenChecker } from './screencheck.js';
+import { LeanScreenChecker } from './lean-screencheck.js';
 import { type Program } from './schema.js';
 import { RunStore } from './store.js';
 import { pad2, readJson } from './util.js';
@@ -46,6 +47,7 @@ export const NIGHT_MODES: readonly NightMode[] = ['auto', 'nightly', 'surface-fe
 
 const manifestSchema = z.object({
   protocol: z.string().optional(),
+  screenGate: z.enum(['lean','browser']).optional(),
   nightlyDiscovery:structurePolicySchema.nullable().optional(),
   scoring:releaseScoringSchema.optional(),
   runId: z.string(),
@@ -102,8 +104,10 @@ export async function rerunNight(args: {
   const outDir = args.outDir ?? path.join(args.runDir, 'adhoc', `night-${pad2(args.night)}-${args.persona}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`);
   const store = new RunStore(outDir);
   const native=retryEhr(args.ehr);
-  const screens=retryScreens(args.screens??createScreenChecker(native,{referenceProgram:noAgentReference(args.runDir,args.night+1),artifactsDir:path.join(outDir,'reports/screens')}));
-  const ehr=screens.geometry?geometryEhr(native,screens.geometry,outDir):native;
+  // A rerun uses the run's recorded screen gate (Lean layout or browser).
+  const lean=manifest.screenGate==='lean';
+  const screens=retryScreens(args.screens??(lean?new LeanScreenChecker(native,{artifactsDir:path.join(outDir,'reports/lean-screens')}):createScreenChecker(native,{referenceProgram:noAgentReference(args.runDir,args.night+1),artifactsDir:path.join(outDir,'reports/screens')})));
+  const ehr=screens.geometry?geometryEhr(native,screens.geometry,outDir,lean):native;
   const deps: LoopDeps = {
     runId: `${manifest.runId}/adhoc`, store,ehr,screens, agent: new LlmAgent(new RecordingLlm(args.llm, outDir)),
     seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: world.dir, worldSeed: world.manifest.seed,incompletePenalty:manifest.scoring?.incompletePenalty??0.5,

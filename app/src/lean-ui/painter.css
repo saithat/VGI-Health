@@ -231,3 +231,14 @@ input.lean-control[type="checkbox"] {
   outline: 1px solid #64748b;
   outline-offset: -1px;
 }
+/* Accessibility-only tab relationships: no geometry, ink or pointer target. */
+.lean-tablist,
+.lean-tabpanel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

@@ -128,12 +128,16 @@ test("Keycloak MAR preserves each nonadministration outcome, re-offers the same 
   try {
     await login(first, "p3");
     await login(second, "rn2");
-    for (const page of [first, second]) {
+    // The dose list opens the scheduled dose on the Lean clinical page.
+    const openDose = async (page: Page) => {
       await page.getByRole("button", { name: "Open MAR", exact: true }).click();
+      await expect(page).toHaveURL(/\/lean\.html\?.*marPatient=/);
+      await expect(page.locator("#root")).toHaveAttribute("data-accepted", "true");
       await action(page, "home.work.w4Worklist");
       await action(page, "w4Worklist.review.allergyList");
       await action(page, "w4Worklist.toMar");
-    }
+    };
+    for (const page of [first, second]) await openDose(page);
     const outcomes = [
       ["held", "Held"], ["refused", "Refused"], ["not-given", "Not given"],
       ["delayed", "Delayed"], ["given", "Given"],
@@ -152,16 +156,19 @@ test("Keycloak MAR preserves each nonadministration outcome, re-offers the same 
       const saved = first.waitForResponse((res) => res.url().endsWith("/commit/commands"));
       await component(first, "w4Admin.commit.administerMed").click();
       expect((await (await saved).json()).version).toBe(index + 2);
-      await expect(first.getByText("Administration saved. MAR refreshed.")).toBeVisible();
+      await expect(first.locator("#status")).toContainText("Administration saved. MAR refreshed.");
+      await expect(second.locator("#status")).toContainText("MAR updated by another nurse");
+      // Each accepted attempt discards stale evidence, including nonconsuming outcomes.
+      await expect(component(first, "home.work.w4Worklist")).toBeVisible();
+      await expect(component(second, "home.work.w4Worklist")).toBeVisible();
+      // The recorded outcome is on the dose list for both nurses.
       for (const page of [first, second]) {
+        await page.goto("/?workflow=mar");
         await expect(page.getByTestId("mar-history")).toContainText(`${label} ·`);
         if (status !== "given")
           await expect(page.getByTestId("mar-history")).toContainText(`live-${status}-reason`);
       }
-      await expect(second.getByRole("status")).toContainText("MAR updated by another nurse");
-      // Each accepted attempt discards stale evidence, including nonconsuming outcomes.
-      await expect(component(first, "home.work.w4Worklist")).toBeVisible();
-      await expect(component(second, "home.work.w4Worklist")).toBeVisible();
+      if (index + 1 < outcomes.length) for (const page of [first, second]) await openDose(page);
     }
     expect(errors).toEqual([]);
   } finally {

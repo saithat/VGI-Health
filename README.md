@@ -67,7 +67,7 @@ one panel can be safe ([investigation](docs/audits/wave2-investigation-20261109.
 flowchart LR
   A["Traces → agent proposal"] --> B["Lean checker + screen/replay gates"]
   B --> C["Accepted Program"]
-  C --> D["React paints Lean WASM preview"]
+  C --> D["Plain DOM page paints the Lean WASM layout"]
   D --> E["Commit service: native screen comparison + fresh guard"]
   E --> F["Postgres: versioned event + projection"]
 ```
@@ -149,7 +149,8 @@ make run APP_PORT=5173
 
 `make install` builds native Lean, checks packaged WASM, provisions local identity
 and imports the baseline before starting the commit service. `make run` builds
-and serves the app. Default ports: app 5173, commit 18090, Postgres 55532,
+and serves the app; `/` opens the clinical page `/lean.html`, and
+`/?shell=encounter` keeps the React encounter shell. Default ports: app 5173, commit 18090, Postgres 55532,
 Keycloak 18180. Local passwords are in untracked `.env`. Use a unique
 `COMPOSE_PROJECT_NAME` for an isolated stack; `make infra-down` preserves its
 volumes. [Live setup and validation](docs/methods/live-validation.md) covers
@@ -342,7 +343,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Simulation and calibration | [Bounded clinician](docs/methods/simulation.md), [workload/interruptions](docs/methods/workload-and-interruptions.md), [simulation clocks](docs/methods/wave3-simulation.md), [workflow phases](docs/methods/workflow-phases.md), [public-evidence calibration plan](docs/design/workflow-calibration.md) |
 | Clinical scenario policies | [Medication outcomes](docs/methods/medication-outcomes.md), [information needs](docs/methods/information-needs.md), [ADT](docs/methods/adt.md) |
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
-| Plain DOM clinical page | [Lean painter and widget inventory](docs/methods/lean-painter.md), [rich widgets and patient-scoped boards](docs/methods/painter-parity.md), and [remaining cut-over checks](docs/design/lean-ui-cutover.md); default clinical entry points retain React |
+| Plain DOM clinical page | [Lean painter and widget inventory](docs/methods/lean-painter.md), [rich widgets and patient-scoped boards](docs/methods/painter-parity.md), and the [cut-over checklist](docs/design/lean-ui-cutover.md); the encounter shell and ADT keep React |
 | Interface research | [UI library](docs/methods/ui-library.md), [Lean nightly designs](docs/methods/design-discovery.md), [dense reference layouts](docs/methods/reference-layouts.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |
 | Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md), [RLM arm R](docs/methods/rlm-night.md), [harness-native arm H](docs/methods/harness-night.md) (Claude Code CLI in a confined workspace: 60/70 accepted vs B's 58/70 in the full study; B ran on Codex `gpt-6.1-sol` and H on Claude Opus 5.5, so the gap is not a harness-only effect; opt-in) |
 | Local evidence and data | [Run data](docs/methods/run-data.md), [recording memory and geometry storage](docs/methods/recording-memory.md), [conformance](docs/methods/conformance.md), [Synthetic Hospital](docs/methods/synthetic-hospital.md), [organization names and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
