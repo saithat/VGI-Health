@@ -119,9 +119,9 @@ At 1440×900, warm Node WASM family-paint samples (milliseconds) were:
 
 These small fixtures have different source counts from live screens. The live
 P2 board-note paint measured 795.6 ms (375 boxes) and the MAR grid 128.7 ms
-(166 boxes), including browser admission/cache work. Large clinical boards can
-fall back to the admitted fixed shell; controls remain patient-scoped, while
-that appearance is simpler than the dense two-pane fixture.
+(166 boxes), including browser admission/cache work. At the time of these measurements, large clinical boards could fall back to
+the admitted fixed shell. The [dense board measurements](../audits/dense-boards.md)
+cover the subsequent generator and the complete two-patient note workflow.
 
 The final single-worker run passed all five targeted browser tests together: P1 note
 and prescription signing, P3 assessment filing, every rich widget at all three

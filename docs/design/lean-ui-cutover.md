@@ -33,9 +33,9 @@ in [painter-parity](../methods/painter-parity.md#cut-over-validation).
   acknowledgment stay separate events`; page keys are a new Lean key pair
   (`grid_preserves`, `grid_page_keeps_column` in
   [Keyboard.lean](../../lean/Ehr/Layout/Keyboard.lean)).
-- [ ] Improve dense geometry for large clinical boards. The complete two-patient
-  note task can use the checked fixed-shell fallback; interaction works, while
-  the large-board appearance remains simpler. Keep the existing admission limits.
+- [x] Improve dense geometry for large clinical boards. The two-patient ED note
+  workflow uses the admitted dense family through signing. [Retained board
+  measurements and live workflow](../audits/dense-boards.md).
 - [x] **Tabs and panels.** Each tabs node has an accessibility-only `tablist`
   owning its tabs and a `tabpanel` labelled by the selected tab and owning the
   shown body; only the selected tab is in the Tab order and controls the panel.

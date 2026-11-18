@@ -24,7 +24,7 @@ checks the reduced text capacity, while G6 checks the plot's contrast. Bound
 family, structural and program outputs run G1–G11 on the bound boxes before
 reporting acceptance. Custom geometry with insufficient text width is refused.
 
-The generator is `dense-reference-v11`. It reserves the inset in both dense
+Since `dense-reference-v11`, the generator reserves the inset in both dense
 and serialized fixed-shell text slots before family admission. The fixed
 shell's Lean output also binds the plot and inset. No density policy, strip
 capacity or screen-state enumeration changes.

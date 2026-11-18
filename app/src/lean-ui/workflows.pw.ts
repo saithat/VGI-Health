@@ -299,7 +299,7 @@ async function differential(page: Page, label: string) {
       layoutMs: Number(document.getElementById("root")?.dataset.layoutMs),
     };
   });
-  expect(result.boxWorst, label).toBeLessThanOrEqual(1 / 64);
+  expect(result.boxWorst, label).toBe(0);
   expect(result.lineWorst, label).toBeLessThanOrEqual(1 / 64);
   expect(result.glyphWorst, label).toBeLessThanOrEqual(1 / 64);
   expect(result.vectorWorst, label).toBeLessThanOrEqual(1 / 64);
@@ -725,6 +725,11 @@ test("P2 board: complete a note in one patient pane and preserve the other patie
       "data-accepted",
       "true",
     );
+    const boardReady = async () => {
+      await idle(page);
+      await expect(page.locator("#root")).toHaveAttribute("data-reference-layout", "dense");
+    };
+    await boardReady();
     const scoped = (comp: string, event = "click") =>
       page.locator(
         `[data-patient="painter-patient"] [data-comp-id="${comp}"][data-event="${event}"]`,
@@ -733,7 +738,7 @@ test("P2 board: complete a note in one patient pane and preserve the other patie
       const target = scoped(comp);
       await reveal(page, target);
       await target.click();
-      await idle(page);
+      await boardReady();
     };
     const fill = async (comp: string, value: string) => {
       const target = scoped(comp, "enter");
@@ -744,7 +749,7 @@ test("P2 board: complete a note in one patient pane and preserve the other patie
         await target.fill(value);
         await target.press("Tab");
       }
-      await idle(page);
+      await boardReady();
     };
     await act("workspace.lookup");
     await fill("workspace.search", "Alex");
@@ -755,18 +760,18 @@ test("P2 board: complete a note in one patient pane and preserve the other patie
       .first();
     await reveal(page, open);
     await open.click();
-    await idle(page);
+    await boardReady();
     const other = (comp: string, event = "click") =>
       page.locator(
         `[data-patient="painter-second"] [data-comp-id="${comp}"][data-event="${event}"]`,
       );
     await reveal(page, other("workspace.lookup"));
     await other("workspace.lookup").click();
-    await idle(page);
+    await boardReady();
     await reveal(page, other("workspace.search", "enter"));
     await other("workspace.search", "enter").fill("Blair");
     await other("workspace.search", "enter").press("Tab");
-    await idle(page);
+    await boardReady();
     const openOther = page
       .locator(
         '[data-patient="painter-second"] [data-comp-id^="workspace.open|painter-second|"]',
@@ -774,7 +779,7 @@ test("P2 board: complete a note in one patient pane and preserve the other patie
       .first();
     await reveal(page, openOther);
     await openOther.click();
-    await idle(page);
+    await boardReady();
     if (await scoped("chartSummary.patientCare.w3Triage").count())
       await act("chartSummary.patientCare.w3Triage");
     else {
@@ -819,7 +824,12 @@ test("P2 board: complete a note in one patient pane and preserve the other patie
     }))
       await fill(`w3Disposition.${id}`, value);
     await act("w3Disposition.nav.w3Provider");
-    await differential(page, "P2/board-note");
+    for (const [width, height] of [[1280, 800], [1920, 1080], [1440, 900]] as const) {
+      await page.setViewportSize({ width, height });
+      await expect.poll(() => page.evaluate(() => window.__leanPaint?.viewport.w)).toBe(width * 64);
+      await boardReady();
+      await differential(page, `P2/board-note-${width}`);
+    }
     await expect(scoped("w3Provider.commit.signNote")).toBeEnabled();
     const saved = page.waitForResponse(
       (r) =>

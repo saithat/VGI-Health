@@ -1068,3 +1068,39 @@ test("a table is a grid: Lean's grid keys move focus and a single-action row cli
   box("c00")?.click();
   expect(dispatch).not.toHaveBeenCalled();
 });
+
+test("clicking cells with repeated table and action IDs dispatches within each patient session", () => {
+  const root = document.createElement("div");
+  const dispatchPatient = vi.fn();
+  const painter = createPainter(root, {
+    dispatch: vi.fn(),
+    dispatchPatient,
+    keyboard: (_p, _r, _c, state) => state,
+  });
+  const boxes: Drawn[] = [], parts: Part[] = [];
+  for (const [i, patient] of ["A", "B"].entries()) {
+    const prefix = [3, i];
+    boxes.push(
+      drawn(patient, prefix, 0, { target: false }),
+      drawn(patient + "-table", [...prefix, 0], 0, { target: false }),
+      drawn(patient + "-cell", [...prefix, 0, 0], 0, { target: false }),
+      drawn(patient + "-group", [...prefix, 1], 0, { target: false }),
+      drawn(patient + "-open", [...prefix, 1, 0], 0),
+    );
+    parts.push(
+      { role: "heading", kind: "patientPane", comp: patient, text: patient },
+      { role: "heading", comp: "schedule", text: "Schedule" },
+      { role: "cellValue", row: 0, col: 0, text: patient },
+      { role: "wrapper", kind: "rowAction", comp: "schedule", row: 0, text: "" },
+      action("open", "nav", "Open"),
+    );
+  }
+  painter.patch(screen([]), output(boxes, parts));
+  for (const patient of ["A", "B"])
+    root.querySelector<HTMLElement>(`[data-box="${patient}-cell"]`)?.click();
+  expect(dispatchPatient.mock.calls).toEqual([
+    ["A", { click: { comp: "open" } }],
+    ["B", { click: { comp: "open" } }],
+  ]);
+  painter.destroy();
+});

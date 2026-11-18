@@ -1,10 +1,10 @@
-// New specification for owner review: v11 keeps each severity plot in its
-// alert occurrence and reserves its square width in every generated text slot.
+// New specification for owner review: v12 scopes table layout to each patient
+// pane and spaces board rows against the supplied admission limit.
 import {widgetParts,placeWidgetParts,numeric,dated} from "./widgets.mjs";
 // Untrusted, content-independent vendor reference geometry. All sizes are 1/64px.
 import {windowOnce} from './window.mjs';
 export const viewports = [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}];
-export const version = 'dense-reference-v11';
+export const version = 'dense-reference-v12';
 const px = n => Math.round(n * 64);
 const key = path => path.join('.');
 const button=(comp,label,role)=>({button:{comp,label,role,enabled:true,blockedReason:null,hotkey:null}});
@@ -48,8 +48,8 @@ function leafParts(cx,kind,v) {
   if(kind==='board') return v.urgent.map(()=>({role:'alert'}));
   if(kind==='datedTimeline') return [...v.dated,...v.undated].map(()=>({role:'item'})).concat([{role:'item',widget:'timeAxis'}]);
   if(kind==='chartReferences') return v.references.map(()=>({role:'item'}));
-  if(kind==='patientPane') return (v.metadata.urgent??[]).map(a=>'alert' in a?{role:'alert',comp:a.alert.comp}:
-    {role:'button',target:true,comp:a.button.comp});
+  if(kind==='patientPane') return (v.metadata.urgent??[]).map(a=>'alert' in a?{role:'alert',comp:a.alert.comp,ids:[a.alert.comp,a.alert.alertId]}:
+    {role:'button',target:true,comp:a.button.comp,ids:[a.button.comp]});
   return [];
 }
 /* Layout.Display.pagerParts: a paged list's position, flagged count and four
@@ -102,7 +102,7 @@ function inventoryOf(screen) {
     const [kind,value]=Object.entries(node)[0];
     push(path,ownPart(kind,value,chrome),{kind,value,...scope});
     const leaves=leafParts(cx,kind,value);
-    leaves.forEach((leaf,i)=>push([...path,i],leaf,{leaf:true,of:kind,...scope,...(["board","patientPane"].includes(kind)?{nestedRegion:"urgent"}:{})}));
+    leaves.forEach((leaf,i)=>push([...path,i],leaf,{leaf:true,of:kind,...scope,...(kind==='patientPane'?{patient:value.patient}:{}),...(["board","patientPane"].includes(kind)?{nestedRegion:"urgent"}:{})}));
     let inner=cx;
     if(kind==='chartReferences')inner={...cx,references:value.references};
     if(kind==='valueSet') inner={...cx,options:value.options.map(o=>[o.code,o.label])};
@@ -134,6 +134,7 @@ export function shapeFor(screen) {
     ...(e.leaf?{leaf:true,placement:placementRules[e.role]??'line'}:{kind:e.kind,placement:placementRules[e.kind]??'line'}),
     ...(e.path[0]>=urgentRoot?{urgent:true}:{}),
     ...(e.kind==='button'?{buttonRole:e.value.role}:{}),
+    ...(e.kind==='presentation'&&e.value.kind==='trackBoard'?{trackBoard:true}:{}),
     ...(e.kind==='info'?{comp:e.comp}:{}),...(e.kind==='rowAction'?{rowTarget:e.comp}:{}),
     ...(e.pager?{pager:e.pager}:{}),
     ...(e.narrative?{narrative:true}:{}),
@@ -186,33 +187,68 @@ function scroller(id,x,y,w,h,children) {
   const extent=Math.max(0,...children.map(c=>(c.position.y+c.height)/64));
   return {type:'Scroll',id,position:{x:px(x),y:px(y)},width:px(w),height:px(h),children:[absolute(`${id}-content`,0,0,w,extent,children)]};
 }
-export function layoutFor(shape,viewport) {
+// Stretch only crowded runs of rows. At a row's top, the last window that
+// includes it may also intersect earlier buttons through their bottom edge.
+// Spread the extra distance across those rows, keeping cells and labels on
+// the same tracks. Coordinates and intersection boundaries are in Lean units.
+function spaceBoardRows(cards, windowHeight, capacity) {
+  if (capacity < 1) return;
+  const rows = [];
+  for (const card of cards) {
+    let row = rows.at(-1);
+    if (!row || row.y !== card.position.y) {
+      row = { y: card.position.y, cards: [], targets: [] };
+      rows.push(row);
+    }
+    row.cards.push(card);
+    if (card.target) row.targets.push(card.height);
+  }
+  const targets = [];
+  for (const row of rows) {
+    if (!row.targets.length) continue;
+    const available = capacity - row.targets.length;
+    // Some inputs have more active controls on one row than the entire
+    // allowance. The checker must still report that refusal.
+    if (available < 0) return;
+    const prior = targets.filter(t => t.row.y + t.height + windowHeight > row.y)
+      .sort((a, b) => b.row.y + b.height - a.row.y - a.height);
+    const boundary = prior[available];
+    if (boundary) {
+      const start = boundary.row.y, end = row.y;
+      const extra = start + boundary.height + windowHeight - end;
+      // Keep every earlier start that must clear this window fixed. Targets
+      // can have different heights, so bottom order need not equal top order.
+      const anchor = Math.max(...prior.slice(available).map(t => t.row.y));
+      for (const r of rows) {
+        if (r.y > anchor) r.y += Math.round(extra * Math.min(1, (r.y-anchor)/(end-anchor)));
+      }
+    }
+    for (const height of row.targets) targets.push({ row, height });
+  }
+  for (const row of rows) for (const card of row.cards) card.position.y = row.y;
+}
+export function layoutFor(shape,viewport,maxTargetsPerViewport=15) {
   const slots=validate(shape,viewport), hints=shape.hints??{}, w=viewport.w/64,h=viewport.h/64;
   const byPath=new Map(slots.map(s=>[key(s.path),s]));
+  const boardLayout=Object.values(hints).some(h=>h.kind==='board' || h.kind==='patientPane' || h.trackBoard);
   const urgent=slots.filter(s=>s.region==='urgent');
-  const urgentColumns=Math.max(1,Math.floor((w-18)/266)),urgentHeight=urgent.length?Math.ceil(urgent.length/urgentColumns)*40+12:0;
   const ordinary=slots.filter(s=>['body','side'].includes(s.region) && s.path[0]!==2);
   const side=ordinary.filter(s=>s.region==='side'), body=ordinary.filter(s=>s.region==='body');
   const hasSide=side.length>0, mainX=hasSide?174:8, mainW=w-mainX-8;
-  const navSlots=slots.filter(s=>s.path[0]===2), navColumns=Math.max(1,Math.floor((w-16)/155));
-  const navRows=navSlots.filter(s=>s.path.length===2).reduce((n,g)=>n+1+Math.ceil(navSlots.filter(s=>s.path.length===3 && s.path[1]===g.path[1]).length/navColumns),1);
-  const bodyTop=104+urgentHeight+navRows*28+40;
-  const scrollTop=104+urgentHeight,bodyOffset=bodyTop-scrollTop,scrollChrome=[];
-  const children=[];
-  const urgentWidth=(w-24-6*(Math.min(urgent.length,urgentColumns)-1))/Math.max(1,Math.min(urgent.length,urgentColumns));
-  urgent.forEach((slot,i)=>children.push(card(slot,12+(i%urgentColumns)*(urgentWidth+6),8+Math.floor(i/urgentColumns)*40,urgentWidth,34,
-    {z:40,bg:{r:255,g:241,b:240},fg:{r:118,g:27,b:24}})));
-  const banner=slots.find(s=>s.region==='banner');
-  if(banner) children.push(card(banner,8,4+urgentHeight,w-16,96,{z:30,lines:4,bg:'slate-100'}));
+  const navSlots=slots.filter(s=>s.path[0]===2), navLabelWidth=boardLayout?164:0;
+  const navColumns=Math.max(1,Math.floor((w-16-navLabelWidth)/155));
+  const scrollChrome=[];
   let navY=0;
   if(byPath.has('2'))scrollChrome.push(card(byPath.get('2'),0,navY,w-16,18,{bg:'slate-100'}));
   navY+=28;
   for(const group of navSlots.filter(s=>s.path.length===2)) {
-    scrollChrome.push(card(group,0,navY,w-16,18,{bg:'slate-100'}));navY+=28;
-    const links=navSlots.filter(s=>s.path.length===3 && s.path[1]===group.path[1]),cw=(w-16-4*(navColumns-1))/navColumns;
-    links.forEach((s,i)=>scrollChrome.push(card(s,(i%navColumns)*(cw+4),navY+Math.floor(i/navColumns)*28,cw,24,{bg:'slate-100'})));
-    navY+=Math.ceil(links.length/navColumns)*28;
+    scrollChrome.push(card(group,0,navY,navLabelWidth||w-16,18,{bg:'slate-100'}));
+    if(!boardLayout)navY+=28;
+    const links=navSlots.filter(s=>s.path.length===3 && s.path[1]===group.path[1]),cw=(w-16-navLabelWidth-4*(navColumns-1))/navColumns;
+    links.forEach((s,i)=>scrollChrome.push(card(s,navLabelWidth+(i%navColumns)*(cw+4),navY+Math.floor(i/navColumns)*28,cw,24,{bg:'slate-100'})));
+    navY+=Math.max(Number(boardLayout),Math.ceil(links.length/navColumns))*28;
   }
+  const bodyOffset=navY+40;
   for(const title of slots.filter(s=>s.region==='title')) scrollChrome.push(card(title,mainX-8,bodyOffset-32,mainW,24,{font:3,fontSize:14}));
   // Dense content: each node's parts are placed together, in reading order.
   // A field is its label beside or above its control, with unit, code and
@@ -221,7 +257,20 @@ export function layoutFor(shape,viewport) {
   // column tracks; tabs share one row; a button keeps its reason and hotkey
   // inline. Structural wrappers have empty text and take a small box in a left
   // gutter, so they reserve no content row.
-  function arrange(list,width) {
+  function arrange(slots,width,inPane=false) {
+    // A pane owns its table/action index and wrapper gutter. The same table
+    // component can occur at the same row in several different patients.
+    const paneContents=new Map(),list=[];
+    for(const slot of slots) {
+      let owner;
+      for(let n=slot.path.length-1;paneContents.size && n>0 && !owner;n--)
+        owner=paneContents.get(key(slot.path.slice(0,n)));
+      if(owner) owner.push(slot);
+      else {
+        list.push(slot);
+        if(hints[key(slot.path)]?.kind==='patientPane')paneContents.set(key(slot.path),[]);
+      }
+    }
     const output=[],byKey=new Map(list.map(s=>[key(s.path),s])),hint=s=>hints[key(s.path)]??{};
     const parentOf=s=>{for(let n=s.path.length-1;n>0;n--){const k=key(s.path.slice(0,n));if(byKey.has(k))return k;}return null;};
     const kidsOf=new Map(),roots=[];
@@ -308,15 +357,17 @@ export function layoutFor(shape,viewport) {
       y=pagerRow(leaves,x,y,w);
       const cells=leaves.filter(l=>hint(l).row!==undefined);
       const actions=(rowActions.get(h.comp)??[]).filter(a=>!placed.has(key(a.path)));
-      if(h.uniform) {
+      if(h.uniform && h.cols>0) {
         const records=Math.max(0,...cells.map(c=>hint(c).row+1));
         const attached=actions.filter(a=>attachable(a)&&hint(a).row<records);
         const most=Math.max(0,...attached.map(a=>kidsOf.get(key(a.path)).length));
-        const aw=most?Math.min(260,most*92):0,n=h.cols,cw=Math.floor((w-aw-(aw?4:0)-4*(n-1))/n);
+        const aw=most?Math.min(260,most*92):0,n=h.cols,cellSpace=w-aw-(aw?4:0);
+        const tracks=inPane?Math.max(1,Math.min(n,Math.floor((cellSpace+4)/88))):n;
+        const bands=Math.ceil(n/tracks),cw=Math.floor((cellSpace-4*(tracks-1))/tracks);
         if(cw>=56) {
-          const header=cells.slice(0,n),values=cells.slice(n),pitch=most?30:20,cellH=most?28:18;
-          header.forEach(c=>add(c,x+hint(c).col*(cw+4),y,cw,18,{bg:'slate-100'}));y+=20;
-          for(const c of values)add(c,x+hint(c).col*(cw+4),y+hint(c).row*pitch,cw,cellH);
+          const header=cells.slice(0,n),values=cells.slice(n),cellH=most?28:18,pitch=bands*(cellH+2);
+          header.forEach(c=>add(c,x+(hint(c).col%tracks)*(cw+4),y+Math.floor(hint(c).col/tracks)*20,cw,18,{bg:'slate-100'}));y+=bands*20;
+          for(const c of values)add(c,x+(hint(c).col%tracks)*(cw+4),y+hint(c).row*pitch+Math.floor(hint(c).col/tracks)*(cellH+2),cw,cellH);
           attach(attached,x+w-aw,y,pitch,aw);
           const bottom=y+records*pitch;
           return lines(leaves,x,bottom,w)-2;
@@ -336,7 +387,7 @@ export function layoutFor(shape,viewport) {
     }
     function strip(leaves,x,y,w,h,max) {
       if(!leaves.length) return y;
-      const per=Math.max(1,Math.min(leaves.length,Math.floor((w+4)/84))),cw=Math.min(max,Math.floor((w-4*(per-1))/per));
+      const per=Math.max(1,Math.min(leaves.length,inPane?3:Infinity,Math.floor((w+4)/84))),cw=Math.min(max,Math.floor((w-4*(per-1))/per));
       leaves.forEach((s,i)=>add(s,x+(i%per)*(cw+4),y+Math.floor(i/per)*(h+4),cw,h));
       return y+Math.ceil(leaves.length/per)*(h+4)-4;
     }
@@ -350,7 +401,7 @@ export function layoutFor(shape,viewport) {
       for(let i=0;i<children.length;) {
         const next=children[i];
         if(fieldLike(next)) {
-          const row=[],capacity=Math.max(1,Math.min(hint(next).kind==='button'?8:5,Math.floor(w/155)));
+          const row=[],capacity=Math.max(1,Math.min(inPane?2:hint(next).kind==='button'?8:5,Math.floor(w/155)));
           while(i<children.length && row.length<capacity && fieldLike(children[i])) row.push(children[i++]);
           const cw=Math.floor((w-4*(row.length-1))/row.length);
           cursor=Math.max(...row.map((s,j)=>place(s,x+j*(cw+4),cursor,cw)))+6;
@@ -364,6 +415,18 @@ export function layoutFor(shape,viewport) {
       const h=hint(node),kids=kidsOf.get(key(node.path))??[];
       if(h.kind==='rowAction' && tables.has(h.rowTarget) && !tablesPlaced.has(h.rowTarget) && attachable(node)) return y-6;
       const leaves=kids.filter(isLeaf),children=kids.filter(k=>!isLeaf(k));
+      if(h.kind==='patientPane') {
+        add(node,x,y,w,24,{bg:'slate-100',font:3,fontSize:14,lines:1});
+        const pane=arrange(paneContents.get(key(node.path)),w,true);
+        let bottom=y+24;
+        for(const card of pane) {
+          card.position.x+=px(gutter+x);
+          card.position.y+=px(y+28);
+          output.push(card);
+          bottom=Math.max(bottom,(card.position.y+card.height)/64);
+        }
+        return bottom;
+      }
       if(h.leaf) return lines([node],x,y,w)-2;
       let bottom=y;
       const rich=placeWidgetParts(leaves,hint,add,x,y+(h.role==='heading'?24:0),w);
@@ -410,9 +473,49 @@ export function layoutFor(shape,viewport) {
   if(hasSide)content.push(...arrange(side,158).map(node=>({...node,position:{...node.position,y:node.position.y+px(bodyOffset)}})));
   content.push(...scrollChrome);
   content.sort((a,b)=>a.position.y-b.position.y || a.position.x-b.position.x);
-  children.push(scroller('reference-body',8,scrollTop,w-16,Math.max(24,h-scrollTop-52),content));
-  for(const footer of slots.filter(s=>s.region==='footer')) children.push(card(footer,mainX,h-44,mainW,32,{z:20,bg:'blue-700',fg:'white'}));
-  slots.filter(s=>s.region==='modal').forEach((slot,i)=>children.push(card(slot,mainX,160+urgentHeight+i*60,mainW,54,{z:100,lines:3,bg:'slate-100'})));
+  const paneHeadings=content.filter(c=>hints[key(c.source)]?.kind==='patientPane');
+  const paneTrack=slot=>paneHeadings.find(c=>c.source.every((n,i)=>n===slot.path[i]));
+  // Global board demands name the patient. A pane's own alerts, acknowledgment,
+  // commit and dialog align with its heading, even when component IDs repeat.
+  const children=[];
+  function pinnedRows(parts,top,left,width,pitch,height,style) {
+    let y=top,right=0;
+    for(let i=0;i<parts.length;) {
+      const pane=paneTrack(parts[i]);
+      let end=i+1;
+      while(end<parts.length && paneTrack(parts[end])===pane)end++;
+      const x=pane?8+pane.position.x/64:left,space=pane?pane.width/64:width;
+      const columns=Math.max(1,Math.min(end-i,Math.floor((space+6)/266)));
+      const cw=(space-6*(columns-1))/columns;
+      if(right>x)y+=pitch;
+      for(let j=i;j<end;j++) {
+        const col=(j-i)%columns;
+        if(!col && j>i)y+=pitch;
+        right=x+col*(cw+6);
+        children.push(card(parts[j],right,y,cw,height,style));
+        right+=cw;
+      }
+      i=end;
+    }
+    return parts.length?y-top+pitch:0;
+  }
+  const urgentRows=pinnedRows(urgent,8,12,w-24,40,34,{z:40,bg:{r:255,g:241,b:240},fg:{r:118,g:27,b:24}});
+  const urgentHeight=urgentRows?urgentRows+12:0,scrollTop=104+urgentHeight;
+  const banner=slots.find(s=>s.region==='banner');
+  if(banner)children.push(card(banner,8,4+urgentHeight,w-16,96,{z:30,lines:4,bg:'slate-100'}));
+  const scrollHeight=Math.max(24,h-scrollTop-52);
+  if(boardLayout && viewport.w===viewports[0].w && !slots.some(s=>s.region==='modal')) {
+    const fixed=slots.filter(s=>s.target && ['urgent','footer'].includes(s.region)).length;
+    spaceBoardRows(content,px(scrollHeight),maxTargetsPerViewport-fixed);
+  }
+  children.push(scroller('reference-body',8,scrollTop,w-16,scrollHeight,content));
+  for(const footer of slots.filter(s=>s.region==='footer')) {
+    const pane=paneTrack(footer);
+    children.push(card(footer,pane?8+pane.position.x/64:mainX,h-44,pane?pane.width/64:mainW,32,{z:20,bg:'blue-700',fg:'white'}));
+  }
+  const modal=slots.filter(s=>s.region==='modal');
+  if(paneHeadings.length)pinnedRows(modal,scrollTop+8,mainX,mainW,60,54,{z:100,lines:3,bg:'slate-100'});
+  else modal.forEach((slot,i)=>children.push(card(slot,mainX,160+urgentHeight+i*60,mainW,54,{z:100,lines:3,bg:'slate-100'})));
   return absolute('reference-root',0,0,w,h,children);
 }
 // Exact geometry of fixed-shell-v2, serialized into the ordinary language so
