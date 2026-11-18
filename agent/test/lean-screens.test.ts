@@ -149,8 +149,8 @@ export function freeLayouts(shape: unknown[]): LayoutDesign[number]["layouts"] {
 const fixtureStates = async (): Promise<LeanScreenState[]> => [
   { screen: "s", ui: ui(), state: "s" },
 ];
-// Two clinical targets plus the page's sign-out link (Layout.withSession).
-const limits = async () => ({ s: { limit: 3, source: "test vendor" } });
+// Screen "s" is not a home screen, so the page adds no sign-out link to it.
+const limits = async () => ({ s: { limit: 2, source: "test vendor" } });
 /** The screen as the page and the gate lay it out: with the session group. */
 async function sessioned<T>(screen: T): Promise<T> {
   const [reply] = await layoutRunner([{ op: "session", screen }]);
@@ -864,4 +864,11 @@ it("uses dense reference for a shape absent from a partially customized screen",
   expect(atlas?.states.map((s) => s.components["sign"]?.center.y)).toEqual([
     858, 872,
   ]);
+});
+
+it("the gate lays out the page's sign-out link on home screens only", async () => {
+  const home = await sessioned({ ...ui("home"), screen: "home" });
+  expect(home.nav.at(-1)).toEqual(["Session", [["session.signOut", "Sign out"]]]);
+  const deep = await sessioned(ui("w1Orders"));
+  expect(deep).toEqual(ui("w1Orders"));
 });

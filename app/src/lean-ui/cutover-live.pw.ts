@@ -93,7 +93,8 @@ test("sign-in, return URL and sign-out on /lean.html", async ({ page }) => {
       service.base,
       service.tokens.P1 ?? "",
     );
-    const path = "/lean.html?persona=P1&date=2026-11-15&baseline=0";
+    const path =
+      "/lean.html?persona=P1&audit=buttons&date=2026-11-15&baseline=0";
     await signIn(page, path, "P1", seen);
     await expect(control(page, "workspace.lookup", "click")).toBeEnabled();
     // A reload in the same tab restores the identity session silently and
@@ -112,6 +113,28 @@ test("sign-in, return URL and sign-out on /lean.html", async ({ page }) => {
     // Sign out is a Lean target: a navigation link in the checked layout,
     // with its own admitted box, and its click never reaches the session.
     const signOut = control(page, "session.signOut", "click");
+    // Only home/worklist screens offer it (Layout.isHome): here the
+    // patient-selection worklist landing; a deep clinical screen has none.
+    await expect(page.locator("#root")).toHaveAttribute(
+      "data-screen",
+      /^workspace:/,
+    );
+    await expect(signOut).toHaveCount(1);
+    await act(page, control(page, "workspace.lookup", "click"));
+    await fill(page, control(page, "workspace.search", "enter"), "Painter");
+    await act(
+      page,
+      page.locator('[data-comp-id^="workspace.open|"][data-event="click"]'),
+    );
+    await navigate(page, "w1Orders");
+    await expect(page.locator("#root")).toHaveAttribute(
+      "data-accepted",
+      "true",
+    );
+    await expect(signOut).toHaveCount(0);
+    await expect(page.getByText("Sign out", { exact: true })).toHaveCount(0);
+    // The Program's own home screen also offers it.
+    await navigate(page, "home");
     await expect(signOut).toHaveCount(1);
     const box = await signOut.evaluate((e) => {
       const id = e.closest<HTMLElement>("[data-box]")?.dataset.box;

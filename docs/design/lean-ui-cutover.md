@@ -88,7 +88,11 @@ in [painter-parity](../methods/painter-parity.md#cut-over-validation).
   out returning to `/lean.html`, and no silent login afterwards (`sign-in,
   return URL and sign-out`). Sign out is an admitted Lean navigation target
   (`Layout.withSession`, New specification for owner review), at least
-  24×24 px, counted by G10, and sends no clinical event. The realm template lists `/lean.html` for every
+  24×24 px, counted by G10, and sends no clinical event. It appears only on
+  home/worklist screens (`Layout.isHome`: `home`, `patient-board` and the
+  patient-selection worklist landing `workspace:<activity>`); a deep clinical
+  screen has none (`withSession_not_home`; the sign-in test checks
+  `w1Orders`). The realm template lists `/lean.html` for every
   local origin. Provisioning deployed identity systems is out of scope.
 - [x] **Viewport contract (decided).** Desktop only: 1440×900, 1280×800 and
   1920×1080. There is no mobile, reflow or 200% text-resize contract; other
@@ -177,24 +181,33 @@ Results of this change's validation run (see the parity page for commands):
   `/usr/bin/time`). Before the fixes, the same command with the default heap
   ran out of heap after 10 minutes, during P5's certification.
 - **Simulator parity with the page's sign-out link.** The simulator's Lean
-  screen gate now lays out and measures the same sessioned screen as the
-  page (`op:"session"`; journals and trace identities keep the clinical
-  screen). The same one-process replay, before → after: clicks unchanged
-  and every task still completed; scrolls P1 1,496 → 1,614, P2 2,716 → 2,777,
-  P3 604 → 610, P4 943 → 965, P5 955 → 978; scroll px P1 1.09 M → 2.91 M,
-  P2 1.82 M → 2.62 M, P3 0.49 M → 1.44 M, P4 0.64 M → 1.46 M, P5 0.70 M →
-  1.15 M. Admission verdicts changed: the extra counted target moves 10–20%
-  of states from the dense layout to the fixed-shell fallback at the frozen
-  per-screen limits (dense → fallback states: P1 4 → 890, P2 0 → 983, P3
-  0 → 455, P4 57 → 449, P5 3 → 280); none were refused. 0 screen assertion
-  failures. No limit or rule was changed.
+  screen gate lays out and measures the same sessioned screen as the page
+  (`op:"session"`; journals and trace identities keep the clinical screen).
+  The same one-process replay without the link, with it on every screen, and
+  with it on home/worklist screens only (the current definition); clicks
+  (1,180 / 1,702 / 482 / 699 / 559) and task completion are unchanged in all
+  three, with 0 screen assertion failures:
+
+  | Persona | Scrolls | Scroll px | Pointer px | Fallback states |
+  |---|---|---|---|---|
+  | P1 | 1,496 / 1,614 / 1,536 | 1.09 M / 2.91 M / 1.50 M | 497 k / 410 k / 466 k | 4 / 890 / 122 |
+  | P2 | 2,716 / 2,777 / 2,716 | 1.82 M / 2.62 M / 1.82 M | 750 k / 722 k / 750 k | 0 / 983 / 73 |
+  | P3 | 604 / 610 / 604 | 0.49 M / 1.44 M / 0.49 M | 311 k / 282 k / 310 k | 0 / 455 / 15 |
+  | P4 | 943 / 965 / 961 | 0.64 M / 1.46 M / 0.82 M | 273 k / 241 k / 256 k | 57 / 449 / 127 |
+  | P5 | 955 / 978 / 956 | 0.70 M / 1.15 M / 0.70 M | 214 k / 189 k / 210 k | 3 / 280 / 45 |
+
+  With the link on home screens only, every additional fallback state is a
+  home state whose counted targets were already at that screen's frozen
+  G10 limit (P2: exactly its 73 home states; elsewhere fewer than the home
+  states measured, e.g. P1 118 of 500). Deep clinical screens are as without
+  the link. No limit or rule was changed.
 - **Accessibility/screen audit pair**, run once, sequentially (templates
   then personas, 44 minutes in total): 1,956 template states (18,774
   measurements) and 1,394 persona states (13,428 measurements), zero
   findings, no failed tests. The pair audits the React screens through the
   browser gate; it is not a Lean-page audit.
 - Application build `appSha256` 82df1564b6683d30c926a7ab6efe7cde1f6173bb4e66f4cc6ff2c3ff678db4fa;
-  WASM Lean sha256 550abc1f026cff8127909ccae1a71fc94417cee6cf25e93d9ea25487ef0dc463.
+  WASM Lean sha256 743aa2b3c39dab2d65438bdcdbed149060a0c84a602aaf9ca54df09b7bed63af.
 
 ## Implemented prerequisites
 

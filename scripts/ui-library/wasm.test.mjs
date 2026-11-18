@@ -145,8 +145,13 @@ test('native and WASM keep five alert severity marks inside five strip occurrenc
   }
 });
 test('native and WASM add the same session group and paint the sign-out target identically',()=>{
-  const screen={banner:[['Patient','Synthetic Patient']],nav:[['Chart',[['home','Home']]]],title:'Results',side:[],modal:null,
+  const screen={screen:'home',banner:[['Patient','Synthetic Patient']],nav:[['Chart',[['home','Home']]]],title:'Results',side:[],modal:null,
     workspace:[{button:{comp:'sign',label:'Sign',role:'primary',enabled:true,blockedReason:null,hotkey:null}}]};
+  // A deep clinical screen is returned unchanged (Layout.withSession_not_home).
+  const deep={op:'session',screen:{...screen,screen:'w1Orders'}};
+  const deepReply=layout(deep);
+  assert.equal(wasm.call('ehr_layout',JSON.stringify(deep)),deepReply);
+  assert.deepEqual(JSON.parse(deepReply).screen.nav,screen.nav);
   const request={op:'session',screen};
   const expected=layout(request);
   assert.equal(wasm.call('ehr_layout',JSON.stringify(request)),expected);

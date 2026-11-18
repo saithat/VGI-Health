@@ -20,8 +20,11 @@ session/service code. The painter does not write FHIR or construct clinical
 state. The optional authentication callback argument leaves existing callers'
 URLs unchanged. The page sends the exact `/lean.html` callback and keeps its own
 address, with its parameters, as the return URL. **Sign out** is a Lean
-target: `Layout.withSession` adds a "Session" navigation group with one link
-(`session.signOut`) to the screen used for layout and painting, so the fixed
+target: on home/worklist screens only (`Layout.isHome`: the Program's `home`,
+the patient board and the patient-selection worklist landing),
+`Layout.withSession` adds a "Session" navigation group with one link
+(`session.signOut`) to the screen used for layout and painting; every other
+screen is unchanged. The simulator's Lean gate applies the same operation. The fixed
 shell and the dense reference place it, the target rules size it and G10
 counts it. Its click ends the identity session and returns to `/lean.html`;
 the interpreter never receives it, and the journal keeps the clinical screen.
