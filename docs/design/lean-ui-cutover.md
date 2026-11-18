@@ -176,6 +176,18 @@ Results of this change's validation run (see the parity page for commands):
   (2.42 GB maximum RSS of any process in the run, as reported by
   `/usr/bin/time`). Before the fixes, the same command with the default heap
   ran out of heap after 10 minutes, during P5's certification.
+- **Simulator parity with the page's sign-out link.** The simulator's Lean
+  screen gate now lays out and measures the same sessioned screen as the
+  page (`op:"session"`; journals and trace identities keep the clinical
+  screen). The same one-process replay, before → after: clicks unchanged
+  and every task still completed; scrolls P1 1,496 → 1,614, P2 2,716 → 2,777,
+  P3 604 → 610, P4 943 → 965, P5 955 → 978; scroll px P1 1.09 M → 2.91 M,
+  P2 1.82 M → 2.62 M, P3 0.49 M → 1.44 M, P4 0.64 M → 1.46 M, P5 0.70 M →
+  1.15 M. Admission verdicts changed: the extra counted target moves 10–20%
+  of states from the dense layout to the fixed-shell fallback at the frozen
+  per-screen limits (dense → fallback states: P1 4 → 890, P2 0 → 983, P3
+  0 → 455, P4 57 → 449, P5 3 → 280); none were refused. 0 screen assertion
+  failures. No limit or rule was changed.
 - **Accessibility/screen audit pair**, run once, sequentially (templates
   then personas, 44 minutes in total): 1,956 template states (18,774
   measurements) and 1,394 persona states (13,428 measurements), zero

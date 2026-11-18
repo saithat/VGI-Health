@@ -149,7 +149,13 @@ export function freeLayouts(shape: unknown[]): LayoutDesign[number]["layouts"] {
 const fixtureStates = async (): Promise<LeanScreenState[]> => [
   { screen: "s", ui: ui(), state: "s" },
 ];
-const limits = async () => ({ s: { limit: 2, source: "test vendor" } });
+// Two clinical targets plus the page's sign-out link (Layout.withSession).
+const limits = async () => ({ s: { limit: 3, source: "test vendor" } });
+/** The screen as the page and the gate lay it out: with the session group. */
+async function sessioned<T>(screen: T): Promise<T> {
+  const [reply] = await layoutRunner([{ op: "session", screen }]);
+  return z.object({ screen: z.custom<T>() }).parse(reply).screen;
+}
 describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () => {
   it("admits dense references under tighter per-screen limits, records provenance and binds an atlas", async () => {
     const dir = await tmp("lean-gate"),
@@ -198,7 +204,7 @@ describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () =
   });
   it("refuses excess density, missing sources, missing viewports and unlinked flags with Lean findings", async () => {
     const [shapeReply] = await layoutRunner([
-      { op: "family-check", references: [{ screen: ui() }] },
+      { op: "family-check", references: [{ screen: await sessioned(ui()) }] },
     ]);
     const shape = required(required(shapeReply?.shapes)[0]);
     const design: LayoutDesign = [
@@ -359,7 +365,7 @@ describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () =
   it("separates custom-layout cache identity and stores layouts beside immutable Programs", async () => {
     const program = withDesign(structuredClone(canonicalV1));
     const [shapeReply] = await layoutRunner([
-      { op: "family-check", references: [{ screen: ui() }] },
+      { op: "family-check", references: [{ screen: await sessioned(ui()) }] },
     ]);
     const shape = required(required(shapeReply?.shapes)[0]);
     const value: LayoutDesign = [
@@ -506,14 +512,15 @@ it("repairs Lean findings and ships a Program change with an independently store
       (s) => s.screen === "home",
     ),
   );
+  const shown = await sessioned(state.ui);
   const [shape] = await layoutRunner([
-    { op: "family-check", references: [{ screen: state.ui }] },
+    { op: "family-check", references: [{ screen: shown }] },
   ]);
   const nativeShape = required(required(shape?.shapes)[0]);
   const paints = await layoutRunner(
     viewports.map((viewport) => ({
       op: "structural-paint",
-      screen: state.ui,
+      screen: shown,
       viewport,
     })),
   );
@@ -525,7 +532,7 @@ it("repairs Lean findings and ships a Program change with an independently store
         viewport: required(viewports[i]),
         tree: z
           .json()
-          .parse(layoutFor(shapeFor(state.ui), required(viewports[i]))),
+          .parse(layoutFor(shapeFor(shown), required(viewports[i]))),
       })),
     },
   ];
@@ -838,7 +845,7 @@ it("uses dense reference for a shape absent from a partially customized screen",
     button: { ...required(first.workspace[0]).button, comp: "extra" },
   });
   const [native] = await layoutRunner([
-    { op: "family-check", references: [{ screen: first }] },
+    { op: "family-check", references: [{ screen: await sessioned(first) }] },
   ]);
   const shape = required(required(native?.shapes)[0]);
   const program = withDesign(structuredClone(canonicalV1), [

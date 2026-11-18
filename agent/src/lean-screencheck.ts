@@ -342,8 +342,31 @@ export class LeanScreenChecker implements ScreenChecker {
       out.push(...(await this.runner(requests.slice(i, i + 32))));
     return out;
   }
+  /** The screens as the clinical page lays them out and paints them: with
+   * the host session group (`Layout.withSession`, through the same native
+   * `session` operation as the page). Only admission, painting and geometry
+   * read these; trace identities and recorded results keep the clinical
+   * screen. Screens shared by several states stay shared. */
+  private async sessioned(states: LeanScreenState[]): Promise<LeanScreenState[]> {
+    const distinct = [...new Set(states.map((s) => s.ui))];
+    const replies = await this.batch(
+      distinct.map((screen) => ({ op: "session", screen })),
+    );
+    const shown = new Map(
+      distinct.map((ui, i) => {
+        const reply = replies[i];
+        if (reply?.error) throw Error(reply.error);
+        return [
+          ui,
+          z.object({ screen: z.record(z.string(), z.unknown()) }).parse(reply)
+            .screen,
+        ] as const;
+      }),
+    );
+    return states.map((s) => ({ ...s, ui: required(shown.get(s.ui)) }));
+  }
   private async measure(input: Parameters<GeometryProvider>[0], spec: Spec) {
-    const states = await this.states(input, spec),
+    const states = await this.sessioned(await this.states(input, spec)),
       design = designOf(input.program) ?? [];
     const limits = await (this.opts.limits ?? vendorDensityLimits)(
       input.program.specVersion,
