@@ -67,8 +67,10 @@ function pagers(boxes: GridBox[]): Map<string, Map<string, GridBox>> {
   for (const box of boxes) {
     const part = box.part;
     if (part?.role !== "pager" || !part.comp || !part.kind) continue;
-    if (!out.has(part.comp)) out.set(part.comp, new Map());
-    out.get(part.comp)?.set(part.kind, box);
+    // Patient-scoped like row actions: list IDs repeat across board panes.
+    const key = tableKey(box);
+    if (!out.has(key)) out.set(key, new Map());
+    out.get(key)?.set(part.kind, box);
   }
   return out;
 }
@@ -138,9 +140,9 @@ export function connectGrids(
           event.preventDefault();
           if (!target || target === cell) {
             // Already at the edge of the page shown: turn the page.
-            const pager = pages
-              .get(comp)
-              ?.get(key === "pageUp" ? "previous" : "next");
+            const pager = (heading && pages.get(tableKey(heading)))?.get(
+              key === "pageUp" ? "previous" : "next",
+            );
             const turn = pager?.part && pagerEvent(pager.part);
             if (pager && turn && !blocked(pager)) emit(pager, turn);
             return;
