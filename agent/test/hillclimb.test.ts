@@ -1,7 +1,10 @@
 import path from "node:path";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { it, expect, vi } from "vitest";
-import { climbWorkspace, type ClimbHost } from "../src/hillclimb.js";
+import { climbWorkspace, ClimbHost } from "../src/hillclimb.js";
+import { runClimbingSession } from "../src/harness/climb-session.js";
+import * as sandbox from "../src/harness/sandbox.js";
+import * as agents from "../src/harness/agents.js";
 import { finalEval } from "../src/final-eval.js";
 import { fakeSchedule, FAKE_PERSONAS } from "../src/fake/world.js";
 import { createFakeEhr } from "../src/fake/ehr-fake.js";
@@ -374,3 +377,68 @@ it("uses the vendor at the evaluated version's release on past and subsequent da
     releaseFixture.mockRestore();
   }
 }, 60000);
+
+it("seals done while letting Codex emit its final turn usage", async () => {
+  const dir = await tmp("climb-usage");
+  const host = new ClimbHost(
+    async () => {
+      throw Error("Unexpected measure");
+    },
+    Date.now() + 20000,
+    async () => {},
+  );
+  const launch = vi.spyOn(agents, "prepareLaunch").mockResolvedValue({
+    command: "/bin/true",
+    args: [],
+    env: {},
+    readOnly: [],
+    hosts: [],
+  });
+  const process = vi
+    .spyOn(sandbox, "runSandboxed")
+    .mockImplementation(async (args, _input, _wall, _limit, stop) => {
+      const spool = args[args.indexOf("/spool") - 1];
+      if (!spool) throw Error("Missing private spool");
+      await writeFile(
+        path.join(spool, "usage.req.json"),
+        JSON.stringify(retain),
+      );
+      await vi.waitFor(() => expect(host.final).toBeTruthy());
+      expect((await host.execute(retain)).exit).toBe(1);
+      // Codex reports usage only after the final model response.
+      await new Promise((resolve) => setTimeout(resolve, 3200));
+      expect(stop?.aborted).toBe(false);
+      return {
+        stdout: JSON.stringify({
+          type: "turn.completed",
+          usage: {
+            input_tokens: 101,
+            output_tokens: 11,
+            cached_input_tokens: 50,
+          },
+        }),
+        stderr: "",
+        code: 0,
+        signal: null,
+        timedOut: false,
+        stdoutTruncated: false,
+      };
+    });
+  try {
+    const usage = await runClimbingSession(
+      host,
+      { "program.json": "{}" },
+      dir,
+      {
+        wallMs: 20000,
+        model: "fixture",
+        reasoningEffort: "high",
+        serviceTier: "default",
+      },
+    );
+    expect(usage).toMatchObject([{ input: 101, output: 11, cachedInput: 50 }]);
+  } finally {
+    process.mockRestore();
+    launch.mockRestore();
+  }
+}, 20000);

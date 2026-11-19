@@ -88,18 +88,15 @@ export async function runClimbingSession(
     spool = path.join(root, "spool");
   let failure: unknown;
   const stopSession = new AbortController();
-  let grace: ReturnType<typeof setTimeout> | undefined;
   try {
     await mkdir(dir, { recursive: true });
     await writeFile(path.join(control, "hillclimb"), "");
     const stopHost = await serveHarnessSpool(spool, {
       execute: async (raw) => {
         try {
-          const reply = await host.execute(raw);
-          // Give the CLI time to flush its final turn usage after the completion token.
-          if (host.final && !grace)
-            grace = setTimeout(() => stopSession.abort(), 3000);
-          return reply;
+          // The accepted token seals the host immediately. The CLI emits billing
+          // totals only after its final model turn, so allow it to exit normally.
+          return await host.execute(raw);
         } catch (error) {
           failure = error;
           stopSession.abort();
@@ -182,7 +179,6 @@ export async function runClimbingSession(
       await stopHost();
     }
   } finally {
-    clearTimeout(grace);
     await rm(root, { recursive: true, force: true });
   }
   return launches;

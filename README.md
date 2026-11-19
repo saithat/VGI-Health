@@ -57,7 +57,7 @@ The Lean `Spec` is the rulebook; a JSON `Program` describes screens, fields,
 tabs, buttons and macros. The agent changes only `Program`. Native `check`,
 browser screen checks and replay validation gate deployment; `step` guards each
 interaction at runtime. The original proposal loop allows three repairs. The
-[hill-climbing night](docs/methods/hillclimb-night.md) measures changes against every past workflow and ends when the agent submits a shipping patch or keeps the current version. A wall-clock backstop also retains it.
+[hill-climbing night](docs/methods/hillclimb-night.md) measures changes against every past workflow. The agent closes the decision by submitting a shipping patch or keeping the current version. A wall-clock backstop also retains it.
 
 Seeded safety probes are diagnostic and cannot deploy. The allergy probe hides
 every provider of the required allergy list on one commit screen; hiding only

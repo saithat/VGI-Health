@@ -35,7 +35,7 @@ Finish with `night done patch.json "summary"`. Say what you changed and why in a
 
 ## Measurement and completion
 
-Both commands invoke the same gate against the host’s deployed bytes. A working copy cannot change the base program, rulebook, traces, memory or gate. A failed `done` returns the refusal and leaves the session open. A successful patch goes through the ordinary screen check, native deployment and durable publication path. An explicit no-change token records the reason. A normal CLI exit without a token relaunches in the same workspace.
+Both commands invoke the same gate against the host’s deployed bytes. A working copy cannot change the base program, rulebook, traces, memory or gate. A failed `done` returns the refusal and leaves the session open. A successful patch goes through the ordinary screen check, native deployment and durable publication path. An explicit no-change token records the reason. Acceptance seals the decision immediately. The CLI can finish its final turn and report token usage within the remaining wall time. A normal CLI exit without a token relaunches in the same workspace.
 
 The Lean checker enforces the program properties and budgets. Lean-painted screens must pass program and family admission including G1–G11. The host checks the identity movement budget. For a certified candidate the replay runs each observed schedule at the candidate’s active spec, twice per layout, using the original day seed. The expert starts with its layout knowledge. Each bounded rehearsal starts from the same clone of memory earned on all preceding observed shifts, including the shift that just ended. Rehearsals never train the actor. The current layout’s paired results can be reused within a night.
 
