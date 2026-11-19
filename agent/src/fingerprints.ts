@@ -32,3 +32,7 @@ export async function runFingerprints(ehr: EhrClient, world: string, root = REPO
     app: screenMode==='lean' ? 'NOT_USED_LEAN_GEOMETRY' : ehr.mode === 'real' ? z.object({appSha256:z.string().regex(/^[a-f0-9]{64}$/)}).parse(JSON.parse(await readFile(path.join(root,'app/dist/build.json'),'utf8'))).appSha256 : 'FAKE',
     wasm: await fileHash(path.join(root,'app/public/ehr/ehr-interp.wasm')) };
 }
+
+export async function leanFingerprints(root=REPO_ROOT){
+  return {referenceGenerator:await fileHash(path.join(root,'scripts/layout-reference/generator.mjs')),layoutExecutable:await fileHash(path.join(root,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(root,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(root,'docs/methods/lean-screen-density.json')),...(existsSync(path.join(root,'docs/methods/lean-paged-density.json'))?{pagedDensityLimits:await fileHash(path.join(root,'docs/methods/lean-paged-density.json'))}:{}),windowMirror:await fileHash(path.join(root,'scripts/layout-reference/window.mjs'))};
+}

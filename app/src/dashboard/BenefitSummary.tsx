@@ -1,3 +1,4 @@
+import {reportingDay,hillclimbPolicy} from './benefit-metrics.mjs';
 import {
   compareDays,
   type DayPair,
@@ -15,7 +16,7 @@ export function benefitFor(run: RunData, persona: string) {
   for (const after of run.days.filter(
     (d) =>
       d.persona === persona &&
-      (!run.manifest.measurementProtocol || d.day % 2 === 0),
+      (reportingDay(run.manifest.measurementProtocol,d.day)),
   )) {
     const before = run.noAgentDays?.find(
       (d) => d.persona === persona && d.day === after.day,
@@ -74,7 +75,7 @@ export function BenefitSummary({
     <section aria-label="Agent benefit in actions and modeled time">
       <h3>Agent benefit vs vendor</h3>
       <p>
-        {run.manifest.measurementProtocol ? "Blind even days. " : ""}Vendor →
+        {run.manifest.measurementProtocol?.name===hillclimbPolicy ? "Days after the first night. " : run.manifest.measurementProtocol ? "Blind even days. " : ""}Vendor →
         agent; costs use identical tasks both completed. Completion counts
         include failures. Modeled time is simulated effort, in minutes (600
         klmDeciSec per minute). Gap captured = (vendor − agent) / (vendor −

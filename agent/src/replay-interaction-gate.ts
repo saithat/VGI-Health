@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { completionOk, improved, interactionAcceptable, INTERACTION_KEYS, INTERACTION_TOLERANCE } from './night.js';
-import { decisionRecordSchema, type ReplayDay } from './schema.js';
+import { decisionRecordSchema, type ReplayDay } from '../../app/src/dashboard/agent-evidence.js';
 
 export function interactionRefusals(replay: ReplayDay | null): string[] {
   if (!replay) return ['missing validation replay'];

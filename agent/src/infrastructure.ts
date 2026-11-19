@@ -1,4 +1,5 @@
 /** Infrastructure attempts are audit metadata; they never select a clinical outcome. */
+import {nativeCancellation} from './native-process.js';
 import { existsSync } from 'node:fs';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { BackendRequestError,InfrastructureError,InfrastructureExhaustedError } from './errors.js';
@@ -19,7 +20,8 @@ export async function retryInfrastructure<T>(op:string,work:()=>Promise<T>,allEr
  const context=contexts.getStore(),messages:string[]=[];
  const retries=infrastructureRetries();
  for(let attempt=1;;attempt++){
-  try{return await work();}catch(error){
+  try{nativeCancellation.getStore()?.throwIfAborted();return await work();}catch(error){
+   nativeCancellation.getStore()?.throwIfAborted();
    if(error instanceof InfrastructureExhaustedError || error instanceof BackendRequestError)throw error;
    if(error instanceof Error&&['ReplayDivergedError','ReplayMissingError'].includes(error.constructor.name))throw error;
    if(!allErrors&&!(error instanceof InfrastructureError))throw error;

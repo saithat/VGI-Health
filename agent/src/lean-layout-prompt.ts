@@ -160,30 +160,10 @@ export function leanLayoutPrompt(parts: PromptParts, design: string, traces = '{
     ].join('\n\n')};
 }
 
-/** Read only this persona's committed odd-day training partitions. */
-export async function leanTrainingLog(
-  directory: string,
-  persona: string,
-  night: number,
-): Promise<string> {
-  const { readFile } = await import("node:fs/promises");
-  const path = await import("node:path");
-  const { dayResultSchema } = await import("./schema.js");
-  const perScreen = new Map<string,{screen:string;clicks:number;rawScrolls:number;scrolls:number|null;scrollPx:number|null;mouseTravelPx:number|null}>();
-  const counts = new Map<string, number>(),
-    sequences = new Map<string, number>(),
-    recent: unknown[] = [];
-  for (let day = 1; day <= night; day += 2) {
-    const result = dayResultSchema.parse(
-      JSON.parse(
-        await readFile(
-          path.join(directory, "training", `day-${day}`, `${persona}.json`),
-          "utf8",
-        ),
-      ),
-    );
-    if (result.day !== day || result.persona !== persona)
-      throw Error("Foreign Lean training trace");
+/** Attribute the physical costs of this exact trace on its bound geometry. */
+export async function screenAttribution(directory:string,result:import('./schema.js').DayResult) {
+    const path = await import('node:path');
+    const day=result.day;
     const { loadGeometry } = await import('./geometry.js');
     const { pointingTrace } = await import('../../app/src/dashboard/bounded-pointing.js');
     const { attributePixels } = await import('./locality.js');
@@ -209,6 +189,33 @@ export async function leanTrainingLog(
       return {...row,event};
     }):[];
     const costs=atlas?attributePixels(projected,atlas,day):[];
+    return {atlas,costs};
+}
+/** Read only this persona's committed odd-day training partitions. */
+export async function leanTrainingLog(
+  directory: string,
+  persona: string,
+  night: number,
+): Promise<string> {
+  const { readFile } = await import("node:fs/promises");
+  const path = await import("node:path");
+  const { dayResultSchema } = await import("./schema.js");
+  const perScreen = new Map<string,{screen:string;clicks:number;rawScrolls:number;scrolls:number|null;scrollPx:number|null;mouseTravelPx:number|null}>();
+  const counts = new Map<string, number>(),
+    sequences = new Map<string, number>(),
+    recent: unknown[] = [];
+  for (let day = 1; day <= night; day += 2) {
+    const result = dayResultSchema.parse(
+      JSON.parse(
+        await readFile(
+          path.join(directory, "training", `day-${day}`, `${persona}.json`),
+          "utf8",
+        ),
+      ),
+    );
+    if (result.day !== day || result.persona !== persona)
+      throw Error("Foreign Lean training trace");
+    const {atlas,costs}=await screenAttribution(directory,result);
     for(const cost of costs) {
       const screen=cost.screen;
       const total=perScreen.get(screen)??{screen,clicks:0,rawScrolls:0,scrolls:0,scrollPx:0,mouseTravelPx:0};

@@ -21,7 +21,7 @@ withData("runs/world/2").it('resumes with real fingerprints, never rebuilds/call
  const worker=path.join(workspace,'verify.mts');
  await writeFile(worker,`import {verifyResume} from '${REPO_ROOT}/agent/src/verify-resume.ts'; await verifyResume(${JSON.stringify(run)});`);
  const tsx=path.join(REPO_ROOT,'agent/node_modules/tsx/dist/cli.mjs'), log=path.join(workspace,'calls');
- await writeFile(path.join(tools,'pnpm'),`#!/bin/sh\nprintf '%s\\n' "$*" >> '${log}'\ncase "$*" in\n '--filter agent verify-resume --run wrapper-fixture') exec '${process.execPath}' '${tsx}' '${worker}';;\n *build*|*manual*) exit 99;;\n '--filter agent run-days '*) exit 0;;\n 'complexity --run wrapper-fixture') exit 7;;\n 'trajectories --run wrapper-fixture'|'conformance --run wrapper-fixture --run-only --jobs 5') exit 0;;\n *) exit 98;;\nesac\n`);
+ await writeFile(path.join(tools,'pnpm'),`#!/bin/sh\nprintf '%s\\n' "$*" >> '${log}'\ncase "$*" in\n '--filter agent verify-resume --run wrapper-fixture') exec '${process.execPath}' '${tsx}' '${worker}';;\n *build*|*manual*) exit 99;;\n '--filter agent run-days '*) exit 0;;\n 'complexity --run wrapper-fixture') exit 7;;\n 'final-eval --run wrapper-fixture'|'trajectories --run wrapper-fixture'|'conformance --run wrapper-fixture --run-only --jobs 5') exit 0;;\n *) exit 98;;\nesac\n`);
  await chmod(path.join(tools,'pnpm'),0o755);
  await writeFile(path.join(tools,'make'),`#!/bin/sh\nprintf '%s\\n' "make $*" >> '${log}'\nif [ "$*" = wasm-check ]; then exec '${process.execPath}' '${REPO_ROOT}/scripts/wasm-assets.mjs'; fi\nexit 98\n`);await chmod(path.join(tools,'make'),0o755);
 

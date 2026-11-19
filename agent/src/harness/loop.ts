@@ -48,6 +48,20 @@ interface LaunchRecord { launch: number; prompt: string; args: string[]; code: n
   /** The CLI's own usage/rate-limit refusal, if any (see usage-limit.ts). */
   usageLimit: UsageLimit | null }
 
+export async function prepareWorkspace(files: Readonly<Record<string,string>>, writable?: string) {
+    const root = await mkdtemp(path.join(tmpdir(), 'agent-harness-'));
+    await chmod(root, 0o700);
+    const ws = path.join(root, 'work'), home = path.join(root, 'home'), ctl = path.join(root, 'control');
+    for (const d of [ws, home, ctl, path.join(root, 'spool'), path.join(ctl, 'bin')]) await mkdir(d, { recursive: true });
+    for (const [name, text] of Object.entries(files)) {
+      const file = path.join(ws, name); await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, text, { mode: name === writable ? 0o644 : 0o444 });
+    }
+    await copyFile(new URL('./entry.mjs', import.meta.url), path.join(ctl, 'entry.mjs'));
+    await copyFile(new URL('./night-cli.mjs', import.meta.url), path.join(ctl, 'bin', 'night'));
+    await chmod(path.join(ctl, 'bin', 'night'), 0o555);
+    return root;
+}
+
 export class HarnessNightAgent implements AgentBackend {
   readonly budget: HarnessBudget;
   readonly host: HarnessHost;
@@ -79,17 +93,7 @@ export class HarnessNightAgent implements AgentBackend {
   /** Workspace, private home and control directory under one private temp root. */
   private async prepare() {
     if (this.root) return this.root;
-    const root = this.root = await mkdtemp(path.join(tmpdir(), 'agent-harness-'));
-    await chmod(root, 0o700);
-    const ws = path.join(root, 'work'), home = path.join(root, 'home'), ctl = path.join(root, 'control');
-    for (const d of [ws, home, ctl, path.join(root, 'spool'), path.join(ctl, 'bin')]) await mkdir(d, { recursive: true });
-    for (const [name, text] of Object.entries(this.files)) {
-      const file = path.join(ws, name); await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, text, { mode: 0o444 });
-    }
-    await copyFile(new URL('./entry.mjs', import.meta.url), path.join(ctl, 'entry.mjs'));
-    await copyFile(new URL('./night-cli.mjs', import.meta.url), path.join(ctl, 'bin', 'night'));
-    await chmod(path.join(ctl, 'bin', 'night'), 0o555);
-    return root;
+    return this.root = await prepareWorkspace(this.files);
   }
   private chargedMs() { return Date.now() - this.start - this.credentialWaitMs; }
   private remainingMs() { return this.budget.wallMs - this.chargedMs(); }

@@ -8,12 +8,12 @@ import {interruptionDayResultSchema as dayResultSchema} from '../../app/src/dash
 import {dayScheduleSchema,personaParamsSchema,programSchema,type UserMemory} from '../../app/src/dashboard/measurement-schema.js';
 import type {EhrClient} from './ehr.js';
 import {daySeed} from './night.js';
-import {calibrationPartition,isMeasurementDay,validationSeed} from './protocol.js';
+import {HILLCLIMB,calibrationPartition,isMeasurementDay,validationSeed} from './protocol.js';
 import {sumMetrics} from './observe.js';
 import {readJson,writeJson,pad2} from './util.js';
 import {withSimulationModes,type SimulationModes} from './simulation-modes.js';
 
-const manifestSchema=z.object({days:z.number().int().positive(),personas:z.array(z.string()),world:z.string(),worldSeed:z.number()});
+const manifestSchema=z.object({days:z.number().int().positive(),personas:z.array(z.string()),world:z.string(),worldSeed:z.number(),measurementProtocol:z.object({name:z.string()}).optional()});
 /** Preserve historical choices, but publish only newly measured day fences. */
 export async function prepareRemeasurementCopy(directory:string,sourceRunId:string,runId:string,days:number,personas:string[]) {
   for(let night=1;night<days;night++)for(const persona of personas) {
@@ -58,7 +58,7 @@ export async function remeasureRun(directory:string,inner:EhrClient,modes:Simula
         interruptions:result.tasks.flatMap(t=>t.interruptions?[{task:t.task,...t.interruptions}]:[]),geometry:result.geometry});
       console.log(`remeasured ${day}/${persona}/${arm.name}: ${result.tasks.filter(t=>t.completed).length}/${result.tasks.length}`);
     }
-    if(!isMeasurementDay(day))for(const side of ['train','validation'] as const) {
+    if(manifest.measurementProtocol?.name!==HILLCLIMB&&!isMeasurementDay(day))for(const side of ['train','validation'] as const) {
       const key=`${persona}/${side}`,memory=params.policy==='bounded'&&side==='train'?memories.get(key):undefined;
       const result=await ehr.simulate({specVersion,program:active,persona:params,schedule:calibrationPartition(schedule,side),
         worldDir:world,seed:side==='validation'?validationSeed(manifest.worldSeed,day):daySeed(manifest.worldSeed,day),...(memory?{memory}:{})});

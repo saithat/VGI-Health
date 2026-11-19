@@ -11,7 +11,7 @@ import {certificateSchema,programSchema,type DaySchedule} from './schema.js';
 import type {Release} from './releases.js';
 import type {PersonaView} from './prompts.js';
 import {pad2,readJson,writeJson} from './util.js';
-export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Release,schedule:DaySchedule,holdout:Holdout) {
+export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Release,schedule:DaySchedule,holdout:Holdout|null) {
  const armDir=path.join(deps.store.dir,'no-agent'), armStore=new RunStore(armDir,path.join(armDir,'custom'),deps.screens.mode==='lean');
  const day=schedule.day, file=path.join(armDir,'days',`day-${pad2(day)}`,`${persona.id}.json`);
  if(existsSync(file))return readJson(file,dayResultSchema);
@@ -19,6 +19,7 @@ export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Relea
  let program=previous?await readJson(`${previous}.program.json`,programSchema):await deps.store.readProgram(persona.id,0);
  let certificate=previous?await readJson(`${previous}.certificate.json`,certificateSchema):await readJson(deps.store.certPath(persona.id,0),certificateSchema);
  if(program.specVersion!==release.specVersion){
+  if(!holdout)throw Error('Vendor migration requires validation');
   const canonical={...personalize(release.canonical,persona.params,persona.userId),id:program.id,version:program.version+1,specVersion:release.specVersion};
   const gate={specVersion:release.specVersion,prev:program,canonical:release.canonical,nextVersion:program.version+1};
   const restamped=await checkPatch(deps.ehr,program,[],gate);

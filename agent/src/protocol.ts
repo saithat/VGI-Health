@@ -28,3 +28,12 @@ export async function validationSchedules(night:number, load:(day:number)=>Promi
   }
   return days;
 }
+
+import {hillclimbPolicy as HILLCLIMB} from '../../app/src/dashboard/benefit-metrics.mjs';
+export {HILLCLIMB};
+export const hillclimbProtocol = {
+  name: HILLCLIMB,
+  training: 'Every completed day of this persona on its deployed program.',
+  measurementDays: [2,3,4,5,6,7,8,9,10],
+  tests: 'Prospective next-day comparisons. Final evaluation replays seen and subsequent days separately.',
+};

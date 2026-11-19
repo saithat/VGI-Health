@@ -1,3 +1,4 @@
+import {reportingDay} from './benefit-metrics.mjs';
 import type {RunData} from './data';
 import type {DayResult} from '../../../agent/src/schema';
 export type Effort={clicks:number;keystrokes:number;scrolls:number;scrollPx:number|null;mouseTravelPx:number|null};
@@ -9,7 +10,7 @@ function divide(a:Effort,n:number):Effort{return {clicks:a.clicks/n,keystrokes:a
 function difference(a:Effort,b:Effort):Effort{return {clicks:a.clicks-b.clicks,keystrokes:a.keystrokes-b.keystrokes,scrolls:a.scrolls-b.scrolls,scrollPx:a.scrollPx===null||b.scrollPx===null?null:a.scrollPx-b.scrollPx,mouseTravelPx:a.mouseTravelPx===null||b.mouseTravelPx===null?null:a.mouseTravelPx-b.mouseTravelPx};}
 export interface WorkloadIteration {version:number;days:number[];tasks:number;completed:number;unclassified:number;workflows:{workflow:string;tasks:number;completed:number;mean:Effort}[];total:Effort|null;canonical?:Effort|null;savings?:Effort|null;noAgent?:Effort|null;agentSavings?:Effort|null}
 export function workloadAt(run:RunData,persona:string,version:number):WorkloadIteration{
- const days=run.days.filter(d=>d.persona===persona&&d.programVersion===version&&(!run.manifest.measurementProtocol||d.day%2===0));
+ const days=run.days.filter(d=>d.persona===persona&&d.programVersion===version&&(reportingDay(run.manifest.measurementProtocol,d.day)));
  const groups=new Map<string,{tasks:number;completed:number;measured:number;actual:Effort;canonical:Effort;canonicalN:number;control:Effort;controlActual:Effort;controlN:number}>();let unclassified=0;
  for(const day of days)for(const task of day.tasks){
   const workflow=/(?:^|-)(W[1-7])(?:-|$)/.exec(task.task)?.[1];if(!workflow){unclassified++;continue;}

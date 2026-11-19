@@ -32,15 +32,18 @@ export function harnessSandboxArgs(m: SandboxMounts, command: string, args: read
 
 export interface SandboxRun { stdout: string; stderr: string; code: number | null; signal: string | null; timedOut: boolean; stdoutTruncated: boolean }
 /** Run to completion or until timeoutMs (SIGTERM, then SIGKILL after 10 s). */
-export function runSandboxed(bwrapArgs: readonly string[], stdin: string, timeoutMs: number, maxStdout = 64_000_000): Promise<SandboxRun> {
+export function runSandboxed(bwrapArgs: readonly string[], stdin: string, timeoutMs: number, maxStdout = 64_000_000, stop?:AbortSignal): Promise<SandboxRun> {
   return new Promise((resolve, reject) => {
     const child = spawn('bwrap', bwrapArgs, { stdio: ['pipe', 'pipe', 'pipe'] });
     let stdout = '', stderr = '', timedOut = false, stdoutTruncated = false;
     child.stdout.on('data', (d: Buffer) => { if (stdout.length < maxStdout) stdout += d.toString(); else stdoutTruncated = true; });
     child.stderr.on('data', (d: Buffer) => { stderr = (stderr + d.toString()).slice(-200_000); });
-    const timer = setTimeout(() => { timedOut = true; child.kill('SIGTERM'); setTimeout(() => child.kill('SIGKILL'), 10_000).unref(); }, timeoutMs);
-    child.on('error', error => { clearTimeout(timer); reject(error); });
-    child.on('close', (code, signal) => { clearTimeout(timer); resolve({ stdout, stderr, code, signal, timedOut, stdoutTruncated }); });
+    const terminate=()=>{child.kill('SIGTERM');setTimeout(()=>child.kill('SIGKILL'),10_000).unref();};
+    stop?.addEventListener('abort',terminate,{once:true});
+    if(stop?.aborted)terminate();
+    const timer = setTimeout(() => { timedOut = true; terminate(); }, timeoutMs);
+    child.on('error', error => { clearTimeout(timer); stop?.removeEventListener('abort',terminate);reject(error); });
+    child.on('close', (code, signal) => { clearTimeout(timer); stop?.removeEventListener('abort',terminate);resolve({ stdout, stderr, code, signal, timedOut, stdoutTruncated }); });
     child.stdin.on('error', () => undefined);
     child.stdin.end(stdin);
   });

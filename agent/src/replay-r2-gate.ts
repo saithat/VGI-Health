@@ -12,7 +12,7 @@ import { calibrationPartition, validationSchedules } from './protocol.js';
 import { makeHoldout, learnabilityOk, completionOk, improved, interactionAcceptable, type LoopDeps } from './night.js';
 import { RunStore } from './store.js';
 import { loadWorld } from './world.js';
-import { programSchema, dayResultSchema, type UserMemory, type DecisionRecord, type ReplayDay } from './schema.js';
+import { programSchema, dayResultSchema, type UserMemory, type DecisionRecord, type ReplayDay } from '../../app/src/dashboard/agent-evidence.js';
 import { interactionRefusals } from './replay-interaction-gate.js';
 import { personalize } from './program.js';
 import { fileHash, treeHash } from './fingerprints.js';
@@ -20,6 +20,7 @@ import { readJson } from './util.js';
 
 /** Unknown frozen geometry is reported separately from a measured regression. */
 export function replayGateVerdict(record:Pick<DecisionRecord,'mode'|'outcome'>,replay:ReplayDay|null) {
+  if(record.mode==='hillclimb')throw Error('Historical R2 replay requires a calibration-holdout decision');
   const boundedPass=learnabilityOk(replay);
   const checks=interactionRefusals(replay);
   const unavailable=checks.filter(reason=>reason.includes('unavailable or nonfinite'));

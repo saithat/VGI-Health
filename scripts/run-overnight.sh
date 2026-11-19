@@ -25,9 +25,18 @@ pnpm --filter agent test
 pnpm --filter app test
 pnpm --filter app lint
 fi
+night_args=()
+if ! $resume; then
+  night_args=(--night-mode hillclimb)
+  for argument in "$@"; do
+    case "$argument" in
+      browser|--screens=browser|--protocol*|--night-mode*|--cadence*|--generator-only|--historical-nightly) night_args=(); break ;;
+    esac
+  done
+fi
 mkdir -p "runs/$run_id/logs"
 pnpm --filter agent run-days --parallel --days 10 --backend codex --service-tier "${CODEX_SERVICE_TIER:-default}" --reasoning-effort "${CODEX_REASONING_EFFORT:-high}" --world runs/world/2 \
-  --personas P1,P2,P3,P4,P5 --run-id "$run_id" \
+  --personas P1,P2,P3,P4,P5 --run-id "$run_id" "${night_args[@]}" \
   --fhir "${EHR_SAMPLE_FHIR:-fixtures/synthea/Ashly_Rippin_149fcc1f.json}" "$@" \
   2>&1 | tee -a "runs/$run_id/logs/console.txt"
 pnpm trajectories --run "$run_id"
@@ -37,3 +46,4 @@ fi
 pnpm conformance --run "$run_id" --run-only --jobs 5
 # Copy the finished artifacts into the static dashboard. Source/code hashes stay the same.
 if ! $resume; then pnpm --filter app build; fi
+pnpm final-eval --run "$run_id"
