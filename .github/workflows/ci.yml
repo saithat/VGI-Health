@@ -121,6 +121,8 @@ jobs:
       - run: pnpm --filter world exec vitest run --maxWorkers=2
       - run: node --test world/realism/*.test.mjs
       - run: pnpm --filter @vgi/commit test
+      # density-cache-browser.test.mjs drives the browser screen check.
+      - run: pnpm --filter app exec playwright install --with-deps chromium
       - name: Script and conformance runner units
         run: |
           node conformance/cures-probe.mjs
