@@ -80,10 +80,11 @@ def all : List Sample := [
   mk "tinyProgram" "Program" Tiny.program,
   mk "tinyFacts" "Facts" Tiny.facts,
   mk "tinyUser" "User" Tiny.user,
+  -- New specification for owner review. Include the explicit deletion in wire samples.
   mk "sampleEvents" "Event[]"
     [Event.click "toOrder", .selectTab "signTabs" 1, .enter "weightField" (.qty 725 .kg),
      .enter "drugField" (.code "amoxicillin"), .enter "cosignField" (.user "u2"),
-     .enter "patientIdField" (.text "JD/F/34"), .confirm "weightField",
+     .enter "patientIdField" (.text "JD/F/34"), .enter "weightField" .cleared, .confirm "weightField",
      .ack "drugAllergy", .scroll "sign", .search "amox"],
   mk "sampleResults" "StepResult[]" [StepResult.ok, .blocked "guard: weight", .ignored],
   mk "sampleCertificate" "Certificate" Tiny.sampleCertificate,

@@ -153,6 +153,7 @@ export interface CommitInput {
 }
 
 export function valueText(value: Value): string {
+  if (value === "cleared") throw new Error("Unexpected deletion marker in a captured value");
   if ("qty" in value) return String(value.qty.tenths / 10);
   if ("code" in value) return value.code.c;
   if ("text" in value) return value.text.s;
@@ -368,7 +369,7 @@ export function mapCommit(input: CommitInput): Bundle {
       const dose = number("dose", slot);
       const doseValue = field("dose", slot)?.value;
       const unit =
-        doseValue && "qty" in doseValue
+        typeof doseValue === "object" && "qty" in doseValue
           ? doseValue.qty.unit
           : text("doseUnit", slot);
       if (!unit || (text("doseUnit", slot) && text("doseUnit", slot) !== unit))
@@ -988,7 +989,7 @@ export function mapCommit(input: CommitInput): Bundle {
       // precision for that attestation instead of serializing boolean "true"
       // into a FHIR dateTime. Explicit legacy dates remain supported.
       const presentationDate =
-        vis && "flag" in vis
+        typeof vis === "object" && "flag" in vis
           ? vis.flag.b
             ? (text("vaccineAdministrationDate") || now).slice(0, 10)
             : ""

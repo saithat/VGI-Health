@@ -1229,7 +1229,9 @@ export type Value =
   | { code: { c: string } }
   | { text: { s: string } }
   | { flag: { b: boolean } }
-  | { user: { u: UserId } };
+  | { user: { u: UserId } }
+  /** New specification for owner review. An explicit field deletion in an enter event. */
+  | "cleared";
 
 /**
  * Who performs an event: a human, or a macro on the human's behalf.

@@ -139,6 +139,8 @@ where
   tenthsText (n : Nat) : String := s!"{n / 10}.{n % 10}"
 
 def valueText : Value → String
+  -- New specification for owner review.
+  | .cleared => ""
   | .text s => s | .code s => s | .user s => s | .flag b => toString b
   | .qty n _ => s!"{n / 10}.{n % 10}"
 

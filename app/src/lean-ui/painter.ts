@@ -25,6 +25,7 @@ interface Entry {
   patient?: string | undefined;
   control?: Control | undefined;
   controlKind?: string;
+  editorNonempty?: boolean;
   textKey?: string;
 }
 export interface PainterOptions {
@@ -133,6 +134,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
     const sendValue = () => {
       const part = entry.part;
       if (part?.role !== "control") return;
+      if (control instanceof HTMLInputElement && control.validity.badInput) return;
       let raw: string | boolean =
         control instanceof HTMLInputElement && control.type === "checkbox"
           ? control.checked
@@ -145,8 +147,11 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         kind: part.entry ?? "text",
         unit: part.unit ?? null,
       };
-      const event = entryEvent(field, raw);
-      if (event) emit(entry, event);
+      const event = entryEvent(field, raw, entry.editorNonempty);
+      if (event) {
+        entry.editorNonempty = raw !== "";
+        emit(entry, event);
+      }
     };
     control.oninput = (event) => {
       if (
@@ -374,8 +379,10 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
               .slice(0, 16)
           : "";
       }
-      if (document.activeElement !== control && control.value !== value)
-        control.value = value;
+      if (document.activeElement !== control) {
+        if (control.value !== value) control.value = value;
+        entry.editorNonempty = control.value !== "";
+      }
       control.placeholder = part.placeholder ?? "";
     } else if (control instanceof HTMLSelectElement) {
       // Options and the empty choice's caption are Lean's data.
@@ -391,6 +398,7 @@ export function createPainter(root: HTMLElement, options: PainterOptions) {
         control.dataset.options = key;
       }
       control.value = raw;
+      entry.editorNonempty = raw !== "";
     }
   }
   const dialogKeys = (event: KeyboardEvent) => {

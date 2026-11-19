@@ -43,6 +43,8 @@ def klmMs (ops : List Op) : Nat := (klmFold none ops).1
 /-- Characters actually typed (coded values use a four-character type-ahead
 plus acceptance key; scans and flag choices type no characters). -/
 def typedLen : Value → Nat
+  -- New specification for owner review.
+  | .cleared => 1
   | .qty t _ => (tenthsText t).length
   | .code c => min c.length 4 + 1
   | .text s | .user s => s.length

@@ -251,6 +251,18 @@ test("a coded control shows Lean's label, offers Lean's options and sends the co
   expect(dispatch).toHaveBeenLastCalledWith({
     enter: { comp: "weight", value: { qty: { tenths: 712, unit: "kg" } } },
   });
+  dispatch.mockClear();
+  number.value = "";
+  number.dispatchEvent(new InputEvent("input", { bubbles: true }));
+  number.dispatchEvent(new InputEvent("input", { bubbles: true }));
+  expect(dispatch).toHaveBeenCalledExactlyOnceWith({
+    enter: { comp: "weight", value: "cleared" },
+  });
+  select.value = "";
+  select.dispatchEvent(new window.Event("change", { bubbles: true }));
+  expect(dispatch).toHaveBeenLastCalledWith({
+    enter: { comp: "route", value: "cleared" },
+  });
   const checkbox = root.querySelector<HTMLInputElement>(
     'input[type="checkbox"]',
   );

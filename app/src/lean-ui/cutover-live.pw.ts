@@ -304,6 +304,11 @@ for (const viewport of viewports)
       const sign = a("w3Provider.commit.signNote");
       await reveal(page, sign);
       await expect(sign).toBeEnabled();
+      await fill(page, a("w3Provider.hpi", "enter"), "");
+      await expect(sign).toBeDisabled();
+      await expect(sign).toHaveAccessibleDescription(/history of present illness|HPI/i);
+      await fill(page, a("w3Provider.hpi", "enter"), note.hpi);
+      await expect(sign).toBeEnabled();
       const response = saved(page);
       await act(page, sign);
       const result = await response;

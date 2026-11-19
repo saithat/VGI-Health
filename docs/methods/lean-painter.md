@@ -336,3 +336,21 @@ assessment. It reads the actual session screen and creates no dispatch hook.
 [Results and remaining fidelity gaps](../audits/dense-reference-defaults.md)
 include the bundle audit and exact command outcomes. No full browser audit is
 claimed by this targeted workflow.
+
+
+### Clearing an entry
+
+New specification for owner review. A human can clear a shown numeric, coded,
+text, identity, scan or cosign field with the same role and modal checks used
+for entry. The journal records `enter` with the literal value `"cleared"`.
+The interpreter removes the capture on the resolved order slot, including its
+time and confirmation. It also discards copies with provenance linked directly
+or transitively to the source, including observation-time companions. Link
+provenance identifies the source element and can cross slots. Other independent
+captures stay in place. A transferred entry awaiting a reconciliation decision
+requires that decision first.
+
+The editor sends deletion on its usual input or selection change. Leaving an
+empty editor alone sends no event. A flag records an explicit Boolean. Search
+queries and critical-result action drafts keep their dedicated text handlers.
+Older journals retain their original event encoding and interpretation.

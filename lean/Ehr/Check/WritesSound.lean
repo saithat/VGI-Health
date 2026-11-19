@@ -116,8 +116,11 @@ private theorem enterCore_writes (sp p f u actor s cid v) (h : WritesState sp f 
               · exact h
               · exact ⟨setCaptured_writes sp u s.captured _ h.1 ⟨el, hel, hrole⟩, h.2⟩
           · split
-            · exact h
-            · exact ⟨setCaptured_writes sp u s.captured _ h.1 ⟨el, hel, hrole⟩, h.2⟩
+            · repeat' (first | exact h | split | dsimp only)
+              exact ⟨fun y hy => h.1 y (List.mem_filter.mp hy).1, h.2⟩
+            · split
+              · exact h
+              · exact ⟨setCaptured_writes sp u s.captured _ h.1 ⟨el, hel, hrole⟩, h.2⟩
     · cases v <;> exact h
     · exact h
 

@@ -157,6 +157,7 @@ export const programSchema: z.ZodType<Program> = z.object({
 
 // ---------------------------------------------------------------- events
 const valueSchema: z.ZodType<L.Value> = z.union([
+  z.literal('cleared'),
   z.object({ qty: z.object({ tenths: nat, unit: unitKindSchema }) }),
   z.object({ code: z.object({ c: str }) }),
   z.object({ text: z.object({ s: str }) }),

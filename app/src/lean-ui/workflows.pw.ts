@@ -533,6 +533,12 @@ for (const persona of ["P1", "P3"])
           nursingAssessment: "Comfortable, vital signs stable.",
         });
         await differential(page, "P3/assessment");
+        const fileAssessment = control(page, "w4Flowsheet.commit.chartAssessment");
+        await expect(fileAssessment).toBeEnabled();
+        await enter(page, "w4Flowsheet.heartRate", "");
+        await expect(fileAssessment).toBeDisabled();
+        await expect(fileAssessment).toHaveAccessibleDescription(/heart\s*rate/i);
+        await enter(page, "w4Flowsheet.heartRate", "72");
         const saved = await sign(page, "w4Flowsheet", "chartAssessment");
         expect(
           saved.links.some((s: string) => s.includes("Observation/")),

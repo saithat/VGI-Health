@@ -18,7 +18,42 @@ theorem human_enter (sp : Spec) (p : Program) (facts : Facts) (user : User)
           element := eid, slot := resolveSlot s slot, value, byHuman := true,
           confirmed := true, provenance? := (if ".observedAt".toList.isSuffixOf eid.toList then el.observationOf?.or el.linkedFrom? else el.linkedFrom?).map ("linked:" ++ ·),
           enteredAt? := epochNow facts s } }, .ok) := by
-  simp [step, stepCore, stepEvent, modal, Event.isAck, enterCore, shown, field, decl, role, valid, validation]
+  have notClear : value ≠ .cleared := by
+    rintro rfl
+    cases hk : el.kind <;> simp [hk, valueAccepted] at valid
+  simp [notClear, step, stepCore, stepEvent, modal, Event.isAck, enterCore, shown, field, decl, role, valid, validation]
+
+/-- New specification for owner review. Clearing a shown field successfully removes
+its entire capture, including its confirmation, timestamp and provenance. -/
+theorem human_clear_missing (sp p facts user s cid comp eid slot pf t)
+    (shown : shownComp? sp p facts s cid = some comp) (field : comp.kind = .field eid slot pf)
+    (ok : step sp p facts user .human s (.enter cid .cleared) = (t, .ok)) :
+    capturedAt? t eid (resolveSlot s slot) = none := by
+  simp only [step, stepCore, stepEvent, shown, enterCore, field, beq_self_eq_true, ↓reduceIte] at ok
+  repeat' (first | (simp at ok; done) | split at ok | dsimp only at ok)
+  obtain ⟨rfl, _⟩ := Prod.mk.inj ok
+  apply List.find?_eq_none.mpr
+  intro x hx
+  intro hm
+  have kept := (Bool.and_eq_true_iff.mp (List.mem_filter.mp hx).2).1
+  simp [hm] at kept
+
+/-- New specification for owner review. For an initially absent field, entering
+a value and successfully clearing that same field restores its original lookup.
+A field that already held a value must also become absent on clear. -/
+theorem enter_then_clear (sp p facts user s cid value comp eid slot pf t)
+    (absent : capturedAt? s eid (resolveSlot s slot) = none)
+    (entered : State) (entry : entered = (step sp p facts user .human s (.enter cid value)).1)
+    (shown : shownComp? sp p facts entered cid = some comp) (field : comp.kind = .field eid slot pf)
+    (sameSlot : resolveSlot entered slot = resolveSlot s slot)
+    (ok : step sp p facts user .human entered (.enter cid .cleared) = (t, .ok)) :
+    capturedAt? t eid (resolveSlot s slot) = capturedAt? s eid (resolveSlot s slot) := by
+  subst entry
+  rw [absent, ← sameSlot]
+  exact human_clear_missing sp p facts user _ cid comp eid slot pf t shown field ok
+
+#print axioms human_clear_missing
+#print axioms enter_then_clear
 
 /-- A scalar witness can be entered without relational dose constraints.
 Medication doses and their selectors require a selected formulary drug. -/

@@ -57,6 +57,13 @@ def setCaptured (l : List Captured) (x : Captured) : List Captured :=
   l.filter (fun y => !(y.element == x.element && y.slot == x.slot) &&
     !dependents.contains y.element) ++ [storedCapture l x]
 
+/-- New specification for owner review. Remove the entry and any copies derived
+from it. Linked provenance names an element and can cross order slots. -/
+def clearCaptured (xs : List Captured) (e : ElementId) (n : Nat) : List Captured :=
+  let sources := linkedClosure xs [e] xs.length
+  xs.filter fun x => !(x.element == e && x.slot == n) &&
+    !sources.any (fun src => x.provenance? == some ("linked:" ++ src))
+
 /-! ## Prefill (on screen entry) -/
 
 /-- The value a `linked` prefill copies: the source element on the same slot,
@@ -530,7 +537,14 @@ def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
                   confirmed := false, provenance? := (el.linkedFrom?.map ("linked:" ++ ·)).or (some "macro"), enteredAt? := epochNow facts s }
               ({ s with captured := setCaptured s.captured x }, .ok)
           | .human =>
-            if (!valueAccepted facts user el.kind v ||
+            -- New specification for owner review. A clear uses ordinary field access.
+            if v == .cleared then
+              let n := resolveSlot s slot
+              if el.kind == .flag then (s, .blocked "flags require an explicit choice")
+              else if !hasEntry s e n then (s, .ignored)
+              else if s.captured.any (fun x => x.element == e && reconcileTagged n x) then (s, .blocked "reconcile the order line first")
+              else ({ s with captured := clearCaptured s.captured e n }, .ok)
+            else if (!valueAccepted facts user el.kind v ||
                 !elementValueValid facts s el (resolveSlot s slot) v) then (s, .blocked (rejectReason el v))
             else
               let x : Captured :=

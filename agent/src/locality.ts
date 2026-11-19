@@ -173,7 +173,7 @@ export function attributeDay(day: DayResult, atlas: GeometryAtlas): Attribution[
     if ('search' in ev.event) row.keystrokes = [...ev.event.search.query].length;
     if ('enter' in ev.event && !ev.ops.includes('scan')) {
       const v = ev.event.enter.value;
-      row.keystrokes = 'qty' in v ? String(v.qty.tenths / 10).length
+      row.keystrokes = v === 'cleared' ? 1 : 'qty' in v ? String(v.qty.tenths / 10).length
         : 'code' in v ? Math.min([...v.code.c].length, 4) + 1
         : 'text' in v ? [...v.text.s].length : 'user' in v ? [...v.user.u].length : 0;
     }

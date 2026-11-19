@@ -65,6 +65,17 @@ const edited = agree('step', { ...context, state: { ...pending, screen: 'order' 
 const dose = edited.state.captured.find(c => c.element === 'dose');
 assert.equal(dose.enteredAt, 1000);
 assert.equal(dose.provenance, 'needsReconciliation');
+// Clearing cannot silently discharge the transfer decision. Once reconciled,
+// the same editor can be cleared, and both runtimes must omit the capture.
+const clearDose = { enter: { comp: 'doseField', value: 'cleared' } };
+const clearPending = agree('step', { ...context, state: edited.state, event: clearDose });
+assert.deepEqual(clearPending.result, { blocked: { reason: 'reconcile the order line first' } });
+const cleared = agree('step', { ...context, state: { ...kept.state, screen: 'order' }, event: clearDose });
+assert.equal(cleared.result, 'ok');
+assert.deepEqual(cleared.state.captured, kept.state.captured.filter(c => c.element !== 'dose' || c.slot !== 0));
+const again = agree('step', { ...context, state: cleared.state, event: clearDose });
+assert.equal(again.result, 'ignored');
+assert.deepEqual(again.state, cleared.state);
 const loading = agree('step', { ...context, program: { ...context.program, patientSelection: true },
   state: { ...pending, captured: [], patientContext: { patient: source, target: context.program.start, activity: "", query: "" },
     patientDrafts: [{ patient: source, captured: tagged, acked: [] }] }, event: decision });
