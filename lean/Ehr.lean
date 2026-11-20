@@ -62,6 +62,7 @@ import Ehr.Check.CompletionScenario
 import Ehr.Check.CompletionScenarioTests
 import Ehr.Check.InteractionRules
 import Ehr.Check.CompletionAudit
+import Ehr.Check.PriorAuthSound
 import Ehr.Check.Tests
 import Ehr.Check.Deploy
 import Ehr.Cli.Check

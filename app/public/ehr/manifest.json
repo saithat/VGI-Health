@@ -1,11 +1,11 @@
 {
   "format": 1,
-  "leanSourceHash": "479173f565709c80d6c2cf97263148225fe549efbd0742e0d51f8a5ae2267e72",
+  "leanSourceHash": "a157505e838954101451a92f098e0a9823a40c4e1b1fcd8543a871d7a84d29b2",
   "sources": {
     "lean/Audit/SpecSurface.lean": "9149e833ded951dc9aaf66fc8848f2eb3dbe142ec14c885b4d290d8303830cec",
     "lean/CommitProtocol.lean": "5d42e502a3b4016d216becffb7c99bfb2940852167a3948e2273cfea98e295a6",
     "lean/CompletionObligations.lean": "34dc959bbd641d1048cc8511ac3a3fb233a6c105f63afdb31ff3f0579859b5ed",
-    "lean/Ehr.lean": "c0cb557aa9ed90a60e1b473e70baecaf29bdccb6bee959077ac7e08879679e63",
+    "lean/Ehr.lean": "45df29113d2e5c90b8a8ee51162e21c196c633955b0fbc12b31e4115ad412574",
     "lean/Ehr/Api.lean": "fc2f18ae53a382ecfc20d2bbaa1858c58dd450a0f651fcd0d0e024dc8e78c8c7",
     "lean/Ehr/Basic.lean": "32ddac724d6b93ca008915e0ddddbe52748801959728e6c08f06aa26e88c879d",
     "lean/Ehr/Canonical/BadPrograms.lean": "1c5f2d064614cb6aa69df9292d9823318a237362a8608b0fcbfeb0db695489fa",
@@ -53,7 +53,7 @@
     "lean/Ehr/Check/CaptureSlots.lean": "b1c6ef9edc747a188fa70820670b675baa4a8e9e0db7b7e9dfa2f17cb2984b08",
     "lean/Ehr/Check/Catalog.lean": "9fdef14ed52227baaf641aa66ca99612648428ae3e4cbdc13c64f73092c2b88a",
     "lean/Ehr/Check/CertificationTests.lean": "44690d18a07e71ab603530e1e00ca4967b93926b64725f405e3a4afcd12dde5d",
-    "lean/Ehr/Check/Check.lean": "c96c5501517a9392d182a41dc3de09f93edb27270c34e92fb7ff0daa3cc3784e",
+    "lean/Ehr/Check/Check.lean": "4f8b6ac41b36048254175e8a21e5a8b43ce99d78bbc9371498d074fcbd864d10",
     "lean/Ehr/Check/ComparatorStatements.lean": "c37593d4feb17e6dcabf21e118e17cdc41a186842b9b398b5e47576d39a2c688",
     "lean/Ehr/Check/Completion.lean": "483d052619a0f13ca4390117ec4475b54f72ed8f83e495276529958ac4f6322d",
     "lean/Ehr/Check/CompletionAbstraction.lean": "62e34f13d9a8612e8b82a2175f97816606943101ac954da3fcece1bbbda28a21",
@@ -66,7 +66,7 @@
     "lean/Ehr/Check/CompletionStatements.lean": "f71430eed8495a71ad3560a89770a37675bc1b9e604b9c8a2b73df3bc5b85830",
     "lean/Ehr/Check/ContextRules.lean": "f98c7913ed4a2c1e6c8d5442d13fe9ee998eef1fd6247725b25d27e4066415e0",
     "lean/Ehr/Check/ContextSound.lean": "47f0c77a44b27f98ddea4cc05d69294d783d047cb0c0bf10ad5ff3d60ae49319",
-    "lean/Ehr/Check/ContextTests.lean": "968985db014f8788ba71d21307c5610be93d715620e99686f457a9fab8d613e6",
+    "lean/Ehr/Check/ContextTests.lean": "e9986138c449da2372af759b43a53c82f993ce56a7aeede9e49ba0cedc06d657",
     "lean/Ehr/Check/ContractSound.lean": "2e62e8f0f08823f70f6a636c3fa0de40551b42059ca5126e0e6328cb3e80ee30",
     "lean/Ehr/Check/ContractTests.lean": "88fdfca8faa83a519f58869241ad8fa66dad7dc63954b71545c6a96e4ac2fa41",
     "lean/Ehr/Check/CopySound.lean": "244ddf4460a8049d6fdf0af6ba25b8374ddad0fc4182c0d9ec88d09b64de0da1",
@@ -82,7 +82,7 @@
     "lean/Ehr/Check/EncounterSound.lean": "95235737abc3ee7e300be683ad230e0790a65969f403e7de3c4d127ecc47d7e6",
     "lean/Ehr/Check/EnterOnceSound.lean": "2c560db39577f2a26ceb730cd6ff0649580f7e609a74bb65c4b021a71530617b",
     "lean/Ehr/Check/EntryConstruction.lean": "930fd454be95e460b3f5cd80ee2046b3b0865ea25ba6a8fb0137400c309b031b",
-    "lean/Ehr/Check/ExportConformanceBad.lean": "c52bca8619c2a8b25588e0e911dbcdd3a8887f09d0133518905290b71a38b9ef",
+    "lean/Ehr/Check/ExportConformanceBad.lean": "7e5a334ca96040a8aaaf61dafc2890bc03fe36f7c9ae2e1eddfc4db71eba2be7",
     "lean/Ehr/Check/ExportDependencyBad.lean": "667f4775d6f44d8329b0fd891e827a3286c600d0e65571be2e4420ce96fbf6f0",
     "lean/Ehr/Check/FeasibleCompletion.lean": "bb2ae7e8d1d1e78cc8af914f51392e7aa131a1a7b86183df92efb10ee022878b",
     "lean/Ehr/Check/FeasibleCompletionObstruction.lean": "95a021e624793002528a6d7661c3ccb4871011eb6c0e597d9d488de5b86410fb",
@@ -108,6 +108,8 @@
     "lean/Ehr/Check/PatchWitness.lean": "375b569ef8cc38758e7531f9b5e6eb0ff8b8070e53ca1208234acdafa5a3e88c",
     "lean/Ehr/Check/PinSound.lean": "d77e6fd6fa27a73cdd3e3327a6c59ec42ff6f4d75c92846b3c7e9c44df2a9468",
     "lean/Ehr/Check/PopupRequests.lean": "10627cc3860ead5a8a722dce38c68a4720d43a045751c7038882bd9b9a721b76",
+    "lean/Ehr/Check/PriorAuth.lean": "03218855bcd3a46cef917ea267dbbc0537494ded850a967ff9bf2dd99f49a4c0",
+    "lean/Ehr/Check/PriorAuthSound.lean": "cd9c4a4e8764ae13815825e9e40689f42b3454e89128690c16093b0576cd62fd",
     "lean/Ehr/Check/ProfileGoalsTests.lean": "1298f6fad7144ca5e51b1a9d3d2adfd06dd3f5cba2423b614cf7d70fe0ee09f5",
     "lean/Ehr/Check/ReachCacheSound.lean": "b56be60cfe5c5f8e91213cff6e5c3b754a9a382747cd3a091f9c88e9c793d563",
     "lean/Ehr/Check/RejectionObstruction.lean": "2aef0497a979d253998770dcb1dab93117700de87c70bd506bacda026089c9f4",
@@ -432,7 +434,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "c3b426042022bfd2c7e0bc5d2dadeaf40575d0661457512c72223ae41817ecce",
+    "ehr-interp.wasm": "9de1f7d29740bb64abfe26e36ff45449f2c5aa200dd02e74cd5eadd3febabb68",
     "interp-loader.mjs": "97bdde445bef78a3aec9f5664e1274b9399094191d5282a71a656b88713040b7",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

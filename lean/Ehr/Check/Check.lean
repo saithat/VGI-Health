@@ -1,4 +1,4 @@
-import Ehr.Check.ContextRules
+import Ehr.Check.PriorAuth
 import Ehr.Render.NavLabels
 import Ehr.Core.CriticalRuntime
 import Ehr.Props.Navigation
@@ -426,7 +426,11 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
             some { property := "highAlertNotices"
                    screen? := some scr.id
                    message := s!"High-alert notice {al.id} must remain inline on commit screen {scr.id}" }
-          else none }
+          else none },
+    { property := "servicePriorAuth", passes := prog.screens.all (priorAuthAvailable spec prog)
+      explain := fun _ => (prog.screens.find? fun scr => !priorAuthAvailable spec prog scr).map fun scr =>
+        { property := "servicePriorAuth", screen? := some scr.id
+          message := s!"Service orders on {scr.id} need a reachable requestPriorAuth button and human priorAuthRequest field on the current line in workflow {scr.workflow}" } }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

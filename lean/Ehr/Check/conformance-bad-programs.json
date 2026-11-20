@@ -6,4 +6,5 @@
  ["lean/Ehr/Check/bad/41-copy-spray.json", "copyBudget"],
  ["lean/Ehr/Check/bad/50-context-removed.json", "contextRetained"],
  ["lean/Ehr/Check/bad/51-misleading-navigation.json", "navigation"],
- ["lean/Ehr/Check/bad/52-stuffed-navigation.json", "navigation"]]
+ ["lean/Ehr/Check/bad/52-stuffed-navigation.json", "navigation"],
+ ["lean/Ehr/Check/bad/54-partial-service.json", "servicePriorAuth"]]

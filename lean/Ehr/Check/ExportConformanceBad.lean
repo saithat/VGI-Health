@@ -46,6 +46,13 @@ def main (args : List String) : IO Unit := do
     { s with components := s.components.map fun c =>
       if c.id == "w1Rooming.nav.w1MedRec" then
         { c with label := "Medication allergy problems results history" } else c }
+  -- New specification for owner review. Retain the v2 service kind/code
+  -- while removing both authorization controls, as in a partial migration.
+  let v2Text ← IO.FS.readFile (root / "releases/v2/personas/P1.json")
+  let v2 ← IO.ofExcept (Lean.Json.parse v2Text >>= Lean.fromJson? (α := Program))
+  let partialService := rewrite v2 fun c => match c.kind with
+    | .button .requestPriorAuth | .field "priorAuthRequest" _ _ => none
+    | _ => some c
   let cases := [("36-cures-without-review", "completable", cures),
     ("37-stale-dosing-weight", "capturesAllOnce", linked),
     ("38-cross-patient-panel", "writesOnly", foreign),
@@ -54,6 +61,7 @@ def main (args : List String) : IO Unit := do
     ("41-copy-spray", "copyBudget", spray),
     ("50-context-removed", "contextRetained", noContext),
     ("51-misleading-navigation", "navigation", wrongNav),
-    ("52-stuffed-navigation", "navigation", stuffedNav)]
+    ("52-stuffed-navigation", "navigation", stuffedNav),
+    ("54-partial-service", "servicePriorAuth", partialService)]
   for (name, _, p) in cases do writeJson root s!"lean/Ehr/Check/bad/{name}.json" p
   writeJson root "lean/Ehr/Check/conformance-bad-programs.json" (cases.map fun (name, prop, _) => (s!"lean/Ehr/Check/bad/{name}.json", prop))

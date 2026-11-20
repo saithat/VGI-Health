@@ -113,4 +113,29 @@ def aliasSpec : Spec := { sp with navigationAliases? := some [("Context", ["Clin
         if id == "P5" then navLink home c && c.label == "Rooming"
         else !navLink home c && c.label == "Open encounter"
 
+-- New specification for owner review. Test the workflow route, each required
+-- control and the optional-release boundary using the context graph above.
+#guard Id.run do
+  let service : Component := { id := "kind", kind := .field "orderKind" .current .none }
+  let request : Component := { id := "request", kind := .button .requestPriorAuth }
+  let input : Component := { id := "input", kind := .field priorAuthElement .current .none }
+  let composer := { source with components := [service, link] }
+  let layout := fun (origin : Screen) (workflow : String) (cs : List Component) =>
+    { remote with screens := [origin, { destination with workflow, components := cs }] }
+  let pass := fun cs => priorAuthAvailable Examples.Tiny.specV2 (layout composer "W1" cs) composer
+  let inputScreen := { destination with id := "paperwork", workflow := "W1", components := [
+    { id := "details", kind := .tabs }, { input with parent? := some "details", tab := 2 }] }
+  let separate := layout composer "W1" [request, { link with kind := .button (.goto "paperwork") }]
+  return priorAuthAvailable Examples.Tiny.specV2
+      { separate with screens := separate.screens ++ [inputScreen] } composer &&
+    pass [request, input] && !pass [request] && !pass [input] &&
+    !pass [{ request with size := .tiny }, input] &&
+    !pass [request, { input with kind := .field priorAuthElement (.fixed 1) .none }] &&
+    !priorAuthAvailable Examples.Tiny.specV2 (layout composer "chart" [request, input]) composer &&
+    !priorAuthAvailable Examples.Tiny.specV2
+      (layout { composer with components := [service] } "W1" [request, input]) composer &&
+    priorAuthAvailable Examples.Tiny.spec (layout composer "W1" []) composer
+
+#guard priorAuthAvailable Examples.Tiny.specV2 remote source
+
 end Ehr.Check.ContextTests
