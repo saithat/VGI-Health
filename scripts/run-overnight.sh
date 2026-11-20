@@ -15,8 +15,9 @@ if $resume; then
   make wasm-check
   pnpm --filter agent verify-resume --run "$run_id"
 else
-(cd lean && lake build && lake -d ../scripts/measure-replay build)
+(cd lean && lake build)
 make wasm-check
+(cd lean && lake -d ../scripts/measure-replay build)
 pnpm --filter agent manual
 pnpm --filter agent typecheck
 pnpm --filter agent lint
@@ -35,7 +36,8 @@ if ! $resume; then
   done
 fi
 mkdir -p "runs/$run_id/logs"
-pnpm --filter agent run-days --parallel --days 10 --backend codex --service-tier "${CODEX_SERVICE_TIER:-default}" --reasoning-effort "${CODEX_REASONING_EFFORT:-high}" --world runs/world/2 \
+# All persona workers share this Node heap inside the recording memory scope.
+NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}" pnpm --filter agent run-days --parallel --days 10 --backend codex --service-tier "${CODEX_SERVICE_TIER:-default}" --reasoning-effort "${CODEX_REASONING_EFFORT:-high}" --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id "$run_id" "${night_args[@]}" \
   --fhir "${EHR_SAMPLE_FHIR:-fixtures/synthea/Ashly_Rippin_149fcc1f.json}" "$@" \
   2>&1 | tee -a "runs/$run_id/logs/console.txt"
