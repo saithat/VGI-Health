@@ -1,3 +1,4 @@
+import {taskSlots} from './replay-pool.js';
 import {AsyncLocalStorage} from 'node:async_hooks';
 import {spawn} from 'node:child_process';
 import {InfrastructureError} from './errors.js';
@@ -18,7 +19,7 @@ export function runNative(binary:string,args:string[],opts:{timeoutMs?:number;in
  if(!Number.isSafeInteger(timeoutMs)||timeoutMs<=0)throw new Error('Native timeout must be positive');
  return new Promise((resolve,reject)=>{
   let failure:InfrastructureError|null=null,stdout='',stderr='';
-  const child=spawn(binary,args,{detached:true,stdio:['pipe','pipe','pipe'],...(opts.cwd?{cwd:opts.cwd}:{}),...(opts.env?{env:opts.env}:{})});
+  const child=spawn(binary,args,{detached:true,stdio:['pipe','pipe','pipe'],...(opts.cwd?{cwd:opts.cwd}:{}),...(taskSlots.getStore()?{env:{...(opts.env??process.env),LEAN_NUM_THREADS:'1'}}:opts.env?{env:opts.env}:{})});
   const stop=()=>{try{if(child.pid)process.kill(-child.pid,'SIGKILL');}catch{child.kill('SIGKILL');}};
   signal?.addEventListener('abort',stop,{once:true});
   const timer=setTimeout(()=>{failure=new InfrastructureError(`ehr ${args[0]??''} timed out after ${timeoutMs}ms; native process group killed`);stop();},timeoutMs);

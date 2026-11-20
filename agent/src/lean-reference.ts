@@ -7,7 +7,7 @@ import {
   version,
 } from "../../scripts/layout-reference/generator.mjs";
 import type { LayoutRunner, LayoutReply } from "./lean-layout-native.js";
-import { stableStringify } from "./program.js";
+import { sha256, stableStringify } from "./program.js";
 import { gzipSync, gunzipSync } from "node:zlib";
 import { BoundedMap } from "./bounded-map.js";
 export { version as referenceGeneratorVersion };
@@ -30,13 +30,14 @@ export class LeanReference {
   constructor(
     private readonly runner: LayoutRunner,
     readonly budgetBytes = 64 * 1024 * 1024,
+    private readonly nativeFamilyPaint = false,
   ) {}
   /** Compressed bytes currently retained (for tests and reports). */
   get retainedBytes() {
     return this.packedBytes;
   }
   private keep(key: string, entry: Entry) {
-    const bytes = gzipSync(JSON.stringify(entry));
+    const bytes = gzipSync(JSON.stringify(entry), { level: 1 });
     const old = this.packed.get(key);
     if (old) this.packedBytes -= old.length;
     this.packed.delete(key);
@@ -53,7 +54,7 @@ export class LeanReference {
   }
   get(ui: Record<string, unknown>, limit: number): Promise<Entry> {
     const shape = shapeFor(ui),
-      key = stableStringify([version, shape, limit]);
+      key = sha256(stableStringify([version, shape, limit]));
     const inFlight = this.pending.get(key);
     if (inFlight) {
       this.stats.hits++;
@@ -93,30 +94,55 @@ export class LeanReference {
           throw Error("Missing native family verdict");
         return reply;
       };
-      const dense = Boolean((await check()).accepted);
+      const paintFamily = async () =>
+        (
+          await this.runner([
+            {
+              op: "family-paint",
+              references: [{ screen, layouts }],
+              screen,
+              viewport: viewports[0],
+              maxTargetsPerViewport: limit,
+            },
+          ])
+        )[0];
+      // The native familyOutput acceptance expression includes the complete
+      // family-check conjunction. Its successful paint certifies both in one
+      // call. On a negative paint distinguish family refusal from paint refusal.
+      let paint = this.nativeFamilyPaint ? await paintFamily() : undefined;
+      const dense =
+        paint?.accepted === true || Boolean((await check()).accepted);
       let fallbackAccepted = true;
       if (!dense) {
         layouts = viewports.map((viewport) => ({
           viewport,
           tree: fixedShellFor(shape, viewport),
         }));
-        fallbackAccepted = Boolean((await check()).accepted);
+        fallbackAccepted =
+          this.nativeFamilyPaint || Boolean((await check()).accepted);
+        paint = undefined;
       }
-      const [paint] = await this.runner([
-        {
-          op: "family-paint",
-          references: [{ screen, layouts }],
-          screen,
-          viewport: viewports[0],
-          maxTargetsPerViewport: limit,
-        },
-      ]);
+      paint ??= await paintFamily();
       if (!paint || paint.error)
         throw Error(paint?.error ?? "Missing native paint");
       if (!fallbackAccepted) paint.accepted = false;
       this.stats.admissions++;
       this.stats.admissionMs += performance.now() - started;
-      return { paint, dense, references: [{ screen, layouts }] };
+      // Geometry consumes only the verdict, viewport and placed boxes. The
+      // gallery re-paints its exact screen with the admitted family below.
+      const compact = Object.fromEntries(
+        Object.entries(paint).filter(([key]) =>
+          [
+            "accepted",
+            "linked",
+            "error",
+            "findings",
+            "boxes",
+            "viewport",
+          ].includes(key),
+        ),
+      );
+      return { paint: compact, dense, references: [{ screen, layouts }] };
     })();
     this.pending.set(key, pending);
     pending.then(

@@ -1,7 +1,9 @@
 import path from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
 import { it, expect, vi } from "vitest";
-import { climbWorkspace, ClimbHost } from "../src/hillclimb.js";
+import type { TrainDay } from "../src/observe.js";
+import { RunStore } from "../src/store.js";
+import { climbWorkspace, climbingGate, ClimbHost } from "../src/hillclimb.js";
 import { runClimbingSession } from "../src/harness/climb-session.js";
 import * as sandbox from "../src/harness/sandbox.js";
 import * as agents from "../src/harness/agents.js";
@@ -63,7 +65,7 @@ it("exports only own observed days on their actual versions", async () => {
     noAgent: "SECRET-CONTROL",
     worldDir: "/SECRET-WORLD",
   };
-  const days = [];
+  const days: TrainDay[] = [];
   for (const day of [1, 2]) {
     const schedule = fakeSchedule(day, "P1", 7),
       program = versions.get(day - 1);
@@ -103,6 +105,147 @@ it("exports only own observed days on their actual versions", async () => {
   expect(() => climbWorkspace(input, [first], versions)).toThrow(
     /Missing observed day/,
   );
+});
+
+it("keeps serial verdict bytes, reuses partial measurements, and stops at either failed gate", async () => {
+  const inner = createFakeEhr(),
+    release = await loadRelease("v1", inner);
+  const params = FAKE_PERSONAS[0];
+  if (!params) throw Error("Missing P1");
+  const current = { ...release.canonical, id: params.id, owner: params.id };
+  const input = {
+    night: 3,
+    current,
+    release,
+    persona: { id: params.id, userId: params.id, params },
+  };
+  const days: TrainDay[] = [];
+  for (const day of [1, 2, 3]) {
+    const schedule = fakeSchedule(day, params.id, 7);
+    days.push({
+      schedule,
+      result: await inner.simulate({
+        program: current,
+        specVersion: "v1",
+        worldDir: "",
+        persona: params,
+        schedule,
+        seed: day,
+      }),
+    });
+  }
+  let active = 0,
+    peak = 0;
+  const simulate = vi.fn(async (i: Parameters<typeof inner.simulate>[0]) => {
+    peak = Math.max(peak, ++active);
+    try {
+      await new Promise((resolve) =>
+        setTimeout(resolve, i.policy === "bounded" ? 1 : 4),
+      );
+      return await inner.simulate(i);
+    } finally {
+      active--;
+    }
+  });
+  const check = vi.fn(inner.check);
+  const screen = {
+    mode: "lean",
+    status: "pass",
+    pages: 1,
+    bundles: [],
+    failingFiles: [],
+    failingScreens: [],
+    message: "",
+  } as const;
+  const checkScreen = vi.fn(async () => ({
+    ...screen,
+    bundles: [],
+    failingFiles: [],
+    failingScreens: [],
+  }));
+  const deps = {
+    ehr: { ...inner, simulate, check },
+    store: new RunStore(await tmp("measure")),
+    worldDir: "",
+    worldSeed: 7,
+    screens: { mode: "lean" as const, check: checkScreen },
+  };
+  const gate = (workers: number) =>
+    climbingGate(
+      deps,
+      input,
+      days,
+      { actor: params.id, entries: [] },
+      Infinity,
+      workers,
+    );
+  const serial = await gate(1).measure([]);
+  expect(serial.replay?.days).toEqual([1, 2, 3]);
+  expect(peak).toBe(1);
+  const parallel = gate(4);
+  const host = new ClimbHost(parallel.measure, Infinity, async () => {});
+  const partial = {
+    ...request("measure", []),
+    argv: ["--days", "3,1", "p.json"],
+  };
+  const estimate = await host.execute(partial);
+  expect(estimate.output).toMatchObject({
+    estimate: true,
+    days: [1, 3],
+    replay: { days: [1, 3] },
+  });
+  expect(estimate.output).not.toHaveProperty("ships");
+  expect((await host.execute({ ...partial, command: "done" })).exit).toBe(1);
+  expect(
+    (await host.execute({ ...partial, argv: ["--days", "4", "p.json"] })).exit,
+  ).toBe(1);
+  const measured = await parallel.measure([]);
+  expect(JSON.stringify(measured)).toBe(JSON.stringify(serial));
+  expect(peak).toBe(2);
+  const calls = simulate.mock.calls.length,
+    checks = check.mock.calls.length;
+  // Different patch encoding, same resulting candidate.
+  expect(
+    await parallel.measure([
+      { op: "replace", path: "/start", value: current.start },
+    ]),
+  ).toEqual(measured);
+  expect(simulate).toHaveBeenCalledTimes(calls);
+  expect(check).toHaveBeenCalledTimes(checks);
+  const screenCalls = checkScreen.mock.calls.length;
+  const refused = gate(4);
+  check.mockResolvedValueOnce({
+    violation: {
+      property: "test",
+      message: "refused",
+      counterexample: [],
+      screens: [],
+    },
+  });
+  expect((await refused.measure([])).ships).toBe(false);
+  expect(checkScreen).toHaveBeenCalledTimes(screenCalls);
+  const failScreen = {
+    ...deps,
+    screens: {
+      mode: "lean" as const,
+      check: async () => ({
+        ...screen,
+        status: "fail" as const,
+        bundles: [],
+        failingFiles: [],
+        failingScreens: [],
+      }),
+    },
+  };
+  const rejected = await climbingGate(
+    failScreen,
+    input,
+    days,
+    { actor: params.id, entries: [] },
+    Infinity,
+  ).measure([]);
+  expect(rejected.check.property).toBe("ScreenCheck");
+  expect(simulate).toHaveBeenCalledTimes(calls);
 });
 
 // Only the fixture simulator assigns a known six-click saving to this edit.

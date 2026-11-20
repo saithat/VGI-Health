@@ -3,7 +3,7 @@ import { workspaceHash } from "./workspace.js";
 import { stableStringify } from "../program.js";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { CLIMB_PROMPT, type ClimbHost } from "../hillclimb.js";
+import { CLIMB_PROMPT, estimateInstruction, type ClimbHost } from "../hillclimb.js";
 import { prepareWorkspace } from "./loop.js";
 import {
   prepareLaunch,
@@ -43,8 +43,12 @@ export async function runClimbingSession(
         commands: z.number().int().nonnegative(),
       }),
     );
-    if (session.workspaceSha256 !== workspaceHash(files))
-      throw Error("Hill-climbing replay workspace mismatch");
+    if (session.workspaceSha256 !== workspaceHash(files)) {
+      // Older sessions saw the identical workspace without the estimate hint.
+      const legacy = {...files, "README.md": files["README.md"]?.replace(estimateInstruction + "\n\n", "") ?? ""};
+      if (session.workspaceSha256 !== workspaceHash(legacy))
+        throw Error("Hill-climbing replay workspace mismatch");
+    }
     for (let index = 1; index <= session.commands; index++) {
       const entry = await readJson(
         path.join(opts.replayFrom, "commands", index + ".json"),

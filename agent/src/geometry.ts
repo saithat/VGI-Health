@@ -1,3 +1,4 @@
+import {publishReplayPointer, taskSlots} from './replay-pool.js';
 import {designOf} from './layout-design.js';
 import { BOUNDED_POINT_ASSUMPTION, pointingTrace, projectBoundedPoints } from '../../app/src/dashboard/bounded-pointing.js';
 import {z} from 'zod';
@@ -21,6 +22,13 @@ export const geometryProgramHash=(program:Program)=>sha256(stableStringify(expan
 export const geometryComponentsHash=(program:Program)=>sha256(stableStringify(designOf(program)?.length?{components:compilePresentations(program)??[],layouts:designOf(program)}:compilePresentations(program)??[]));
 export const geometryCacheKey=(program:Program)=>`${geometryProgramHash(program)}:${geometryComponentsHash(program)}`;
 export type GeometryProvider=(input:Pick<CheckInput,'specVersion'|'program'> & Partial<Pick<SimulateInput,'schedule'|'worldDir'>> & {result?:DayResult})=>Promise<GeometryAtlas|null>;
+// The measurement reads its exact atlas once more for per-screen attribution.
+const replayAtlases = new WeakMap<DayResult, GeometryAtlas & {traceTargets?:Record<string,string>}>();
+export function takeReplayAtlas(result: DayResult) {
+ const atlas = replayAtlases.get(result);
+ replayAtlases.delete(result);
+ return atlas;
+}
 export function attachGeometry(result:DayResult,atlas:GeometryAtlas):DayResult{
  const metadata=z.object({traceTargets:z.record(z.string(),z.string()).exactOptional()}).parse(atlas);
  const projectedTrace=pointingTrace(result.trace,atlas,result);
@@ -77,11 +85,13 @@ export function geometryEhr(inner:EhrClient,provider:GeometryProvider,dir:string
   const atlas={...measured,componentsSha256:components};
   const resultKey=geometryResultKey(result);
   const pointer=await saveGeometry(directory,atlas,`result:${key}:${resultKey}`);
-  await writeJson(path.join(base,'results',`${resultKey}.json`),pointer);
-  await writeJson(path.join(base,'days',`${result.day}.json`),pointer);
-  await writeJson(path.join(directory,`${hash}.${components}.json`),pointer);
-  await writeJson(path.join(directory,`${hash}.json`),pointer);
-  return attachGeometry(result,atlas);
+  for (const file of [path.join(base,'results',`${resultKey}.json`), path.join(base,'days',`${result.day}.json`),
+    path.join(directory,`${hash}.${components}.json`),path.join(directory,`${hash}.json`)]) {
+    await publishReplayPointer(file, () => writeJson(file,pointer));
+  }
+  const enriched = attachGeometry(result,atlas);
+  if(taskSlots.getStore()) replayAtlases.set(enriched,atlas);
+  return enriched;
  }};
 }
 export async function loadGeometry(file:string,result?:Pick<DayResult,'day'|'persona'|'trace'|'observations'>,directory?:string){

@@ -1,8 +1,11 @@
+import { BoundedMap } from "./bounded-map.js";
+import { replayJobs, replayWorkers, taskSlots } from "./replay-pool.js";
 import { nativeCancellation } from "./native-process.js";
 import path from "node:path";
 import {
   daySeed,
-  checkPatch,
+  preparePatch,
+  certifyPatch,
   completionOk,
   emptyRecord,
   deployVersion,
@@ -52,12 +55,16 @@ import {
 export const CLIMB_PROMPT =
   "Read README.md in /work. Continue until night done succeeds.";
 export const CLIMB_WALL_MS = 2 * 60 * 60 * 1000;
+export const estimateInstruction =
+  "Use `night measure --days 1,3 patch.json` for an estimate. Shipping requires every past day.";
 export function climbReadme(persona: string, role: string) {
   return `You are redesigning the EHR for ${persona}, a simulated ${role}. Reduce daily clicks plus scrolls while preserving completion, learnability, typing effort and modeled time. The checker enforces the clinical, screen and movement rules.
 
 persona.json describes this clinician. days/N.json contains their recorded tasks and trace on the program in versions/V.json. program.json is your working copy of the deployed program, including its layouts. spec.json is the active rulebook.
 
 Edit the working copy and run \`node patch.mjs > patch.json\`, or write an RFC 6902 patch against the deployed version directly. Run \`night measure patch.json\` to certify it and replay all past days with the expert and bounded clinicians. Inspect the verdict, totals and breakdowns. Iterate as often as needed. Savings must cover movement and reach five actions per day. Both clinicians must finish every task, with at most 2% more keys and modeled time. Bounded clicks and scrolls must each hold.
+
+${estimateInstruction}
 
 Finish with \`night done patch.json "summary"\`. Say what you changed and why in a few sentences. A refusal gives the reason so you can keep working. To retain the current version, use \`night done --no-change "reason"\`.`;
 }
@@ -226,13 +233,18 @@ function screenReason(message: string): string {
   }
   return message;
 }
+class InvalidDays extends Error {}
 export class Deadline extends Error {}
 export function climbingGate(
-  deps: LoopDeps,
+  deps: Pick<
+    LoopDeps,
+    "ehr" | "screens" | "worldDir" | "worldSeed" | "store" | "incompletePenalty"
+  >,
   input: Context,
   past: readonly TrainDay[],
   memory: UserMemory,
   deadline: number,
+  workers = replayWorkers(),
 ) {
   const { current, release, night, persona } = input,
     specVersion = release.specVersion;
@@ -256,7 +268,21 @@ export function climbingGate(
   const checkTime = () => {
     if (Date.now() >= deadline) throw new Deadline();
   };
-  const baseline = new Map<string, Awaited<ReturnType<typeof simulate>>>();
+  type Checked = Awaited<ReturnType<typeof certifyPatch>>["check"];
+  type ReplayCache = Map<
+    string,
+    Awaited<ReturnType<typeof simulate>> | LeanLayoutRefusal
+  >;
+  const baseline: ReplayCache = new Map(),
+    vendorCache: ReplayCache = new Map();
+  const candidates = new BoundedMap<
+    string,
+    {
+      check: Checked;
+      replays: ReplayCache;
+      full?: Awaited<ReturnType<typeof score>>;
+    }
+  >(8);
   async function simulate(
     program: Program,
     schedule: DaySchedule,
@@ -286,20 +312,67 @@ export function climbingGate(
       breakdown: await breakdown(deps.store.dir, result),
     };
   }
-  async function measure(patch: JsonPatchOp[]) {
+  async function cached(
+    cache: ReplayCache,
+    key: string,
+    program: Program,
+    schedule: DaySchedule,
+    policy: "expert" | "bounded",
+  ) {
+    const hit = cache.get(key);
+    if (hit instanceof LeanLayoutRefusal) throw hit;
+    if (hit) return hit;
+    try {
+      const replay = await simulate(program, schedule, policy);
+      cache.set(key, replay);
+      return replay;
+    } catch (error) {
+      if (error instanceof LeanLayoutRefusal) cache.set(key, error);
+      throw error;
+    }
+  }
+  async function measure(
+    patch: JsonPatchOp[],
+    days?: readonly number[],
+  ): Promise<
+    | Awaited<ReturnType<typeof score>>
+    | {
+        ships: false;
+        reason: string;
+        check: Checked;
+        program?: never;
+        replay?: never;
+      }
+  > {
     checkTime();
-    const { program, check } = await checkPatch(
-      deps.ehr,
-      current,
-      patch,
-      gate,
-      deps.screens,
-    );
+    const selected = days
+      ? past.filter((d) => days.includes(d.schedule.day))
+      : past;
+    if (days && (!days.length || selected.length !== days.length))
+      throw new InvalidDays("Choose distinct observed days");
+    const prepared = preparePatch(current, patch, gate);
+    const program = prepared.program;
+    if (!program)
+      return {
+        ships: false,
+        reason: prepared.check.message ?? "",
+        check: prepared.check,
+      };
+    const hash = sha256(stableStringify(source(program)));
+    let candidate = candidates.get(hash);
+    if (!candidate) {
+      const { check } = await taskSlots.run(workers, () =>
+        certifyPatch(deps.ehr, program, gate, deps.screens),
+      );
+      candidate = { check, replays: new Map() };
+      if (check.status !== "error") candidates.set(hash, candidate);
+    }
+    const { check, replays } = candidate;
     if (check.status === "error")
       throw Error(check.message ?? "Lean screen infrastructure error");
     if (check.property === "ScreenCheck" && check.message)
       check.message = screenReason(check.message);
-    if (!program || check.status !== "pass")
+    if (check.status !== "pass")
       return {
         ships: false,
         reason: [check.property, check.message].filter(Boolean).join(": "),
@@ -312,44 +385,67 @@ export function climbingGate(
         reason: `Identity movement ${moved} exceeds budget ${release.spec.design.stabilityBudget}`,
         check,
       };
+    if (!days && candidate.full) return candidate.full;
+    const result = await score(
+      program,
+      check,
+      replays,
+      selected,
+      Boolean(days),
+    );
+    if (!days) candidate.full = result;
+    return result;
+  }
+
+  async function score(
+    program: Program,
+    check: Checked,
+    replays: ReplayCache,
+    selected: readonly TrainDay[],
+    estimate: boolean,
+  ) {
     const totals = () => ({ before: sumMetrics([]), after: sumMetrics([]) });
     const metrics = { expert: totals(), bounded: totals() };
     const details = [];
-    for (const { schedule } of past)
-      for (const policy of ["expert", "bounded"] as const) {
+    const jobs = selected.flatMap(({ schedule }) =>
+      (["expert", "bounded"] as const).map((policy) => ({ schedule, policy })),
+    );
+    const rows = await replayJobs(
+      jobs,
+      workers,
+      async ({ schedule, policy }) => {
         const key = `${schedule.day}/${policy}`;
-        const b =
-          baseline.get(key) ?? (await simulate(current, schedule, policy));
-        baseline.set(key, b);
-        const a = await simulate(program, schedule, policy);
-        // Preserve the canonical incomplete-task charge on either arm.
-        let vendor = b;
-        if ([...b.tasks, ...a.tasks].some((t) => !t.completed)) {
-          vendor =
-            baseline.get("vendor/" + key) ??
-            (await simulate(
+        const b = await cached(baseline, key, current, schedule, policy);
+        const a = await cached(replays, key, program, schedule, policy);
+        const vendor = [...b.tasks, ...a.tasks].some((t) => !t.completed)
+          ? await cached(
+              vendorCache,
+              key,
               { ...release.canonical, owner: current.owner, id: current.id },
               schedule,
               policy,
-            ));
-          baseline.set("vendor/" + key, vendor);
-        }
-        const m = metrics[policy];
-        m.before = addMetrics(
-          m.before,
-          scoredMetrics(b, vendor, deps.incompletePenalty),
-        );
-        m.after = addMetrics(
-          m.after,
-          scoredMetrics(a, vendor, deps.incompletePenalty),
-        );
-        details.push({
-          day: schedule.day,
-          policy,
-          before: b.breakdown,
-          after: a.breakdown,
-        });
-      }
+            )
+          : b;
+        return { schedule, policy, b, a, vendor };
+      },
+    );
+    for (const { schedule, policy, b, a, vendor } of rows) {
+      const m = metrics[policy];
+      m.before = addMetrics(
+        m.before,
+        scoredMetrics(b, vendor, deps.incompletePenalty),
+      );
+      m.after = addMetrics(
+        m.after,
+        scoredMetrics(a, vendor, deps.incompletePenalty),
+      );
+      details.push({
+        day: schedule.day,
+        policy,
+        before: b.breakdown,
+        after: a.breakdown,
+      });
+    }
     checkTime();
     const reasons: string[] = [];
     const boundedReasons: string[] = [];
@@ -380,14 +476,14 @@ export function climbingGate(
     const { expert, bounded } = metrics;
     const replay: ReplayDay = {
       day: night,
-      load: "all observed days",
-      days: past.map((d) => d.schedule.day),
-      taskCounts: past.map((d) => ({
+      load: estimate ? "estimate on selected days" : "all observed days",
+      days: selected.map((d) => d.schedule.day),
+      taskCounts: selected.map((d) => ({
         day: d.schedule.day,
         tasks: d.schedule.tasks.length,
       })),
       ...expert,
-      saving: saving(expert.before, expert.after, past.length),
+      saving: saving(expert.before, expert.after, selected.length),
       pctAboveFloor: { before: null, after: null },
       scoring: {
         policy: RELEASE_SCORING_POLICY,
@@ -397,7 +493,7 @@ export function climbingGate(
       },
       bounded: {
         ...bounded,
-        saving: saving(bounded.before, bounded.after, past.length),
+        saving: saving(bounded.before, bounded.after, selected.length),
         policy: "bounded",
         memorySource: "all-past",
         memorySha256: sha256(stableStringify(memory)),
@@ -409,7 +505,7 @@ export function climbingGate(
       clinician: persona.id,
       role: current.role,
       department: "unspecified",
-      train: past,
+      train: selected,
     });
     const net = validationGross(replay) - movement.cost,
       minimum = defaultStructurePolicy().minimumEffect;
@@ -446,7 +542,10 @@ export class ClimbHost {
   } | null = null;
   measures = 0;
   constructor(
-    private measure: (patch: JsonPatchOp[]) => Promise<Measurement>,
+    private measure: (
+      patch: JsonPatchOp[],
+      days?: readonly number[],
+    ) => Promise<Measurement>,
     readonly deadline: number,
     private record: (
       request: unknown,
@@ -461,9 +560,13 @@ export class ClimbHost {
     return reply;
   }
   private async command(raw: unknown): Promise<HarnessReply> {
+    let estimateRequested = false;
+    let days: number[] | undefined;
     const fail = (reason: string) => ({
       exit: 1,
-      output: { ships: false, reason },
+      output: estimateRequested
+        ? { estimate: true, days, reason }
+        : { ships: false, reason },
     });
     if (this.final || Date.now() >= this.deadline) return fail("Session ended");
     const parsed = harnessRequestSchema.safeParse(raw);
@@ -471,19 +574,35 @@ export class ClimbHost {
     const { command, argv, file } = parsed.data;
     const done = command === "done",
       summary = argv[1]?.trim() ?? "";
+    let fileName = argv[0];
+    estimateRequested = command === "measure" && argv.includes("--days");
     if (
+      command === "measure" &&
+      argv.length === 3 &&
+      (argv[0] === "--days" || argv[1] === "--days")
+    ) {
+      const list = argv[0] === "--days" ? argv[1] : argv[2];
+      fileName = argv[0] === "--days" ? argv[2] : argv[0];
+      if (!list || !/^[1-9]\d*(,[1-9]\d*)*$/.test(list))
+        return fail("Expected --days 1,3");
+      days = list
+        .split(",")
+        .map(Number)
+        .sort((a, b) => a - b);
+    } else if (
       done
         ? argv.length !== 2 || !summary
         : command !== "measure" || argv.length !== 1
-    )
+    ) {
       return fail(
-        'Use night measure <patch> or night done <patch>|--no-change "summary"',
+        'Use night measure [--days 1,3] <patch> or night done <patch>|--no-change "summary"',
       );
+    }
     if (done && argv[0] === "--no-change" && !file) {
       this.final = { summary };
       return { exit: 0, output: { done: true } };
     }
-    if (!file || file.name !== argv[0]) return fail("Missing patch file");
+    if (!file || file.name !== fileName) return fail("Missing patch file");
     let patch: JsonPatchOp[];
     try {
       patch = jsonPatchSchema.parse(JSON.parse(file.text));
@@ -506,18 +625,26 @@ export class ClimbHost {
     }
     this.measures += Number(!done);
     try {
-      const result = await this.measure(patch);
+      const result = await this.measure(patch, days);
       if (Date.now() >= this.deadline) return fail("Wall-clock backstop");
       if (done && result.ships)
         this.final = { summary, patch, measurement: result };
       const { program: _program, ...report } = result;
       void _program;
+      if (days) {
+        const { ships: _ships, ...estimate } = report;
+        void _ships;
+        return { exit: 0, output: { estimate: true, days, ...estimate } };
+      }
       return { exit: done && !result.ships ? 1 : 0, output: report };
     } catch (error) {
+      if (error instanceof InvalidDays) return fail(error.message);
       if (error instanceof Deadline || Date.now() >= this.deadline)
         return fail("Wall-clock backstop");
-      if (error instanceof LeanLayoutRefusal)
-        return fail(screenReason(error.message));
+      if (error instanceof LeanLayoutRefusal) {
+        const reason = screenReason(error.message);
+        return fail(reason);
+      }
       throw error;
     }
   }
@@ -544,7 +671,7 @@ export async function runHillclimb(
   let commands = 0;
   const signal = AbortSignal.timeout(Math.max(0, deadline - Date.now()));
   const host = new ClimbHost(
-    (patch) => nativeCancellation.run(signal, () => measure(patch)),
+    (patch, days) => nativeCancellation.run(signal, () => measure(patch, days)),
     deadline,
     async (request, reply, elapsedMs) => {
       await writeJson(path.join(dir, "commands", `${++commands}.json`), {

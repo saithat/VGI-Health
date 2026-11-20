@@ -6,11 +6,15 @@ import { sha256, stableStringify } from './program.js';
 import { writeFileAtomic, writeJsonAtomic, jsonChunks } from './util.js';
 
 export const GEOMETRY_STORAGE_VERSION = 2;
+const recordLimit = 8 * 1024 * 1024;
+function checkSize(bytes:number) {
+  if (bytes > recordLimit) throw Error('A geometry record exceeds the 8 MiB storage limit');
+}
 function boundedJson(value:unknown){
   const chunks:string[]=[];let bytes=0;
   for(const chunk of jsonChunks(value,false)){
     bytes+=Buffer.byteLength(chunk);
-    if(bytes>8*1024*1024)throw Error('A geometry record exceeds the 8 MiB storage limit');
+    checkSize(bytes);
     chunks.push(chunk);
   }
   return chunks.join('');
@@ -27,6 +31,14 @@ export async function saveGeometry(directory:string, atlas:GeometryAtlas, identi
   if (!existsSync(path.join(root,'index.json'))) {
     let rows:string[]=[], bytes=0, chunks=0;
     const seen=new Set<string>();
+    // Lean trace states share the placed boxes even when their event aliases
+    // differ. Encode each immutable box once within this snapshot.
+    const encodedBoxes = new WeakMap<object,string>();
+    const boxJson = (box:object) => {
+      let json = encodedBoxes.get(box);
+      if (json === undefined) { json=boundedJson(box); encodedBoxes.set(box,json); }
+      return json;
+    };
     const flush=async()=>{
       if(!rows.length)return;
       await writeFileAtomic(path.join(root,`${chunks++}.json`),'['+rows.join(',')+']\n');
@@ -34,15 +46,24 @@ export async function saveGeometry(directory:string, atlas:GeometryAtlas, identi
     };
     for(const state of states){
       const {state:label,sample,components,...rest}=state;
-      const ordinary:typeof components={},targets:Record<string,string>={};
+      const ordinary:Record<string,string>={},targets:Record<string,string>={};
       // Lean event names are aliases of an existing measured box. Store the
       // alias without copying every other control into every trace event.
-      const names=new Map(Object.entries(components).filter(([id])=>!id.startsWith('lean-event-')).map(([id,box])=>[JSON.stringify(box),id]));
+      const names=new Map(Object.entries(components).filter(([id])=>!id.startsWith('lean-event-')).map(([id,box])=>[boxJson(box),id]));
       for(const [id,box]of Object.entries(components)){
-        const source=id.startsWith('lean-event-')?names.get(JSON.stringify(box)):undefined;
-        if(source)targets[id]=source;else ordinary[id]=box;
+        const source=id.startsWith('lean-event-')?names.get(boxJson(box)):undefined;
+        if(source)targets[id]=source;else ordinary[id]=boxJson(box);
       }
-      const body=boundedJson({...rest,components:ordinary});
+      const parts = [boundedJson(rest).slice(0,-1), ',"components":{'];
+      let bodyBytes = Buffer.byteLength(parts.join('')) + 2;
+      checkSize(bodyBytes);
+      for (const [id,json] of Object.entries(ordinary)) {
+        const prefix = (parts.length > 2 ? ',' : '') + JSON.stringify(id) + ':';
+        bodyBytes += Buffer.byteLength(prefix) + Buffer.byteLength(json);
+        checkSize(bodyBytes);
+        parts.push(prefix,json);
+      }
+      const body=parts.join('')+'}}';
       const hash=sha256(body),file=path.join(directory,'objects',`${hash}.json`);
       if(!seen.has(hash)){
         if(!existsSync(file))await writeFileAtomic(file,body+'\n');

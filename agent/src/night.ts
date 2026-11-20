@@ -126,15 +126,25 @@ export interface Gate {
 
 /** Apply a patch to `base` and run `ehr check`. */
 export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly JsonPatchOp[], gate: Gate, screens?:ScreenChecker): Promise<{ program: Program | null; check: CheckResult }> {
+  const prepared = preparePatch(base, patch, gate);
+  if (!prepared.program) return prepared;
+  return certifyPatch(ehr, prepared.program, gate, screens);
+}
+
+export function preparePatch(base: Program, patch: readonly JsonPatchOp[], gate: Gate) {
   let program: Program;
   try {
     program = applyToProgram(base, patch, { version: gate.nextVersion, specVersion: gate.specVersion }).program;
     expandProgram(program);
     compilePresentations(program);
+    return { program };
   } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
     return { program: null, check: invalidPatch(e) };
   }
+}
+
+export async function certifyPatch(ehr: EhrClient, program: Program, gate: Gate, screens?: ScreenChecker) {
   const verdict = await ehr.check({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, ...(gate.workload ? {workload:gate.workload} : {}) });
   if(verdict==='ok'&&screens?.mode==='lean'){
     const screen=await retryScreens(screens).check({specVersion:gate.specVersion,program,...gate.workspace});

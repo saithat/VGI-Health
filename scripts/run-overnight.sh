@@ -15,7 +15,7 @@ if $resume; then
   make wasm-check
   pnpm --filter agent verify-resume --run "$run_id"
 else
-(cd lean && lake build)
+(cd lean && lake build && lake -d ../scripts/measure-replay build)
 make wasm-check
 pnpm --filter agent manual
 pnpm --filter agent typecheck
@@ -43,7 +43,7 @@ pnpm trajectories --run "$run_id"
 if ! pnpm complexity --run "$run_id"; then
   echo "Post-run floor report unavailable; completed run measurements are retained." >&2
 fi
+pnpm final-eval --run "$run_id"
 pnpm conformance --run "$run_id" --run-only --jobs 5
 # Copy the finished artifacts into the static dashboard. Source/code hashes stay the same.
 if ! $resume; then pnpm --filter app build; fi
-pnpm final-eval --run "$run_id"

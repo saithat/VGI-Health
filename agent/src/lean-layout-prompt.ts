@@ -164,12 +164,12 @@ export function leanLayoutPrompt(parts: PromptParts, design: string, traces = '{
 export async function screenAttribution(directory:string,result:import('./schema.js').DayResult) {
     const path = await import('node:path');
     const day=result.day;
-    const { loadGeometry } = await import('./geometry.js');
+    const { loadGeometry, takeReplayAtlas } = await import('./geometry.js');
     const { pointingTrace } = await import('../../app/src/dashboard/bounded-pointing.js');
     const { attributePixels } = await import('./locality.js');
     const { existsSync } = await import('node:fs');
     const geometryFile=result.geometry?path.join(directory,'geometry',`${result.geometry.programHash}.${result.geometry.componentsSha256}.json`):'';
-    let atlas=geometryFile&&existsSync(geometryFile)?await loadGeometry(geometryFile,result,path.join(directory,'geometry')):undefined;
+    let atlas=takeReplayAtlas(result) ?? (geometryFile&&existsSync(geometryFile)?await loadGeometry(geometryFile,result,path.join(directory,'geometry')):undefined);
     if(atlas?.appSha256.startsWith('lean-layout:')) {
       // Old flat atlases accumulate states and overwrite their top-level event
       // aliases. Select this exact committed trace before attributing costs.
