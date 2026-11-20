@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { z } from "zod";
 import { ClimbHost, climbingGate, climbWorkspace } from "./hillclimb.js";
+import { nativeCancellation } from "./native-process.js";
 import { createEhr } from "./ehr.js";
 import { geometryEhr } from "./geometry.js";
 import { LeanScreenChecker } from "./lean-screencheck.js";
@@ -26,7 +27,7 @@ import {
 } from "./schema.js";
 import { REPO_ROOT, readJson } from "./util.js";
 
-async function benchmark(night: number, id: string, identityOnly = false) {
+async function prepare(night: number, id: string) {
   const dir = path.join(REPO_ROOT, "runs/lean-10day");
   const scratch = await mkdtemp(path.join(tmpdir(), "bench-hillclimb-"));
   console.log(JSON.stringify({ persona: id, night, scratch }));
@@ -151,19 +152,7 @@ async function benchmark(night: number, id: string, identityOnly = false) {
     Infinity,
   );
   const host = new ClimbHost(gate.measure, Infinity, async () => {});
-  const reorder: JsonPatchOp[] = [
-    {
-      op: "move",
-      from: "/screens/0/components/7",
-      path: "/screens/0/components/6",
-    },
-  ];
-  for (const [label, patch] of [
-    ["identity", []],
-    ["reorder", reorder],
-    ["repeat", reorder],
-  ] as const) {
-    if (identityOnly && label !== "identity") break;
+  return async (label: string, patch: JsonPatchOp[]) => {
     timings = {};
     const start = performance.now();
     const { output: report } = await host.execute({
@@ -193,21 +182,47 @@ async function benchmark(night: number, id: string, identityOnly = false) {
         reason: z.object({ reason: z.string() }).parse(report).reason,
       }),
     );
-  }
+  };
 }
 
 const [nightArg = "9", mode] = process.argv.slice(2);
 const night = Number(nightArg);
 if (
   ![1, 9].includes(night) ||
-  (mode !== undefined && mode !== "--capacity") ||
+  (mode && !["--capacity", "--contended"].includes(mode)) ||
   process.argv.length > 4
 )
-  throw Error("Usage: bench-hillclimb.ts 1|9 [--capacity]");
+  throw Error("Usage: bench-hillclimb.ts 1|9 [--capacity|--contended]");
+const ids = mode ? ["P1", "P2", "P3", "P4", "P5"] : ["P1"];
+const sessions = await Promise.all(ids.map((id) => prepare(night, id)));
 if (mode === "--capacity") {
-  await Promise.all(
-    ["P1", "P2", "P3", "P4", "P5"].map((id) => benchmark(night, id, true)),
-  );
+  await Promise.all(sessions.map((measure) => measure("identity", [])));
 } else {
-  await benchmark(night, "P1");
+  const [p1, ...peers] = sessions;
+  if (!p1) throw Error("Missing P1 benchmark");
+  const reorder: JsonPatchOp[] = [
+    {
+      op: "move",
+      from: "/screens/0/components/7",
+      path: "/screens/0/components/6",
+    },
+  ];
+  await p1("identity", []);
+  // Time a previously unseen patch after P1's baseline is populated. Each
+  // peer starts its real cold measure and shares the same host until P1 finishes.
+  const stop = new AbortController();
+  const pressure = peers.map((measure) =>
+    nativeCancellation
+      .run(stop.signal, () => measure("identity", []))
+      .catch((error) => {
+        if (!stop.signal.aborted) throw error;
+      }),
+  );
+  const results = await Promise.allSettled([
+    p1("reorder", reorder).finally(() => stop.abort()),
+    ...pressure,
+  ]);
+  for (const result of results)
+    if (result.status === "rejected") throw result.reason;
+  await p1("repeat", reorder);
 }

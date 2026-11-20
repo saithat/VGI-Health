@@ -54,7 +54,7 @@ This replaces train estimates, a withheld release sample, blind even days, predi
 
 `EHR_MEASURE_WORKERS` controls each persona’s native worker budget (default 4, serial 1). Up to two day/policy pairs share those slots. Clinical simulation preserves task order and earned receipts within a day. After reconstructing episode boundaries, independent workers render each task and check its recorded transitions. The host folds results in recorded order. Each persona-night keeps its deployed and canonical replay rows and the eight most recent candidate programs, including their layout designs. Exact native layout requests, reference families, gallery verdicts, schedule-independent popup exports and trace placements share byte-bounded caches. Native task workers use one Lean thread each, including when `EHR_BIN` selects an external interpreter. The overnight wrapper gives the shared Node host an 8 GiB old-generation heap. A caller can override it via `NODE_OPTIONS`; the memory scope covers native children as well.
 
-To benchmark P1, build the adapters once and run the harness from the repository root. Use `1` for the first night or `9` for nine days. The harness reads historical schedules and programs from the retained world and `runs/lean-10day`, reconstructs memory, and writes the workspace, verdicts and geometry under a fresh `TMPDIR` directory. It times an empty patch, a component reorder and the identical reorder again. For a capacity check, add `--capacity` to measure the unchanged layouts for all five clinicians concurrently in one Node host. Use the same `NODE_OPTIONS=--max-old-space-size=8192` as the overnight wrapper. The stage timings include overlapping workers and nested calls. The wall time measures the complete verdict after workspace preparation.
+To benchmark P1, build the adapters once and run the harness from the repository root. Use `1` for the first night or `9` for nine days. The harness reads historical schedules and programs from the retained world and `runs/lean-10day`, reconstructs memory, and writes the workspace, verdicts and geometry under a fresh `TMPDIR` directory. It times an empty patch, a component reorder and the identical reorder again. For a capacity check, add `--capacity` to measure the unchanged layouts for all five clinicians concurrently in one Node host. Use `--contended` to time P1’s new patch while P2–P5 start cold measures in the same host. The peer measurements stop when P1’s patch finishes. Set `NODE_OPTIONS=--max-old-space-size=8192` for either concurrency mode to match the overnight wrapper. The stage timings include overlapping workers and nested calls. The wall time measures the complete verdict after workspace preparation.
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp
@@ -64,7 +64,24 @@ export TMPDIR=/home/saithat/Projects/run-tmp
 
 ### Historical P1 benchmark
 
-On night 1 (42 tasks), an empty patch took 1,417.1 seconds on the original serial implementation and 263.8 seconds with four workers. A new component reorder after that first measure took 411.1 and 49.4 seconds respectively. Repeating it took 21.3 and 0.014 seconds. Each pair produced identical JSON verdict bytes. These timings use an empty geometry store at the start of each session.
+These are wall seconds for three consecutive full P1 measures on the shared host. Each session first measures the unchanged program, then moves one home-screen component, then repeats the same patch. Night 1 contains 42 tasks. Night 9 contains 339 tasks on days 1–9, with v6 deployed. The original implementation is commit `2b9d90c2`. The updated implementation uses four workers per persona.
+
+| Night and starting geometry | Implementation | Unchanged | New reorder | Repeat |
+| --- | --- | ---: | ---: | ---: |
+| 1, empty | Original | 1,417.1 | 411.1 | 21.3 |
+| 1, empty | Updated | 263.8 | 49.4 | 0.014 |
+| 9, empty | Original | Timed out at 7,200 | — | — |
+| 9, empty | Updated | 1,639.6 | 372.3 | 0.015 |
+| 9, populated | Original | 393.9 | 197.1 | 101.8 |
+| 9, populated | Updated | 170.5 | 69.9 | 0.016 |
+
+The original cold nine-day measure reached day 6 when stopped at the two-hour production backstop. All 21 completed atlas result pointers and their 2,443 geometry objects matched the updated run byte for byte. The populated-store runs started from independent copies of the same on-disk geometry with empty in-memory caches. Each replayed both clinical policies. All three original verdict files matched the updated files byte for byte on both nights. The updated nine-day results also matched across empty and populated stores.
+
+On the original cold night 1, geometry took 1,188 of the 1,417 wall seconds. The first screen gate took 163 seconds, expert and bounded simulation took 16 and 20, and the program check took under one. On updated cold night 9, geometry accumulated 2,835 worker-seconds, including trace reconstruction, export and viewport placement. Native layout took 2,491 worker-seconds across the gate and geometry, including 1,300 for 3,432 reference family admissions. Expert and bounded simulation took 81 and 99 worker-seconds. Atlas storage and attachment took 128. For the next patch, geometry fell to 582 worker-seconds with 21 new reference admissions. These nested worker times overlap.
+
+With all five personas active in one host, P1’s new full reorder took 72.5 seconds on night 1 and 1,226.3 seconds on night 9. On night 9, P2–P5 each started a cold measure alongside P1 and all four were still working when P1 finished. The combined process tree peaked at 5.80 GiB sampled once per second. Repeating P1’s patch took 0.019 seconds. The five-persona night-1 capacity check ran every unchanged measure to completion and peaked at 5.12 GiB. These runs exercised the measurement host and native children without model clients.
+
+The ten-minute goal was met for a fresh reorder with four workers allocated to P1 alone. The same reorder took 20m26s under five-persona load. Geometry rose to 2,107 worker-seconds, including native viewport work and contention in the shared host. The initial screen gate took 44 wall seconds, expert and bounded simulation took 62 and 76 worker-seconds, and atlas storage and attachment took 110 worker-seconds. CPU time sampled over this interval averaged 0.86 cores in the shared Node process and 3.55 cores across its entire process tree.
 
 ## End-of-run evaluation
 
