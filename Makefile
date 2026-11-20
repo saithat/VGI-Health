@@ -2,7 +2,8 @@
 .PHONY: install run run-live check verify lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
 
 COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
-export TMPDIR := /home/saithat/Projects/run-tmp
+export TMPDIR ?= $(CURDIR)/.cache/tmp
+$(shell mkdir -p "$(TMPDIR)")
 export CI := true
 # Bound fresh Lean builds on shared development/judging machines.
 export LEAN_NUM_THREADS ?= 4

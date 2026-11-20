@@ -1,4 +1,4 @@
-_README last reviewed against commit `567d232f` (2026-11-18)._
+_README last reviewed against commit `d0cf1f69` (2026-11-20)._
 
 # VGI Health
 
@@ -136,27 +136,31 @@ gaps. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md
 
 ## How to run
 
-Requires Node ≥22.18, pnpm 11.8, Docker Compose and pinned Lean 4.35
-(`lean/lean-toolchain`). Run commands from the repository root with disk-backed
-`TMPDIR`. Restore local gitignored fixtures, worlds and recordings before
-archive-backed work. Run data and local run-store aliases remain untracked. Initial FHIR imports are immutable; a different baseline
-requires a separate tenant/database.
+You need Git, Node 22.18 or newer, Docker with Compose, and
+[elan](https://github.com/leanprover/elan). elan installs the pinned Lean 4.35
+on first build. pnpm comes from Node's Corepack.
+
+From scratch:
 
 ```sh
-export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
-CI=true pnpm install --offline
-COMPOSE_PROJECT_NAME=vgi-local make install SYNTHETIC_HOSPITAL=1
-make run APP_PORT=5173
+git clone <this repository> vgi-health && cd vgi-health
+corepack enable
+node scripts/clean-clone-smoke.mjs --extract-data   # synthetic data snapshot
+pnpm install
+make install   # build Lean, create .env, start Postgres/Keycloak, import patients
+make run       # build and serve the app
 ```
 
-`make install` builds native Lean, checks packaged WASM, provisions local identity
-and imports the baseline before starting the commit service. `make run` builds
-and serves the app; `/` opens the clinical page `/lean.html`, and
-`/?shell=encounter` keeps the React encounter shell. Default ports: app 5173, commit 18090, Postgres 55532,
-Keycloak 18180. Local passwords are in untracked `.env`. Use a unique
-`COMPOSE_PROJECT_NAME` for an isolated stack; `make infra-down` preserves its
-volumes. [Live setup and validation](docs/methods/live-validation.md) covers
-accounts, import bindings, alternate ports, MAR/ADT and integration commands.
+Open http://localhost:5173 for the clinical EHR (sign in as a persona; the
+password is `KEYCLOAK_PERSONA_PASSWORD` in `.env`) and
+http://localhost:5173/dashboard for recorded runs. The first `make install`
+takes several minutes. Rerunning `make install && make run` later reuses what is
+already built and imported.
+
+The data snapshot is the archived synthetic fixtures, world and programs. It is
+older than the current recordings, so recorded runs made since then are not
+included. [Live setup and validation](docs/methods/live-validation.md) covers
+ports, accounts, MAR/ADT and integration tests.
 
 For a self-contained cadence demo after installing dependencies:
 
