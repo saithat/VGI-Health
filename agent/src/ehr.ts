@@ -35,6 +35,9 @@ import {exportPopupGeometry} from './geometry-popups.js';
  * EHR_FAKE=1 swaps in `createFakeEhr()` (src/fake/ehr-fake.ts): plausible,
  * deterministic outputs FOR TESTS ONLY. It certifies nothing.
  */
+import { PackedCache } from './layout-reply-cache.js';
+import { taskSlots } from './replay-pool.js';
+import type { PopupScreen } from './geometry-popups.js';
 import { expandProgram } from './composites.js';
 import { programSchema } from '../../app/src/dashboard/measurement-schema.js';
 import {runNative,nativeTimeout,type NativeResult} from './native-process.js';
@@ -124,6 +127,7 @@ function parseOut<T extends z.ZodType>(cmd: string, res: ExecResult, schema: T):
 
 class CliEhr implements EhrClient {
   readonly mode = 'real' as const;
+  private readonly popupScreens = new PackedCache<PopupScreen[]>(16 * 1024 * 1024);
   constructor(readonly binary: string,private readonly timeoutMs:number) {}
   private run(args:string[]){return retryInfrastructure(`ehr:${args[0]??'command'}`,()=>runNative(this.binary,args,{timeoutMs:this.timeoutMs}));}
 
@@ -205,7 +209,7 @@ class CliEhr implements EhrClient {
       await mkdir(i.outDir, { recursive: true });
       const res = await this.run(['render-screens', ...(i.ui ? ['--ui'] : []), ...(i.workspace ? ['--schedule', p['schedule'] ?? '', '--world', i.workspace.worldDir] : []), '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
       if (res.code !== 0) throw new InfrastructureError(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
-      if(i.ui)await exportPopupGeometry(this.binary,{program:i.program,specFile:this.specPath(i.specVersion),fhir:i.fhir,outDir:i.outDir});
+      if(i.ui)await exportPopupGeometry(this.binary,{program:i.program,specFile:this.specPath(i.specVersion),fhir:i.fhir,outDir:i.outDir}, taskSlots.getStore() ? this.popupScreens : undefined);
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
     });
   }

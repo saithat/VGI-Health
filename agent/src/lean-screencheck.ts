@@ -255,7 +255,7 @@ export class LeanScreenChecker implements ScreenChecker {
   private readonly runner: LayoutRunner;
   private readonly reference: LeanReference;
   private layoutHash: Promise<string> | undefined;
-  private readonly traceSamples = new PackedCache<SampleMeasurement>(
+  private readonly sampleCache = new PackedCache<SampleMeasurement>(
     48 * 1024 * 1024,
   );
   private readonly replayLayouts: LayoutReplyCache;
@@ -531,6 +531,12 @@ export class LeanScreenChecker implements ScreenChecker {
     const paints: Verdict[] = [];
     const families: unknown[] = [];
     const galleryScreens = new Set<string>();
+    const needsFamily = samples.map((sample, i) => {
+      if (input.result || !this.opts.artifactsDir) return false;
+      const needed = !galleryScreens.has(sample.screen) || Boolean(selections[i]);
+      galleryScreens.add(sample.screen);
+      return needed;
+    });
     const extra: { index: number; reply: LayoutReply }[] = [];
     const slots = taskSlots.getStore() ?? 1;
     const nativeFamily = !this.opts.runner || this.opts.runner === layoutRunner;
@@ -668,9 +674,10 @@ export class LeanScreenChecker implements ScreenChecker {
       // result to its selected layout, applicable rules, limit, and every
       // occurrence-to-control map used to place its boxes.
       const key =
-        input.result && taskSlots.getStore()
+        taskSlots.getStore()
           ? sha256(
               JSON.stringify([
+                needAtlas, needsFamily[i],
                 s.screen,
                 s.ui,
                 selections[i],
@@ -680,7 +687,7 @@ export class LeanScreenChecker implements ScreenChecker {
               ]),
             )
           : undefined;
-      const cached = key && this.traceSamples.get(key);
+      const cached = key && this.sampleCache.get(key);
       if (cached) return cached;
       const result = await paintSample(s, i);
       const paint = needAtlas ? compactPaint(result.paint) : undefined;
@@ -694,9 +701,9 @@ export class LeanScreenChecker implements ScreenChecker {
         ...("admission" in result && result.admission
           ? { admission: verdictOf(result.admission) }
           : {}),
-        ...(!input.result ? { references: result.references } : {}),
+        ...(needsFamily[i] ? { references: result.references } : {}),
       };
-      if (key) this.traceSamples.set(key, measured);
+      if (key) this.sampleCache.set(key, measured);
       return measured;
     };
     // Release recursive paints and family trees after each bounded batch.
@@ -708,13 +715,7 @@ export class LeanScreenChecker implements ScreenChecker {
       );
       for (const [offset, result] of results.entries()) {
         paints.push(result.verdict);
-        const screen = required(group[offset]).screen;
-        const gallery =
-          !input.result &&
-          this.opts.artifactsDir &&
-          (!galleryScreens.has(screen) || selections[start + offset]);
-        families.push(gallery ? result.references : undefined);
-        galleryScreens.add(screen);
+        families.push(result.references);
         const placements =
           placementsByShape.get(shapeKeyOf(required(group[offset]))) ?? [];
         for (const [j, geometry] of result.geometry.entries()) {

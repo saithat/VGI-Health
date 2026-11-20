@@ -9,13 +9,16 @@ import {expandProgram} from './composites.js';
 import {isRecord} from './jsonpatch.js';
 import {specSchema,type Program} from './schema.js';
 import {writeJson} from './util.js';
+import {sha256} from './program.js';
+import type {PackedCache} from './layout-reply-cache.js';
+export type PopupScreen = {name:string; ui:unknown};
 async function jsonCommand(binary:string,command:string,input:unknown):Promise<unknown>{
  const result=await runNative(binary,[command],{input:JSON.stringify(input)});
  if(result.code!==0)throw new Error(`Native ${command}: ${result.stderr}`);
  return JSON.parse(result.stdout);
 }
 
-export async function exportPopupGeometry(binary:string,input:{program:Program;specFile:string;fhir:string;outDir:string}):Promise<void>{
+export async function exportPopupGeometry(binary:string,input:{program:Program;specFile:string;fhir:string;outDir:string},cache?:PackedCache<PopupScreen[]>):Promise<void>{
  const spec=await readFile(input.specFile,'utf8').then(s=>specSchema.parse(JSON.parse(s))),program=expandProgram(input.program);
  const explicit=program.screens.flatMap(screen=>screen.components.flatMap(component=>{
   const kind:unknown=component.kind;if(!isRecord(kind)||!isRecord(kind['alert']))return [];
@@ -30,6 +33,14 @@ export async function exportPopupGeometry(binary:string,input:{program:Program;s
  if(!targets.length)return;
  const bundle=JSON.parse(await readFile(input.fhir,'utf8'));
  const index=z.object({referenceDate:z.string()}).parse(JSON.parse(await readFile(path.join(path.dirname(input.fhir),'index.json'),'utf8').catch(()=>readFile(path.join(import.meta.dirname,'../../fixtures/synthea/index.json'),'utf8'))));
+ // These synthetic popup probes have no schedule input. Bind every native
+ // argument before reusing the files in another day's gallery.
+ const key = cache && sha256(JSON.stringify([binary,program,spec,bundle,index.referenceDate]));
+ const cached = key ? cache?.get(key) : undefined;
+ if (cached) {
+  for (const {name,ui} of cached) await writeJson(path.join(input.outDir,name),ui);
+  return;
+ }
  const projection=z.object({facts:z.unknown(),display:z.unknown()}).parse(await jsonCommand(binary,'facts',{bundle,worldContext:bundle,context:{today:index.referenceDate,now:0,record:[],receipts:[]}}));
  const user={id:program.owner,role:program.role};
  let state=z.record(z.string(),z.unknown()).parse(await jsonCommand(binary,'init',{spec,program,facts:projection.facts,user}));
@@ -42,9 +53,12 @@ export async function exportPopupGeometry(binary:string,input:{program:Program;s
   }
  }
  const rendered=await runNativeJsonBatch(binary,targets.map(target=>({op:'render-screen',input:{spec,program,facts:projection.facts,display:projection.display,user,state:{...state,screen:target.screen,popup:[target.id,'geometry-probe']}}})));
+ const screens:PopupScreen[] = [];
  for(const [index,target] of targets.entries()){
   const ui=z.object({screen:z.unknown()}).parse(rendered[index]).screen;
   const name=`${target.screen}-popup-${target.id}-geometry.json`;if(!/^[\w.-]+$/.test(name))throw new Error('Unsafe geometry output path');
   await writeJson(path.join(input.outDir,name),ui);
+  if (key) screens.push({name,ui});
  }
+ if (key) cache?.set(key,screens);
 }

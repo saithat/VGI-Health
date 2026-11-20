@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import path from "node:path";
 import { z } from "zod";
-import { nativeCancellation,runNative } from "./native-process.js";
+import { nativeCancellation, nativeEnvironment, runNative } from "./native-process.js";
 import { REPO_ROOT } from "./util.js";
 export const viewport = { w: 1440 * 64, h: 900 * 64 };
 export const viewports = [
@@ -67,7 +67,7 @@ export class EhrSession {
   private readonly cancel=()=>this.child.kill('SIGKILL');
   constructor(binary: string) {
     this.cancellation?.throwIfAborted();
-    this.child = spawn(binary, ["serve"], { stdio: ["pipe", "pipe", "pipe"] });
+    this.child = spawn(binary, ["serve"], { stdio: ["pipe", "pipe", "pipe"], env: nativeEnvironment() });
     this.cancellation?.addEventListener('abort',this.cancel,{once:true});
     let stderr = "";
     this.child.stderr.on("data", (d) => {
