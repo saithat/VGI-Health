@@ -39,6 +39,15 @@ a systemd user scope is available and displays the memory mode in the form.
 The launcher is available from Vite dev and preview bound to `127.0.0.1` and is
 absent from static build output. [Recording data](run-data.md)
 
+The targeted workspace tests use an already running isolated app. Set
+`VGI_START_TEST_URL` to the printed URL and run
+`pnpm --filter app exec playwright test --config e2e/one-command.config.ts --workers=1`.
+Set `VGI_START_TEST_MODE=live` for Keycloak sign-in and a one-day replay-backend
+recording, or `VGI_START_TEST_MODE=offline` for the dashboard, task replays and
+trajectory comparison with Docker unavailable. For a smaller recording test,
+set `VGI_START_TEST_WORLD` to a local copy of world 2 with a shortened P1 day-one
+schedule. The smoke run and its results stay under `runs/`.
+
 ## Manual setup and testing
 
 Legacy commands remain available for CI and isolated development. For those

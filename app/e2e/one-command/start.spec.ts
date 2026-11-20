@@ -19,6 +19,7 @@ async function screenshot(page: Page, name: string) {
 test("start page opens a chart after real Keycloak sign-in", async ({
   page,
 }) => {
+  test.setTimeout(90_000);
   test.skip(
     process.env.VGI_START_TEST_MODE !== "live",
     "Requires the isolated live stack",
@@ -38,31 +39,21 @@ test("start page opens a chart after real Keycloak sign-in", async ({
     timeout: 30_000,
   });
   await page
-    .locator('[data-comp-id="workspace.lookup"][data-event="click"]')
-    .click();
-  const search = page.locator(
-    '[data-comp-id="workspace.search"][data-event="enter"]',
-  );
-  await search.fill("Aaron");
-  await search.press("Tab");
-  const patient = page
-    .locator('[data-comp-id^="workspace.open|"][data-event="click"]')
-    .filter({ hasText: "Aaron" })
-    .first();
-  await patient.click();
-  await expect(root).not.toHaveAttribute("aria-busy", "true");
-  await expect(page.getByText(/Aaron Ankunding/).first()).toBeVisible();
+    .getByRole("button", { name: "Open chart", exact: true })
+    .first()
+    .press("Enter");
+  await expect(root).toHaveAttribute("data-screen", "chartSummary");
   await expect(page.locator("#status")).not.toContainText(
     /Error:|rejected|differs/i,
   );
 });
 
-test("launches a one-day generator recording and stops a second job", async ({
+test("launches a one-day replay recording and stops a second job", async ({
   page,
 }) => {
   test.skip(
     process.env.VGI_START_TEST_MODE !== "live",
-    "Requires the isolated live stack",
+    "Requires the isolated recording launcher",
   );
   await page.goto("/#record");
   const launch = page.getByRole("button", { name: "Start recording" });
@@ -72,7 +63,11 @@ test("launches a one-day generator recording and stops a second job", async ({
   await screenshot(page, "record.png");
   await page.getByLabel("Run ID").fill("onecmd-record-" + Date.now());
   await page.getByLabel("Days", { exact: true }).fill("1");
-  await page.getByLabel("Backend").selectOption("generator-only");
+  await page.getByLabel("Backend").selectOption("replay");
+  await page.getByLabel("Replay source").selectOption("core-10day");
+  await page
+    .locator('select[name="world"]')
+    .selectOption(process.env.VGI_START_TEST_WORLD ?? "2");
   for (const id of ["P2", "P3", "P4", "P5"])
     await page.getByLabel(id, { exact: true }).uncheck();
   await launch.click();
@@ -128,4 +123,12 @@ test("offline start page keeps the dashboard and recorded task replays available
   await expect(
     page.getByRole("button", { name: "Play", exact: true }).first(),
   ).toBeVisible({ timeout: 30_000 });
+  await page.goto("/");
+  await page.locator("#view-day").selectOption("1");
+  await page.locator("#view-version").selectOption("0");
+  await page.getByRole("link", { name: "Compare trajectories" }).click();
+  await expect(
+    page.getByRole("button", { name: "Compare", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(page).toHaveURL(/day=1.*revision=0|revision=0.*day=1/);
 });

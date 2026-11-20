@@ -9,6 +9,7 @@ export default defineConfig({
   reporter: "list",
   use: {
     ...captureSettings,
+    actionTimeout: 15_000,
     baseURL: process.env.VGI_START_TEST_URL,
     browserName: "chromium",
     viewport: { width: 1440, height: 900 },

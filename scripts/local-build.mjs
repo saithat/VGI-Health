@@ -179,7 +179,7 @@ async function build() {
   const leanSignature = await fingerprint([join(wasm, 'manifest.json')]);
   const nativeValid = ['ehr', 'ui-layout', 'export-content'].every((name) => existsSync(join(lean, '.lake/build/bin', name)));
   await stamped('Lean', leanSignature, nativeValid, async () => {
-    await command('lake', ['build'], { cwd: lean });
+    await command('lake', ['build', 'Ehr', 'ehr', 'CommitProtocol', 'ui-layout', 'export-content'], { cwd: lean });
   });
 
   const issuer = process.env.VITE_KEYCLOAK_ISSUER;
