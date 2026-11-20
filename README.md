@@ -1,4 +1,4 @@
-_README last reviewed against commit `d0cf1f69` (2026-11-20)._
+_README last reviewed against commit `072dc8c5` (2026-11-20)._
 
 # VGI Health
 
@@ -182,12 +182,15 @@ modules serially (about 8.3 GiB peak); the weekly `ehrheavy.yml` workflow audits
 all 24 seeded-defect axioms.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
-runs unit tests, 202 canonical conformance scenarios, the 15-accepted/29-rejected
+runs unit tests, 202 canonical conformance scenarios, the 15-accepted/30-rejected
 certification matrix, and Postgres integration/protocol tests. Archive-backed
 tests skip without local data. CI checks packaged WASM evidence but does not
 rebuild WASM. Full Comparator verification is `make verify`; browser audits,
 WASM rebuilds and live e2e remain manual. [Reproduction and CI](docs/reproduction.md)
 contains the exact commands, local prerequisites and browser-lock discipline.
+
+When a release defines prior authorization, a service-order composer must give clinicians a route to request it.
+The [conformance coverage map](docs/audits/conformance-formal-coverage.md) identifies the guarantees and remaining gaps for all 202 scenarios.
 
 ## What is proved
 
