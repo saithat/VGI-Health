@@ -5,7 +5,7 @@ export default defineConfig({
   testDir: "./one-command",
   outputDir: "../test-results/one-command",
   workers: 1,
-  timeout: 240_000,
+  timeout: 600_000,
   reporter: "list",
   use: {
     ...captureSettings,

@@ -43,11 +43,11 @@ export function startPage(root: string, server: ViteDevServer["httpServer"]) {
     res: ServerResponse,
     next: () => void,
   ) => {
-    const url = new URL(req.url ?? "/", "http://127.0.0.1");
+    const [pathname = "/", query] = (req.url ?? "/").split("?", 2);
     // Existing clinical entry points and OIDC callbacks keep their root queries.
     const staticAsset =
-      url.pathname === "/" && url.search ? undefined : assets.get(url.pathname);
-    const localApi = url.pathname.startsWith(api);
+      pathname === "/" && query ? undefined : assets.get(pathname);
+    const localApi = pathname.startsWith(api);
     if (!staticAsset && !localApi) return next();
     const send = (status: number, data: unknown) => {
       res.statusCode = status;
@@ -61,7 +61,7 @@ export function startPage(root: string, server: ViteDevServer["httpServer"]) {
       address.address !== "127.0.0.1" ||
       !loopback(req)
     ) {
-      if (url.pathname === "/") return next();
+      if (pathname === "/") return next();
       return send(404, { error: "Local start page unavailable" });
     }
     res.setHeader("Cache-Control", "no-store");
@@ -79,7 +79,7 @@ export function startPage(root: string, server: ViteDevServer["httpServer"]) {
         res.end(req.method === "HEAD" ? "" : await readFile(join(dir, file)));
         return;
       }
-      const endpoint = url.pathname.slice(api.length);
+      const endpoint = pathname.slice(api.length);
       if (req.method === "GET") {
         if (endpoint === "status") {
           const [stack, recording, capped] = await Promise.all([

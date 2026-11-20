@@ -24,8 +24,8 @@ async function defaultRun() {
 }
 
 const runId = await defaultRun();
-const base = `http://localhost:${process.argv[2] ?? 5173}`;
-console.log(`\nLIVE EHR sign-in: ${base}/ (opens ${base}/lean.html) · local commit authority :18090 (no internet needed)`);
+const base = `http://127.0.0.1:${process.argv[2] ?? 5173}`;
+console.log(`\nStart page: ${base}/ · Live EHR sign-in: ${base}/lean.html · local commit authority :18090 (no internet needed)`);
 console.log(`Encounter shell (React): ${base}/?shell=encounter · ADT: ${base}/?workflow=adt · MAR dose list: ${base}/?workflow=mar`);
 console.log(`REPLAY mode · recorded run: ${runId} · works without Docker`);
 for (const persona of ['P1', 'P2', 'P3', 'P4', 'P5']) console.log(`${persona} offline EHR: ${base}/?mode=replay&persona=${persona}&run=${encodeURIComponent(runId)}`);

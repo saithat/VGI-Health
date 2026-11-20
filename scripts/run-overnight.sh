@@ -9,7 +9,7 @@ for argument in "$@"; do [[ "$argument" != "--resume" ]] || resume=true; done
 if [[ ! "$run_id" =~ ^[A-Za-z0-9_-]+$ ]]; then echo 'Invalid run id' >&2; exit 2; fi
 if [[ "${VGI_LOCAL_RECORD:-0}" != 1 && ! -f runs/world/2/world.json ]]; then echo 'World 2 must land before the full run.' >&2; exit 1; fi
 export EHR_FAKE=0 LEAN_STACK_SIZE_KB=65536 CODEX_REASONING_EFFORT=high
-defaults=(--parallel --days 10 --backend codex --world runs/world/2 --reasoning-effort "${CODEX_REASONING_EFFORT}")
+defaults=(--parallel --days 10 --backend codex --world runs/world/2 --personas P1,P2,P3,P4,P5 --reasoning-effort "${CODEX_REASONING_EFFORT}")
 if [[ "${VGI_LOCAL_RECORD:-0}" == 1 ]]; then
   defaults=()
 else
@@ -21,6 +21,11 @@ if [[ "${VGI_LOCAL_RECORD:-0}" == 1 ]]; then
   # The local launcher uses the same recording and reporting pipeline. Its
   # incremental build provides current native and browser assets; run-days
   # validates the resume against its recorded fingerprints.
+  if command -v flock >/dev/null; then
+    mkdir -p .cache/one-command
+    exec 9>>.cache/one-command/recording.lock
+    flock -n 9 || { echo 'Another recording is active in this checkout.' >&2; exit 1; }
+  fi
   node scripts/local-build.mjs
 elif $resume; then
   make wasm-check
@@ -38,7 +43,7 @@ pnpm --filter app lint
 fi
 mkdir -p "runs/$run_id/logs"
 pnpm --filter agent run-days "${defaults[@]}" --service-tier "${CODEX_SERVICE_TIER:-default}" \
-  --personas P1,P2,P3,P4,P5 --run-id "$run_id" \
+  --run-id "$run_id" \
   --fhir "${EHR_SAMPLE_FHIR:-fixtures/synthea/Ashly_Rippin_149fcc1f.json}" "$@" \
   2>&1 | tee -a "runs/$run_id/logs/console.txt"
 pnpm trajectories --run "$run_id"

@@ -24,7 +24,7 @@ export function command(file, args, { cwd = root, quiet = false, timeout } = {})
       child.stderr.setEncoding('utf8').on('data', (data) => { output += data; });
     }
     child.once('error', reject);
-    child.once('exit', (code, signal) => {
+    child.once('close', (code, signal) => {
       if (code === 0) resolve(output.trim());
       else reject(new Error(quiet ? output.trim() || String(signal ?? code) :
         `${file} ${args.join(' ')} exited with ${signal ?? code}.`));
@@ -100,9 +100,11 @@ async function appSignature(portIssuer) {
     .filter((path) => path.startsWith(root + '/') && !path.startsWith(app + '/') &&
       !path.includes('/node_modules/') && existsSync(path));
   const files = [
-    ...await filesIn(join(app, 'src')), ...await filesIn(join(app, 'public')),
+    ...(await filesIn(join(app, 'src'))).filter((file) => !file.startsWith(join(app, 'src/dashboard/start') + '/')),
+    ...await filesIn(join(app, 'public')),
     ...external, ...['vite.config.ts', 'index.html', 'lean.html', 'screen-check.html',
-      'trajectory-frame.html', 'tsconfig.json', 'package.json'].map((path) => join(app, path)),
+      'trajectory-frame.html', 'tsconfig.json', 'package.json', 'scripts/build-binding-plugin.ts',
+      'scripts/compression-plugin.ts', 'scripts/lean-bundle-plugin.ts'].map((path) => join(app, path)),
     join(root, 'pnpm-lock.yaml'),
   ];
   const viteEnv = Object.entries(process.env).filter(([key]) => key.startsWith('VITE_')).sort();
@@ -120,18 +122,22 @@ async function appBuildValid(wasm) {
   }
 }
 
-export async function prepareBuild() {
+export async function withLocalLock(name, work) {
   const lock = await acquireBrowserLock({
-    env: { EHR_BROWSER_LOCK_PATH: join(cache, 'build.lock') },
+    env: { EHR_BROWSER_LOCK_PATH: join(cache, `${name}.lock`) },
   }).catch((error) => {
     if (error.code !== 'ENOENT') throw error;
     return null;
   });
   try {
-    await build();
+    return await work();
   } finally {
     lock?.release();
   }
+}
+
+export async function prepareBuild() {
+  await withLocalLock('build', build);
 }
 
 async function build() {

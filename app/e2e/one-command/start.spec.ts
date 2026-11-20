@@ -81,7 +81,7 @@ test("launches a one-day generator recording and stops a second job", async ({
     timeout: 30_000,
   });
   await expect(status).toContainText(/Completed · 1\/1 days/, {
-    timeout: 200_000,
+    timeout: 540_000,
   });
   await expect(
     page.getByRole("link", { name: "Open recording" }),

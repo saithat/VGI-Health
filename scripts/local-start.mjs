@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadEnv } from '../infra/scripts/lib.mjs';
-import { checkNode, command, localEnvironment, prepareBuild, root } from './local-build.mjs';
+import { checkNode, command, localEnvironment, prepareBuild, root, withLocalLock } from './local-build.mjs';
 
 const app = join(root, 'app');
 const composeFile = join(root, 'infra/docker-compose.yml');
@@ -83,8 +83,6 @@ async function startStack() {
   const literal = "'" + tenant.replaceAll("'", "''") + "'";
   const hasStreams = await sql("SELECT to_regclass('public.commit_streams') IS NOT NULL") === 't';
   const count = hasStreams ? Number(await sql(`SELECT count(*) FROM commit_streams WHERE kind='patient' AND tenant=${literal}`)) : 0;
-  const hasClinicalEvents = hasStreams &&
-    await sql(`SELECT EXISTS(SELECT 1 FROM commit_events WHERE tenant=${literal} AND event->>'kind' NOT IN ('import', 'adt-initial'))`) === 't';
   const configPath = join(process.env.COMMIT_DATA_DIR, 'config.json');
   const config = await readFile(configPath, 'utf8').then(JSON.parse).catch(() => null);
   const expected = config?.actors?.[0]?.patients;
@@ -92,6 +90,8 @@ async function startStack() {
     count === expected.length && config.oidc?.issuer === process.env.KEYCLOAK_ISSUER &&
     (!config.adt || await sql(`SELECT EXISTS(SELECT 1 FROM commit_streams WHERE kind='bed' AND tenant=${literal})`) === 't');
   if (!complete) {
+    const hasClinicalEvents = hasStreams &&
+      await sql(`SELECT EXISTS(SELECT 1 FROM commit_events WHERE tenant=${literal} AND event->>'kind' IS DISTINCT FROM 'import' AND event->>'kind' IS DISTINCT FROM 'adt-initial')`) === 't';
     if (hasClinicalEvents)
       throw new Error(`Docker project ${project} has live history. Restore its .cache/commit/config.json and original ports before restarting.`);
     await command(process.execPath, ['infra/keycloak/provision-adt.mjs']);
@@ -139,7 +139,7 @@ async function start() {
     return;
   }
   try {
-    await startStack();
+    await withLocalLock(`stack-${project}`, startStack);
     process.env.VGI_STACK_STATUS = 'running';
   } catch (error) {
     process.env.VGI_STACK_STATUS = 'unavailable';
@@ -149,6 +149,8 @@ async function start() {
 }
 
 try {
+  if (!/^[a-z0-9][a-z0-9_-]*$/.test(project))
+    throw new Error('COMPOSE_PROJECT_NAME must be a valid Docker Compose project name.');
   if (process.argv[2] === 'stop') await stop();
   else await start();
 } catch (error) {
