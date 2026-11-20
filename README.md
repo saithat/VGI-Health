@@ -145,7 +145,7 @@ From scratch:
 ```sh
 git clone <this repository> vgi-health && cd vgi-health
 corepack enable
-node scripts/clean-clone-smoke.mjs --extract-data   # synthetic data snapshot
+node scripts/clean-clone-smoke.mjs --extract-data   # download synthetic data
 pnpm install
 make install   # build Lean, create .env, start Postgres/Keycloak, import patients
 make run       # build and serve the app
@@ -157,9 +157,10 @@ http://localhost:5173/dashboard for recorded runs. The first `make install`
 takes several minutes. Rerunning `make install && make run` later reuses what is
 already built and imported.
 
-The data snapshot is the archived synthetic fixtures, world and programs. It is
-older than the current recordings, so recorded runs made since then are not
-included. [Live setup and validation](docs/methods/live-validation.md) covers
+The synthetic data (world, patient fixtures, exported programs) is published as
+a [release asset](https://github.com/saithat/VGI-Health/releases/tag/data-2026-11-20),
+not in git. A 10-day recording for the dashboard is in the same release;
+extract it at the repository root. [Live setup and validation](docs/methods/live-validation.md) covers
 ports, accounts, MAR/ADT and integration tests.
 
 For a self-contained cadence demo after installing dependencies:

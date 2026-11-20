@@ -1,4 +1,4 @@
-// Restore ignored data before installing dependencies in a clean clone.
+// Download the synthetic data snapshot before installing dependencies in a clean clone.
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -7,22 +7,22 @@ import { fileURLToPath } from "node:url";
 import console from "node:console";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-const dataPaths = ["runs", "fixtures", "programs", "verdicts.json"];
+// Synthetic data snapshot published outside git history (see README).
+const DATA_URL = "https://github.com/saithat/VGI-Health/releases/download/data-2026-11-20/vgi-data-2026-11-20.tar.gz";
+const dataPaths = ["runs", "fixtures", "programs"];
 const missing = dataPaths.filter((path) => !existsSync(join(root, path)));
 if (missing.length === dataPaths.length) {
   const scratch = mkdtempSync(join(tmpdir(), "vgi-archive-"));
   try {
-    const archive = join(scratch, "data.tar");
-    execFileSync("git", ["archive", "--output", archive, "hackathon-final", ...dataPaths], {
-      cwd: root, stdio: "inherit",
-    });
-    execFileSync("tar", ["-xf", archive, "-C", root], { stdio: "inherit" });
-    console.log("Restored runs, fixtures, programs and verdicts.json from hackathon-final.");
+    const archive = join(scratch, "data.tar.gz");
+    execFileSync("curl", ["-fsSL", "-o", archive, DATA_URL], { stdio: "inherit" });
+    execFileSync("tar", ["-xzf", archive, "-C", root], { stdio: "inherit" });
+    console.log(`Restored runs/world/2, fixtures and programs from ${DATA_URL}.`);
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
 } else if (missing.length) {
-  throw new Error(`Partial archive data: missing ${missing.join(", ")}. Extract with git archive hackathon-final runs fixtures programs verdicts.json | tar -x`);
+  throw new Error(`Partial data: missing ${missing.join(", ")}. Extract ${DATA_URL} at the repository root.`);
 }
 if (process.argv[2] === "--extract-data") process.exit(0);
 
