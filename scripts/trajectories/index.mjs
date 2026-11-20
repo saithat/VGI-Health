@@ -130,8 +130,9 @@ export async function indexTrajectories({ root = defaultRoot, runDirectory, cont
           const key=contextProvenance?extractionKey(contextProvenance,await Promise.all([scheduleFile,programFile,specFile,recordingFile].map(file=>readFile(file)))):null;
           return cachedExtraction(contextProvenance?contextCache:null,key,async()=>{
           await exec('lean', ['-j6', `--root=${root}`, '--run', path.join(root, 'scripts/trajectories/Contexts.lean'), root, world, scheduleFile, specFile, programFile, recordingFile, nativePath], {
-            cwd: root, timeout: 180000, maxBuffer: 4e6,
-            env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_STACK_SIZE_KB:'65536', LEAN_PATH: path.join(leanDir, '.lake/build/lib/lean') },
+            // Elan must use the toolchain that produced the imported .olean files.
+            cwd: leanDir, timeout: 180000, maxBuffer: 4e6,
+            env: { ...process.env, LEAN_NUM_THREADS: '6', LEAN_STACK_SIZE_KB:'65536', LEAN_PATH: path.resolve(leanDir, '.lake/build/lib/lean') },
           });
           return read(nativePath);
           });

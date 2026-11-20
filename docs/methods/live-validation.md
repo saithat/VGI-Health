@@ -46,7 +46,8 @@ Set `VGI_START_TEST_MODE=live` for Keycloak sign-in and a one-day replay-backend
 recording, or `VGI_START_TEST_MODE=offline` for the dashboard, task replays and
 trajectory comparison with Docker unavailable. For a smaller recording test,
 set `VGI_START_TEST_WORLD` to a local copy of world 2 with a shortened P1 day-one
-schedule. The smoke run and its results stay under `runs/`.
+schedule. `VGI_START_TEST_RESUME` selects an existing smoke run with matching
+recording inputs. The smoke run and its results stay under `runs/`.
 
 ## Manual setup and testing
 

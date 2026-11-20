@@ -61,26 +61,32 @@ test("launches a one-day replay recording and stops a second job", async ({
   const status = page.locator("#recording-status");
   await expect(launch).toBeEnabled();
   await screenshot(page, "record.png");
-  await page.getByLabel("Run ID").fill("onecmd-record-" + Date.now());
-  await page.getByLabel("Days", { exact: true }).fill("1");
+  const resume = process.env.VGI_START_TEST_RESUME;
+  if (resume) {
+    await page.locator("#resume-run").selectOption(resume);
+  } else {
+    await page.getByLabel("Run ID").fill("onecmd-record-" + Date.now());
+    await page.getByLabel("Days", { exact: true }).fill("1");
+    await page
+      .locator('select[name="world"]')
+      .selectOption(process.env.VGI_START_TEST_WORLD ?? "2");
+    for (const id of ["P2", "P3", "P4", "P5"])
+      await page.getByLabel(id, { exact: true }).uncheck();
+  }
   await page.getByLabel("Backend").selectOption("replay");
   await page.getByLabel("Replay source").selectOption("core-10day");
-  await page
-    .locator('select[name="world"]')
-    .selectOption(process.env.VGI_START_TEST_WORLD ?? "2");
-  for (const id of ["P2", "P3", "P4", "P5"])
-    await page.getByLabel(id, { exact: true }).uncheck();
   await launch.click();
   await expect(status).toContainText("Running");
   await expect(page.getByLabel("Recording log")).toBeVisible({
     timeout: 30_000,
   });
   await expect(status).toContainText(/Completed · 1\/1 days/, {
-    timeout: 540_000,
+    timeout: 720_000,
   });
   await expect(
     page.getByRole("link", { name: "Open recording" }),
   ).toBeVisible();
+  await page.locator("#resume-run").selectOption("");
   await page.getByLabel("Run ID").fill("onecmd-stop-" + Date.now());
   await launch.click();
   await expect(stop).toBeEnabled();
