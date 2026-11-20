@@ -29,8 +29,9 @@ are saved in this browser.
 
 The recording form runs the overnight pipeline against local data. Codex uses
 its existing CLI authentication and model configuration, and other model
-backends use their standard credentials. **Generator only** uses the existing
-model-free cadence mode with browser screening and the real Lean simulator.
+backends use their standard credentials. Conformance reports reuse a native
+Lean process through the existing stateless server transport. **Generator only**
+uses the existing model-free cadence mode with browser screening and the real Lean simulator.
 Its browser gate needs Chromium (`pnpm --filter app exec playwright install chromium`).
 The progress panel follows the recording manifest and log. Stop terminates the
 recording and keeps its completed artifacts. The app server also stops its

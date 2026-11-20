@@ -12,6 +12,7 @@ export EHR_FAKE=0 LEAN_STACK_SIZE_KB=65536 CODEX_REASONING_EFFORT=high
 defaults=(--parallel --days 10 --backend codex --world runs/world/2 --personas P1,P2,P3,P4,P5 --reasoning-effort "${CODEX_REASONING_EFFORT}")
 if [[ "${VGI_LOCAL_RECORD:-0}" == 1 ]]; then
   defaults=()
+  export EHR_CONFORMANCE_TRANSPORT="${EHR_CONFORMANCE_TRANSPORT:-serve}"
 else
   export LEAN_NUM_THREADS=6 EHR_SCREEN_WORKERS="${EHR_SCREEN_WORKERS:-6}"
 fi
