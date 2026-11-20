@@ -136,53 +136,11 @@ gaps. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md
 
 ## How to run
 
-Requires Node ≥22.18, pnpm 11.8, Docker Compose and pinned Lean 4.35
-(`lean/lean-toolchain`). Run commands from the repository root with disk-backed
-`TMPDIR`. Restore local gitignored fixtures, worlds and recordings before
-archive-backed work. Run data and local run-store aliases remain untracked. Initial FHIR imports are immutable; a different baseline
-requires a separate tenant/database.
-
 ```sh
-export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
-CI=true pnpm install --offline
-COMPOSE_PROJECT_NAME=vgi-local make install SYNTHETIC_HOSPITAL=1
-make run APP_PORT=5173
+pnpm start
 ```
 
-`make install` builds native Lean, checks packaged WASM, provisions local identity
-and imports the baseline before starting the commit service. `make run` builds
-and serves the app; `/` opens the clinical page `/lean.html`, and
-`/?shell=encounter` keeps the React encounter shell. Default ports: app 5173, commit 18090, Postgres 55532,
-Keycloak 18180. Local passwords are in untracked `.env`. Use a unique
-`COMPOSE_PROJECT_NAME` for an isolated stack; `make infra-down` preserves its
-volumes. [Live setup and validation](docs/methods/live-validation.md) covers
-accounts, import bindings, alternate ports, MAR/ADT and integration commands.
-
-For a self-contained cadence demo after installing dependencies:
-
-```sh
-pnpm --filter agent cadence-fake --out "$TMPDIR"/cadence-demo
-```
-
-It uses synthetic geometry and a fake checker, certifies nothing and makes no
-live model calls. [Model backends](docs/methods/model-backends.md) documents real
-and replay configuration, context requirements and frozen-night comparisons.
-The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
-lazy review evidence and safe local renames.
-Validation pools past odd-day holdouts and gates bounded learning costs; incomplete tasks cost canonical effort plus 50% ([policy and checkpointed replay](docs/methods/learnability-validation.md)). Movement budgets charge copies surviving deletion of their original ([movement tests](docs/methods/interaction-validation.md)).
-Discarded-order notices expire after the 30-day discharge deadline, retaining provenance ([timing policy](docs/design/chart-timing.md)).
-
-`scripts/build-ehrheavy.py [--target MODULE]` builds the full-profile `EhrHeavy`
-modules serially (about 8.3 GiB peak); the weekly `ehrheavy.yml` workflow audits
-all 24 seeded-defect axioms.
-
-CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
-runs unit tests, 202 canonical conformance scenarios, the 15-accepted/29-rejected
-certification matrix, and Postgres integration/protocol tests. Archive-backed
-tests skip without local data. CI checks packaged WASM evidence but does not
-rebuild WASM. Full Comparator verification is `make verify`; browser audits,
-WASM rebuilds and live e2e remain manual. [Reproduction and CI](docs/reproduction.md)
-contains the exact commands, local prerequisites and browser-lock discipline.
+With the local data restored, this prepares the project and prints the start page URL. Choose recordings, EHR personas and recording settings there. [Prerequisites and live validation](docs/methods/live-validation.md).
 
 ## What is proved
 

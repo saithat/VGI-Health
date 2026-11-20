@@ -4,5 +4,7 @@ packages:
   - "world"
   - "infra/scripts"
   - "services/commit"
+# Start installs a missing workspace after setting up disk-backed scratch.
+verifyDepsBeforeRun: false
 allowBuilds:
   esbuild: true

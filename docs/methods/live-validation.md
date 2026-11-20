@@ -2,17 +2,50 @@
 
 [Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
 
-Requires Node ≥22.18, pnpm 11.8, Docker Compose and the pinned Lean 4.35
-(`lean/lean-toolchain`). Set `TMPDIR` to disk-backed scratch outside the repository
-before using the commands below. Fixture/world/recording data is local and gitignored;
-restore it before importing or running archive tests. FHIR is an initial import
-format only. `fixtures/clinical/overrides.json`, dated world resources and
-`runs/world/2/context/day-01.json` are composed before the immutable import;
-Synthea and Synthetic Hospital identities and references are preserved. The
-loader verifies fixture hashes, normalizes resource IDs/references (including
-stable content-derived IDs for anonymous resources), imports each
-patient exactly once and refuses a changed baseline. Rerunning an identical
-import preserves every later event. There is no online import/reset API.
+## Start the workspace
+
+Run `pnpm start` (or `make start`) from the repository root. Install Node ≥22.18,
+pnpm 11.8.0 and Lean 4.35.0 via Elan, and restore the gitignored `fixtures/`,
+`programs/` and `runs/` directories. Docker with Compose enables live EHR sign-in.
+The command installs missing dependencies, checks the packaged WASM, builds
+stale native and app assets, prepares the local stack and prints
+`http://127.0.0.1:5173/`. It uses `.cache/tmp` for disk-backed scratch by default.
+A missing or stopped Docker daemon leaves the dashboard and offline task
+replays available. The start page shows how to enable live sign-in.
+
+Ctrl-C closes the app server. `pnpm stop` stops the `vgi-local` containers
+and preserves their volumes. Startup reuses a provisioned database and its
+clinical history. When another checkout already hosts the project, use
+that checkout's `.env` for the existing sign-in credentials. A different
+patient baseline belongs in a new database.
+
+The start page offers the recorded-run dashboard, task replays, trajectory
+comparison, the EHR screen browser, clinician sign-in, MAR, ADT and the encounter
+shell. The recording form defaults to ten days, P1–P5, Lean screens, Codex with
+high reasoning effort and world 2. Choose a run to resume and check the displayed
+settings against the original invocation. The runner validates the resume
+against the recorded fingerprints and settings. View and recording preferences
+are saved in this browser.
+
+The recording form runs the overnight pipeline against local data. Codex uses
+its existing CLI authentication and model configuration, and other model
+backends use their standard credentials. **Generator only** uses the existing
+model-free cadence mode with browser screening and the real Lean simulator.
+Its browser gate needs Chromium (`pnpm --filter app exec playwright install chromium`).
+The progress panel follows the recording manifest and log. Stop terminates the
+recording and keeps its completed artifacts. The app server also stops its
+active recording when it closes. Recording uses a 24 GB memory limit when
+a systemd user scope is available and displays the memory mode in the form.
+The launcher is available from Vite dev and preview bound to `127.0.0.1` and is
+absent from static build output. [Recording data](run-data.md)
+
+## Manual setup and testing
+
+Legacy commands remain available for CI and isolated development. For those
+commands, use disk-backed scratch. FHIR is an initial import format only.
+The loader composes `fixtures/clinical/overrides.json`, dated world resources
+and `runs/world/2/context/day-01.json`, validates fixture hashes, normalizes
+resource IDs and references, and refuses a changed patient baseline.
 
 ```sh
 export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
@@ -76,6 +109,12 @@ rewrite an unchanged inpatient episode or advance its chart version. Scoped
 journal reads redact full-board evidence from both clinical and administrative
 ADT events.
 
+For an isolated one-command stack, choose a separate project and available ports.
+For example, use `COMPOSE_PROJECT_NAME=vgi-onecmd APP_PORT=4186
+COMMIT_PG_PORT=55586 COMMIT_PORT=28090 KEYCLOAK_PORT=28180 pnpm start`.
+Use `COMPOSE_PROJECT_NAME=vgi-onecmd pnpm stop` for that project. The app port
+must be registered as a redirect URI and web origin on the Keycloak client.
+
 `COMPOSE_PROJECT_NAME` selects isolated volumes. `COMMIT_PG_PORT`,
 `COMMIT_PORT`, `KEYCLOAK_PORT` and `KEYCLOAK_BASE_URL` change bindings. Set
 `KEYCLOAK_URL` to the same base for identity provisioning, and set the
@@ -99,3 +138,18 @@ pnpm --filter app build
 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live --project=desktop --project=narrow
 COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow
 ```
+
+The model-free cadence demo is also available without the local launcher.
+
+```sh
+pnpm --filter agent cadence-fake --out "$TMPDIR"/cadence-demo
+```
+
+This separate demo uses synthetic geometry and a fake checker.
+[Model backends](model-backends.md)
+
+For the full `EhrHeavy` profile, `scripts/build-ehrheavy.py [--target MODULE]`
+builds serially with about 8.3 GiB peak memory. The weekly workflow audits the
+24 seeded-defect axioms. CI builds Lean, audits axioms, runs workspace checks
+and validates packaged WASM. `make verify` runs Comparator.
+[Reproduction and CI](../reproduction.md)

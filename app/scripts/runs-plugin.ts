@@ -12,6 +12,7 @@ import { resolve } from "node:path";
 import type { Plugin } from "vite";
 import { geometrySliceFile } from "./geometry-slice";
 import { sendArtifact } from "./artifact-response";
+import { startPage } from "./start-page";
 
 export interface RecordedRun {
   id: string;
@@ -54,8 +55,11 @@ export function selectDefaultRun(
 export function runsPlugin(): Plugin {
   const middleware = runMiddleware();
   const attach = (
-    server: Pick<import("vite").ViteDevServer, "middlewares">,
+    server: Pick<import("vite").ViteDevServer, "middlewares" | "httpServer">,
   ) => {
+    server.middlewares.use(
+      startPage(resolve(import.meta.dirname, "../.."), server.httpServer),
+    );
     server.middlewares.use(middleware);
   };
   return {
