@@ -3,9 +3,8 @@
 [Overview](../../README.md) · [Layout contracts](ui-library.md)
 
 `/lean.html?persona=P1` is the live clinical page; `/`, `/ehr` and
-`/?workflow=chart` open it, and the MAR dose list opens each dose on it. The
-React encounter/login shell (`/?shell=encounter`), ADT, the dashboard and
-replay entry points retain their renderers ([cut-over](../design/lean-ui-cutover.md)).
+`/?workflow=chart` open it, and the MAR dose list opens each dose on it.
+ADT and MAR use React. The dashboard and program browser open recorded clinical screens through the same Lean WASM painter.
 Lean supplies geometry, every displayed text and the role of every part; a
 plain TypeScript painter patches native DOM controls into those rectangles and
 formats nothing. This changes the certified application and

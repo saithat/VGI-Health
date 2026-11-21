@@ -1,8 +1,7 @@
-import { withData } from "./data.js";
-import {pointerTravel,type GeometryAtlas} from '../../app/src/metrics/geometry.js';
-import {attachGeometry} from '../src/geometry.js';
-import {sumMetrics,pairedMetrics} from '../src/observe.js';
-import {improved} from '../src/night.js';
+import { pointerTravel,type GeometryAtlas } from '../../app/src/metrics/geometry.js';
+import { attachGeometry } from '../src/geometry.js';
+import { sumMetrics,pairedMetrics } from '../src/observe.js';
+import { improved } from '../src/night.js';
 const atlas:GeometryAtlas={schemaVersion:1,programHash:'fixture',appSha256:'fixture',source:'recorded-fixture',viewport:{width:1440,height:900},states:[{screen:'s',state:'fixture',viewport:{width:1440,height:900},scrollers:{root:{width:1440,height:900,maxX:0,maxY:1800}},components:{a:{center:{x:723,y:454},reveal:{x:723,y:454},chain:[],offsets:{}},b:{center:{x:726,y:458},reveal:{x:726,y:458},chain:[],offsets:{}},c:{center:{x:726,y:1358},reveal:{x:726,y:458},chain:['root'],offsets:{root:{x:0,y:900}}}}}]};
 it('uses Euclidean pixel travel, measured reveal offsets and actual scroll distance',()=>{
  const trace=[{task:'t',screen:'s',event:{click:{comp:'a'}},ops:['point','click']},{task:'t',screen:'s',event:{enter:{comp:'b'}},ops:['key']},{task:'t',screen:'s',event:{click:{comp:'c'}},ops:['point','click']},{task:'t',screen:'s',event:{scroll:{screen:'s'}},ops:['scroll']}];
@@ -41,29 +40,6 @@ it('allows only the documented pixel tolerance, never count or completion regres
  expect(improved({...replay,after:{...replay.after,mouseTravelPx:103.01}})).toBe(false);
  expect(improved({...replay,after:{...replay.after,scrolls:5}})).toBe(false);
  expect(improved({...replay,after:{...replay.after,completed:0}})).toBe(false);
-});
-
-it('does not reuse geometry across presentation-only alternatives sharing an executable',async()=>{
- const {geometryEhr,geometryProgramHash}=await import('../src/geometry.js');
- const {createFakeEhr,fakeCanonical}=await import('../src/fake/ehr-fake.js');
- const {fakeWorld,tmp}=await import('./helpers.js');const {loadWorld}=await import('../src/world.js');
- const world=await loadWorld(await fakeWorld(1)),params=world.personas.get('P1'),schedule=await world.schedule(1,'P1');if(!params||!schedule)throw new Error('No fixture');
- const make=(padding:string)=>({...fakeCanonical('v1'),presentationComponents:[{name:'Review',key:'info',source:`import {Paper} from '@mantine/core'; import {UiNodeView,type PresentationProps} from '@ehr/presentation'; export default function Review({node,onEvent}:PresentationProps){return <Paper p="${padding}"><UiNodeView node={node} onEvent={onEvent}/></Paper>;}`}]});
- const one=make('xs'),two=make('lg');expect(geometryProgramHash(one)).toBe(geometryProgramHash(two));let captures=0;
- const ehr=geometryEhr(createFakeEhr(),async input=>{captures++;return {...atlas,programHash:geometryProgramHash(input.program)};},await tmp('geometry-bundles'));
- const args={specVersion:'v1',persona:params,schedule,worldDir:world.dir,seed:1};
- const a=await ehr.simulate({...args,program:one});await ehr.simulate({...args,program:one});const b=await ehr.simulate({...args,program:two});
- expect(captures).toBe(2);expect(a.geometry?.componentsSha256).not.toBe(b.geometry?.componentsSha256);
-});
-withData("runs/core-10day/decisions").it('stops on exhausted geometry infrastructure without publishing a night outcome',async()=>{
- const {runDays}=await import('../src/run.js');const {createFakeEhr}=await import('../src/fake/ehr-fake.js');
- const {ScreenInfrastructureError}=await import('../src/errors.js');const {fakeWorld,tmp}=await import('./helpers.js');
- const {ScriptedLlm}=await import('./scripted.js');const {readFile}=await import('node:fs/promises');
- const root=await tmp('geometry-infrastructure');
- await expect(runDays({days:2,worldDir:await fakeWorld(2),runsRoot:root,runId:'FAKE',ehr:createFakeEhr(),llm:new ScriptedLlm(),geometry:async input=>{if(input.program.version>0)throw new ScreenInfrastructureError('FAKE geometry browser unavailable');return null;}})).rejects.toThrow('FAKE geometry browser unavailable');
- const manifest=JSON.parse(await readFile(root+'/FAKE/manifest.json','utf8'));
- expect(manifest.status).toBe('infrastructure-error');expect(manifest.infrastructureRetries.at(-1).attempts).toBe(3);
- await expect(readFile(root+'/FAKE/decisions/night-01/P1.json','utf8')).rejects.toThrow('ENOENT');
 });
 
 it('uses the measured workspace for the actual day without depending on task naming', () => {

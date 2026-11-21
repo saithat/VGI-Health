@@ -2,7 +2,7 @@ import type { Event } from "../../../lean/generated/ehr-types";
 import type { Interp } from "./interp";
 import { createSession } from "./session";
 import { screenJournal } from "../data/screenFingerprint";
-import type { UiScreen } from "../ehr/ui/types";
+import type { UiScreen } from "./types";
 import {
   MarConflict,
   MarRejected,

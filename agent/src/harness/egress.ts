@@ -1,16 +1,11 @@
-/** Host-side egress for arm H: an HTTP CONNECT proxy on a private Unix socket that
+/** Host-side egress for hill climbing: an HTTP CONNECT proxy on a private Unix socket that
  * opens TLS tunnels only to an exact host allowlist on port 443. The sandbox has no
  * network namespace of its own beyond loopback; this socket is its only way out. */
 import { connect, createServer, type Socket } from 'node:net';
 
 export interface EgressEvent { host: string; port: number; allowed: boolean }
 /** Model API endpoints each CLI needs. Nothing else is reachable. */
-const NONE: readonly string[] = [];
-export const EGRESS_HOSTS: Readonly<Record<'codex' | 'claude' | 'script', readonly string[]>> = {
-  codex: ['chatgpt.com', 'api.openai.com'],
-  claude: ['api.anthropic.com'],
-  script: NONE,
-};
+export const EGRESS_HOSTS = { codex: ['chatgpt.com', 'api.openai.com'] };
 
 export async function startEgressProxy(socketPath: string, allow: readonly string[], log: (event: EgressEvent) => void) {
   const sockets = new Set<Socket>();

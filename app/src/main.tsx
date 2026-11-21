@@ -4,10 +4,10 @@ import { createRoot } from "react-dom/client";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
-import { clinicalCssVariables, clinicalTheme } from "./ehr/ui/theme";
+import { clinicalCssVariables, clinicalTheme } from "./theme";
 import { Notifications } from "@mantine/notifications";
 import "./styles.css";
-import "./ehr.css";
+
 import { leanEntry } from "./entry";
 
 const lean = leanEntry(location.href);

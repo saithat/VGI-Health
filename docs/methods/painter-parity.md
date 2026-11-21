@@ -150,5 +150,5 @@ flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright test \
 # One-day Lean replay for every persona, no model call.
 EHR_FAKE=0 pnpm --filter agent run-days --screens lean --backend replay \
   --replay-from runs/<recorded lean run> --days 1 --personas P1,P2,P3,P4,P5 \
-  --world runs/world/2 --run-id <new id> --seed-policy none
+  --world runs/world/2 --run-id <new id>
 ```

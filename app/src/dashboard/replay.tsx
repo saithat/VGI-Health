@@ -1,45 +1,22 @@
+import { assertRecordingMode } from "../../../agent/src/recording-mode";
+import { replayScreen,createReferencePainter,referenceLimit } from "../lean-ui/reference";
+import { LeanReplay } from "./LeanReplay";
 import { expandProgram } from "../../../agent/src/composites";
-import { UiScreenView } from "../ehr/ui/Screen";
-import { uiScreenSchema } from "../ehr/ui/types";
-import type { PresentationBundle } from "../ehr/ui/presentation-types";
-import { useEffect, useMemo, useRef, useState } from "react";
-import type { Event, StepOutput } from "../../../lean/generated/ehr-types";
+import { uiScreenSchema } from "../core/types";
+import type { LayoutDesign } from "../../../agent/src/layout-design";
+import { useEffect,useMemo,useRef,useState } from "react";
+import type { Event,StepOutput } from "../../../lean/generated/ehr-types";
 import { applyPatch } from "../../../agent/src/jsonpatch";
 import {
-  programSchema,
-  type Program,
-  type JsonPatchOp,
+programSchema,
+type Program,
+type JsonPatchOp,
 } from "../../../agent/src/schema";
 import { verifyRecordedBuild } from "../browser/data";
 import type { Interp } from "../core/interp";
-import { mockReplayInterp } from "../mock/replay";
-import { paint } from "../ehr/painter";
-import type { Html } from "../ehr/html";
-import { programAt, type RunData, type Replay } from "./data";
+import { programAt,type RunData,type Replay } from "./data";
 
 export type InterpFactory = (program: Program) => Interp;
-
-export function renderReplay(
-  interp: Interp,
-  context: Replay["contexts"][number],
-  program: Program,
-  events: Event[],
-): Html {
-  const args = [
-    JSON.stringify(context.spec),
-    JSON.stringify(program),
-    JSON.stringify(context.bundle),
-    JSON.stringify(context.user),
-  ] as const;
-  let state = interp.init(...args);
-  for (const event of events) {
-    const response: StepOutput = JSON.parse(
-      interp.step(...args, state, JSON.stringify(event)),
-    );
-    state = JSON.stringify(response.state);
-  }
-  return JSON.parse(interp.render(...args, state));
-}
 
 export function ReplayScreen({
   run,
@@ -64,19 +41,20 @@ export function ReplayScreen({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const bindingKey = `${run.manifest.runId}/${persona}/${version}`;
-  const [binding, setBinding] = useState<{ key: string; error: string; presentations: PresentationBundle | null }>({ key: "", error: "Verifying certified build…", presentations: null });
+  const [binding, setBinding] = useState<{ key: string; error: string; design: LayoutDesign | null }>({ key: "", error: "Verifying certified build…", design: null });
   useEffect(() => {
     let active = true;
-    if (!run.manifest.buildBindingRequired) return;
     verifyRecordedBuild(`runs/${run.manifest.runId}/programs/${persona}/v${version}.json`, run.programs.get(`programs/${persona}/v${version}.json`))
-      .then((presentations) => { if (active) setBinding({ key: bindingKey, error: "", presentations }); })
-      .catch((error: unknown) => { if (active) setBinding({ key: bindingKey, error: error instanceof Error ? error.message : String(error), presentations: null }); });
+      .then((design) => { if (active) setBinding({ key: bindingKey, error: "", design }); })
+      .catch((error: unknown) => { if (active) setBinding({ key: bindingKey, error: error instanceof Error ? error.message : String(error), design: null }); });
     return () => { active = false; };
   }, [run, persona, version, bindingKey]);
   const result = useMemo(() => {
     try {
-      if (run.manifest.buildBindingRequired && (binding.key !== bindingKey || binding.error))
+      assertRecordingMode(run.manifest);
+      if (binding.key !== bindingKey || binding.error)
         throw new Error(binding.key === bindingKey ? binding.error : "Verifying certified build…");
+
       if (!run.replay)
         throw new Error(
           "This run needs replay.json with spec, bundle, user and same-task traces.",
@@ -96,31 +74,23 @@ export function ReplayScreen({
       const program = expandProgram(programSchema.parse(
         applyPatch(programAt(run, persona, version), patch).doc,
       ));
-      const interp = factory
-        ? factory(program)
-        : run.replay.mode === "mock" && run.manifest.ehr.mode === "fake"
-          ? mockReplayInterp(program)
-          : null;
-      if (!interp)
+      const interp = factory?.(program);
+      if (!interp?.renderUi || !interp.layout)
         throw new Error(
           "WASM Interp is required for this real run. Inject an InterpFactory into Dashboard.",
         );
-      let ui = null;
-      if (binding.presentations || interp.renderUi) {
-        if (!interp.renderUi) throw new Error('Semantic renderer required for presentation components');
+      {
         const args = [JSON.stringify(context.spec), JSON.stringify(program), JSON.stringify(context.bundle), JSON.stringify(context.user)] as const;
         let state = interp.init(...args);
         for (const event of events) {
           const output: StepOutput = JSON.parse(interp.step(...args, state, JSON.stringify(event)));
           state = JSON.stringify(output.state);
         }
-        ui = uiScreenSchema.parse(JSON.parse(interp.renderUi(...args, state)));
+        const ui = replayScreen(interp.layout, uiScreenSchema.parse(JSON.parse(interp.renderUi(...args, state))));
+        const {output} = createReferencePainter(interp.layout, binding.design ?? [])(ui, {w:1440*64,h:900*64}, referenceLimit(program.specVersion,persona,ui.screen ?? ""));
+        if (!output.accepted) throw Error("Lean refused replay layout");
+        return {ui,output,layout:interp.layout,error:null};
       }
-      return {
-        ui,
-        page: ui ? null : renderReplay(interp, context, program, events),
-        error: null,
-      };
     } catch (error) {
       return {
         page: null,
@@ -142,9 +112,7 @@ export function ReplayScreen({
       {result.error ? (
         <p role="alert">{result.error}</p>
       ) : result.ui ? (
-        <UiScreenView screen={result.ui} presentations={binding.presentations} onEvent={onEvent ?? (() => {})} />
-      ) : result.page ? (
-        paint(result.page, onEvent ?? (() => {}))
+        <LeanReplay screen={result.ui} output={result.output} layout={result.layout} onEvent={onEvent} />
       ) : null}
     </div>
   );

@@ -1,5 +1,5 @@
+import {geometryComponentsHash} from './geometry.js';
 import { expandProgram } from './composites.js';
-import { compilePresentations } from './presentation-compiler.js';
 /** Agent sidecar: binds a native certificate to the exact renderer/interpreter build. */
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -22,5 +22,5 @@ export async function installedBuild(root = REPO_ROOT, binary = path.join(root, 
   return { ehrSha256: createHash('sha256').update(await readFile(binary)).digest('hex'), appSha256: build.appSha256, wasmSha256, componentsSha256: sha256(stableStringify([])) };
 }
 export function bindBuild(build: Awaited<ReturnType<typeof installedBuild>>, program: Program, certificate: Certificate): BuildBinding {
-  return buildBindingSchema.parse({ schemaVersion: 1, ...build, componentsSha256: sha256(stableStringify(compilePresentations(program) ?? [])), sourceProgramSha256: sha256(stableStringify(program)), programSha256: sha256(stableStringify(expandProgram(program))), certificateSha256: sha256(stableStringify(certificate)) });
+  return buildBindingSchema.parse({ schemaVersion: 1, ...build, componentsSha256: geometryComponentsHash(program), sourceProgramSha256: sha256(stableStringify(program)), programSha256: sha256(stableStringify(expandProgram(program))), certificateSha256: sha256(stableStringify(certificate)) });
 }

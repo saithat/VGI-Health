@@ -28,9 +28,9 @@ export interface RecordedRun {
 export function selectDefaultRun(
   runs: RecordedRun[],
   requested = process.env.VGI_RUN,
-): string {
+): string | null {
   if (requested) {
-    if (!runs.some((run) => run.id === requested && run.replayable))
+    if (!runs.some((run) => run.id === requested && run.real && run.replayable))
       throw new Error(`VGI_RUN=${requested} is not a replayable recorded run`);
     return requested;
   }
@@ -43,12 +43,11 @@ export function selectDefaultRun(
         a.id.localeCompare(b.id),
     )[0];
   if (best) return best.id;
-  if (runs.some((run) => run.id === "mock" && run.replayable)) return "mock";
   const waiting = runs
     .filter((run) => run.real)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
   if (waiting) return waiting.id;
-  throw new Error("No replayable recorded runs; wait for a completed day");
+  return null;
 }
 
 /** Direct completed-prefix access, for both dev and preview servers. */
@@ -72,13 +71,17 @@ export function runMiddleware(root = resolve(import.meta.dirname, "../..")) {
   const runRoot = resolve(root, "runs");
   async function index(): Promise<RecordedRun[]> {
     const runs: RecordedRun[] = [];
-    for (const entry of await readdir(runRoot, { withFileTypes: true })) {
+    const entries = await readdir(runRoot, { withFileTypes: true }).catch(error => {
+      if (error.code === "ENOENT") return [];
+      throw error;
+    });
+    for (const entry of entries) {
       if (!entry.isDirectory() || !/^[\w-]+$/.test(entry.name)) continue;
       try {
         const prefix = await completedPrefix(resolve(runRoot, entry.name));
         if (
           prefix.manifest.runId !== entry.name ||
-          !["real", "fake"].includes(prefix.manifest.ehr.mode)
+          prefix.manifest.ehr.mode !== "real"
         )
           continue;
         runs.push({

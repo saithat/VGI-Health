@@ -12,12 +12,12 @@ import {
 } from "../src/browser/data";
 import { createWasmInterp } from "../src/core/wasmInterp";
 import { createSession } from "../src/core/session";
-import type { UiNode } from "../src/ehr/ui/types";
+import type { UiNode } from "../src/core/types";
 
 let catalog: ReturnType<typeof catalogSchema.parse>;
 describe("offline live UI catalog", () => {
   beforeAll(async () => { catalog = catalogSchema.parse(await buildCatalog()); });
-  withData("fixtures", "programs/bad", "runs/mock").it("renders a nonempty chart search for every committed patient without runtime exceptions", async () => {
+  withData("fixtures", "programs/bad").it("renders a nonempty chart search for every committed patient without runtime exceptions", async () => {
     const interp = createWasmInterp(await loadEhrInterp());
     const spec = await readJson("releases/v3/spec.json");
     const program = await readJson("releases/v3/personas/P1.json");
@@ -104,7 +104,7 @@ describe("offline live UI catalog", () => {
       expect(result?.rows.length, patient.name).toBeLessThanOrEqual(26);
     }
   }, 240000);
-  withData("fixtures", "programs/bad", "runs/mock").it("includes canonical and all persona releases, bad programs, and recorded versions", () => {
+  withData("fixtures", "programs/bad").it("includes canonical and all persona releases, bad programs, and recorded versions", () => {
     for (const release of ["v1", "v2", "v3"]) {
       expect(
         catalog.programs.filter((program) =>
@@ -119,9 +119,6 @@ describe("offline live UI catalog", () => {
         f.endsWith(".json"),
       ).length,
     );
-    expect(
-      catalog.programs.filter((program) => program.run === "mock").length,
-    ).toBeGreaterThan(20);
     expect(catalog.patients).toHaveLength(1442);
     expect(catalog.patients.filter((p) => p.source === "synthea")).toHaveLength(
       174,
@@ -136,9 +133,8 @@ describe("offline live UI catalog", () => {
     expect(currentProgram(catalog, "P1", null).path).toBe(
       "releases/v1/personas/P1.json",
     );
-    expect(currentProgram(catalog, "P1", "mock").deployed).toBe(true);
   });
-  withData("fixtures", "programs/bad", "runs/mock").it("projects every committed bundle and renders every program with real Lean WASM", async () => {
+  withData("fixtures", "programs/bad").it("projects every committed bundle and renders every program with real Lean WASM", async () => {
     const interp = createWasmInterp(await loadEhrInterp());
     const context = {
       today: catalog.referenceDate,

@@ -1,6 +1,6 @@
-import {designOf,withDesign,layoutDesignSchema} from './layout-design.js';
+import {geometryComponentsHash} from './geometry.js';
+import { designOf,withDesign,layoutDesignSchema } from './layout-design.js';
 import { readBinding } from './binding-pointer.js';
-import { presentationBundleSchema } from '../../app/src/ehr/ui/presentation-types.js';
 import { existsSync } from 'node:fs';
 import { readFileSync } from 'node:fs';
 import { diskArray } from './disk-array.js';
@@ -8,8 +8,6 @@ import { dayScheduleSchema } from './schema.js';
 import { calibrationPartition } from './protocol.js';
 import type { TrainDay } from './observe.js';
 import { expandProgram } from './composites.js';
-import { compilePresentations } from './presentation-compiler.js';
-import { REPO_ROOT } from './util.js';
 /**
  * Run directory layout:
  *   runs/<run-id>/manifest.json
@@ -23,19 +21,19 @@ import { REPO_ROOT } from './util.js';
  *   runs/<run-id>/summary.json
  */
 import path from 'node:path';
-import { buildBindingSchema, type BuildBinding } from './build-binding.js';
-import { sha256, stableStringify } from './program.js';
+import { buildBindingSchema,type BuildBinding } from './build-binding.js';
+import { sha256,stableStringify } from './program.js';
 import { z } from 'zod';
 import {
-  certificateSchema, dayResultSchema, decisionRecordSchema, programSchema,
-  type Certificate, type DayResult, type DecisionRecord, type Program,
+certificateSchema,dayResultSchema,decisionRecordSchema,programSchema,
+type Certificate,type DayResult,type DecisionRecord,type Program,
 } from '../../app/src/dashboard/agent-evidence.js';
-import { pad2, readJson, writeJson, writeJsonAtomic } from './util.js';
+import { pad2,readJson,writeJson,writeJsonAtomic } from './util.js';
 
 export const deployedPointerSchema = z.object({ version: z.number().int().nonnegative(), program: z.string(), certificate: z.string(), build: z.string().optional(), source: z.string().optional(), components: z.string().optional() });
 
 export class RunStore {
-  constructor(readonly dir: string, private readonly customRoot = path.join(REPO_ROOT, 'app/src/ehr/ui/custom'), private readonly leanLayouts=false) {}
+  constructor(readonly dir: string, private readonly customRoot = path.join(dir, 'custom'), private readonly leanLayouts=false) {}
 
   programPath(persona: string, version: number): string { return path.join(this.dir, 'programs', persona, `v${version}.json`); }
   certPath(persona: string, version: number): string { return path.join(this.dir, 'certs', persona, `v${version}.json`); }
@@ -65,30 +63,17 @@ export class RunStore {
     }
     const certFile = this.certPath(persona, program.version);
     const executable = expandProgram(program);
-    const components = compilePresentations(program);
     if (build) {
       buildBindingSchema.parse(build);
-      if (build.programSha256 !== sha256(stableStringify(executable)) || build.componentsSha256 !== sha256(stableStringify(components ?? []))) throw new Error('Staged build does not bind the executable/component bundle');
+      if (build.programSha256 !== sha256(stableStringify(executable)) || build.componentsSha256 !== geometryComponentsHash(program)) throw new Error('Staged build does not bind the executable/component bundle');
     }
     const sourceFile = programFile.replace(/\.json$/, '.source.json');
-    const componentsFile = programFile.replace(/\.json$/, '.components.json');
     await writeJsonAtomic(sourceFile, program);
-    if (components) {
-      if (!/^[\w-]+$/.test(program.owner)) throw new Error('Unsafe presentation owner path');
-      await writeJsonAtomic(componentsFile, components);
-      const customDir = path.join(this.customRoot, program.owner, `v${program.version}`);
-      for (const component of components.components) {
-        const { writeFile, mkdir } = await import('node:fs/promises');
-        await mkdir(customDir, { recursive: true });
-        await writeFile(path.join(customDir, `${component.name}.tsx`), component.source);
-      }
-      await writeJsonAtomic(path.join(customDir, 'manifest.json'), components);
-    }
     await writeJsonAtomic(programFile, executable);
     await writeJsonAtomic(certFile, certificate);
     const buildFile = certFile.replace(/\.json$/, '.build.json');
     if (build) await writeJsonAtomic(buildFile, buildBindingSchema.parse(build));
-    const pointer = { version: program.version, program: this.rel(programFile), certificate: this.rel(certFile), source: this.rel(sourceFile), ...(components ? { components: this.rel(componentsFile) } : {}), ...(build ? { build: this.rel(buildFile) } : {}) };
+    const pointer = { version: program.version, program: this.rel(programFile), certificate: this.rel(certFile), source: this.rel(sourceFile), ...(build ? { build: this.rel(buildFile) } : {}) };
     if (night === undefined) await writeJsonAtomic(path.join(this.dir, 'programs', persona, 'deployed.json'), pointer);
     else await writeJsonAtomic(path.join(this.dir, 'pending', `${persona}.json`), { night, persona, pointer });
     return pointer;
@@ -106,13 +91,12 @@ export class RunStore {
         throw new Error('Deployed program/certificate no longer match their build binding');
     }
     const source = pointer.source ? await readJson(path.join(this.dir, pointer.source), programSchema) : program;
+    if(this.leanLayouts)withDesign(source,await this.readDesign(source,persona));
     if (pointer.build) {
       const binding = await readBinding(path.join(this.dir, pointer.build));
       if (binding.sourceProgramSha256 && binding.sourceProgramSha256 !== sha256(stableStringify(source))) throw new Error('Source program no longer matches its build binding');
-      const components = pointer.components ? await readJson(path.join(this.dir, pointer.components), presentationBundleSchema) : [];
-      if (binding.componentsSha256 !== sha256(stableStringify(components))) throw new Error('Components no longer match the build binding');
+      if (binding.componentsSha256 !== geometryComponentsHash(source)) throw new Error('Components no longer match the build binding');
     }
-    if(this.leanLayouts)withDesign(source,await this.readDesign(source,persona));
     return { program: source, certificate };
   }
 

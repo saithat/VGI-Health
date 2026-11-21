@@ -102,7 +102,7 @@ async function appSignature(portIssuer) {
   const files = [
     ...(await filesIn(join(app, 'src'))).filter((file) => !file.startsWith(join(app, 'src/dashboard/start') + '/')),
     ...await filesIn(join(app, 'public')),
-    ...external, ...['vite.config.ts', 'index.html', 'lean.html', 'screen-check.html',
+    ...external, ...['vite.config.ts', 'index.html', 'lean.html',
       'trajectory-frame.html', 'tsconfig.json', 'package.json', 'scripts/build-binding-plugin.ts',
       'scripts/compression-plugin.ts', 'scripts/lean-bundle-plugin.ts'].map((path) => join(app, path)),
     join(root, 'pnpm-lock.yaml'),
@@ -115,7 +115,7 @@ async function appBuildValid(wasm) {
   try {
     const binding = JSON.parse(await readFile(join(dist, 'build.json'), 'utf8'));
     return /^[a-f0-9]{64}$/.test(binding.appSha256) &&
-      ['index.html', 'lean.html', 'screen-check.html', 'trajectory-frame.html'].every((path) => existsSync(join(dist, path))) &&
+      ['index.html', 'lean.html',  'trajectory-frame.html'].every((path) => existsSync(join(dist, path))) &&
       await bytesCurrent(join(wasm, 'ehr-interp.wasm'), join(dist, 'ehr/ehr-interp.wasm'));
   } catch {
     return false;

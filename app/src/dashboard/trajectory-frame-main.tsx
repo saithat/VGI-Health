@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
+import { output } from "../browser/ui-library/schema";
+import { useEffect,useState } from "react";
 import { createRoot } from "react-dom/client";
 import { z } from "zod";
 import "@mantine/core/styles.css";
 import "../styles.css";
-import "../ehr.css";
+import "../lean-ui/painter.css";
 import "./trajectory-frame.css";
-import { clinicalCssVariables } from "../ehr/ui/theme";
-import { uiScreenSchema } from "../ehr/ui/types";
-import { presentationBundleSchema } from "../ehr/ui/presentation-types";
+import { clinicalCssVariables } from "../theme";
+import { uiScreenSchema } from "../core/types";
 import { trajectorySchema } from "./trajectories-data";
 import {
-  TrajectorySurface,
-  type TrajectoryFrameState,
+TrajectorySurface,
+type TrajectoryFrameState,
 } from "./TrajectoryFrame";
 
 const messageSchema = z.object({
   type: z.literal("trajectory-state"),
-  presentations: presentationBundleSchema.nullable(),
+  output,
   screen: uiScreenSchema,
   trace: trajectorySchema.shape.trace,
   count: z.number().int().nonnegative(),

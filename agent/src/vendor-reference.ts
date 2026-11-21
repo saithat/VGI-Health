@@ -4,7 +4,7 @@ import {programSchema} from './schema.js';
 import {readJson} from './util.js';
 
 /** Read the actual no-agent layout, including accepted release migrations. */
-export function noAgentReference(runDir:string,maxDay=Infinity): import('./screencheck.js').ReferenceProvider {
+export function noAgentReference(runDir:string,maxDay=Infinity): import('./screen-gate.js').ReferenceProvider {
  return async input=>{
   const {readdir}=await import('node:fs/promises');
   const dir=path.join(runDir,'no-agent/days');

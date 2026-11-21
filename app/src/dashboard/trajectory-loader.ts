@@ -1,5 +1,5 @@
 import { programSchema } from "../../../agent/src/schema";
-import { readArtifact, verifyRecordedBuild } from "../browser/data";
+import { readArtifact, recordingManifest, verifyRecordedBuild } from "../browser/data";
 import { contentHash } from "../core/buildBinding";
 import type { GeometryAtlas } from "../metrics/geometry";
 import type { InterpFactory } from "./replay";
@@ -18,6 +18,7 @@ export async function loadTrajectory(
   factory: InterpFactory,
   prefixKey?: string,
 ): Promise<LoadedTrajectory> {
+  await recordingManifest(runId);
   const task = trajectorySchema.parse(
     await readRunJson(
       runArtifactPath(runId, `trajectories/${file}`, prefixKey),
@@ -28,14 +29,14 @@ export async function loadTrajectory(
     readArtifact(`/${task.context.specPath}`),
     readArtifact(`/${task.context.fixtureFile}`),
   ]);
-  const presentations = await verifyRecordedBuild(
+  const design = await verifyRecordedBuild(
     task.context.programPath,
     program,
   );
   let geometry: GeometryAtlas | null = null;
   if (typeof metrics.mouseTravelPx === "number") {
     const hash = await contentHash(program);
-    const componentsHash = await contentHash(presentations ?? []);
+    const componentsHash = await contentHash(design.length ? {components: [], layouts: design} : []);
     // Geometry is optional evidence. Never substitute made-up pixel totals.
     for (const suffix of [`.${componentsHash}`, ""]) {
       try {
@@ -92,7 +93,7 @@ export async function loadTrajectory(
     task,
     geometry,
     program: parsedProgram,
-    presentations,
+    design,
     spec,
     display: projection.display,
   };

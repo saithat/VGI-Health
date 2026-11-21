@@ -1,7 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { z } from "zod";
-import { uiScreenSchema, type UiScreen } from "../ehr/ui/types";
+import { uiScreenSchema, type UiScreen } from "../core/types";
 import type { Output } from "./layout";
 
 /** Cut-over regressions for the Lean clinical page that need no live

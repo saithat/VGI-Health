@@ -334,16 +334,6 @@ async function differential(page: Page, label: string) {
     );
     await page.screenshot({ path: `${dir}/dense.png` });
     writeFileSync(`${dir}/screen.json`, JSON.stringify(ui));
-    const vendor = await page.context().newPage();
-    try {
-      await vendor.goto("/screen-check.html");
-      await vendor.waitForFunction(() => typeof window.renderUi === "function");
-      await vendor.evaluate((screen) => window.renderUi?.(screen), ui);
-      await vendor.evaluate(() => document.fonts.ready);
-      await vendor.screenshot({ path: `${dir}/vendor.png` });
-    } finally {
-      await vendor.close();
-    }
     writeFileSync(
       `${dir}/evidence.json`,
       JSON.stringify(
@@ -618,7 +608,7 @@ test("rich widgets: WASM geometry and text agree with DOM at every desktop viewp
   });
   strip.urgent = urgent;
   fixtures["alert-strip"] = strip;
-  const { uiScreenSchema } = await import("../ehr/ui/types");
+  const { uiScreenSchema } = await import("../core/types");
   const directory = process.env.TMPDIR + "/painter-parity";
   mkdirSync(directory, { recursive: true });
   await page.goto("/tests/lean-widget-preview.html");

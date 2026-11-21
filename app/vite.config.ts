@@ -1,5 +1,4 @@
 import { leanBundlePlugin } from "./scripts/lean-bundle-plugin";
-import { fileURLToPath } from "node:url";
 import { buildBindingPlugin } from "./scripts/build-binding-plugin";
 import { defineConfig } from "vitest/config";
 import { catalogPlugin } from "./scripts/catalog-plugin";
@@ -31,13 +30,6 @@ export default defineConfig({
       ).leanSourceHash,
     ),
   },
-  resolve: {
-    alias: {
-      "@ehr/presentation": fileURLToPath(
-        new URL("./src/ehr/ui/presentation-helpers.tsx", import.meta.url),
-      ),
-    },
-  },
   server: { proxy: commitProxy },
   preview: { proxy: commitProxy },
   build: {
@@ -45,7 +37,6 @@ export default defineConfig({
       input: {
         app: "index.html",
         lean: "lean.html",
-        screenCheck: "screen-check.html",
         trajectoryFrame: "trajectory-frame.html",
       },
     },

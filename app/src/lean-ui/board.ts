@@ -1,5 +1,5 @@
 import type { Event } from "../../../lean/generated/ehr-types";
-import type { UiScreen } from "../ehr/ui/types";
+import type { UiScreen } from "../core/types";
 interface PatientSession {
   getSnapshot(): { ui?: UiScreen | undefined; result?: unknown };
   dispatch(event: Event): Promise<unknown>;

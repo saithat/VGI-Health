@@ -4,20 +4,7 @@
 [Layout contract](../methods/ui-library.md) ·
 [Rich displays and validation](../methods/painter-parity.md)
 
-The clinical screens now open on `/lean.html`: Lean display parts and checked
-layout geometry painted with native DOM controls. `/`, `/ehr` and
-`/?workflow=chart` redirect there with their parameters, and the MAR dose list
-opens each scheduled dose there. The React encounter/login shell
-(`/?shell=encounter`), the standalone ADT route (`/?workflow=adt`), offline
-replay (`?mode=replay`), the dashboard and the browser keep their renderers.
-Application and WASM hashes have changed; retained certificates are
-historical until rebound.
-
-Browser regressions named below live in
-[`cutover.pw.ts`](../../app/src/lean-ui/cutover.pw.ts) (fixture host, no
-service) and [`cutover-live.pw.ts`](../../app/src/lean-ui/cutover-live.pw.ts)
-(isolated real commit service: native replay, guards, Postgres). Commands are
-in [painter-parity](../methods/painter-parity.md#cut-over-validation).
+Clinical entry points and recorded screens use the plain DOM Lean WASM painter. ADT and MAR retain their React workflow pages. The following measurements document the cut-over. Current replay requires the build and layout bindings described in [run data](../methods/run-data.md).
 
 ## Required before switching the clinical entry points
 
@@ -98,8 +85,6 @@ in [painter-parity](../methods/painter-parity.md#cut-over-validation).
   1920×1080. There is no mobile, reflow or 200% text-resize contract; other
   sizes refuse interaction until a supported size is restored.
 - [ ] **Encounter/login shell and standalone `/adt` (open).** Both stay on
-  their current React renderer, unchanged: `/?shell=encounter` and
-  `/?workflow=adt`. Shared dashboard/browser UI helpers keep their consumers.
 - The accessibility/screen audit pair currently audits the React screens
   through the browser gate; the Lean page relies on G1–G11 and its Playwright
   tests.
@@ -115,27 +100,6 @@ in [painter-parity](../methods/painter-parity.md#cut-over-validation).
   application are rebuilt and their hashes recorded below; recertification and rebinding follow a fresh recording and are not
   part of this change. Do not overwrite historical certificates or claim they
   certify this implementation.
-
-## Removed and retained
-
-Only obligations with a named replacement were removed:
-
-| Removed | Obligation | Replacement |
-|---|---|---|
-| `/`, `/ehr`, `/?workflow=chart` opening the React live chart | Patient search and selection, chart session, entry, drafts, alerts and signing | `/lean.html` with the same live session and commit service: P1/P3 tasks in `workflows.pw.ts`, the board and MAR tests above |
-| The MAR dose list's React chart (`MarApp`) | Scheduled-dose administration, outcomes, stale/duplicate handling, cosign consent use | The Lean MAR route; the dose list, its sign-in and the cosign button remain |
-| `run-days` defaulting to the browser screen gate | Nightly screen admission for simulator and recorder runs | `--screens lean` by default (Lean G1–G11, density limits, dense/fixed-shell families); a resumed run keeps its recorded gate; single-night reruns use the run's gate |
-
-Retained, because they still have consumers:
-
-- The React clinical renderer (`app/src/ehr/ui`): the encounter/login shell,
-  offline replay (`?mode=replay`), dashboard replay and trajectory frames,
-  the browser's revision views, and `screen-check.html`.
-- The browser screen gate (`app/scripts/screen-check.mjs`,
-  `agent/src/screencheck.ts`): `--screens browser` runs, which archive/cadence
-  and generator-only protocols require explicitly; `try-to-break-it`;
-  retained-run recertification and rebinding; the accessibility/screen audit
-  pair; the React e2e specs, which now select `?shell=encounter`.
 
 ## Workload through the Lean page
 

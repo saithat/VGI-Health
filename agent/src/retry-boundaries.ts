@@ -1,5 +1,5 @@
 import type { EhrClient } from './ehr.js';
-import type { ScreenChecker } from './screencheck.js';
+import type { ScreenChecker } from './screen-gate.js';
 import { InfrastructureError } from './errors.js';
 import { retryInfrastructure } from './infrastructure.js';
 export function retryEhr(inner:EhrClient):EhrClient {

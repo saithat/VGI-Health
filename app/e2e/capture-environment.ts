@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import fontManifest from '../src/ehr/ui/fonts/manifest.json' with { type: 'json' };
+import fontManifest from '../src/fonts/manifest.json' with { type: 'json' };
 
 /** Layout inputs shared by the collector and the screen/WCAG gate. */
 export const captureSettings = {

@@ -1,21 +1,21 @@
 import { z } from "zod";
 import { workspaceHash } from "./workspace.js";
 import { stableStringify } from "../program.js";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir,mkdtemp,rm,writeFile } from "node:fs/promises";
 import path from "node:path";
-import { CLIMB_PROMPT, estimateInstruction, type ClimbHost } from "../hillclimb.js";
-import { prepareWorkspace } from "./loop.js";
+import { CLIMB_PROMPT,estimateInstruction,type ClimbHost } from "../hillclimb.js";
+import { prepareWorkspace } from "./workspace.js";
 import {
-  prepareLaunch,
-  launchUsage,
-  auditLaunch,
-  type LaunchUsage,
+prepareLaunch,
+launchUsage,
+auditLaunch,
+type LaunchUsage,
 } from "./agents.js";
-import { startEgressProxy, type EgressEvent } from "./egress.js";
+import { startEgressProxy,type EgressEvent } from "./egress.js";
 import { serveHarnessSpool } from "./host.js";
-import { harnessSandboxArgs, runSandboxed } from "./sandbox.js";
-import { readJson, writeJson } from "../util.js";
-import { UsageLimitError, usageLimitIn } from "../usage-limit.js";
+import { harnessSandboxArgs,runSandboxed } from "./sandbox.js";
+import { readJson,writeJson } from "../util.js";
+import { UsageLimitError,usageLimitIn } from "../usage-limit.js";
 
 export interface ClimbSessionOptions {
   model: string;
@@ -117,11 +117,9 @@ export async function runClimbingSession(
         const home = await mkdtemp(path.join(root, "cli-home-"));
         const spec = await prepareLaunch(
           {
-            harness: "codex",
             model: opts.model,
             serviceTier: opts.serviceTier,
             reasoningEffort: opts.reasoningEffort,
-            maxTurns: 0,
           },
           home,
           control,
@@ -153,8 +151,8 @@ export async function runClimbingSession(
             undefined,
             stopSession.signal,
           );
-          const usage = launchUsage("codex", run.stdout),
-            audit = auditLaunch("codex", run.stdout);
+          const usage = launchUsage(run.stdout),
+            audit = auditLaunch(run.stdout);
           launches.push(usage);
           await writeFile(path.join(dir, `launch-${index}.txt`), run.stdout);
           await writeJson(path.join(dir, `launch-${index}.json`), {

@@ -12,17 +12,15 @@ test("default clinical entry points open the Lean page with their parameters", (
   );
   expect(leanEntry(`${o}/ehr?persona=P3`)).toBe("/lean.html?persona=P3");
 });
-test("ADT, MAR dose list, replay, the encounter shell, callbacks, dashboard and browser stay", () => {
+test("ADT, MAR, dashboard and browser keep their routes", () => {
   for (const path of [
     "/?workflow=adt",
     "/?workflow=mar",
-    "/?mode=replay",
-    "/?shell=encounter",
-    "/?workflow=chart&code=x&state=y",
-    "/?error=access_denied",
     "/dashboard",
     "/browse",
     "/lean.html",
   ])
     expect(leanEntry(`${o}${path}`), path).toBeUndefined();
 });
+
+test("old encounter bookmarks open Lean", () => expect(leanEntry(o+"/?shell=encounter&persona=P3")).toBe("/lean.html?persona=P3"));

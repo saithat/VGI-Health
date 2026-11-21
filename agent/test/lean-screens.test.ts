@@ -1,42 +1,31 @@
-import {
-  layoutFor,
-  shapeFor,
-} from "../../scripts/layout-reference/generator.mjs";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { readFile,writeFile,mkdir } from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import {
-  LeanScreenChecker,
-  vendorDensityLimits,
+LeanScreenChecker,
+vendorDensityLimits,
 } from "../src/lean-screencheck.js";
-import { layoutRunner, viewports } from "../src/lean-layout-native.js";
+import { layoutRunner,viewports } from "../src/lean-layout-native.js";
 import {
-  paintSchema,
-  placedGeometry,
-  shellTree,
+paintSchema,
+placedGeometry,
+shellTree,
 } from "../src/lean-layout-geometry.js";
 import {
-  withDesign,
-  designOf,
-  type LayoutDesign,
+withDesign,
+designOf,
+type LayoutDesign,
 } from "../src/layout-design.js";
-import { applyToProgram, stableStringify } from "../src/program.js";
-import { geometryComponentsHash, attachGeometry } from "../src/geometry.js";
+import { applyToProgram,stableStringify } from "../src/program.js";
+import { geometryComponentsHash,attachGeometry } from "../src/geometry.js";
 import { createFakeEhr } from "../src/fake/ehr-fake.js";
 import { fakeCanonical } from "../src/fake/fixtures.js";
-import { runDays } from "../src/run.js";
-import { ReplayLlm } from "../src/backends/replay.js";
-import { llmProposalSchema } from "../src/schema.js";
-import type { JsonRequest } from "../src/backends/types.js";
-import { fakeLeanStates } from "./lean-fixture.js";
-import { ScriptedLlm } from "./scripted.js";
-import { fakeWorld, tmp } from "./helpers.js";
+import { fakeWorld,tmp } from "./helpers.js";
 import { RunStore } from "../src/store.js";
 import type { LeanScreenState } from "../src/lean-layout-states.js";
-import type { GeometryProvider } from "../src/geometry.js";
 import {
-  compactLeanInventory,
-  leanLayoutPrompt,
+compactLeanInventory,
+leanLayoutPrompt,
 } from "../src/lean-layout-prompt.js";
 const canonicalV1 = fakeCanonical("v1");
 function required<T>(value: T | undefined): T {
@@ -424,180 +413,6 @@ describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () =
 });
 /** Fake traces and semantic screen fixtures are explicitly synthetic. Native
  * ui-layout still checks and paints every fixture used by the test loop. */
-const runStates = async (
-  input: Parameters<GeometryProvider>[0],
-): Promise<LeanScreenState[]> => {
-  const all = input.program.screens.map((s) => ({
-    screen: s.id,
-    ui: {
-      ...ui(s.id),
-      workspace: s.components.map((c) => ({
-        button: {
-          comp: c.id,
-          label: c.label,
-          role: "secondary",
-          enabled: true,
-          blockedReason: null,
-          hotkey: null,
-        },
-      })),
-    },
-    state: s.id,
-  }));
-  return all;
-};
-it("runs two days through Lean providers with scripted/replay backends and no browser", async () => {
-  const worldDir = await fakeWorld(2),
-    runsRoot = await tmp("lean-run");
-  const common = {
-    screenMode: "lean" as const,
-    leanOptions: { states: runStates, limits: async () => ({}) },
-    days: 2,
-    worldDir,
-    runsRoot,
-    personas: ["P1"],
-    seedPolicy: "none" as const,
-    ehr: createFakeEhr(),
-  };
-  const recorded = await runDays({
-    ...common,
-    llm: new ScriptedLlm(),
-    runId: "recorded",
-  });
-  const replay = await runDays({
-    ...common,
-    llm: new ReplayLlm(recorded.dir),
-    runId: "replay",
-  });
-  expect(replay.infrastructureErrors).toEqual([]);
-  expect(replay.llmErrors).toEqual([]);
-  expect(replay.timelines[0]?.days).toHaveLength(2);
-  const manifest = JSON.parse(
-    await readFile(path.join(replay.dir, "manifest.json"), "utf8"),
-  );
-  expect(manifest).toMatchObject({
-    screenGate: "lean",
-    browserCertified: false,
-    status: "completed",
-    referenceGeneratorVersion: "dense-reference-v12",
-  });
-  expect(
-    manifest.referenceUsage.some(
-      (r: { day: number; dense: number; fallback: number }) =>
-        r.day === 1 && r.dense + r.fallback > 0,
-    ),
-  ).toBe(true);
-  expect(recorded.timelines[0]?.nights.map((n) => n.outcome)).toEqual(
-    replay.timelines[0]?.nights.map((n) => n.outcome),
-  );
-  expect(
-    JSON.parse(
-      await readFile(path.join(replay.dir, "days/day-01/P1.json"), "utf8"),
-    ).geometry.appSha256,
-  ).toMatch(/^lean-layout:/);
-  await expect(
-    runDays({
-      ...common,
-      llm: new ScriptedLlm(),
-      runId: "recorded",
-      resume: true,
-      screenMode: "browser",
-    }),
-  ).rejects.toThrow(/screen gate/);
-}, 120000);
-
-it("repairs Lean findings and ships a Program change with an independently stored custom family", async () => {
-  const state = required(
-    (await fakeLeanStates({ program: canonicalV1, specVersion: "v1" })).find(
-      (s) => s.screen === "home",
-    ),
-  );
-  const shown = await sessioned(state.ui);
-  const [shape] = await layoutRunner([
-    { op: "family-check", references: [{ screen: shown }] },
-  ]);
-  const nativeShape = required(required(shape?.shapes)[0]);
-  const paints = await layoutRunner(
-    viewports.map((viewport) => ({
-      op: "structural-paint",
-      screen: shown,
-      viewport,
-    })),
-  );
-  const good: LayoutDesign = [
-    {
-      screen: "home",
-      shape: nativeShape,
-      layouts: paints.map((_paint, i) => ({
-        viewport: required(viewports[i]),
-        tree: z
-          .json()
-          .parse(layoutFor(shapeFor(shown), required(viewports[i]))),
-      })),
-    },
-  ];
-  const bad: LayoutDesign = [
-    {
-      ...required(good[0]),
-      layouts: [
-        { viewport: required(viewports[0]), tree: { type: "Absolute" } },
-      ],
-    },
-  ];
-  class LayoutScript extends ScriptedLlm {
-    override async complete(req: JsonRequest) {
-      const response = await super.complete(req);
-      if (!["propose", "repair"].includes(req.purpose)) return response;
-      const proposal = llmProposalSchema.parse(response.json);
-      for (const candidate of proposal.candidates)
-        candidate.patch.push({
-          op: "add",
-          path: "/layouts",
-          from: "",
-          valueJson: JSON.stringify(req.purpose === "repair" ? good : bad),
-        });
-      return { ...response, json: proposal };
-    }
-  }
-  const backend = new LayoutScript(),
-    runsRoot = await tmp("lean-repair");
-  const run = await runDays({
-    screenMode: "lean",
-    leanOptions: { states: fakeLeanStates, limits: async () => ({}) },
-    days: 2,
-    worldDir: await fakeWorld(2),
-    runsRoot,
-    runId: "custom",
-    personas: ["P1"],
-    seedPolicy: "none",
-    llm: backend,
-    ehr: createFakeEhr(),
-  });
-  const record = await new RunStore(
-    run.dir,
-    path.join(run.dir, "custom"),
-    true,
-  ).readDecision(1, "P1");
-  expect(
-    record.candidates.some(
-      (e) =>
-        e.check.property === "ScreenCheck" && e.check.message?.includes("G1"),
-    ),
-  ).toBe(true);
-  expect(backend.prompts.find((p) => p.purpose === "repair")?.prompt).toContain(
-    "G1",
-  );
-  expect(record.outcome).toBe("deployed");
-  expect(
-    designOf(
-      await new RunStore(
-        run.dir,
-        path.join(run.dir, "custom"),
-        true,
-      ).readProgram("P1", 1),
-    ),
-  ).toEqual(good);
-}, 120000);
 
 it("selects exact event-state boxes without changing the native trace or adding a miss assumption", () => {
   const row = {

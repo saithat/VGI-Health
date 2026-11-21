@@ -5,69 +5,7 @@
 [First local result and verification](../audits/lean-nightly-first-result.md) ·
 [Layout-rule and prompt measurements](../audits/layout-rules-discovery.md)
 
-`run-days --screens lean` is the default screen gate of the existing nightly
-loop (`--screens browser` selects the browser gate, which archive/cadence and
-generator-only runs require explicitly; a resumed run keeps its recorded gate). The agent reads one simulated persona's training evidence and proposes
-Program edits and optional layout rules or literal layouts together. The objective is clicks plus
-scrolls saved on that persona's traces. Completion, clinical admission,
-learnability and physical-interaction validation still gate each release.
-There is no pointer-travel ranking, fixed Program or layout search separate
-from the nightly agent. The shared dense reference supplies geometry for shapes
-without a custom layout; it is not a restriction on proposed custom designs. P1–P5 have separate programs, histories,
-memories and designs. Without the flag, the existing browser mode is unchanged.
-
-**No browser runs in this mode.** Layout admission and the geometry used for
-scroll counts, scroll pixels and mouse travel come from the existing native
-`ui-layout` executable. The deployed application still paints with React. Lean
-reference/custom geometry is not a measurement of that application's screens;
-a successful research run has no browser screen certificate and establishes no
-clinical benefit. All clinicians and patients here are simulated/synthetic.
-
-## Run and inspect
-
-Run from the repository root with the copied, gitignored fixtures/world and
-installed dependencies. No Lean source changes or new executable targets are
-needed. Keep one build process per checkout.
-
-```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2 CI=true
-(cd lean && lake build ehr ui-layout ui-port-audit)
-pnpm --filter agent run-days --screens lean --days 2 --personas P1,P3,P5 \
-  --backend codex --model gpt-6.1-sol --world runs/world/2 \
-  --run-id lean-2day --seed-policy none
-node scripts/discovery/report.mjs runs/lean-2day
-node scripts/discovery/serve.mjs --run runs/lean-2day --port 5190
-```
-
-If pnpm's dependency auto-check attempts an unavailable store in this environment,
-add `--config.verify-deps-before-run=false` before `--filter`; dependencies must
-already be installed. Model calls use the existing confined backend. A failed
-call is recorded; no fake answer is substituted. Use a new run ID after changing
-code, native binaries, density snapshots or inputs. `--resume` requires the same
-screen mode and fingerprints. The archive/cadence protocol and injected screen
-or geometry overrides are rejected in this mode. Tests may inject explicit
-semantic fixtures; live backends cannot override the native runner, states or
-vendor limits.
-
-A reproducible two-day, three-persona fake/replay exercise uses the existing
-scripted and replay backends and the real `ui-layout` executable:
-
-```sh
-node scripts/discovery/smoke.mjs runs/lean-smoke
-node scripts/discovery/report.mjs runs/lean-smoke/recorded
-node scripts/discovery/report.mjs runs/lean-smoke/replay
-node scripts/discovery/gate-benchmark.mjs runs/lean-gate-benchmark
-node scripts/discovery/rules-smoke.mjs runs/layout-rules-smoke
-node scripts/discovery/rules-benchmark.mjs runs/layout-rules-benchmark
-node scripts/discovery/prompt-measure.mjs /path/to/lean-10day-stopped-day3 \
-  runs/layout-rules-prompt-measure
-pnpm --filter agent test --maxWorkers 2
-pnpm --filter agent typecheck
-```
-
-Its clinical checker, simulator and semantic screen fixtures are fakes. It tests
-plumbing and determinism, and certifies nothing. It cannot measure clinical or
-human usability gains.
+New recordings use the Lean screen gate and hill climbing. Each persona has a separate program, history and layout design. Native Lean admits custom layout families and the dense reference. The clinical page paints them with Lean WASM. The measurements below document the original design study. See [hill climbing](hillclimb-night.md) for current commands.
 
 ## Design sidecars and admission
 

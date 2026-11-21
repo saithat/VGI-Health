@@ -1,15 +1,13 @@
-import { afterEach, beforeAll, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
-import { MantineProvider } from "@mantine/core";
+import { afterEach,beforeAll,expect,it,vi } from "vitest";
+import { cleanup } from "@testing-library/react";
 import { webcrypto } from "node:crypto";
 import fc from "fast-check";
 import {
-  screenCanonical,
-  screenHash,
-  screenJournal,
+screenCanonical,
+screenHash,
+screenJournal,
 } from "../src/data/screenFingerprint";
-import { UiScreenView } from "../src/ehr/ui/Screen";
-import type { UiScreen } from "../src/ehr/ui/types";
+import type { UiScreen } from "../src/core/types";
 
 beforeAll(() => {
   Object.defineProperty(globalThis, "crypto", {
@@ -60,14 +58,7 @@ it("hashes the exact painted object including a tampered alert, without re-rende
     JSON.stringify(screenCanonical(JSON.parse(input))),
   );
   const journal = screenJournal(serialize);
-  const onPaint = vi.fn((value: UiScreen) => journal.observe(value, 3));
-  render(
-    <MantineProvider>
-      <UiScreenView screen={painted} onPaint={onPaint} onEvent={() => {}} />
-    </MantineProvider>,
-  );
-  expect(screen.getByText("Altered display")).toBeDefined();
-  expect(onPaint.mock.calls[0]?.[0]).toBe(painted);
+  journal.observe(painted, 3);
   const expected = await screenHash(screenCanonical(painted));
   painted.title = "Mutated after paint";
   const evidence = await journal.evidence("request-1");

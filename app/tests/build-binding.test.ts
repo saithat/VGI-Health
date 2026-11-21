@@ -1,3 +1,4 @@
+import {HILLCLIMB} from "../../agent/src/protocol";
 import { describe, it, expect, vi } from 'vitest';
 import { webcrypto } from 'node:crypto';
 import { assertBuildBinding, contentHash, stableJson } from '../src/core/buildBinding';
@@ -34,15 +35,25 @@ it('loads a rebound fork against the current build and keeps its frozen replay c
  const program={owner:'P1',version:1},certificate={verdict:'ok'},appSha256='1'.repeat(64),wasmSha256='2'.repeat(64);
  const binding={schemaVersion:1,appSha256,wasmSha256,componentsSha256:await contentHash([]),programSha256:await contentHash(program),certificateSha256:await contentHash(certificate)};
  const artifacts:Record<string,unknown>={
- '/runs/FAKE/manifest.json':{buildBindingRequired:true},
+ '/runs/FAKE/manifest.json':{buildBindingRequired:true,screenGate:'lean',measurementProtocol:{name:HILLCLIMB}},
  '/runs/FAKE/certs/P1/v1.build.json':{status:'bound',current:'v1.build.2.json'},
  '/runs/FAKE/certs/P1/v1.build.2.json':binding,
- '/runs/FAKE/certs/P1/v1.json':certificate,
+ '/runs/FAKE/certs/P1/v1.json':certificate, '/runs/FAKE/programs/P1/v1.layouts.json':[],
  '/build.json':{appSha256},'/ehr/manifest.json':{assets:{'ehr-interp.wasm':wasmSha256}},
  };
  vi.stubGlobal('fetch',async(input:unknown)=>{const value=artifacts[String(input)];if(!value)throw new Error(`Unexpected ${String(input)}`);return new Response(JSON.stringify(value));});
  try{
- await expect(verifyRecordedBuild('runs/FAKE/programs/P1/v1.json',program)).resolves.toBeNull();
- expect(programSpecPath({path:'runs/FAKE/programs/P1/v1.json',run:'FAKE',persona:'P1',release:'v3',version:1,role:'physician',group:'run',label:'fake',deployed:true,mock:false,recordedCertificate:null})).toBe('/runs/FAKE/certifications/P1/v1/spec.json');
+ await expect(verifyRecordedBuild('runs/FAKE/programs/P1/v1.json',program)).resolves.toEqual([]);
+ expect(programSpecPath({path:'runs/FAKE/programs/P1/v1.json',run:'FAKE',persona:'P1',release:'v3',version:1,role:'physician',group:'run',label:'fake',deployed:true,recordedCertificate:null})).toBe('/runs/FAKE/certifications/P1/v1/spec.json');
  }finally{vi.unstubAllGlobals();}
+});
+
+it("identifies a removed recording mode before requesting certificate files", async () => {
+  const { verifyRecordedBuild } = await import("../src/browser/data");
+  const response = vi.fn(async () => new Response(JSON.stringify({screenGate:"browser"})));
+  vi.stubGlobal("fetch", response);
+  try {
+    await expect(verifyRecordedBuild("runs/old/programs/P1/v0.json", {})).rejects.toThrow("recorded with a removed mode");
+    expect(response).toHaveBeenCalledTimes(1);
+  } finally { vi.unstubAllGlobals(); }
 });

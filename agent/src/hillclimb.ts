@@ -1,56 +1,56 @@
 import { BoundedMap } from "./bounded-map.js";
-import { replayJobs, replayWorkers, taskSlots } from "./replay-pool.js";
+import { replayJobs,replayWorkers,taskSlots } from "./replay-pool.js";
 import { nativeCancellation } from "./native-process.js";
 import path from "node:path";
 import {
-  daySeed,
-  preparePatch,
-  certifyPatch,
-  completionOk,
-  emptyRecord,
-  deployVersion,
-  recordDeploy,
-  validationGross,
-  type LoopDeps,
-  type NightInput,
-  type Gate,
+daySeed,
+preparePatch,
+certifyPatch,
+completionOk,
+emptyRecord,
+deployVersion,
+recordDeploy,
+validationGross,
+type LoopDeps,
+type NightInput,
+type Gate,
 } from "./night.js";
 import {
-  addMetrics,
-  sumMetrics,
-  saving,
-  summarizeTrain,
-  type TrainDay,
+addMetrics,
+sumMetrics,
+saving,
+summarizeTrain,
+type TrainDay,
 } from "./observe.js";
-import { componentsMoved, sha256, stableStringify } from "./program.js";
+import { componentsMoved,sha256,stableStringify } from "./program.js";
 import {
-  RELEASE_SCORING_POLICY,
-  releaseScoringSchema,
-  scoredMetrics,
+RELEASE_SCORING_POLICY,
+releaseScoringSchema,
+scoredMetrics,
 } from "./release-scoring.js";
-import { defaultStructurePolicy } from "./structure-policy.js";
-import { usageWeightedSwitchCost } from "./cadence.js";
+import { usageWeightedSwitchCost } from "./switch-cost.js";
 import { layoutRuleSchema } from "./layout-rules.js";
 import { designOf } from "./layout-design.js";
 import { screenAttribution } from "./lean-layout-prompt.js";
 import { LeanLayoutRefusal } from "./lean-layout-refusal.js";
 import { RELEASE_IDS } from "./release-config.js";
 import {
-  jsonPatchSchema,
-  type DayResult,
-  type DaySchedule,
-  type Program,
-  type UserMemory,
-  type JsonPatchOp,
+jsonPatchSchema,
+type DayResult,
+type DaySchedule,
+type Program,
+type UserMemory,
+type JsonPatchOp,
 } from "./schema.js";
 import type { ReplayDay } from "../../app/src/dashboard/agent-evidence.js";
-import { harnessRequestSchema, type HarnessReply } from "./harness/host.js";
+import { harnessRequestSchema,type HarnessReply } from "./harness/host.js";
 import { workspaceHash } from "./harness/workspace.js";
-import { pad2, writeJson } from "./util.js";
+import { pad2,writeJson } from "./util.js";
 import {
-  runClimbingSession,
-  type ClimbSessionOptions,
+runClimbingSession,
+type ClimbSessionOptions,
 } from "./harness/climb-session.js";
+const minimumDailySaving = 5;
 
 export const CLIMB_PROMPT =
   "Read README.md in /work. Continue until night done succeeds.";
@@ -508,7 +508,7 @@ export function climbingGate(
       train: selected,
     });
     const net = validationGross(replay) - movement.cost,
-      minimum = defaultStructurePolicy().minimumEffect;
+      minimum = minimumDailySaving;
     if (net < minimum)
       reasons.push(
         `Daily net saving ${net} below ${minimum} (movement charge ${movement.cost})`,

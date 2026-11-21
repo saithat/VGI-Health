@@ -1,13 +1,11 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { MantineProvider } from "@mantine/core";
-import type { PresentationBundle } from "../ehr/ui/presentation-types";
-import type { UiScreen } from "../ehr/ui/types";
-import { UiScreenView } from "../ehr/ui/Screen";
-import { clinicalTheme } from "../ehr/ui/theme";
+import { LeanReplay } from "./LeanReplay";
+import type { Output } from "../lean-ui/layout";
+import { useEffect,useLayoutEffect,useRef,useState } from "react";
+import type { UiScreen } from "../core/types";
 import {
-  eventTarget,
-  entryText,
-  type TrajectoryEvent,
+eventTarget,
+entryText,
+type TrajectoryEvent,
 } from "./trajectory-replay";
 
 export const REPLAY_VIEWPORT = { width: 1440, height: 900 };
@@ -59,7 +57,7 @@ function reveal(doc: Document, node: HTMLElement) {
 }
 
 export type TrajectoryFrameState = {
-  presentations: PresentationBundle | null;
+  output: Output;
   screen: UiScreen;
   trace: TrajectoryEvent[];
   count: number;
@@ -68,7 +66,7 @@ export type TrajectoryFrameState = {
 };
 
 export function TrajectoryFrame({
-  presentations,
+  output,
   screen,
   trace,
   count,
@@ -110,7 +108,7 @@ export function TrajectoryFrame({
       frame.current?.contentWindow?.postMessage(
         {
           type: "trajectory-state",
-          presentations,
+          output,
           screen,
           trace,
           count,
@@ -119,7 +117,7 @@ export function TrajectoryFrame({
         },
         location.origin,
       );
-  }, [ready, presentations, screen, trace, count, speed, title]);
+  }, [ready, output, screen, trace, count, speed, title]);
   return (
     <div
       ref={stage}
@@ -147,14 +145,14 @@ export function TrajectoryFrame({
 // This surface runs in the iframe's own JavaScript realm, so painter window,
 // media-query, modal and scroll effects all use the fixed logical viewport.
 export function TrajectorySurface({
-  presentations,
+  output,
   screen,
   trace,
   count,
   speed,
 }: TrajectoryFrameState) {
   const doc = document;
-  const [shown, setShown] = useState({ screen, count });
+  const [shown, setShown] = useState({ screen, output, count });
   const current = useRef(shown);
   const seek = useRef(true);
   const deferredScroll = useRef<number | null>(null);
@@ -202,8 +200,8 @@ export function TrajectorySurface({
     seek.current = !sequential;
     const finish = () => {
       restoreInput?.();
-      current.current = { screen, count };
-      setShown({ screen, count });
+      current.current = { screen, output, count };
+      setShown({ screen, output, count });
     };
     if (!sequential || !event) {
       finish();
@@ -357,21 +355,7 @@ export function TrajectorySurface({
 
   return (
     <>
-      <MantineProvider
-        theme={{
-          ...clinicalTheme,
-          components: {
-            ...clinicalTheme.components,
-            ModalRoot: { defaultProps: { portalProps: { target: doc.body } } },
-          },
-        }}
-      >
-        <UiScreenView
-          screen={shown.screen}
-          onEvent={() => {}}
-          presentations={presentations}
-        />
-      </MantineProvider>
+      <LeanReplay screen={shown.screen} output={shown.output} />
       <div ref={cursor} className="trajectory-cursor" aria-hidden="true">
         <svg viewBox="0 0 24 30">
           <path

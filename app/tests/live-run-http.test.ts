@@ -55,7 +55,7 @@ it("HTTP summary/index and direct artifacts share the marker boundary", async ()
     days: 2,
     personas: ["P1"],
     status: "running",
-    ehr: { mode: "fake" },
+    ehr: { mode: "real" },
     completionProtocol: "atomic-prefix-v1",
   });
   await put("runs/live/programs/P1/v0.json", { version: 0 });

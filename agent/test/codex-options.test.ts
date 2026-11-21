@@ -1,10 +1,9 @@
-import { existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { CodexLlm } from '../src/backends/codex.js';
 import { spawnSync } from 'node:child_process';
-import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { chmod,readFile,writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { confinedArgs, auditTranscript, queryRequirements } from '../src/backends/isolation.js';
+import { confinedArgs,auditTranscript } from '../src/backends/isolation.js';
 import { tmp } from './helpers.js';
 it('confines file reads to request/runtime directories, with no LLM call', async () => {
   const directory = await tmp('codex-isolation');
@@ -53,63 +52,3 @@ it('passes the configured model explicitly when no CLI model is supplied',async(
 });
 
 it('rejects Codex fast mode before starting a subprocess',()=>{expect(()=>new CodexLlm({model:'FAKE',serviceTier:'fast'})).toThrow('fast mode is prohibited');});
-it('stages arm C train files and enables only confined read-only shell execution (stub, no model)',async()=>{
- const {trainingQueryBundle}=await import('../src/quality-queries.js');
- const {localityDigest}=await import('../src/locality.js');
- const home=await tmp('codex-query-stub'),binary=path.join(home,'stub');
- await writeFile(binary,`#!/usr/bin/python3
-import json, os, subprocess, sys
-args=sys.argv[1:]
-output=args[args.index('-o')+1]
-result=subprocess.run(['/usr/bin/node','query.mjs','screens','--limit','1'],capture_output=True,text=True,check=True)
-print(json.dumps({'type':'item.completed','item':{'type':'command_execution','id':'query-1','command':'/usr/bin/node query.mjs screens --limit 1','aggregated_output':result.stdout,'status':'completed','exit_code':0}}))
-with open(output,'w') as f: json.dump({'args':args,'files':sorted(os.listdir('.'))},f)
-sys.stdin.read()
-`);await chmod(binary,0o755);
- const bundle=trainingQueryBundle({night:1,train:[]},[],{ledger:[],locality:localityDigest([])});
- const request={callId:'C',purpose:'test',system:'FAKE',prompt:'FAKE',schemaName:'Fake',schema:{},queryBundle:bundle};
- await expect(new CodexLlm({binary,model:'FAKE'}).complete(request)).rejects.toThrow('explicit offline arm-C');
- const response=await new CodexLlm({binary,model:'FAKE',serviceTier:'default',queryMode:true}).complete(request);
- const {z}=await import('zod');
- const result=z.object({args:z.array(z.string()),files:z.array(z.string())}).parse(response.json);
- expect(result.args).toContain('features.shell_tool=true');expect(result.args).toContain('web_search="disabled"');expect(result.args).toContain('mcp_servers={}');
- for(const feature of ['apps','plugins','browser_use','code_mode'])expect(result.args).toContain(`features.${feature}=false`);expect(result.args).toContain('read-only');
- for(const file of ['traces.json','geometry.json','ledger.json','locality.json','query.mjs','README.md'])expect(result.files).toContain(file);
- const {queryUsage}=await import('../src/backends/query-audit.js');expect(queryUsage(response.usage)).toEqual({count:1,tally:{screens:1}});
-});
-
-it.skipIf(!existsSync('/usr/local/bin/codex'))('enforces managed auth read denial and read-only tools in the real Codex sandbox without a model',async()=>{
- const dir=await tmp('codex-query-permissions'),home=path.join(dir,'codex-home');await mkdir(home,{mode:0o700});
- await writeFile(path.join(home,'auth.json'),'FAKE_CREDENTIAL_MARKER');
- await writeFile(path.join(home,'query-requirements.toml'),queryRequirements(dir));
- const {trainingQueryBundle,writeQueryDirectory}=await import('../src/quality-queries.js');
- const {localityDigest}=await import('../src/locality.js');
- await writeQueryDirectory(dir,trainingQueryBundle({night:1,train:[]},[],{ledger:[],locality:localityDigest([])}));
- const probe=`import json, subprocess
-r={}
-for key,filename,mode in [('train','traces.json','r'),('credential','codex-home/auth.json','r'),('write','new-file','w')]:
- try:
-  with open(filename,mode) as f: pass
-  r[key]='allowed'
- except OSError: r[key]='denied'
-query=subprocess.run(['/usr/bin/node','query.mjs','screens'],capture_output=True,text=True,check=True)
-r['query']=json.loads(query.stdout)['query']
-print(json.dumps(r))`;
- const run=spawnSync('bwrap',confinedArgs(dir,'/usr/local/bin/codex',['sandbox','-P',':read-only','--include-managed-config','-C',dir,'--','/usr/bin/python3','-c',probe],true),{cwd:dir,encoding:'utf8'});
- // codex >=0.167 warns that it will not create PATH helper aliases under /tmp; any other stderr output fails.
- expect(run.stderr.split('\n').filter(l=>l&&!l.startsWith('WARNING: proceeding, even though we could not create PATH aliases:'))).toEqual([]);expect(run.status).toBe(0);expect(JSON.parse(run.stdout)).toEqual({train:'allowed',credential:'denied',write:'denied',query:'screens'});
-});
-
-it('rejects arm C transcript overflow rather than losing command provenance (stub, no model)',async()=>{
- const dir=await tmp('codex-query-overflow'),binary=path.join(dir,'stub');
- await writeFile(binary,`#!/usr/bin/python3
-import json, sys
-for i in range(12):
- print(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':'x'*1000000}}),flush=True)
-sys.stdin.read()
-`);await chmod(binary,0o755);
- const {trainingQueryBundle}=await import('../src/quality-queries.js');
- const {localityDigest}=await import('../src/locality.js');
- const bundle=trainingQueryBundle({night:1,train:[]},[],{ledger:[],locality:localityDigest([])});
- await expect(new CodexLlm({binary,model:'FAKE',queryMode:true}).complete({callId:'overflow',purpose:'test',system:'FAKE',prompt:'FAKE',schemaName:'Fake',schema:{},queryBundle:bundle})).rejects.toThrow('complete audit unavailable');
-});

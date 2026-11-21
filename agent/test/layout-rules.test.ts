@@ -83,7 +83,7 @@ it('exposes layout move only for opt-in requests; mixed patches remain separate 
             return { json: wire, backend: 'scripted', model: 'fixture', servedBy: null, replayOf: null, promptMatched: null, usage: null };
         } };
     const agent = new LlmAgent(new RecordingLlm(backend, await tmp('rule-agent')));
-    const proposal = await agent.proposeCandidates({ callId: 'night-01/P1/propose-0', purpose: 'propose', source: 'llm', parts: leanLayoutPrompt({ system: 'default', prompt: 'fixture' }, '{}') });
+    const proposal = await agent.proposeCandidates({ callId: 'night-01/P1/propose-0', purpose: 'surface', source: 'llm', parts: leanLayoutPrompt({ system: 'default', prompt: 'fixture' }, '{}') });
     const patch = required(proposal.candidates[0]).patch;
     const original = withDesign(structuredClone(fakeCanonical('v1')));
     const next = applyToProgram(original, [...patch, { op: 'replace', path: '/screens/0/title', value: 'Updated' }], { version: 1 }).program;

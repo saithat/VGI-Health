@@ -76,7 +76,7 @@ export async function completedCatalogRuns(directory) {
       // Research outputs also use manifest.json; only recordings have this identity.
       if (
         manifest.runId !== entry.name ||
-        !["real", "fake"].includes(manifest.ehr?.mode)
+        manifest.ehr?.mode !== "real"
       )
         continue;
       completed.set(entry.name, await completedPrefix(dir));
@@ -119,14 +119,12 @@ export async function buildCatalog() {
       { rn: "P3", np: "P4", surgeon: "P5" }[program.role] ??
       "P1";
     let deployed = false;
-    let mock = false;
     let recordedCertificate = null;
     if (recorded) {
       const prefix = completed.get(recorded[1]);
       deployed =
         Math.max(...(prefix?.versions.get(persona) ?? [])) === program.version;
-      mock = prefix?.manifest.ehr.mode === "fake";
-      if (!mock) {
+      {
         try {
           const certificate = await readJson(
             `runs/${recorded[1]}/certs/${persona}/v${program.version}.json`,
@@ -144,7 +142,7 @@ export async function buildCatalog() {
       persona,
       role: program.role ?? "physician",
       group: recorded
-        ? `Run ${recorded[1]}${mock ? " · MOCK authored" : ""}`
+        ? `Run ${recorded[1]}`
         : bad
           ? "Bad programs"
           : path.startsWith("releases/")
@@ -161,7 +159,6 @@ export async function buildCatalog() {
               : path,
       run: recorded?.[1] ?? null,
       deployed,
-      mock,
       recordedCertificate,
       version: program.version,
       ...(bad
@@ -252,7 +249,6 @@ export async function buildCatalog() {
       const manifest = completed.get(id).manifest;
       return {
         id,
-        mock: manifest.ehr?.mode !== "real",
         days: manifest.daysCompleted,
         createdAt: manifest.createdAt ?? "",
       };
@@ -260,7 +256,6 @@ export async function buildCatalog() {
   );
   runs.sort(
     (a, b) =>
-      Number(a.mock) - Number(b.mock) ||
       b.createdAt.localeCompare(a.createdAt) ||
       a.id.localeCompare(b.id),
   );

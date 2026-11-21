@@ -1,5 +1,7 @@
 # Hill-climbing nights on Lean screens
 
+Hill climbing is the default and only discretionary night mode. Vendor release and migration nights retain their validation gates. One-day runs measure the starting program and finish before the first night.
+
 A fresh overnight recording uses one confined Codex CLI session per persona on each discretionary night. For a direct invocation, select the mode explicitly.
 
 ```sh

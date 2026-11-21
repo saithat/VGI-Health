@@ -1,3 +1,4 @@
+import {scriptedClimb} from "./lean-fixture.js";
 import { withData } from "./data.js";
 import { RELEASE_IDS } from '../src/release-config.js';
 import { readFile } from 'node:fs/promises';
@@ -9,8 +10,8 @@ import { ScriptedLlm } from './scripted.js';
 withData("runs/core-10day/decisions").it('resumes an unfinished night without repeating completed days, decisions or LLM calls', async () => {
   const worldDir = await fakeWorld(3);
   const runsRoot = await tmp('resume-runs');
-  const common = { worldDir, runsRoot, runId: 'resume', personas: ['P3'], releaseDays: { v2: 2, v3: 3 } };
-  const first = await runDays({ ...common, days: 2, llm: new ScriptedLlm() });
+  const common = { ...scriptedClimb, worldDir, runsRoot, runId: 'resume', personas: ['P3'], releaseDays: { v2: 2, v3: 3 } };
+  const first = await runDays({ ...scriptedClimb, ...common, days: 2, llm: new ScriptedLlm() });
   const store = new RunStore(first.dir);
   const day1 = await readFile(store.dayPath(1, 'P3'), 'utf8');
   const decision = await store.readDecision(1, 'P3');
@@ -21,7 +22,7 @@ withData("runs/core-10day/decisions").it('resumes an unfinished night without re
     expect(request.callId).not.toContain('night-01');
     return complete(request);
   });
-  const resumed = await runDays({ ...common, days: 3, resume: true, llm });
+  const resumed = await runDays({ ...scriptedClimb, ...common, days: 3, resume: true, llm });
   expect(await readFile(store.dayPath(1, 'P3'), 'utf8')).toBe(day1);
   expect(await readFile(store.certPath('P3', 0), 'utf8')).toBe(cert);
   expect((await store.readDecision(1, 'P3')).llmCalls).toEqual(decision.llmCalls);

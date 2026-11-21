@@ -1,5 +1,5 @@
 import type { Program } from "../../../agent/src/schema";
-import { fieldCaption, sectionCaption } from "../ehr/ui/clinical-display";
+import { fieldCaption, sectionCaption } from "../browser/clinical-display";
 import type { RevisionChange } from "../browser/revision-diff";
 import type { TrajectoryEntry } from "./trajectories-data";
 import { eventTarget, type Trajectory } from "./trajectory-replay";

@@ -1,15 +1,14 @@
 import { existsSync } from 'node:fs';
-import { chmod, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
+import { chmod,mkdtemp,readdir,rm,writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { afterEach, expect, it } from 'vitest';
+import { afterEach,expect,it } from 'vitest';
 import Anthropic from '@anthropic-ai/sdk';
-import { UsageLimitError, apiUsageLimit, usageLimitIn } from '../src/usage-limit.js';
+import { UsageLimitError,apiUsageLimit,usageLimitIn } from '../src/usage-limit.js';
 import { ClaudeLlm } from '../src/backends/claude.js';
-import { DEFAULT_TOOL_BUDGET, ToolSession } from '../src/tool-session.js';
 import { CodexLlm } from '../src/backends/codex.js';
 import { RecordingLlm } from '../src/backends/recording.js';
-import { InfrastructureError, InfrastructureExhaustedError } from '../src/errors.js';
+import { InfrastructureError,InfrastructureExhaustedError } from '../src/errors.js';
 
 const lines = (events: unknown[]) => events.map(e => JSON.stringify(e)).join('\n');
 const dirs: string[] = [];
@@ -74,10 +73,6 @@ it('an exhausted rate limit from the direct claude (SDK) backend is the same res
     const recorded = await readdir(path.join(dir, 'llm/night-01/P1'));
     expect(recorded.filter(f => f.includes('.attempt-'))).toEqual(['propose-0.attempt-1.error.json']);
     expect(recorded).not.toContain('propose-0.json');
-    // The tool-session path (arms C/E) raises it too, instead of BackendRequestError.
-    const toolSession = new ToolSession([], DEFAULT_TOOL_BUDGET, () => Promise.resolve({}));
-    const toolError: unknown = await llm.complete({ ...request, callId: 'night-01/P1/tools-0', toolSession }).catch((e: unknown) => e);
-    expect(toolError).toBeInstanceOf(UsageLimitError);
     // Other API errors keep their meaning.
     Object.defineProperty(inner, 'client', { value: { beta: { messages: { stream: () => ({ finalMessage: () => Promise.reject(new Anthropic.InternalServerError(500, undefined, 'boom', new Headers())) }) } } } });
     const other: unknown = await inner.complete(request).catch((e: unknown) => e);

@@ -1,43 +1,42 @@
+import { assertRecordingMode } from './recording-mode.js';
 import path from "node:path";
 import { tmpdir } from "node:os";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp,rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { z } from "zod";
 import { assertCertified } from "./certification.js";
-import { createEhr, type EhrClient } from "./ehr.js";
-import { fileHash, treeHash } from "./fingerprints.js";
+import { createEhr,type EhrClient } from "./ehr.js";
+import { fileHash,treeHash } from "./fingerprints.js";
 import { geometryEhr } from "./geometry.js";
 import { designOf } from "./layout-design.js";
 import {
-  LeanScreenChecker,
-  type LeanCheckerOptions,
+LeanScreenChecker,
+type LeanCheckerOptions,
 } from "./lean-screencheck.js";
-import { createScreenChecker } from "./screencheck.js";
-import { noAgentReference } from "./vendor-reference.js";
 import {
-  legacyModes,
-  simulationModesSchema,
-  withSimulationModes,
+legacyModes,
+simulationModesSchema,
+withSimulationModes,
 } from "./simulation-modes.js";
 import { assertReplay } from "./hillclimb.js";
 import { daySeed } from "./night.js";
 import { RunStore } from "./store.js";
 import { loadWorld } from "./world.js";
 import {
-  certificateSchema,
-  programSchema,
-  type Program,
-  type DaySchedule,
-  type TaskMetrics,
+certificateSchema,
+programSchema,
+type Program,
+type DaySchedule,
+type TaskMetrics,
 } from "./schema.js";
 import { stableStringify } from "./program.js";
 import {
-  pad2,
-  readJson,
-  REPO_ROOT,
-  writeFileAtomic,
-  writeJson,
+pad2,
+readJson,
+REPO_ROOT,
+writeFileAtomic,
+writeJson,
 } from "./util.js";
 
 const metrics = [
@@ -96,6 +95,7 @@ const manifestSchema = z.object({
   worldSeed: z.number(),
   personas: z.array(z.string()),
   screenGate: z.string().optional(),
+  measurementProtocol: z.object({name:z.string()}).optional(),
   simulationModes: simulationModesSchema.optional(),
   ehr: z.object({ mode: z.enum(["fake", "real"]) }),
   fhirBundles: z.array(z.string()).optional(),
@@ -112,19 +112,17 @@ export async function finalEval(
   dir: string,
   fixture?: { ehr: EhrClient; lean: LeanCheckerOptions },
 ) {
-  const manifest = await readJson(
-    path.join(dir, "manifest.json"),
-    manifestSchema,
-  );
+  const record = await readJson(path.join(dir, "manifest.json"), z.unknown());
+  assertRecordingMode(record);
+  const manifest = manifestSchema.parse(record);
   if (manifest.ehr.mode === "real" && fixture)
     throw Error(
       "Real final evaluation requires the recorded native simulation and screen gate",
     );
-  const world = await loadWorld(manifest.world),
-    lean = manifest.screenGate === "lean";
+  const world = await loadWorld(manifest.world);
   if (world.manifest.seed !== manifest.worldSeed)
     throw Error("World seed differs from recording");
-  const store = new RunStore(dir, path.join(dir, "custom"), lean),
+  const store = new RunStore(dir, path.join(dir, "custom"), true),
     out = path.join(dir, "final-eval");
   const native = withSimulationModes(
     fixture?.ehr ?? createEhr({ fake: manifest.ehr.mode === "fake" }),
@@ -140,7 +138,7 @@ export async function finalEval(
     )
       throw Error("Final evaluation world or simulator differs from recording");
     if (
-      lean &&
+
       (await fileHash(
         path.join(REPO_ROOT, "lean/.lake/build/bin/ui-layout"),
       )) !== recorded.layoutExecutable
@@ -155,15 +153,10 @@ export async function finalEval(
         ...(manifest.fhirBundles ? { bundles: manifest.fhirBundles } : {}),
         ...fixture?.lean,
       };
-      const checker = lean
-        ? new LeanScreenChecker(native, opts)
-        : createScreenChecker(native, {
-            ...opts,
-            referenceProgram: noAgentReference(dir),
-          });
+      const checker = new LeanScreenChecker(native, opts);
       if (!checker.geometry)
         throw Error("Final evaluation requires measured geometry");
-      const ehr = geometryEhr(native, checker.geometry, scratch, lean);
+      const ehr = geometryEhr(native, checker.geometry, scratch, true);
       const params = world.personas.get(persona);
       if (!params) throw Error(`Missing recorded clinician ${persona}`);
       const days: DaySchedule[] = [];

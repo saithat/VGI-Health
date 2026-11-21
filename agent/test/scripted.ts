@@ -4,7 +4,7 @@
  * recorder, then replay the recordings with the real replay backend.
  */
 import type { JsonLlm, JsonRequest, JsonResponse } from '../src/backends/types.js';
-import type { LlmCandidate, LlmChoice, LlmProposal } from '../src/schema.js';
+import type { LlmCandidate, LlmProposal } from '../src/schema.js';
 
 type Op = LlmCandidate['patch'][number];
 const op = (o: 'add' | 'remove' | 'replace', path: string, value?: unknown): Op => ({ op: o, path, from: '', valueJson: value === undefined ? '' : JSON.stringify(value) });
@@ -14,96 +14,6 @@ const comp = (id: string, kind: unknown, extra: Record<string, unknown> = {}) =>
 const cand = (id: string, moveType: LlmCandidate['moveType'], summary: string, patch: Op[], klm = 60): LlmCandidate => ({
   id, summary, moveType, rationale: `scripted: ${summary}`, targets: [], patch, predicted: { clicks: 3, keystrokes: 6, scrolls: 0, klmDeciSec: klm },
 });
-
-const macroCandidate = (id: string, screen: string, target: string, fields: string[], label = 'Usual order'): LlmCandidate => cand(id, 'macro',
-  `Macro on ${screen}: pre-set ${fields.join(', ')} and jump to ${target}`, [
-    op('add', `/screens/[id=${screen}]/components/-`, comp(`${id}-btn`, { macro: { id: `${id}-m` } }, { label, hotkey: 'Alt+U' })),
-    op('add', '/macros/-', { id: `${id}-m`, label: 'Usual order', steps: [...fields.map((f) => ({ setValue: { comp: f, value: 'usual' } })), { goto: { screen: target } }] }),
-  ], 150);
-
-function nightly(persona: string): LlmProposal {
-  const hypothesis = `scripted hypothesis for ${persona}`;
-  switch (persona) {
-    case 'P1':
-      return {
-        hypothesis, decision: 'change', candidates: [
-          macroCandidate('p1-macro', 'w1-notes', 'w1-orders', ['w1-drug', 'w1-dose', 'w1-freq']),
-          // Natural (unseeded) unsafe idea: commit from the composer, where allergies are not shown.
-          cand('p1-toolbar-sign', 'copyToToolbar', 'Copy "Sign orders" onto the order composer toolbar', [
-            op('add', '/screens/[id=w1-orders]/components/[id=w1-go-sign]', comp('w1-tb-sign', { button: { action: { commit: { commit: 'signOrders' } } } }, { copyOf: 'w1-sign-orders', label: 'Sign' })),
-          ], 120),
-          cand('p1-labs-forward', 'bringInfoForward', 'Show relevant labs on the refill screen without opening a tab', [
-            op('replace', '/screens/[id=w7-refill]/components/[id=w7-labs]/tab', 0),
-          ], 40),
-        ],
-      };
-    case 'P2':
-      return {
-        hypothesis, decision: 'change', candidates: [
-          macroCandidate('p2-orderset', 'w3-triage', 'w3-orders', ['w3-drug', 'w3-dose']),
-          cand('p2-dup-passive', 'collapseOptional', 'Make the removable duplicate-therapy alert passive', [
-            op('replace', '/screens/[id=w3-orders]/components/[id=w3-dup]/kind/alert/popup', false),
-          ], 30),
-          cand('p2-bad-selector', 'reorder', 'Reorder a component that does not exist', [op('remove', '/screens/[id=w3-orders]/components/[id=nope]')], 10),
-        ],
-      };
-    case 'P3':
-      return {
-        hypothesis, decision: 'change', candidates: [
-          cand('p3-pain-prefill', 'defaultConfirm', 'Default the pain score to the last value', [
-            op('replace', '/screens/[id=w4-mar]/components/[id=w4-pain]/kind/field/prefill', { default: { value: '0' } }),
-          ], 30),
-          cand('p3-skip-worklist', 'composeTaskView', 'Open the MAR from the home screen directly', [
-            op('replace', '/screens/[id=home]/components/[id=home-go-w4]/kind/button/action/goto/screen', 'w4-mar'),
-            op('remove', '/screens/[id=w4-worklist]'),
-          ], 50),
-          cand('p3-compact', 'reorder', 'Compact the dose details panel', [op('replace', '/screens/[id=w4-mar]/components/[id=w4-dose]/size', 'compact')], 5),
-        ],
-      };
-    case 'P4':
-      return {
-        hypothesis, decision: 'change', candidates: [
-          // The label overflows at 390px: passes the checker, fails the (fake) offline screen check.
-          macroCandidate('p4-macro', 'w5-growth', 'w5-dosing', ['w5-drug', 'w5-dose'], 'Usual pediatric order: amoxicillin 45 mg/kg/day in two doses for ten days, weight confirmed today'),
-          cand('p4-compact', 'reorder', 'Compact the growth chart', [op('replace', '/screens/[id=w5-growth]/components/[id=w5-growth-trend]/size', 'compact')], 5),
-          cand('p4-hide-dosecheck', 'collapseOptional', 'Collapse the dose check', [op('replace', '/screens/[id=w5-dosing]/components/[id=w5-dosecheck]/size', 'tiny')], 20),
-        ],
-      };
-    default: {
-      // P5: two candidates that each pass but together exceed the stability budget (forces a repair).
-      const groupInto = (gid: string, ids: string[]): Op[] => [
-        op('add', `/screens/[id=w6-preop]/components/[id=${ids[0] ?? ''}]`, comp(gid, { group: { collapsible: true, startCollapsed: false } }, { label: gid })),
-        ...ids.map((x) => op('add', `/screens/[id=w6-preop]/components/[id=${x}]/parent`, gid)),
-      ];
-      return {
-        hypothesis, decision: 'change', candidates: [
-          cand('p5-group-review', 'merge', 'Group the pre-op review panels', groupInto('p5-review', ['w6-anticoag', 'w6-allergies', 'w6-meds', 'w6-consent'])),
-          cand('p5-group-orders', 'merge', 'Group the pre-op order fields', groupInto('p5-orders', ['w6-drug', 'w6-dose', 'w6-idreentry'])),
-          macroCandidate('p5-macro', 'w6-preop', 'w6-discharge', ['w6-dc-note']),
-        ],
-      };
-    }
-  }
-}
-
-function choose(prompt: string, persona: string): LlmChoice {
-  const rows = prompt.split('\n').filter((l) => l.startsWith('{"id":')).flatMap((l) => {
-    try {
-      const r: unknown = JSON.parse(l);
-      return typeof r === 'object' && r !== null ? [r] : [];
-    } catch {
-      return [];
-    }
-  });
-  const passing = rows.flatMap((r) => ('id' in r && 'check' in r && 'seeded' in r && r.check === 'pass' && r.seeded === false && typeof r.id === 'string' ? [r.id] : []));
-  const chosen = persona === 'P5' ? passing.filter((id) => id.startsWith('p5-group')) : passing.slice(0, 1);
-  return { chosen, rationale: `scripted choice for ${persona}`, rejected: passing.filter((id) => !chosen.includes(id)).map((id) => ({ id, reason: 'scripted' })) };
-}
-
-function repair(persona: string): LlmProposal {
-  const first = nightly(persona).candidates[0];
-  return { hypothesis: 'scripted repair: keep only the first candidate', decision: 'change', candidates: first ? [{ ...first, id: `${first.id}-alone` }] : [] };
-}
 
 const indicationField = (id: string) => comp(id, { field: { element: 'abxIndication', slot: 'current', prefill: 'none' } }, { tag: 'abxIndication' });
 
@@ -137,7 +47,7 @@ function migrate(persona: string, attempt: number): LlmProposal {
 function surface(persona: string): LlmProposal {
   if (persona === 'P1') {
     return { hypothesis: 'P1 orders imaging and specialty meds (R1.1-1)', decision: 'change', candidates: [cand('p1-priorauth', 'surfaceFeature', 'R1.1-1: prior-auth panel inline in the order composer', [
-      op('add', '/screens/[id=w1-orders]/components/[id=w1-go-sign]', comp('w1-priorauth', { priorAuthStatus: { scope: 'imaging,specialtyMed' } }, { tag: 'priorAuthPanel' })),
+      op('add', '/screens/[id=w1-orders]/components/[id=w1-go-sign]', comp('w1-priorauth', { priorAuth: { info: 'priorAuthStatus' } }, { tag: 'priorAuthPanel' })),
     ], 0)] };
   }
   return { hypothesis: `${persona} does not place orders that need prior auth`, decision: 'noChange', candidates: [] };
@@ -153,19 +63,18 @@ export class ScriptedLlm implements JsonLlm {
   readonly name = 'scripted' as const;
   readonly model = 'scripted-test';
   readonly prompts: JsonRequest[] = [];
-  constructor(private readonly fixture?:LlmProposal) {}
 
   async complete(req: JsonRequest): Promise<JsonResponse> {
     this.prompts.push(req);
     const persona = /(?:^|\/)(P\d)[/-]/.exec(req.callId)?.[1] ?? 'P1';
     const attempt = Number(/-(\d+)$/.exec(req.callId)?.[1] ?? '1');
-    const json = req.purpose === 'choose' ? choose(req.prompt, persona)
-      : this.fixture ? this.fixture
-      : req.purpose === 'repair' ? repair(persona)
-        : req.purpose === 'migrate' ? migrate(persona, attempt)
-          : req.purpose === 'surface' ? surface(persona)
-            : req.purpose === 'break' ? breakIt()
-              : nightly(persona);
+    let json: LlmProposal;
+    switch (req.purpose) {
+      case 'migrate': json = migrate(persona, attempt); break;
+      case 'surface': json = surface(persona); break;
+      case 'break': json = breakIt(); break;
+      default: throw Error(`Unexpected scripted model request: ${req.purpose}`);
+    }
     return { json, backend: 'scripted', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: null };
   }
 }

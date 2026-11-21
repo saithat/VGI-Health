@@ -18,7 +18,7 @@
  * component kinds added by vendor releases (`FutureKind`).
  */
 import { z } from 'zod';
-import { presentationSourceSchema, type PresentationSource } from '../../app/src/ehr/ui/presentation-types.js';
+type PresentationSource = never;
 import type * as L from '../../lean/generated/ehr-types.js';
 
 const nat = z.number().int().nonnegative();
@@ -151,7 +151,7 @@ export const programSchema: z.ZodType<Program> = z.object({
   start: str,
   screens: z.array(z.object({ id: str.min(1), title: str, workflow: str, components: z.array(componentSchema) })),
   macros: z.array(z.object({ id: str.min(1), label: str, steps: z.array(macroStepSchema) })),
-  presentationComponents: z.array(presentationSourceSchema).exactOptional(),
+  presentationComponents: z.array(z.never("React presentation components were removed. Use Lean layout rules.")).exactOptional(),
   componentDefs: z.array(z.object({ name: str.min(1), params: z.array(str), body: z.array(componentSchema) })).exactOptional(),
 });
 

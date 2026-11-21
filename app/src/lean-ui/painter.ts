@@ -1,6 +1,6 @@
 import type { Event } from "../../../lean/generated/ehr-types";
-import type { NodeOf, UiScreen } from "../ehr/ui/types";
-import { entryEvent } from "../ehr/ui/events";
+import type { NodeOf, UiScreen } from "../core/types";
+import { entryEvent } from "./events";
 import {
   keyboardKey,
   type KeyboardTransition,

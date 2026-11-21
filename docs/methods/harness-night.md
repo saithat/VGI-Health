@@ -1,7 +1,6 @@
 # Arm H: harness-native night agent
 
-H is opt-in (`proposal-quality --arms B,H --harness codex|claude`). The default
-arm and production discovery are unchanged.
+Historical method and results. The implementation and original commands are available at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Current recordings use [hill climbing](hillclimb-night.md) and the Lean screen gate.
 
 Arms E and R used a model as a stateless JSON function inside our own loop. The
 Codex and Claude Code CLIs are post-trained in their own harnesses: a persistent
@@ -129,16 +128,6 @@ MCP, web search and the like; Claude Code: anything but the six tools) and on
 any command or tool input that names the CLI's private home, credential files,
 `/proc` or the egress socket, even if the attempt was denied.
 
-**The replay guarantee is weaker than R's.** A CLI agent's model calls cannot
-be replayed exactly. `--backend replay --tool-replay-from <run>` instead checks
-that the workspace bytes are identical (SHA-256 over every file), re-executes
-every recorded night command in order against a fresh host, and requires every
-exit code and output to match byte for byte. It also requires the same
-submission. The submission then passes again through the same independent final
-gate and held-out validation. This proves the recorded checks and estimates and
-the decision outcome. It does not prove that the model would produce the same
-transcript again.
-
 ## Pre-declaration (owner approved 2026-11-09)
 
 Committed while the pilot was running, before any H pilot result had been read.
@@ -173,17 +162,6 @@ the same decision rule as the B/R study: a decision-unit paired bootstrap with
 stops after the pilot and is reported.
 
 ## Smokes
-
-There was one smoke on night-01/P1 per harness. The first Codex smoke showed
-that Codex's own workspace-write sandbox refuses socket connections from shell
-commands, so every `night` call failed with EPERM and the agent could not
-submit. The CLI transport was changed from a Unix socket to the file spool
-before any recorded result. The second Codex smoke and the Claude Code smoke
-were both accepted: 12 clicks and 20 scrolls saved for Codex, 0 and 11 for
-Claude. A replay of the second Codex smoke (`--backend replay
---tool-replay-from`) made no CLI launch. It re-executed all 12 night commands
-identically, and its outcome, candidates, certification, validation and choice
-equal the recording.
 
 ## Pilot, 2026-11-09
 
@@ -540,36 +518,6 @@ their meaning, including 529 overloaded. A test injects the SDK's own
 once and that exactly one attempt error is recorded with no response record.
 It also checks the tool-session path and that a 500 error is not treated as a
 usage limit.
-
-## Commands
-
-```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=2 LEAN_NUM_THREADS=4
-export EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr
-DATA=/home/saithat/Projects/VGI-Health/runs
-SOURCE=$DATA/quality-BR-source-20261109 SANITY=$DATA/quality-BR-sanity-20261109
-D=night-01/P1,night-02/P2,night-04/P3,night-05/P4,night-07/P5,night-08/P1,night-09/P2
-cd agent
-lock() { systemd-run --user --scope -q -p MemoryMax=12G -p MemorySwapMax=0 flock "$TMPDIR/vgi-browser-heavy.lock" "$@"; }
-lock ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY --samples 1 --workers 1 \
-  --out ../runs/quality-BH-pilot-codex-20261109 --arms B,H --harness codex --decisions $D \
-  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default
-lock ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY --samples 1 --workers 1 \
-  --out ../runs/quality-BH-pilot-claude-20261109 --arms H --harness claude --decisions $D --backend claude
-# Re-verification of a recorded H sample (no model calls):
-lock ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY --samples 1 --workers 1 \
-  --out ../runs/quality-BH-smoke-codex2-replay-20261109 --arms H --decisions night-01/P1 \
-  --backend replay --tool-replay-from ../runs/quality-BH-smoke-codex2-20261109
-# Full study (add --resume to continue an interrupted run):
-systemd-run --user --scope -q -p MemoryMax=16G -p MemorySwapMax=0 flock "$TMPDIR/vgi-browser-heavy.lock" \
-  ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY \
-  --out ../runs/quality-BH-full-claude-20261109 --arms B,H --harness claude \
-  --reuse-arm-from $DATA/quality-BR-20261109 --reuse-arm B --samples 2 --workers 4 \
-  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default
-```
-
-For a Claude H run, `--backend codex --model …` names B's settings only; the
-reuse check compares them. Data stays untracked under the worktree's `runs/`.
 
 ## Limitations
 

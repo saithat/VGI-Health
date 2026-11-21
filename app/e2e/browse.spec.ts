@@ -26,7 +26,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
   ).toHaveCount(0);
   await expect(page.locator(".patient-card")).toHaveCount(0);
   for (const href of await page
-    .locator('a[href*="/ehr?"]')
+    .locator('a[href*="/lean.html?"]')
     .evaluateAll((links) =>
       links.map((link) => link.getAttribute("href") ?? ""),
     ))
@@ -46,7 +46,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
   await expect(page).toHaveURL(/persona=P3/);
   await expect(page).toHaveURL(/day=5/);
   expect(new URL(page.url()).searchParams.has("patient")).toBe(false);
-  await expect(page.locator(".clinical-app")).toBeVisible({ timeout: 30000 });
+  await expect(page.locator("#status")).toContainText("recorded with a removed mode", {timeout: 30000});
   await page.goBack();
   await expect(
     page.getByRole("region", { name: "Choose a patient" }),
@@ -69,12 +69,6 @@ test("release grid orders v1 v2 v3 and exposes the vendor as a reference", async
     grid.getByRole("row").filter({ hasText: "Vendor reference" }),
   ).toContainText("Reference");
   await expect(grid.locator("tbody tr")).toHaveCount(6);
-  await page.getByLabel("Show mock data", { exact: true }).check();
-  await expect(
-    page
-      .getByLabel("Recorded run", { exact: true })
-      .locator("option[value=mock]"),
-  ).toHaveCount(1);
   await page
     .getByText("Bad programs (should be rejected)", { exact: false })
     .click();

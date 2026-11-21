@@ -1,5 +1,7 @@
 # Offline tailoring sessions (simulator only)
 
+Historical method and results. The implementation and original commands are available at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Current recordings use [hill climbing](hillclimb-night.md) and the Lean screen gate.
+
 [Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
 
 `agent/src/session.ts` prepares an off-shift, weekly or monthly review from a
@@ -63,11 +65,6 @@ without interrupting work or changing screens during a shift.
 evidence, choice/reasons and comparisons). These files are gitignored data.
 The offline harness runs without an LLM or deployment:
 
-```sh
-EHR_BIN=./lean/.lake/build/bin/ehr \
-pnpm --filter agent exec tsx src/session-cli.ts /absolute/path/to/session-input.json
-```
-
 The input shape is `inputSchema` in `agent/src/session-cli.ts`: current and
 canonical programs, persona, nonempty recent schedules, world directory,
 archive candidates with certificates, session metadata, seed and optional flags.
@@ -89,14 +86,7 @@ inside `app/src/browser`; the certified clinical app hash is unchanged.
 
 Validation for this module uses the fake backend and no LLM calls:
 
-```sh
-pnpm --filter agent exec vitest run test/session.test.ts test/bounded-tailoring.test.ts --maxWorkers=2
-pnpm --filter app build
-pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
-```
-
-`run-days --protocol certified-cadence-archive-v1 --cadence weekly
---bounded-costs --tailoring-sessions` enables the connected path. On a release
+the historical cadence protocol enables the connected path. On a release
 slot, `sessionReviewGate` recertifies the archive's top three niche bundles in
 scratch and prepares 2–3 diverse replay-complete options. The historical session comparison may consider nonpositive effort scores to express a placement preference; production releases require the configured net effect floor. Fewer than two eligible options or a `null`
 choice keeps current. A choice still passes the existing validation, stability,
@@ -185,13 +175,6 @@ files may differ because the native API takes the full schedule explicitly;
 changed task inputs miss the cache. Actor memories, simulations, archive scores,
 choices and deployments are recomputed. Reuse provenance and hit counts enter
 `comparison.json`; resume fingerprint checks remain unchanged.
-
-```sh
-EHR_SCREEN_WORKERS=4 \
-flock "$TMPDIR"/vgi-browser-heavy.lock \
-pnpm --filter agent exec tsx src/offline-tailoring-compare.ts \
-  --out "$TMPDIR"/wire-tailoring-medication-comparison --days 8
-```
 
 `--world` defaults to this checkout's `runs/world/2`. The outer `flock`
 serializes this harness against full audits; agent-internal

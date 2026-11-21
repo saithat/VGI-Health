@@ -47,7 +47,6 @@ This check writes no new certificates or build bindings.
 
 ## Verification scope
 
-The native Lean build includes the expiry and movement guards. The verification audit checks the protected theorem surfaces and permitted axioms. The service integration test uses isolated Postgres and tests exact-deadline expiry after readmission while retaining the discarded-order provenance. Browser iteration uses `scripts/audit-alert-policy.mjs --urgency-only`; the full template/persona audits and full conformance are reserved for integration, as requested for this task.
 
 Verified with disk-backed scratch and at most four test/browser workers:
 
@@ -69,7 +68,6 @@ pnpm --filter @vgi/commit test
 COMMIT_PG_PORT=55448 docker compose -p vgi-rules-gate-tests -f services/commit/compose.yml up -d --wait postgres
 DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55448/vgi_commit node --experimental-strip-types --test --test-concurrency=1 services/commit/test/deficiencies.integration.test.ts
 COMMIT_PG_PORT=55448 docker compose -p vgi-rules-gate-tests -f services/commit/compose.yml down -v
-node scripts/audit-alert-policy.mjs "$TMPDIR/rules-gate-audit-urgency" --urgency-only
 (cd lean && xargs -r lake build < ../scripts/proof-map/extra-modules.txt)
 scripts/proof-map/build.sh --readme
 ```

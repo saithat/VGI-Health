@@ -1,3 +1,4 @@
+import { scriptedClimb } from "./lean-fixture.js";
 import { withData } from "./data.js";
 import {chmod,writeFile,readFile} from 'node:fs/promises';
 import path from 'node:path';
@@ -14,7 +15,7 @@ withData("runs/core-10day/decisions").it('kills a hung real native command, repo
  await writeFile(binary,`#!${process.execPath}\nsetInterval(()=>{},1000);`);await chmod(binary,0o755);
  const ehr=createEhr({fake:false,binary,timeoutMs:40}),program=programSchema.parse(tinyProgram);
  await expect(ehr.check({specVersion:'v1',program,prev:program,canonical:program})).rejects.toThrow(/ehr check timed out after 40ms/);
- await expect(runDays({days:1,personas:['P3'],worldDir:await fakeWorld(1),runsRoot:dir,runId:'FAKE-timeout',ehr,llm:new ScriptedLlm()})).rejects.toBeInstanceOf(InfrastructureError);
+ await expect(runDays({...scriptedClimb,days:1,personas:['P3'],worldDir:await fakeWorld(1),runsRoot:dir,runId:'FAKE-timeout',ehr,llm:new ScriptedLlm()})).rejects.toBeInstanceOf(InfrastructureError);
  const manifest=JSON.parse(await readFile(path.join(dir,'FAKE-timeout/manifest.json'),'utf8'));expect(manifest.status).toBe('infrastructure-error');
  expect(manifest.error).toContain('timed out');
 });

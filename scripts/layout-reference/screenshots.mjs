@@ -12,10 +12,10 @@ try {
   const page=await context.newPage(),receipts=[];
   for(const sample of report.samples) {
     const errors=[];const onError=error=>errors.push(error.message);page.on('pageerror',onError);
-    await page.goto(`${url}/screen-check.html`);await page.waitForFunction(()=>typeof window.renderUi==='function');
-    await page.evaluate(screen=>window.renderUi(screen),read(join(sample.dir,'screen.json')));
+    await page.goto(`${url}/tests/lean-widget-preview.html`);await page.waitForFunction(()=>typeof window.paintLeanFamily==='function');
+    await page.evaluate(screen=>window.paintLeanFamily(screen,"fixed-shell"),read(join(sample.dir,'screen.json')));
     await page.evaluate(()=>document.fonts.ready);await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-    await page.screenshot({path:join(sample.dir,'vendor.png')});
+    await page.screenshot({path:join(sample.dir,'fixed-shell.png')});
     await page.goto(`${url}/src/browser/ui-library/index.html`);await page.getByText('Supply native ui-layout output').waitFor();
     await page.evaluate(layout=>window.postMessage(layout,location.origin),JSON.parse(readFileSync(join(sample.dir,'layout.json'),'utf8')));
     await page.locator('main[data-accepted="true"]').waitFor();

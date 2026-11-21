@@ -135,7 +135,7 @@ export function leanLayoutPrompt(parts: PromptParts, design: string, traces = '{
     .flatMap(name=>{const body=section(name);return body?['## '+name,body]:[];}).join('\n');
   // The core semantic/patch contract remains available after the persona-first design material.
   const coreSystem=(parts.system.split('\n\n## Lean screen mode:')[0]??'').replace('Pixel values come from Chromium','Pixel values come from Lean placed boxes').replace('Allowed (moveType):','Allowed (moveType): layout,');
-  return {...parts,portfolio:false,leanLayouts:true,
+  return {...parts,leanLayouts:true,
     system:'You redesign one simulated persona’s interface. Read their evidence first. Return the requested JSON. The layout and Program rules below are the only limits; optimize fewer clicks and scrolls with full completion.',
     prompt:[
       '## Persona evidence: logs, traces and per-screen click/scroll/travel costs',traces,

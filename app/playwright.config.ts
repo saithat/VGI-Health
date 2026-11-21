@@ -31,7 +31,7 @@ export default defineConfig({
   ],
   webServer: {
     command: `${build}pnpm exec vite ${preview ? "preview" : ""} --host 127.0.0.1 --port ${port} --strictPort`,
-    url: `http://127.0.0.1:${port}/screen-check.html`,
+    url: `http://127.0.0.1:${port}/lean.html`,
     reuseExistingServer: false,
     timeout: 120000,
   },

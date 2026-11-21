@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { offlineChart } from "../src/mock/patient";
+const patient = {resourceType:"Patient",id:"sample-patient",name:[{family:"Example"}]};
 const request = vi.hoisted(() => vi.fn());
 vi.mock("../src/data/commitService", () => ({
   marRequest: request,
@@ -24,7 +24,7 @@ describe("commit store chart reads", () => {
         bundle: {
           resourceType: "Bundle",
           type: "collection",
-          entry: [offlineChart.patient, ...offlineChart.resources].map(
+          entry: [patient].map(
             (resource) => ({ resource }),
           ),
         },
@@ -32,7 +32,7 @@ describe("commit store chart reads", () => {
     });
     const chart = await loadChart("sample-patient");
     expect(chart.source).toBe("commit");
-    expect(chart.resources).toHaveLength(offlineChart.resources.length);
+    expect(chart.resources).toHaveLength(0);
     expect(request).toHaveBeenCalledWith("/patients/sample-patient/chart");
   });
   it("surfaces malformed data and unavailable storage without substituting a demo chart", async () => {

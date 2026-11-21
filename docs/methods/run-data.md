@@ -1,5 +1,9 @@
 # Run data and live review
 
+New recordings bind the executable program, certificate, app build, WASM and Lean layout design. Clinical replay verifies those hashes. A manifest from a retired mode reports “recorded with a removed mode.” Historical results remain available in the published reports.
+
+The clinical-painter change moved the app SHA-256 from `abd8cae5fd223eefc24611d29c4ea1c0ad32af9cf96def3df4398f19e4d0e657` to `c71f32bf9128c4ea928c9a2d7689497cf84dcc28c8661c036e3eb4576734ebb0`. Earlier certificates bind their original app.
+
 [Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
 
 `runs/<id>` is the single recording for a run, during execution and after it

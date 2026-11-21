@@ -11,7 +11,7 @@ import {
   deltaTone,
   round,
 } from "./EvolutionSummary";
-import { AppHeader } from "../ehr/ui/AppHeader";
+import { AppHeader } from "../browser/AppHeader";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type {
@@ -73,7 +73,7 @@ function Certificate({ record }: { record: DecisionRecord }) {
     <details className="certificate">
       <summary>
         <Badge tone="pass">
-          {record.ehr.mode === "fake" ? "MOCK certificate" : "Certificate"} ·{" "}
+          Certificate ·{" "}
           {releaseLabel(cert.specVersion, record.runId)}
         </Badge>
       </summary>
@@ -409,9 +409,6 @@ function Why({
               <p>Predicted: {savings(candidate.predicted)}</p>
               <p>
                 Source: {candidate.source}
-                {record.ehr.mode === "fake"
-                  ? " · authored MOCK, no LLM call"
-                  : ""}
               </p>
               {check.property && (
                 <p>
@@ -511,17 +508,11 @@ function BeforeAfter({
   const [afterEvents, setAfterEvents] = useState(prefix);
   const [step, setStep] = useState(0);
   // Exported traces are simulated against the exact projected patient context.
-  // Older authored mock data retains the per-version day-trace fallback.
   const traceFor = (version: number) => {
     const context = run.replay?.contexts.find(
       (c) => c.persona === persona && c.version === version,
     );
-    if (context?.trace) return context.trace;
-    const day = run.days.find(
-      (d) => d.persona === persona && d.programVersion === version,
-    );
-    const id = day?.tasks[0]?.task;
-    return day?.trace.filter((t) => t.task === id).map((t) => t.event) ?? [];
+    return context?.trace ?? [];
   };
   const beforeTrace = traceFor(before),
     afterTrace = traceFor(after);
@@ -530,8 +521,7 @@ function BeforeAfter({
     <div className="dash-review">
       <p>
         Interpreter comparison: exported traces use the same projected patient
-        and episode in both versions. Older authored examples can use different
-        recorded tasks. Next task event advances each available trace
+        and episode in both versions. Next task event advances each available trace
         independently; a pane with no further recorded events stays still. Event
         positions do not align clinical milestones.
       </p>
@@ -1039,7 +1029,7 @@ function BreakPanel({
         ) : (
           <p className="effect-caption">
             Live attempts are unavailable:{" "}
-            {capability.reason || "this run uses mock data"}. Recorded examples
+            {capability.reason || "live attempts are unavailable"}. Recorded examples
             above always work.
           </p>
         )}
@@ -1187,7 +1177,7 @@ function VersionList({
             <span className="mobile-label">Status: </span>
             {r.certificate ? (
               <span className="status-ok">
-                ✓ {r.ehr.mode === "fake" ? "MOCK" : "Certified"}{" "}
+                ✓ Certified{" "}
                 {releaseLabel(r.certificate.specVersion, run.manifest.runId)}
               </span>
             ) : deployed || r.release ? (
@@ -1277,9 +1267,7 @@ function VersionList({
           )}
         </span>
         <span className="night-status">
-          {run.manifest.ehr.mode === "fake" ? (
-            <Badge>MOCK certificate</Badge>
-          ) : baseCert ? (
+          {baseCert ? (
             <span className="status-ok">✓ Certificate recorded</span>
           ) : (
             <Badge>Certificate unavailable</Badge>
@@ -1333,6 +1321,7 @@ export function Dashboard({
         ? (query.get("view") ?? "Evolution")
         : "Evolution",
   );
+  const [indexLoaded, setIndexLoaded] = useState(false);
   const [runId, setRunId] = useState(query.get("run") ?? "");
   const [index, setIndex] = useState<ReturnType<typeof runIndexSchema.parse>>(
     [],
@@ -1353,9 +1342,7 @@ export function Dashboard({
   >(null);
   const [loadedFactory, setLoadedFactory] = useState<InterpFactory>();
   const interpFactory =
-    run?.manifest.ehr.mode === "fake"
-      ? undefined
-      : (suppliedFactory ?? loadedFactory);
+    suppliedFactory ?? loadedFactory;
   useEffect(() => {
     let active = true;
     Promise.all([
@@ -1365,8 +1352,9 @@ export function Dashboard({
       .then(([raw, selected]) => {
         if (active) {
           setIndex(runIndexSchema.parse(raw));
+          setIndexLoaded(true);
           setRunId(
-            (current) => current || defaultRunSchema.parse(selected).runId,
+            (current) => current || defaultRunSchema.parse(selected).runId || "",
           );
         }
       })
@@ -1456,7 +1444,7 @@ export function Dashboard({
     if (run && selection) {
       Promise.all([
         loadRunDetails(run, selectedPersona),
-        run.manifest.ehr.mode === "fake" || suppliedFactory
+        suppliedFactory
           ? Promise.resolve(null)
           : loadWasmInterp(),
       ])
@@ -1478,6 +1466,7 @@ export function Dashboard({
     };
   }, [run, selection, selectedPersona, suppliedFactory]);
   const record = selection?.record;
+  if (indexLoaded && !index.length) return <main><h1>No recordings yet</h1><p>Choose “Download sample recording” on the <a href="/">start page</a>.</p></main>;
   return (
     <div className="dashboard">
       {run?.manifest.status === "blocked" && (
@@ -1510,12 +1499,12 @@ export function Dashboard({
           >
             {index.map((e) => (
               <option key={e.id} value={e.id}>
-                {e.id === "mock" ? "mock (illustrative)" : e.id}
+                {e.id}
               </option>
             ))}
           </select>
         </label>
-        <a href={`/ehr?mode=replay&persona=${persona}&run=${runId}`}>
+        <a href={`/lean.html?persona=${persona}`}>
           Open EHR
         </a>
       </AppHeader>

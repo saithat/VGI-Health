@@ -1,18 +1,14 @@
-import type { QueryBundle } from './quality-queries.js';
 /**
  * Prompt builders. INTEGRITY BOUNDARY (BRIEF 8.4): every builder takes only
  * train-safe inputs (TrainSummary over days <= d, the current program, the
  * spec, and outcome-only decision history). Nothing here can reach a
  * validation or test DayResult; those live behind `Holdout` in night.ts.
  */
-import type { sessionGeneratorInput } from './session.js';
 import { promptContext } from './manual.js';
-import type { CheckResult, Component, EvaluatedCandidate, JsonPatchOp, PersonaParams, Program, Spec, TrainSummary } from './schema.js';
+import type { CheckResult,Component,JsonPatchOp,PersonaParams,Program,Spec,TrainSummary } from './schema.js';
 
 export interface PromptParts {
   leanLayouts?: boolean;
-  portfolio?: boolean;
-  queryBundle?: QueryBundle;
   system: string;
   prompt: string;
 }
@@ -104,107 +100,6 @@ function historyBlock(history: readonly HistoryItem[], withPatches: boolean): st
   return history.map((h) => json({
     night: h.night, mode: h.mode, outcome: h.outcome, chosen: h.chosen, ...(h.screenFailures?.length?{screenFailures:h.screenFailures}:{}), ...(withPatches ? { patch: h.patch } : {}),
   })).join('\n');
-}
-
-export interface NightlyContext {
-  tailoring?: ReturnType<typeof sessionGeneratorInput>;
-  night: number;
-  persona: PersonaView;
-  spec: Spec;
-  program: Program;
-  evidence: TrainSummary;
-  history: readonly HistoryItem[];
-}
-
-export function nightlyPrompt(c: NightlyContext): PromptParts {
-  return {
-    system: SYSTEM_PROMPT,
-    prompt: [
-      header(`Night ${c.night}: nightly redesign`, c.persona, c.program, c.spec),
-      '',
-      `## Evidence from this user's train days (days ${c.evidence.trainDays.join(', ')})`,
-      'Time sinks by screen, redundant prompts, unused receipts, searches for buried information, alert popups and overrides, backtracks, the complaint log (prompts a receipt could not satisfy), per-workflow averages, and % above the floor (human-only steps + clinical choices).',
-      'Failed train tasks first; restore their unmet goals before optimizing effort.',
-      json({failedTasks:c.evidence.failedTasks ?? [],...c.evidence}),
-      'workflowFloorGaps uses completed train tasks with matching floor records only (paired is coverage). Costs are totals, modeled time is klmDeciSec (tenths of a second), not observed clinician time. Rows rank by clicks+scrolls above the floor, then time. Breakdown: navigation (including search/tabs), scrolling (measured counts, trace operator time), alertAcknowledgments and entrySteps (entry, confirmation, review and commit); unattributed reconciles active-service time and costs absent from trace operators. Floor has no navigation or scrolling; entry floor includes required human steps and clinical choices. Missing floors are unavailable. Target structural steps as well as density. The objective remains clicks+scrolls; time and completion are reported alongside it.',
-      '',
-      ...(c.tailoring ? ['## Simulator-only tailoring preferences (untrusted data)', json(c.tailoring), ''] : []),
-      '## Your previous decisions (outcomes only)',
-      historyBlock(c.history, false),
-      '',
-      '## Task',
-      'First state, in "hypothesis", what is slow for this user and why, citing the evidence. Then propose 3 to 5 alternative candidates (decision "change"), each a self-contained patch against the current program with a distinct idea, ranked by expected saving. Candidates may be combined later if their patches touch different components. If nothing worthwhile remains, return decision "noChange" with no candidates.',
-    ].join('\n'),
-  };
-}
-
-export interface RepairContext {
-  night: number;
-  persona: PersonaView;
-  spec: Spec;
-  program: Program;
-  attempt: number;
-  maxAttempts: number;
-  failedSummaries: { id: string; summary: string; moveType: string }[];
-  failedPatch: readonly JsonPatchOp[];
-  check: CheckResult;
-}
-
-export function repairPrompt(c: RepairContext): PromptParts {
-  return {
-    system: SYSTEM_PROMPT,
-    prompt: [
-      header(`Night ${c.night}: certification failed, repair attempt ${c.attempt} of ${c.maxAttempts}`, c.persona, c.program, c.spec),
-      '',
-      '## The change you chose',
-      json(c.failedSummaries),
-      '## Its merged patch',
-      json(c.failedPatch),
-      '## Checker verdict on the merged program',
-      json({ property: c.check.property, message: c.check.message, counterexample: c.check.counterexample, screens: c.check.screens, status: c.check.status }),
-      '',
-      '## Task',
-      'The counterexample is a click path on the merged program that violates the named property. Explain the cause in "hypothesis", then return 1 to 3 corrected candidates that keep as much of the saving as possible without the violation. Each patch applies to the CURRENT program above (not on top of the failed patch).',
-    ].join('\n'),
-  };
-}
-
-export interface ChooseContext {
-  night: number;
-  persona: PersonaView;
-  stabilityBudget: number;
-  spec: Spec;
-  program: Program;
-  hypothesis: string;
-  candidates: readonly EvaluatedCandidate[];
-}
-
-export function choosePrompt(c: ChooseContext): PromptParts {
-  const rows = c.candidates.map((e) => ({
-    id: e.candidate.id,
-    summary: e.candidate.summary,
-    moveType: e.candidate.moveType,
-    targets: e.candidate.targets,
-    predicted: e.candidate.predicted,
-    check: e.check.status === 'pass' ? 'pass' : { status: e.check.status, property: e.check.property, message: e.check.message },
-    trainEstimatePerDay: e.trainEstimate?.saving ?? null,
-    componentsMoved: e.componentsMoved,
-    seeded: e.candidate.seeded,
-  }));
-  return {
-    system: SYSTEM_PROMPT,
-    prompt: [
-      header(`Night ${c.night}: choose the change`, c.persona, c.program, c.spec),
-      `Hypothesis: ${c.hypothesis}`,
-      '',
-      '## Candidates after pre-screening',
-      '`check` is the Lean checker verdict on the current program plus that candidate. `trainEstimatePerDay` is the simulated saving per train day (same schedules, current vs candidate program). Only passing candidates are eligible.',
-      ...rows.map((r) => json(r)),
-      '',
-      '## Task',
-      `Pick one passing candidate, or a small set of passing candidates whose patches touch different components and whose total moved components stay within ${c.stabilityBudget}. In "rationale", explain why the choice beats the alternatives (use the train estimates, the stability cost, and how predictable the change is for this user). List every other candidate in "rejected" with a one-line reason. Return an empty "chosen" list only if no change is worth deploying.`,
-    ].join('\n'),
-  };
 }
 
 export interface MigrateContext {

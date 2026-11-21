@@ -43,6 +43,7 @@ export function expandProgram(source: Program): Program {
   }) }));
   const program = { ...source };
   delete program.componentDefs;
+  if (program.presentationComponents?.length) throw Error('React presentation components were removed. Use Lean layout rules.');
   delete program.presentationComponents;
   return programSchema.parse({ ...program, screens });
 }

@@ -70,7 +70,6 @@
               <div class="actions">
                 <a class="button" data-live="/?workflow=mar">MAR</a>
                 <a class="button" data-live="/?workflow=adt">ADT</a>
-                <a class="button" data-live="/?shell=encounter">Encounter shell</a>
               </div>
             </div>
           </section>
@@ -90,7 +89,7 @@
                 <label>Run ID<input name="runId" required maxlength="80" pattern="[A-Za-z0-9_][A-Za-z0-9_\-]*" placeholder="my-recording" autocomplete="off"></label>
                 <label>Days<input name="days" type="number" min="1" step="1" value="10" required></label>
                 <label>World<select name="world" required></select></label>
-                <label>Screens mode<select name="screens"><option value="lean">Lean</option><option value="browser">Browser</option></select></label>
+                <label>Screens mode<select name="screens"><option value="lean">Lean</option></select></label>
                 <fieldset class="wide">
                   <legend>Personas</legend>
                   <div class="checks">
@@ -102,9 +101,8 @@
                   </div>
                 </fieldset>
                 <label>Backend<select name="backend">
-                  <option value="codex">Codex</option><option value="claude">Claude</option>
-                  <option value="openai-compat">OpenAI-compatible</option><option value="replay">Replay</option>
-                  <option value="generator-only">Generator only (no model calls)</option>
+                  <option value="codex">Codex</option>
+                  <option value="replay">Replay</option>
                 </select></label>
                 <label id="model-field">Model<input name="model" maxlength="128" placeholder="Use backend default" autocomplete="off"></label>
                 <label id="effort-field">Reasoning effort<select name="reasoningEffort">
@@ -113,7 +111,6 @@
                 </select></label>
                 <label id="replay-field" hidden>Replay source<select name="replayFrom"><option value="">Choose a recording</option></select></label>
               </div>
-              <p id="backend-note" class="feedback" hidden>Generator-only recording uses browser screens.</p>
               <p id="form-error" class="feedback error" role="alert" hidden></p>
               <div class="actions form-actions"><button id="launch" type="submit" class="primary" disabled>Start recording</button></div>
             </form>

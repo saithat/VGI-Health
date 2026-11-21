@@ -1,8 +1,9 @@
+import {replayScreen,createReferencePainter,referenceLimit} from "../lean-ui/reference";
 import { pointingTrace } from "./bounded-pointing";
 import { useMemo } from "react";
 import type { Program } from "../../../agent/src/schema";
-import type { PresentationBundle } from "../ehr/ui/presentation-types";
-import type { UiScreen } from "../ehr/ui/types";
+import type { LayoutDesign } from "../../../agent/src/layout-design";
+import type { UiScreen } from "../core/types";
 import type { GeometryAtlas } from "../metrics/geometry";
 import { pointerTravel } from "../metrics/geometry";
 import type { InterpFactory } from "./replay";
@@ -10,7 +11,7 @@ import type { TrajectoryEntry } from "./trajectories-data";
 import { replayTrajectory, type Trajectory } from "./trajectory-replay";
 import { TrajectoryFrame } from "./TrajectoryFrame";
 export type LoadedTrajectory = {
-  presentations: PresentationBundle | null;
+  design: LayoutDesign | null;
   geometry: GeometryAtlas | null;
   task: Trajectory;
   program: Program;
@@ -42,11 +43,14 @@ export function TrajectoryPlayer({
       count,
       loaded.display,
     );
-    if (!interp.renderUi) throw new Error("Semantic WASM renderer is required");
-    const screen: UiScreen = JSON.parse(
+    if (!interp.renderUi || !interp.layout) throw new Error("Semantic WASM renderer is required");
+    const screen: UiScreen = replayScreen(interp.layout, JSON.parse(
       interp.renderUi(...result.args, JSON.stringify(result.state)),
-    );
-    return { ...result, screen };
+    ));
+    const persona = loaded.task.context.programPath.split("/").find(part => /^P[1-5]$/.test(part)) ?? loaded.task.context.user.id;
+    const {output} = createReferencePainter(interp.layout, loaded.design ?? [])(screen,{w:1440*64,h:900*64},referenceLimit(loaded.program.specVersion,persona,screen.screen ?? ""));
+    if (!output.accepted) throw Error("Lean refused trajectory layout");
+    return { ...result, screen, output };
   }, [loaded, count, factory]);
   const next = loaded.task.trace[count];
   const prefix = loaded.task.trace.slice(0, count);
@@ -82,7 +86,7 @@ export function TrajectoryPlayer({
         </p>
       )}
       <TrajectoryFrame
-        presentations={loaded.presentations}
+        output={result.output}
         title={`${label} EHR`}
         screen={result.screen}
         trace={loaded.task.trace}
