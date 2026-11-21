@@ -165,7 +165,7 @@ WASM rebuilds and live e2e remain manual. [Reproduction and CI](docs/reproductio
 contains the exact commands, local prerequisites and browser-lock discipline.
 
 Service authorization requires a reachable, drug-free service-order route. Medication workflows retain identity and allergy review and dose correction on later lines. Critical-result displays retain a route to follow-up.
-The [conformance coverage map](docs/audits/conformance-formal-coverage.md) lists 112 scenarios covered by checker acceptance, two by the runtime and 88 with open proof obligations. For release personas, the checker exercises required entries, human-only inputs and later medication lines through the native interpreter.
+The [conformance coverage map](docs/audits/conformance-formal-coverage.md) lists 200 scenarios covered by checker acceptance and two by the runtime. Acceptance supplies native traces for each scenario's fixture encounter: actionable refusals, human entry, reviews, receipts, alerts and signing. Completion from arbitrary states and for other patients remains open.
 
 ## What is proved
 

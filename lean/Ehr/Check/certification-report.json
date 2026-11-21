@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "d8f056a5b4216aff4961ff7521af6097a0f9f8af",
+  "sourceRevision": "bb74315e93f2572f64f3b5bdf06cfe84129380aa",
   "sourceDirty": true,
-  "binarySha256": "cf86555ee2a76f27c772d216d3720e4330e4c2dcdb36bbd73e6add070f85e8d1",
+  "binarySha256": "53023bce81efbbbaafd9b94e0b2777973d47a470963df7d48244f8c6c95a60d5",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 36,
-  "badCount": 36,
+  "badRejected": 38,
+  "badCount": 38,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -1895,6 +1895,64 @@
       },
       "status": "rejected",
       "expectedProperty": "entryTraces",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/67-missing-human-review.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "64a22fbc2ea9c1e277b533e2818c45c6032d58e5826f8c4b9a03a906644f3b2c",
+      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
+      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "clinicalScenarios",
+          "message": "automation.commit-and-review: visit signOrders: human allergy review: Provide a reachable human allergy review from w1Sign",
+          "counterexample": []
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "clinicalScenarios",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/68-duplicate-banner.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "13a9147ff8364ccb083a6a7613f8d92756edebc58884147393931e7adfddce03",
+      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
+      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "clinicalScenarios",
+          "message": "design.banner: inspect patient banner on home: Show exactly one patient banner on home",
+          "counterexample": []
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "clinicalScenarios",
       "expectedPropertyRejected": true,
       "replay": {
         "valid": true,

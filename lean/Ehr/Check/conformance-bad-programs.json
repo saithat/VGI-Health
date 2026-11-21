@@ -15,4 +15,6 @@
  ["lean/Ehr/Check/bad/58-critical-without-follow-up.json",
   "criticalFollowThrough"],
  ["lean/Ehr/Check/bad/59-prefilled-medication.json", "entryTraces"],
- ["lean/Ehr/Check/bad/60-hidden-exemption.json", "entryTraces"]]
+ ["lean/Ehr/Check/bad/60-hidden-exemption.json", "entryTraces"],
+ ["lean/Ehr/Check/bad/67-missing-human-review.json", "clinicalScenarios"],
+ ["lean/Ehr/Check/bad/68-duplicate-banner.json", "clinicalScenarios"]]
