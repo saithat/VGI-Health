@@ -1,4 +1,5 @@
 import Ehr.Check.ContextSound
+import Ehr.Specs.CriticalResults
 import Ehr.Canonical.Personas
 import Ehr.Core.Json
 import Ehr.Examples.Tiny
@@ -137,5 +138,27 @@ def aliasSpec : Spec := { sp with navigationAliases? := some [("Context", ["Clin
     priorAuthAvailable Examples.Tiny.spec (layout composer "W1" []) composer
 
 #guard priorAuthAvailable Examples.Tiny.specV2 remote source
+
+-- New specification for owner review. Status and all four release fields are
+-- preserved, and the declaration remains optional in the preceding release.
+#guard serviceControls Specs.V2.specV2 == [.field "orderKind" .current .none,
+  .field "orderCode" .current .none, .field "imagingPriority" .current .none,
+  .button .requestPriorAuth, .field "priorAuthRequest" .current .none, .priorAuth "priorAuthStatus"]
+#guard Id.run do
+  let only := { source with components := [{ id := "auth", kind := .button .requestPriorAuth }] }
+  return serviceOptIn Specs.V2.specV2 only && !serviceBundle Specs.V2.specV2 remote only &&
+    !serviceOptIn Specs.V1.specV1 only
+#guard Id.run do
+  let drug : Component := { id := "med", kind := .field "drug" .current (.default "metformin") }
+  let contaminated := { destination with components := [drug, meds] }
+  let layout := { remote with screens := [source, contaminated] }
+  return workflowPath sp layout "chart" false source.id [.panel "currentMeds"] &&
+    !workflowPath sp layout "chart" true source.id [.panel "currentMeds"]
+#guard !identityReview Specs.V1.specV1 { remote with patientSelection? := some true } source
+#guard !medicationLines Specs.V1.specV1 remote source
+#guard !independentDose { id := "nextDose", kind := .field "dose" .current (.linked "dose") }
+#guard Id.run do
+  let sc := { source with components := [{ id := "warning", kind := .alert "criticalResult" false }] }
+  return !criticalFollowThrough Specs.CriticalResults.specV1 remote sc
 
 end Ehr.Check.ContextTests

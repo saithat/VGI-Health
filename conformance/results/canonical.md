@@ -133,14 +133,15 @@
 | naloxone.benzodiazepine.naloxoneEducation | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | v3.antibiotic-indication | — | — | — | — | — | — | — | — | — | — | PASS | PASS | — | PASS | PASS |
 | v3.mar-indication-shown | — | — | — | — | — | — | — | — | — | — | — | — | PASS | — | — |
-| v2.prior-auth.imaging | — | — | — | — | — | PASS | — | — | — | PASS | PASS | — | — | — | PASS |
-| v2.prior-auth.procedure | — | — | — | — | — | PASS | — | — | — | PASS | PASS | — | — | — | PASS |
+| v2.prior-auth.imaging | — | — | — | — | — | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
+| v2.prior-auth.procedure | — | — | — | — | — | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.drugAllergyOrder | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.drugAllergyAdmin | — | — | PASS | — | — | — | — | PASS | — | — | — | — | PASS | — | — |
 | alert.interactionOrder | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.interactionRefill | PASS | — | — | PASS | — | PASS | — | — | PASS | — | PASS | — | — | PASS | — |
 | alert.doseRangeOrder | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.highAlertAdmin | — | — | PASS | — | — | — | — | PASS | — | — | — | — | PASS | — | — |
+| alert.highAlertOrderNotice | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.passive.careGapsInline | PASS | — | — | — | PASS | PASS | — | — | — | PASS | PASS | — | — | — | PASS |
 | alert.passive.duplicateTherapyInline | PASS | — | — | — | PASS | PASS | — | — | — | PASS | PASS | — | — | — | PASS |
 | alert.passive.immunizationsDueInline | — | — | — | PASS | — | — | — | — | PASS | — | — | — | — | PASS | — |
@@ -188,7 +189,7 @@
 | automation.commit-and-review | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | patient-switch.chart-scoping | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 | alert.removable.healthMaintenancePopup | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
-| alert.removable.highAlertOrderNotice | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
+| alert.removable.highAlertOrderNotice | — | — | — | — | — | — | — | — | — | — | — | — | — | — | — |
 | alert.removable.activeRxPopup | PASS | — | — | PASS | — | PASS | — | — | PASS | — | PASS | — | — | PASS | — |
 | alert.removable.refillCareGapPopup | PASS | — | — | PASS | — | PASS | — | — | PASS | — | PASS | — | — | PASS | — |
 | alert.removable.minorInteractionPopup | — | — | PASS | — | — | — | — | PASS | — | — | — | — | PASS | — | — |
@@ -206,21 +207,21 @@
 
 | Revision | Start state | Passed | Failed | Not applicable |
 |---|---|---:|---:|---:|
-| canonical/v1/P1 | in-ui-selection | 122 | 0 | 79 |
-| canonical/v1/P2 | in-ui-selection | 103 | 0 | 98 |
-| canonical/v1/P3 | in-ui-selection | 46 | 0 | 155 |
-| canonical/v1/P4 | in-ui-selection | 120 | 0 | 81 |
-| canonical/v1/P5 | in-ui-selection | 126 | 0 | 75 |
-| canonical/v2/P1 | in-ui-selection | 126 | 0 | 75 |
-| canonical/v2/P2 | in-ui-selection | 105 | 0 | 96 |
-| canonical/v2/P3 | in-ui-selection | 46 | 0 | 155 |
-| canonical/v2/P4 | in-ui-selection | 122 | 0 | 79 |
-| canonical/v2/P5 | in-ui-selection | 130 | 0 | 71 |
-| canonical/v3/P1 | in-ui-selection | 128 | 0 | 73 |
-| canonical/v3/P2 | in-ui-selection | 107 | 0 | 94 |
-| canonical/v3/P3 | in-ui-selection | 47 | 0 | 154 |
-| canonical/v3/P4 | in-ui-selection | 124 | 0 | 77 |
-| canonical/v3/P5 | in-ui-selection | 132 | 0 | 69 |
+| canonical/v1/P1 | in-ui-selection | 122 | 0 | 80 |
+| canonical/v1/P2 | in-ui-selection | 103 | 0 | 99 |
+| canonical/v1/P3 | in-ui-selection | 46 | 0 | 156 |
+| canonical/v1/P4 | in-ui-selection | 120 | 0 | 82 |
+| canonical/v1/P5 | in-ui-selection | 126 | 0 | 76 |
+| canonical/v2/P1 | in-ui-selection | 126 | 0 | 76 |
+| canonical/v2/P2 | in-ui-selection | 107 | 0 | 95 |
+| canonical/v2/P3 | in-ui-selection | 46 | 0 | 156 |
+| canonical/v2/P4 | in-ui-selection | 124 | 0 | 78 |
+| canonical/v2/P5 | in-ui-selection | 130 | 0 | 72 |
+| canonical/v3/P1 | in-ui-selection | 128 | 0 | 74 |
+| canonical/v3/P2 | in-ui-selection | 109 | 0 | 93 |
+| canonical/v3/P3 | in-ui-selection | 47 | 0 | 155 |
+| canonical/v3/P4 | in-ui-selection | 126 | 0 | 76 |
+| canonical/v3/P5 | in-ui-selection | 132 | 0 | 70 |
 
 | Scenario | Revision | Observed outcome |
 |---|---|---|

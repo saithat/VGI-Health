@@ -13,24 +13,25 @@ def withPriorAuth (p : Program) (id : ScreenId) : Program := p.updateScreen id f
 
 /-- Imaging/procedure ordering with actual service-only prior-auth requests. -/
 def withServicePriorAuth (p : Program) (id : ScreenId) : Program := p.updateScreen id fun s =>
-  s.insertAfter (cid id "banner")
-    [group id "servicePriorAuth" "Imaging / procedure authorization" (collapsible := false),
+  let service := [group id "servicePriorAuth" "Imaging / procedure authorization" (collapsible := false),
      button id "newServiceOrder" .newOrderLine "Add imaging / procedure order"
        (parent := some "servicePriorAuth"),
      lineField id "orderKind" "orderKind" "Kind: imaging / procedure" (parent := some "servicePriorAuth"),
      lineField id "orderCode" "orderCode" "Service code" (parent := some "servicePriorAuth"),
      lineField id "imagingPriority" "imagingPriority" "Imaging priority (routine / urgent / stat)"
-       (parent := some "servicePriorAuth"),
-     lineField id "priorAuthRequest" "priorAuthRequest" "Request authorization (human entry)"
+       (parent := some "servicePriorAuth")]
+  let request := [lineField id "priorAuthRequest" "priorAuthRequest" "Request authorization (human entry)"
        (parent := some "servicePriorAuth"),
      mk id "servicePriorAuthStatus" (.priorAuth "priorAuthStatus") "Service prior-auth status"
        (parent := some "servicePriorAuth"),
      button id "requestServicePriorAuth" .requestPriorAuth "Request service prior authorization"
        (parent := some "servicePriorAuth")]
+  let hasRequest := s.components.any (fun c => c.kind == .button .requestPriorAuth)
+  s.insertAfter (cid id "banner") (if hasRequest then service else service ++ request)
 
 /-- Canonical optional-feature release. No previous required field is moved. -/
 def canonicalV2 : Program :=
-  { ["w1Labs", "w6PreOp"].foldl withServicePriorAuth
+  { ["w1Labs", "w3OrderSets", "w5Orders", "w6PreOp"].foldl withServicePriorAuth
       (["w1Orders", "w3Orders", "w5Orders", "w6Orders"].foldl withPriorAuth canonicalV1) with
     version := 2, specVersion := "v2" }
 

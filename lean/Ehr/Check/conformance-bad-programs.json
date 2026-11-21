@@ -7,4 +7,10 @@
  ["lean/Ehr/Check/bad/50-context-removed.json", "contextRetained"],
  ["lean/Ehr/Check/bad/51-misleading-navigation.json", "navigation"],
  ["lean/Ehr/Check/bad/52-stuffed-navigation.json", "navigation"],
- ["lean/Ehr/Check/bad/54-partial-service.json", "servicePriorAuth"]]
+ ["lean/Ehr/Check/bad/54-partial-service.json", "servicePriorAuth"],
+ ["lean/Ehr/Check/bad/55-authorization-only.json", "serviceBundle"],
+ ["lean/Ehr/Check/bad/56-identity-outside-workflow.json",
+  "patientIdentityReview"],
+ ["lean/Ehr/Check/bad/57-no-next-medication-line.json", "medicationLines"],
+ ["lean/Ehr/Check/bad/58-critical-without-follow-up.json",
+  "criticalFollowThrough"]]

@@ -177,6 +177,12 @@ def badMacroStep (spec : Spec) (prog : Program) (m : Macro) (st : MacroStep) : O
 /-- A finding with no location. -/
 def plain (property message : String) : Option Finding := some { property, message }
 
+/-- New specification for owner review. Report the first affected screen and workflow. -/
+def workflowRule (p : Program) (name requirement : String) (test : Screen → Bool) : Rule :=
+  { property := name, passes := p.screens.all test
+    explain := fun _ => (p.screens.find? fun scr => !test scr).map fun scr =>
+      { property := name, screen? := some scr.id, message := s!"{scr.id} ({scr.workflow}): {requirement}" } }
+
 /-- The checker's rules, in the order they are reported. -/
 def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : List Rule :=
   let required := requiredCommits spec canonical prog
@@ -427,10 +433,21 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
                    screen? := some scr.id
                    message := s!"High-alert notice {al.id} must remain inline on commit screen {scr.id}" }
           else none },
+    workflowRule prog "patientIdentityReview" "Pin the allergy list at medication commit and provide the workflow’s identity re-entry or wristband scan."
+      (identityReview spec prog),
+    workflowRule prog "medicationLines" "Provide reachable current-line drug and dose fields and an add-line action, and remove linked dose prefills that could copy a correction between lines."
+      (medicationLines spec prog),
+    workflowRule prog "criticalFollowThrough" "Provide a reachable result acknowledgment in the workflow showing the critical result."
+      (criticalFollowThrough spec prog),
     { property := "servicePriorAuth", passes := prog.screens.all (priorAuthAvailable spec prog)
       explain := fun _ => (prog.screens.find? fun scr => !priorAuthAvailable spec prog scr).map fun scr =>
         { property := "servicePriorAuth", screen? := some scr.id
-          message := s!"Service orders on {scr.id} need a reachable requestPriorAuth button and human priorAuthRequest field on the current line in workflow {scr.workflow}" } }
+          message := s!"Service orders on {scr.id} need a reachable requestPriorAuth button and human priorAuthRequest field on the current line in workflow {scr.workflow}" } },
+    workflowRule prog "serviceBundle"
+      (let fields := (Specs.V2.serviceElements.filter fun el => (spec.element? el.id).isSome).map (·.id)
+       let status := if (spec.info? Specs.V2.priorAuthStatus.id).isSome then " and priorAuthStatus" else ""
+       s!"Provide the current-line fields {String.intercalate ", " fields}, the requestPriorAuth button{status} along a route free of drug prefills.")
+      (serviceBundle spec prog)
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure
