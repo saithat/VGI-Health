@@ -1,6 +1,7 @@
 import {publishReplayPointer, taskSlots} from './replay-pool.js';
 import {designOf} from './layout-design.js';
-import { BOUNDED_POINT_ASSUMPTION, pointingTrace, projectBoundedPoints } from '../../app/src/dashboard/bounded-pointing.js';
+import { BOUNDED_POINT_ASSUMPTION, projectBoundedPoints } from '../../app/src/dashboard/bounded-pointing.js';
+import { measuredPointingTrace } from '../../app/src/dashboard/trajectory-travel.js';
 import {z} from 'zod';
 import {existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
@@ -30,18 +31,9 @@ export function takeReplayAtlas(result: DayResult) {
 }
 export function attachGeometry(result:DayResult,atlas:GeometryAtlas):DayResult{
  const metadata=z.object({traceTargets:z.record(z.string(),z.string()).exactOptional()}).parse(atlas);
- const projectedTrace=pointingTrace(result.trace,atlas,result);
- const projected=projectedTrace.some((row,index)=>row.event!==result.trace[index]?.event);
- const trace=metadata.traceTargets?projectedTrace.map((row,index)=>{
-  const target=metadata.traceTargets?.[String(index)];if(!target||row.event!==result.trace[index]?.event)return row;
-  const event=z.record(z.string(),z.unknown()).parse(row.event);
-  return {...row,event:Object.fromEntries(Object.entries(event).map(([kind,payload])=>{
-   const parsed=z.record(z.string(),z.unknown()).safeParse(payload);
-   return [kind,parsed.success?Object.fromEntries(Object.entries(parsed.data).map(([key,value])=>[key,['comp','alert'].includes(key)?target:value])):payload];
-  }))};
- }):projectedTrace;
+ const {trace,bounded}=measuredPointingTrace(result.trace,{...atlas,...metadata},result);
  const costs=pointerTravel(trace,atlas,result.day);
- return {...result,...(projected ? {complaints:[...new Set([...result.complaints,BOUNDED_POINT_ASSUMPTION])]}:{}),geometry:{programHash:atlas.programHash,...(atlas.componentsSha256?{componentsSha256:atlas.componentsSha256}:{}),appSha256:atlas.appSha256,source:atlas.source,viewport:atlas.viewport,missingTargets:Object.values(costs).flatMap(c=>c.missingTargets)},tasks:result.tasks.map(t=>{
+ return {...result,...(bounded ? {complaints:[...new Set([...result.complaints,BOUNDED_POINT_ASSUMPTION])]}:{}),geometry:{programHash:atlas.programHash,...(atlas.componentsSha256?{componentsSha256:atlas.componentsSha256}:{}),appSha256:atlas.appSha256,source:atlas.source,viewport:atlas.viewport,missingTargets:Object.values(costs).flatMap(c=>c.missingTargets)},tasks:result.tasks.map(t=>{
   const cost=costs[t.task];return {...t,rawScrolls:t.rawScrolls??t.scrolls,mouseTravelPx:cost?.mouseTravelPx??null,scrollPx:cost?.scrollPx??null,...(cost?{scrolls:cost.scrolls}:{})};
  })};
 }

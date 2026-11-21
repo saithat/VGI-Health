@@ -174,15 +174,9 @@ export function runMiddleware(root = resolve(import.meta.dirname, "../..")) {
         /^geometry\/([a-f0-9]{64}(?:\.[a-f0-9]{64})?)\/slices\/((?:[\w.-]+\/)*[\w.-]+\.json)$/.exec(
           file,
         );
-      if (slice)
-        return await sendArtifact(
-          req,
-          res,
-          pathname,
-          await geometrySliceFile(prefix.dir, slice[1] ?? "", slice[2] ?? ""),
-        );
-      // Derived task paths belong to the index of this committed prefix.
-      if (file.startsWith("trajectories/tasks/")) {
+      // Use the same task and index for playback and its geometry slice.
+      if (slice || file.startsWith("trajectories/tasks/")) {
+        const taskFile = slice ? `trajectories/${slice[2]}` : file;
         const data = z
           .object({
             tasks: z.array(
@@ -196,31 +190,19 @@ export function runMiddleware(root = resolve(import.meta.dirname, "../..")) {
         if (
           !data.tasks.some(
             (t) =>
-              `trajectories/${t.file}` === file ||
-              (t.baseline && `trajectories/${t.baseline.file}` === file),
+              `trajectories/${t.file}` === taskFile ||
+              (t.baseline && `trajectories/${t.baseline.file}` === taskFile),
           )
         )
           throw new Error("Uncommitted task");
-        const cached = resolve(
-          prefix.dir,
-          ".cache/completed",
-          prefix.key,
-          file,
-        );
-        const source = await Promise.all([
-          access(cached),
-          access(
-            resolve(
-              prefix.dir,
-              ".cache/completed",
-              prefix.key,
-              "trajectories.ready.json",
-            ),
-          ),
-        ]).then(
-          () => cached,
-          () => resolve(prefix.dir, file),
-        );
+        const cached = resolve(prefix.dir, ".cache/completed", prefix.key);
+        const directory = await Promise.all([
+          access(resolve(cached, taskFile)),
+          access(resolve(cached, "trajectories.ready.json")),
+        ]).then(() => cached, () => prefix.dir);
+        const source = slice
+          ? await geometrySliceFile(prefix.dir, slice[1] ?? "", slice[2] ?? "", resolve(directory, "trajectories"))
+          : resolve(directory, taskFile);
         return await sendArtifact(req, res, pathname, source);
       }
       if (requested && file.startsWith("trajectories/")) {

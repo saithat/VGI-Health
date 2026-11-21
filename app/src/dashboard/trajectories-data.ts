@@ -171,6 +171,14 @@ export const replayGeometrySchema = z.object({
       ),
     }),
   ),
+  traceTargets: z.record(z.string(), z.string()).exactOptional(),
   aliases: z.record(z.string(), z.array(z.string())).exactOptional(),
   source: z.enum(["chromium", "recorded-fixture"]),
+});
+
+export const geometrySliceSchema = replayGeometrySchema.extend({
+  day: nat.positive().exactOptional(),
+  carry: z.array(z.object({
+    before: nat, task: z.string(), screen: z.string(), ops: z.array(z.string()), event: eventSchema,
+  })).exactOptional(),
 });
