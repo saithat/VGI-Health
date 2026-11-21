@@ -1,4 +1,4 @@
-import { configSchema, maybeObj, maybeObjs, obj, objs, str, type Obj } from './types.ts';
+import { configSchema, maybeObj, maybeObjs, obj, objs, str } from './types.ts';
 import { z } from 'zod';
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
