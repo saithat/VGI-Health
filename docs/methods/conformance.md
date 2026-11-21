@@ -116,3 +116,56 @@ drugs from the rule's prior authorization provisions. [Release bundle](../../lea
 The checker reports the screen, workflow and missing capability. The Lean
 proofs connect these checks to shown native controls, patient binding, line
 guards and ticket actions. [Workflow rules](../../lean/Ehr/Check/PriorAuth.lean) · [Soundness theorems](../../lean/Ehr/Check/WorkflowSound.lean)
+
+## Clinical encounter witnesses
+
+**New specification for owner review.** On a v1–v3 clinical release, checker acceptance supplies a native execution for each applicable case in the release persona’s clinical workload. The case binds the facts, user, program, required entries, and observations. The checker starts with `runInit`, opens the patient through a supplied row when selection is enabled, binds the chart, and exercises the displayed controls with `runStep`. The existing release specifications supply the clinical rules. The [scenario audit](../audits/conformance-formal-coverage.md) maps all 88 added guarantees to their contracts.
+
+`Scenario` requires a successful opening and a sequence of concrete paths, controls and intermediate states. Each path must replay through real group expansion, tab selection and goto clicks. The next checkpoint starts in the state left by the previous one. Branch probes retain their original state while testing the alternative continuation. `accepted_clinicalScenarios` extracts this existential guarantee for every member of the bound catalog from a successful check. [Trace semantics and search](../../lean/Ehr/Check/ReviewTrace.lean) · [Catalog](../../lean/Ehr/Check/ClinicalScenarios.lean) · [Soundness](../../lean/Ehr/Check/ClinicalScenarioSound.lean)
+
+The search considers one shortest revealable goto route per destination and its finite list of controls. It can try another matching control if a proposed route or action fails. It does not backtrack across completed checkpoints. Ancestor traversal is bounded by the number of screen components. Signing allows at most 40 iterations and rejects a repeated alert key. The result establishes an executable route for the stated encounter. A search failure identifies the encounter and the unmet action or observation. [Checker registration](../../lean/Ehr/Check/Check.lean)
+
+| Family | Observations required on the execution |
+|---|---|
+| Positive commits and reviews | Enter the fixture’s values in order, accepting an already confirmed matching link. Reach the commit, see its required panels together, handle modal acknowledgments, and sign. The controlled order has one rendered summary row with its drug, native dose, route, frequency, quantity and refills. |
+| Receipts and exemptions | Remove exactly the specified display providers. With the supplied receipt or waiver, complete signing or obtain the applicable named guard refusal after the legitimate prefix. Suppressing the controlled order details still refuses signing with a fresh receipt. |
+| Alerts | Observe the configured trigger, test modal bypass, reject the wrong ID, acknowledge the current key and try to reopen it before signing. The data-change case increments the allergy version on the same signed chart. Passive and configured removable alerts are inspected in the native view. |
+| Critical results | Render the available ticket in the urgent strip. UI acknowledgment and inbox signature preserve the obligation. Use the enabled receipt and resolution buttons and the displayed clinical action field. Inspect independent future and resolved variants across the entire rendered screen. |
+| Services and landmarks | Human service entries and both requests use the same workflow. Check the human-entry refusal, current confirmed capture, status, capture equality after the repeat, and absence of drugs and shown firing alerts. The banner tour inspects the first banner on each candidate screen in order. Opening and initial Back history seed a search over goto controls and goto-only macros. Lean validates that the set includes every seed and is closed under all such moves. A self-link on an isolated screen cannot make that screen reachable. |
+| Recovery and isolation | Exercise the named entry or refusal before correction, including the two-branch prescribing probes and dedicated refill denial. On fresh patient B, inspect the initial state and view and refuse patient A’s identifier. Inject the signing and review macros into a fork and complete ordinary signing on the original. |
+
+The suite binds a role-specific release canonical. A mixed-role certification template is projected by persona for these cases. A custom comparison program with neither a prescribing nor an administration workflow has a different workload. Version-specific probes follow the bound specification, including archived alert triggers and optional service controls. Clinical scenario witnesses apply to the synthetic facts in the audit. The general reachable-state completion problem remains open.
+
+The certification matrix has **15 accepted personas and 36 rejected bad programs**. Two fixtures pass the preceding checker. Removing the human allergy-review button prevents the macro probe from reaching it. Adding a second visible banner fails the count on the home screen. [Matrix and replay results](../../lean/Ehr/Check/certification-report.json)
+
+### Specification inventory
+
+All names below are in `Ehr.Check.ReviewTrace`. The existing `Ehr.Check.revealEvents` helper moved intact so that both diagnostic and clinical traces use it.
+
+| Module | New declarations |
+|---|---|
+| [ReviewTrace](../../lean/Ehr/Check/ReviewTrace.lean) | `fire`, `applyOk`, `beginEncounter`, `Checkpoint`, `reveal`, `perform`, `Realizes`, `routes`, `seek`, `search`, `Scenario`, `witness` |
+| [ReviewEncounters](../../lean/Ehr/Check/ReviewEncounters.lean) | `clinicalFacts`, `encounterInput`, `enterValue`, `entriesFor`, `prepare`, `showsControlledLine`, `finish`, `refuseCommit`, `withoutPanel`, `ClinicalCase`, `controlled`, `factsFor`, `completeCase`, `reviewCases`, `receiptCases` |
+| [AlertEncounters](../../lean/Ehr/Check/AlertEncounters.lean) | `atCommit`, `observeAlert`, `alertCases`, `changedAllergy`, `clinicalUi`, `criticalAlerts`, `criticalCases` |
+| [ServiceEncounters](../../lean/Ehr/Check/ServiceEncounters.lean) | `serviceCases` |
+| [LandmarkEncounters](../../lean/Ehr/Check/LandmarkEncounters.lean) | `tourTargets`, `closedTour`, `tourScreens`, `landmarkCases` |
+| [ClinicalCorrections](../../lean/Ehr/Check/ClinicalCorrections.lean) | `refuseEntry`, `prefixBefore`, `withAlternative`, `forkBefore`, `correctionCases` |
+| [PrescriptionEncounters](../../lean/Ehr/Check/PrescriptionEncounters.lean) | `prescriptionDisplay`, `prescriptionDetails`, `incompleteLine`, `refillCases`, `curesCases` |
+| [ReviewProbes](../../lean/Ehr/Check/ReviewProbes.lean) | `injectClick`, `automationCase`, `resetCase` |
+| [ClinicalScenarios](../../lean/Ehr/Check/ClinicalScenarios.lean) | `clinicalCases`, `certifyCases` |
+| [ClinicalScenarioSound](../../lean/Ehr/Check/ClinicalScenarioSound.lean) | `accepted_clinicalScenarios`, `tour_includes_destination` |
+
+### Check time
+
+Each timing pair runs the pre-change and current native `ehr check` on identical JSON files. The measurements include process startup and JSON decoding. The harness discards one warm-up per binary and reports medians over seven alternating pairs. Each persona uses its release canonical and previous release layout (itself for v1). The three mixed-role references retain their original role refusal. For comparison, the retained hillclimb run’s five initial persona checks took 837, 852, 760, 771 and 915 ms for P1–P5 respectively, in the first persona-specific preflight entries of `lean-timings.jsonl`. [Paired timing command](../../scripts/time-clinical-checks.py) · [Night preflight](../../agent/src/run.ts)
+
+| Program | v1 before → after (ms) | v2 before → after (ms) | v3 before → after (ms) |
+|---|---:|---:|---:|
+| Mixed-role canonical | 905.9 → 972.6 | 891.8 → 962.1 | 883.8 → 970.2 |
+| P1 | 747.5 → 788.4 | 728.1 → 779.3 | 738.2 → 751.3 |
+| P2 | 733.4 → 765.5 | 722.5 → 714.2 | 684.9 → 716.3 |
+| P3 | 710.5 → 736.0 | 678.9 → 691.3 | 690.2 → 707.0 |
+| P4 | 730.1 → 765.1 | 738.7 → 730.7 | 700.0 → 727.4 |
+| P5 | 794.0 → 866.8 | 758.0 → 878.1 | 763.5 → 832.2 |
+
+The sum of the 18 medians increased from 13.600 s to 14.354 s (5.5%). The largest increase was 15.8% for v2/P5. Both are within the 25% check-time budget.

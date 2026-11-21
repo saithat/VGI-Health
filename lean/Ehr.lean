@@ -64,6 +64,7 @@ import Ehr.Check.InteractionRules
 import Ehr.Check.CompletionAudit
 import Ehr.Check.PriorAuthSound
 import Ehr.Check.WorkflowSound
+import Ehr.Check.ClinicalScenarioSound
 import Ehr.Check.Tests
 import Ehr.Check.Deploy
 import Ehr.Cli.Check

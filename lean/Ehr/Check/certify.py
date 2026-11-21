@@ -79,6 +79,10 @@ def main():
     }
     if any(expected.get(path) != prop for path, prop in design_expected.items()):
         raise RuntimeError("R4/R6 bad-program expectations are missing or changed")
+    clinical_diagnostics = {
+        "lean/Ehr/Check/bad/67-missing-human-review.json": "reachable human allergy review",
+        "lean/Ehr/Check/bad/68-duplicate-banner.json": "exactly one patient banner on home",
+    }
     cases += [(path, "bad") for path in expected]
     if "--bad-only" in sys.argv[1:]:
         cases = [(path, "bad") for path in expected]
@@ -110,6 +114,8 @@ def main():
                 verdict["violation"]["property"] == expected[path])
             if not item["expectedPropertyRejected"]:
                 raise RuntimeError(f"bad fixture did not fail expected property {expected[path]}: {path}: {verdict}")
+            if path in clinical_diagnostics and clinical_diagnostics[path] not in verdict["violation"]["message"]:
+                raise RuntimeError(f"wrong clinical checkpoint failed for {path}: {verdict}")
             if path == missing_context and "workflowContexts" not in verdict["violation"]["message"]:
                 raise RuntimeError(f"missing context refusal must name workflowContexts: {verdict}")
         if run.returncode == 1:

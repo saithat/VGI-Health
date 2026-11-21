@@ -13,4 +13,6 @@
   "patientIdentityReview"],
  ["lean/Ehr/Check/bad/57-no-next-medication-line.json", "medicationLines"],
  ["lean/Ehr/Check/bad/58-critical-without-follow-up.json",
-  "criticalFollowThrough"]]
+  "criticalFollowThrough"],
+ ["lean/Ehr/Check/bad/67-missing-human-review.json", "clinicalScenarios"],
+ ["lean/Ehr/Check/bad/68-duplicate-banner.json", "clinicalScenarios"]]

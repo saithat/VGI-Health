@@ -64,6 +64,11 @@ def main (args : List String) : IO Unit := do
   let oneLine := rewrite release fun c => if c.kind == .button .newOrderLine then none else some c
   let strayResult := release.updateScreen "chartSummary" fun s =>
     { s with components := s.components ++ [{ id := "criticalNotice", kind := .alert "criticalResult" false, label := "Critical result" }] }
+  let noAllergyReview := rewrite release fun c =>
+    if c.kind == .button (.markReviewed "allergyList") then none else some c
+  let twoBanners := release.updateScreen release.start fun sc =>
+    {sc with components := sc.components ++
+      [{ id := "extraPatientBanner", kind := .banner, label := "Patient banner", tag := "second.landmark" }]}
   let cases := [("36-cures-without-review", "completable", cures),
     ("37-stale-dosing-weight", "capturesAllOnce", linked),
     ("38-cross-patient-panel", "writesOnly", foreign),
@@ -77,6 +82,8 @@ def main (args : List String) : IO Unit := do
     ("55-authorization-only", "serviceBundle", authOnly),
     ("56-identity-outside-workflow", "patientIdentityReview", elsewhere),
     ("57-no-next-medication-line", "medicationLines", oneLine),
-    ("58-critical-without-follow-up", "criticalFollowThrough", strayResult)]
+    ("58-critical-without-follow-up", "criticalFollowThrough", strayResult),
+    ("67-missing-human-review", "clinicalScenarios", noAllergyReview),
+    ("68-duplicate-banner", "clinicalScenarios", twoBanners)]
   for (name, _, p) in cases do writeJson root s!"lean/Ehr/Check/bad/{name}.json" p
   writeJson root "lean/Ehr/Check/conformance-bad-programs.json" (cases.map fun (name, prop, _) => (s!"lean/Ehr/Check/bad/{name}.json", prop))

@@ -1,4 +1,4 @@
-import Ehr.Check.PriorAuth
+import Ehr.Check.ClinicalScenarios
 import Ehr.Render.NavLabels
 import Ehr.Core.CriticalRuntime
 import Ehr.Props.Navigation
@@ -188,6 +188,7 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
   let required := requiredCommits spec canonical prog
   let reachTable := openReachTable prog
   let completion := fun c => completeForWithReach spec prog c (tableReach prog reachTable)
+  let clinical := ReviewTrace.certifyCases (ReviewTrace.clinicalCases spec canonical prog)
   [ -- 1. well-formed: catalog, unique IDs, references
     { property := "wellFormed", passes := prog.inCatalog spec
       explain := fun _ => compFinding "wellFormed" prog false fun scr c =>
@@ -447,7 +448,12 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
       (let fields := (Specs.V2.serviceElements.filter fun el => (spec.element? el.id).isSome).map (·.id)
        let status := if (spec.info? Specs.V2.priorAuthStatus.id).isSome then " and priorAuthStatus" else ""
        s!"Provide the current-line fields {String.intercalate ", " fields}, the requestPriorAuth button{status} along a route free of drug prefills.")
-      (serviceBundle spec prog)
+      (serviceBundle spec prog),
+    { property := "clinicalScenarios"
+      passes := clinical.isOk
+      explain := fun _ => match clinical with
+        | .error reason => plain "clinicalScenarios" reason
+        | .ok _ => none }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure
@@ -457,23 +463,6 @@ def firstFinding (rs : List Rule) : Option Finding :=
     (r.explain ()).getD { property := r.property, message := s!"{r.property}: rule failed" }
 
 /-! ## Counterexamples, replayed through the interpreter -/
-
-/-- Events that open every closed group and unselected tab above `c`, in the
-current state. -/
-def revealEvents (s : State) (comps : List Component) : Nat → Component → List Event
-  | 0, _ => []
-  | fuel + 1, c =>
-    match c.parent? with
-    | none => []
-    | some pid =>
-      match comps.find? (·.id == pid) with
-      | none => []
-      | some p =>
-        revealEvents s comps fuel p ++
-          match p.kind with
-          | .group true _ => if s.expanded.contains p.id then [] else [.click p.id]
-          | .tabs => if s.tabOf p.id == c.tab then [] else [.selectTab p.id c.tab]
-          | _ => []
 
 /-- Replay events one at a time; stop at the first one that is not `ok`.
 Returns the events that replayed, the final state, and whether all did. -/
