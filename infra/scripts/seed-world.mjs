@@ -234,6 +234,13 @@ export function buildResources(data, patients, practitioners) {
         r.code.coding = [{ system: 'http://loinc.org', code: '36813-4', display: 'CT Abdomen and Pelvis W contrast IV' }];
       }
       if (enc && ['Observation', 'DiagnosticReport', 'Task'].includes(r.resourceType)) r.encounter = enc;
+      if (r.resourceType === 'Task' && task.workflow === 'W2') {
+        // Contemporary inbox messages have no prescription. A result with an
+        // observation gets its own linked result-review work item below.
+        const hasResult = task.todayResources.some(resource => resource.resourceType === 'Observation');
+        imported.set(name, add(name, r, `${task.persona}-${hasResult ? 'facts' : 'inbox'}`));
+        continue;
+      }
       if (r.resourceType === 'Task') {
         const current = r.contained?.find((c) => c.resourceType === 'MedicationRequest' && r.focus?.reference === `#${c.id}`);
         if (!current) throw new Error(`Refill ${task.id} has no current prescription`);
@@ -261,6 +268,7 @@ export function buildResources(data, patients, practitioners) {
       importToday(task, enc);
       if (task.workflow === 'W2') {
         const observations = task.todayResources.filter((r) => r.resourceType === 'Observation');
+        if (!observations.length) continue;
         const abnormal = observations.some((o) => o.interpretation?.some((c) => c.coding?.some((v) => ['H', 'L', 'A', 'HH', 'LL'].includes(v.code))));
         const report = add(`result-report-${task.id}`, { resourceType: 'DiagnosticReport', status: 'final',
           category: [concept('http://terminology.hl7.org/CodeSystem/v2-0074', 'LAB')],

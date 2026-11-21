@@ -13,10 +13,10 @@ const app = join(root, 'app');
 const lean = join(root, 'lean');
 const dist = join(app, 'dist');
 
-export function command(file, args, { cwd = root, quiet = false, timeout } = {}) {
+export function command(file, args, { cwd = root, quiet = false, timeout, env = process.env } = {}) {
   return new Promise((resolve, reject) => {
     const child = spawn(file, args, {
-      cwd, timeout, stdio: quiet ? ['ignore', 'pipe', 'pipe'] : 'inherit',
+      cwd, timeout, env, stdio: quiet ? ['ignore', 'pipe', 'pipe'] : 'inherit',
     });
     let output = '';
     if (quiet) {

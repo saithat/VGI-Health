@@ -22,7 +22,7 @@ SYNTHEA_URL="https://github.com/synthetichealth/synthea/releases/download/${SYNT
 JAR_DIR="$ROOT/.tools/synthea-${SYNTHEA_VERSION}"
 JAR="$JAR_DIR/synthea-with-dependencies.jar"
 
-OUT="$ROOT/fixtures/raw"
+OUT="${VGI_DATA_ROOT:-$ROOT}/fixtures/raw"
 # Fixed "today" for the simulation so reruns are byte-for-byte reproducible.
 REF_DATE="${REF_DATE:-20261031}"
 YEARS_OF_HISTORY="${YEARS_OF_HISTORY:-10}"

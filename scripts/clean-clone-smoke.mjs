@@ -1,30 +1,16 @@
-// Download the synthetic data snapshot before installing dependencies in a clean clone.
-import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fetchData } from "./fetch-data.mjs";
+import { localEnvironment } from "./local-build.mjs";
 import console from "node:console";
 
-const root = fileURLToPath(new URL("../", import.meta.url));
-// Synthetic data snapshot published outside git history (see README).
-const DATA_URL = "https://github.com/saithat/VGI-Health/releases/download/data-2026-11-20/vgi-data-2026-11-20.tar.gz";
-const dataPaths = ["runs", "fixtures", "programs"];
-const missing = dataPaths.filter((path) => !existsSync(join(root, path)));
-if (missing.length === dataPaths.length) {
-  const scratch = mkdtempSync(join(tmpdir(), "vgi-archive-"));
-  try {
-    const archive = join(scratch, "data.tar.gz");
-    execFileSync("curl", ["-fsSL", "-o", archive, DATA_URL], { stdio: "inherit" });
-    execFileSync("tar", ["-xzf", archive, "-C", root], { stdio: "inherit" });
-    console.log(`Restored runs/world/2, fixtures and programs from ${DATA_URL}.`);
-  } finally {
-    rmSync(scratch, { recursive: true, force: true });
-  }
-} else if (missing.length) {
-  throw new Error(`Partial data: missing ${missing.join(", ")}. Extract ${DATA_URL} at the repository root.`);
-}
+const base = process.argv[2];
+if (!base)
+  throw new Error(
+    "Usage: node scripts/clean-clone-smoke.mjs http://127.0.0.1:5189",
+  );
+await localEnvironment();
+await fetchData();
 if (process.argv[2] === "--extract-data") process.exit(0);
+await fetchData(true); // The browser smoke opens a recorded pair.
 
 // Resolve the browser dependency from its owning workspace package.
 import { createRequire } from "node:module";
@@ -32,11 +18,6 @@ const require = createRequire(new URL("../app/package.json", import.meta.url));
 const { chromium, expect: baseExpect } = require("@playwright/test");
 const expect = baseExpect.configure({ timeout: 30_000 });
 import { URL } from "node:url";
-const base = process.argv[2];
-if (!base)
-  throw new Error(
-    "Usage: node scripts/clean-clone-smoke.mjs http://127.0.0.1:5189",
-  );
 const browser = await chromium.launch({ headless: true });
 try {
   const context = await browser.newContext();
@@ -57,9 +38,7 @@ try {
     if (response.status() >= 400)
       failed.push(`${response.status()} ${response.url()}`);
   });
-  // The default clinical entry opens the Lean page; the React encounter
-  // shell remains selectable.
-  await page.goto(`${base}/`);
+  await page.goto(`${base}/lean.html`);
   await expect(page).toHaveURL(/\/lean\.html$/);
   await expect(page.getByRole("button", { name: "Sign in as P1" })).toBeVisible();
   console.log("Lean clinical sign-in loaded");

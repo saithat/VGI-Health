@@ -5,13 +5,18 @@
 ## Start the workspace
 
 Run `pnpm start` (or `make start`) from the repository root. Install Node ≥22.18,
-pnpm 11.8.0 and Lean 4.35.0 via Elan, and restore the gitignored `fixtures/`,
-`programs/` and `runs/` directories. Docker with Compose enables live EHR sign-in.
+pnpm 11.8.0, curl, tar and Lean 4.35.0 via Elan. Docker with Compose enables live EHR sign-in.
 The command installs missing dependencies, checks the packaged WASM, builds
 stale native and app assets, prepares the local stack and prints
 `http://127.0.0.1:5173/`. It uses `.cache/tmp` for disk-backed scratch by default.
 A missing or stopped Docker daemon leaves the dashboard and offline task
 replays available. The start page shows how to enable live sign-in.
+
+The first start verifies the release archives against both the published `SHA256SUMS` and the [pinned hashes](../../data/release.json). Data is unpacked under `.cache/one-command` and installed after verification. An incomplete dataset stops startup and identifies missing paths. Restore the missing files or move the existing dataset aside before retrying. Other recordings can coexist with the restored world. An older dataset without a source marker appears as “existing local data”.
+
+If the release cannot be downloaded, startup uses Make, Python 3, Java 17+ and the upstream Synthetic Hospital and Synthea downloads. It converts the full hospital cohort, trims Synthea, generates ten days of world 2 with clinical overlays, and exports core Lean programs and P1 review screens. The regenerated live EHR opens on day two because day one exceeds the bounded ADT board. All ten days remain available for recording. The start page uses the live database’s clinical date. Frozen benchmark inputs, historical personas, full-profile feature replays and the sample recording come from the release. The page labels locally generated data “regenerated locally; recordings may not match”. To use a mirror, set `VGI_DATA_RELEASE_URL` to a directory URL serving the same archives and checksum file. A checksum mismatch stops installation.
+
+**Download sample recording** installs the optional ten-day dashboard recording. It requires tar with `--zstd` and the zstd executable. Subsequent requests reuse the installed recording.
 
 Ctrl-C closes the app server. `pnpm stop` stops the `vgi-local` containers
 and preserves their volumes. Startup reuses a provisioned database and its
