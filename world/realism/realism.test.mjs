@@ -6,8 +6,11 @@ import { mkdtempSync, cpSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { read, hash, resourceKey, SYSTEM, EXT } from './common.mjs';
 import { reconcileBundle, ingredient } from './reconcile.mjs';
+import { contextDirectory } from './live-context.mjs';
 import { ROOT, augment } from './generate.mjs';
 const skip = dataReason("fixtures/clinical", "fixtures/synthea", "fixtures/synthetic-hospital", "runs/world/2");
+const worldDir = resolve(ROOT, 'runs/world/2');
+const contextDir = contextDirectory(ROOT, worldDir);
 const codes=r=>r.code?.coding?.map(c=>c.code)??[];
 
 test('all 1,442 charts have a reviewed allergy state, PCP, coverage and reconciled active medications', { skip },()=>{
@@ -52,7 +55,7 @@ const clinical=read(resolve(ROOT,'fixtures/clinical/overrides.json'));
   let dnr=0;
   const clinicalKeys=new Set(clinical.entry.filter(e=>e.action!=='withdraw').map(e=>e.key));
   for(let day=1;day<=10;day++) {
-    const bundle=read(resolve(ROOT,`runs/world/2/context/day-${String(day).padStart(2,'0')}.json`));
+    const bundle=read(resolve(contextDir,`day-${String(day).padStart(2,'0')}.json`));
     const resources=bundle.entry.map(e=>e.resource),byKey=new Map(resources.map(r=>[`${r.resourceType}/${r.id}`,r]));
     assert.equal(byKey.size,resources.length);
     const lists=resources.filter(r=>r.resourceType==='List');
@@ -124,10 +127,20 @@ test('regeneration is byte reproducible and never changes schedules or imported 
     const world=join(scratch,'world'),clinicalOutput=join(scratch,'clinical');
     cpSync(resolve(ROOT,'runs/world/2'),world,{recursive:true});
     cpSync(resolve(ROOT,'fixtures/clinical'),clinicalOutput,{recursive:true});
-    augment({world,clinical:clinicalOutput});
+    const separate = contextDir !== resolve(worldDir, 'context');
+    const contextOut = separate ? join(scratch, 'live-context') : undefined;
+    augment({world,clinical:clinicalOutput,contextOut});
     const relocated=read(resolve(world,'manifest.json'));
-    assert.equal(relocated.clinicalData.fixtures,relative(ROOT,clinicalOutput));
-    relocated.clinicalData.fixtures=manifest.clinicalData.fixtures;
+    if (separate) {
+      assert.deepEqual(relocated, manifest);
+    } else {
+      assert.equal(relocated.clinicalData.fixtures,relative(ROOT,clinicalOutput));
+      relocated.clinicalData.fixtures=manifest.clinicalData.fixtures;
+    }
+    for (const {day} of manifest.perDay) {
+      const file = `day-${String(day).padStart(2,'0')}.json`;
+      assert.deepEqual(readFileSync(join(contextOut ?? join(world,'context'),file)), readFileSync(join(contextDir,file)));
+    }
     assert.deepEqual(manifest.files.map(f=>hash(f==='manifest.json'?relocated:read(resolve(world,f)))),before);
     assert.equal(hash(read(resolve(clinicalOutput,'overrides.json'))),overlayHash);
     assert.deepEqual(manifest.files.map(f=>hash(read(resolve(ROOT,'runs/world/2',f)))),before);
@@ -147,7 +160,7 @@ test('background organ-removal cases respect imported history and prior context 
   }
   for(let day=1;day<=10;day++) {
     const state=read(resolve(ROOT,`runs/world/2/state-day-${day}.json`));
-    const rs=read(resolve(ROOT,`runs/world/2/context/day-${String(day).padStart(2,'0')}.json`)).entry.map(e=>e.resource);
+    const rs=read(resolve(contextDir,`day-${String(day).padStart(2,'0')}.json`)).entry.map(e=>e.resource);
     for(const r of rs.filter(r=>r.resourceType==='ServiceRequest'&&r.occurrencePeriod)) {
       const pid=r.subject.reference.slice(8);
       const original=state.surgicalCases.some(c=>c.orDay===day&&c.patientId===pid);
@@ -162,7 +175,7 @@ test('background organ-removal cases respect imported history and prior context 
 test('department background cases do not double-book the clinic surgeon and actual case times are preserved', { skip },()=>{
   for(let day=1;day<=10;day++) {
     const state=read(resolve(ROOT,`runs/world/2/state-day-${day}.json`));
-    const rs=read(resolve(ROOT,`runs/world/2/context/day-${String(day).padStart(2,'0')}.json`)).entry.map(e=>e.resource);
+    const rs=read(resolve(contextDir,`day-${String(day).padStart(2,'0')}.json`)).entry.map(e=>e.resource);
     const providers=new Map(rs.filter(r=>r.resourceType==='Practitioner').map(r=>[`Practitioner/${r.id}`,r.identifier[0].value]));
     for(const r of rs.filter(r=>r.resourceType==='ServiceRequest'&&r.occurrencePeriod)) {
       const pid=r.subject.reference.slice(8);

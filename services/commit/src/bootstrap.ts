@@ -49,7 +49,12 @@ export async function initialPatients(options: { hospital?: boolean; world?: str
   const today = manifest.perDay.find((d: Obj) => d.day === day)?.date;
   if (!today) throw new Error('World day missing');
   const clinical = await read(resolve(root, 'fixtures/clinical/overrides.json')).catch(e => { if (e.code === 'ENOENT') return { entry: [] }; throw e; });
-  const context = await read(resolve(world, `context/day-${String(day).padStart(2, '0')}.json`)).catch(e => { if (e.code === 'ENOENT') return undefined; throw e; });
+  const { contextDirectory } = await import(new URL('../../../world/realism/live-context.mjs', import.meta.url).href);
+  const contextDir = contextDirectory(root, world);
+  const context = await read(resolve(contextDir, `day-${String(day).padStart(2, '0')}.json`)).catch(e => {
+    if (e.code === 'ENOENT' && contextDir === resolve(world, 'context')) return undefined;
+    throw e;
+  });
   const { buildResources, loadWorld } = await import(new URL('../../../infra/scripts/seed-world.mjs', import.meta.url).href);
   const data = loadWorld({ world, day });
   const patientRefs = Object.fromEntries(bases.map(es => { const p = required(es.find(e => obj(e.resource).resourceType === 'Patient')); const id = obj(p.resource).id ?? str(p.fullUrl).slice(9); return [id, `Patient/${id}`]; }));

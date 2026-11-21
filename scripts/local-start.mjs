@@ -1,4 +1,4 @@
-import { fetchData, regeneratedSource } from './fetch-data.mjs';
+import { fetchData } from './fetch-data.mjs';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
@@ -55,7 +55,7 @@ async function waitForIdentity() {
   await command(process.execPath, ['infra/scripts/wait-healthy.mjs', '--identity']);
 }
 
-async function startStack(source) {
+async function startStack() {
   const projects = JSON.parse(await command('docker', ['compose', 'ls', '--all', '--format', 'json'], { quiet: true }));
   const existing = projects.find(({ Name }) => Name === project);
   if (existing && existing.ConfigFiles !== composeFile) {
@@ -96,10 +96,7 @@ async function startStack(source) {
     if (hasClinicalEvents)
       throw new Error(`Docker project ${project} has live history. Restore its .cache/commit/config.json and original ports before restarting.`);
     await command(process.execPath, ['infra/keycloak/provision-adt.mjs']);
-    // Seed 1's first regenerated day exceeds the bounded live ADT board.
-    const day = source === regeneratedSource ? '2' : '1';
-    console.log(`Importing live EHR baseline from world 2, day ${day}.`);
-    await command(process.execPath, ['infra/scripts/load.mjs', '--hospital', '--day', day]);
+    await command(process.execPath, ['infra/scripts/load.mjs', '--hospital']);
   } else {
     console.log('Patient baseline: already provisioned');
   }
@@ -123,7 +120,7 @@ async function start() {
   await localEnvironment();
   configurePorts();
   const appPort = port('APP_PORT', 5173);
-  const source = await fetchData();
+  await fetchData();
   await prepareBuild();
   const { preview } = await import(pathToFileURL(join(app, 'node_modules/vite/dist/node/index.js')));
   process.env.VGI_STACK_STATUS = 'starting';
@@ -145,7 +142,7 @@ async function start() {
     return;
   }
   try {
-    const file = await withLocalLock(`stack-${project}`, () => startStack(source));
+    const file = await withLocalLock(`stack-${project}`, startStack);
     // Read the actual project's snapshot date, including when reusing its DB
     // from another checkout. Only the date is exposed to the start page.
     const tenant = (process.env.COMMIT_TENANT ?? 'local').replaceAll("'", "''");

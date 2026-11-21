@@ -360,7 +360,7 @@ export async function main(args = process.argv.slice(2)) {
   if (opts.resetDay) throw new Error('Resetting live data is forbidden; start a distinct compose project');
   const { spawnSync } = await import('node:child_process');
   const result = spawnSync(process.execPath, ['--experimental-strip-types', resolve(REPO_ROOT, 'services/commit/src/provision.ts'),
-    '--world', opts.world, '--day', String(opts.day), ...(opts.dryRun ? ['--dry-run'] : []), ...(opts.verifyOnly ? ['--verify-only'] : []), ...(process.env.SYNTHETIC_HOSPITAL === '0' ? [] : ['--hospital'])], { cwd: REPO_ROOT, env: process.env, stdio: 'inherit' });
+    '--world', opts.world, ...(args.includes('--day') ? ['--day', String(opts.day)] : []), ...(opts.dryRun ? ['--dry-run'] : []), ...(opts.verifyOnly ? ['--verify-only'] : []), ...(process.env.SYNTHETIC_HOSPITAL === '0' ? [] : ['--hospital'])], { cwd: REPO_ROOT, env: process.env, stdio: 'inherit' });
   if (result.status !== 0) throw new Error('Commit-service import failed');
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main().catch(e => { console.error(e); process.exitCode = 1; });

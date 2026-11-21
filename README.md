@@ -142,7 +142,7 @@ git clone https://github.com/saithat/VGI-Health.git && cd VGI-Health
 pnpm start
 ```
 
-Open the printed URL (normally http://127.0.0.1:5173). Startup downloads and verifies the synthetic data, or regenerates it if the release is unavailable. Select **Download sample recording** for the dashboard. Later starts reuse local data and builds. `pnpm stop` stops the containers and keeps their data. [Setup, fallback prerequisites and validation](docs/methods/live-validation.md).
+Open the printed URL (normally http://127.0.0.1:5173). Startup downloads and verifies 1,442 synthetic charts, or regenerates the data if the release is unavailable. Live sign-in uses dated worklists for the full cohort. Recordings use their frozen world. Select **Download sample recording** for the dashboard. Later starts reuse local data and builds. `pnpm stop` stops the containers and keeps their data. [Setup, fallback prerequisites and validation](docs/methods/live-validation.md).
 
 [Model backends](docs/methods/model-backends.md) documents real and replay
 configuration. The [run-data contract](docs/methods/run-data.md) explains

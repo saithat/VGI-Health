@@ -11,8 +11,37 @@ import { Lean } from './lean.ts';
 const args = process.argv.slice(2);
 const value = (key: string) => args.includes(key) ? args[args.indexOf(key) + 1] : undefined;
 const dir = resolve(process.env.COMMIT_DATA_DIR ?? '.cache/commit');
-const patients = await initialPatients({ hospital: args.includes('--hospital') || process.env.SYNTHETIC_HOSPITAL === '1',
-  world: value('--world'), day: Number(value('--day') ?? 1) });
+async function baseline(day: number) {
+  const patients = await initialPatients({ hospital: args.includes('--hospital') || process.env.SYNTHETIC_HOSPITAL === '1',
+    world: value('--world'), day });
+  const boardPatients: string[] = [];
+  const bedIds = new Set<string>();
+  for (const patient of patients) {
+    let onBoard = false;
+    for (const entry of objs(patient.bundle.entry)) {
+      const resource = obj(entry.resource);
+      if (resource.resourceType === 'Encounter' && ['IMP','EMER'].includes(String(maybeObj(resource.class)?.code))
+        && ['in-progress','arrived','triaged'].includes(String(resource.status)) && maybeObjs(maybeObj(resource.meta)?.tag)?.length) onBoard = true;
+      if (resource.resourceType === 'Location' && maybeObjs(maybeObj(resource.physicalType)?.coding)?.some(c => c.code === 'bd'))
+        bedIds.add(str(resource.id));
+    }
+    if (onBoard) boardPatients.push(patient.patient);
+  }
+  const beds = [...bedIds].sort().map((resource, i) => ({ id: i+1, resource, unit: '4-west' }));
+  const exceedsLimit = boardPatients.length > 64 || beds.length > 64;
+  console.log(`World day ${day}: ${boardPatients.length} ADT patients, ${beds.length} beds.`);
+  return { patients, boardPatients, beds, exceedsLimit };
+}
+
+let day = args.includes('--day') ? Number(value('--day')) : 1;
+let selected = await baseline(day);
+if (selected.exceedsLimit && !args.includes('--day')) {
+  day = 2;
+  selected = await baseline(day);
+}
+if (selected.exceedsLimit) throw new Error('Dated board exceeds the bounded ADT deployment; partition units explicitly');
+const { patients, boardPatients, beds } = selected;
+console.log(`Selected world day ${day} for ${patients.length} initial patient bundles.`);
 const roles = ['physician','physician','rn','rn','np','surgeon'];
 const personas = ['P1','P2','P3','RN2','P4','P5'];
 const ids = patients.map(p => p.patient);
@@ -32,11 +61,6 @@ for (const p of patients) for (const e of objs(p.bundle.entry)) {
     mar: { unit: '4-west', patient: p.patient, medicationRequest: obj(r).id, encounter: str(obj(obj(r).encounter).reference).slice(10), scheduledTime } };
 }
 if (Object.keys(workflows).length) releases.mar = { spec: obj(releases.P3).spec, program: marProgram, workflows };
-const bedResources = new Map<string, unknown>();
-const boardPatients = patients.filter(p => objs(objs(p.bundle.entry)).some((e: Obj) => obj(e.resource).resourceType === 'Encounter' && ['IMP','EMER'].includes(String(maybeObj(obj(e.resource).class)?.code)) && ['in-progress','arrived','triaged'].includes(String(obj(e.resource).status)) && maybeObjs(maybeObj(obj(e.resource).meta)?.tag)?.length)).map(p => p.patient);
-for (const p of patients) for (const e of objs(p.bundle.entry)) if (obj(e.resource).resourceType === 'Location' && maybeObjs(maybeObj(obj(e.resource).physicalType)?.coding)?.some((c: Obj) => c.code === 'bd')) bedResources.set(str(obj(e.resource).id), e.resource);
-const beds = [...bedResources.keys()].sort().map((resource, i) => ({ id: i+1, resource, unit: '4-west' }));
-if (boardPatients.length > 64 || beds.length > 64) throw new Error('Dated board exceeds the bounded ADT deployment; partition units explicitly');
 const subjects = JSON.parse(await readFile(process.env.KEYCLOAK_SUBJECTS ?? resolve(dir, 'keycloak-subjects.json'), 'utf8'));
 const operators = [
   ['4west-rn1','rn',[]], ['4west-rn2','rn',[]], ['bed-manager','bedManager',['bedManager']], ['charge-4west','rn',['chargeNurse']], ['admitting-clerk','admittingClerk',['admittingClerk']],

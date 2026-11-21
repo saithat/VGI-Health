@@ -14,7 +14,7 @@ replays available. The start page shows how to enable live sign-in.
 
 The first start verifies the release archives against both the published `SHA256SUMS` and the [pinned hashes](../../data/release.json). Data is unpacked under `.cache/one-command` and installed after verification. An incomplete dataset stops startup and identifies missing paths. Restore the missing files or move the existing dataset aside before retrying. Other recordings can coexist with the restored world. An older dataset without a source marker appears as “existing local data”.
 
-If the release cannot be downloaded, startup uses Make, Python 3, Java 17+ and the upstream Synthetic Hospital and Synthea downloads. It converts the full hospital cohort, trims Synthea, generates ten days of world 2 with clinical overlays, and exports core Lean programs and P1 review screens. The regenerated live EHR opens on day two because day one exceeds the bounded ADT board. All ten days remain available for recording. The start page uses the live database’s clinical date. Frozen benchmark inputs, historical personas, full-profile feature replays and the sample recording come from the release. The page labels locally generated data “regenerated locally; recordings may not match”. To use a mirror, set `VGI_DATA_RELEASE_URL` to a directory URL serving the same archives and checksum file. A checksum mismatch stops installation.
+If the release cannot be downloaded, startup uses Make, Python 3, Java 17+ and the upstream Synthetic Hospital and Synthea downloads. It converts the full hospital cohort, trims Synthea, generates ten days of world 2 with clinical overlays, and exports core Lean programs and P1 review screens. The live importer checks the actual ADT board on day one. If it exceeds 64 patients or 64 beds, the importer tries day two with the same limits. An explicit `--day` must fit. All ten days remain available for recording. The start page uses the live database’s clinical date. Frozen benchmark inputs, historical personas, full-profile feature replays and the sample recording come from the release. The page labels locally generated data “regenerated locally; recordings may not match”. To use a mirror, set `VGI_DATA_RELEASE_URL` to a directory URL serving the same archives and checksum file. A checksum mismatch stops installation.
 
 **Download sample recording** installs the optional ten-day dashboard recording. It requires tar with `--zstd` and the zstd executable. Subsequent requests reuse the installed recording.
 
@@ -60,8 +60,15 @@ recording inputs. The smoke run and its results stay under `runs/`.
 Legacy commands remain available for CI and isolated development. For those
 commands, use disk-backed scratch. FHIR is an initial import format only.
 The loader composes `fixtures/clinical/overrides.json`, dated world resources
-and `runs/world/2/context/day-01.json`, validates fixture hashes, normalizes
+and the selected day’s context, validates fixture hashes, normalizes
 resource IDs and references, and refuses a changed patient baseline.
+Release `data-2026-11-21` supplies world 2’s live contexts in
+`fixtures/live-context/world-2/v2/`. Older installations and other worlds use
+their own `context/` directory. To rebuild the release’s live data from the
+frozen world, run `make synthetic-hospital` followed by
+`node world/realism/generate.mjs --live`. This refreshes the clinical overlays
+and live contexts. The recording fingerprint covers the entire `runs/world/2`
+tree and the Synthea fixture directory.
 
 ```sh
 export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
