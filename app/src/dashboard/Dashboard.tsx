@@ -387,7 +387,7 @@ function Why({
         <span className="step-label">02 · Hypothesis</span>
         <h3>{record.hypothesis}</h3>
         <p className="dash-note">
-          Backend: {record.backend.name} / {record.backend.model} ·{" "}
+          {record.mode === "hillclimb" ? "Night agent" : "Backend"}: {record.mode === "hillclimb" ? run.manifest.hillclimb?.provider ?? record.backend.name : record.backend.name} / {record.backend.model} ·{" "}
           {record.mode} · spec{" "}
           {releaseLabel(record.specVersion, run.manifest.runId)}
         </p>
@@ -1567,6 +1567,8 @@ export function Dashboard({
             <span className="run-banner" role="status">
               {run.manifest.warning ??
                 `${runId} · Real checker · ${run.manifest.daysCompleted ?? run.manifest.days} completed days${isRunning(run.manifest.status) ? ` of ${run.manifest.days} · refreshing every 30 s` : ""}`}
+              {(run.manifest.hillclimb?.model ?? run.manifest.model) &&
+                ` · Night agent ${run.manifest.hillclimb?.provider ?? run.manifest.backend} / ${run.manifest.hillclimb?.model ?? run.manifest.model}`}
             </span>
           )}
           <div

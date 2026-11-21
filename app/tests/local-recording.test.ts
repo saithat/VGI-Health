@@ -68,6 +68,15 @@ describe("local recording arguments", () => {
 
   });
 
+  it("passes the local night settings separately from the release backend model", () => {
+    const local = { ...configuration, nightProvider:"local", nightModel:"inkling-2-mini",
+      nightBaseUrl:"http://[::1]:8888/v1", nightContextWindow:"64000" };
+    expect(recordingArgs(local).args.slice(-8)).toEqual(["--night-provider","local","--night-base-url",
+      "http://[::1]:8888/v1","--night-model","inkling-2-mini","--night-context-window","64000"]);
+    expect(() => recordingArgs({...local, nightBaseUrl:"http://example.com/v1"})).toThrow();
+    expect(() => recordingArgs({...local, nightContextWindow:"-1"})).toThrow();
+  });
+
   it.each([
     { runId: "../run" },
     { runId: "--resume" },

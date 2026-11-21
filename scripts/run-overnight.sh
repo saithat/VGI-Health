@@ -9,6 +9,8 @@ for argument in "$@"; do [[ "$argument" != "--resume" ]] || resume=true; done
 if [[ ! "$run_id" =~ ^[A-Za-z0-9_-]+$ ]]; then echo 'Invalid run id' >&2; exit 2; fi
 if [[ "${VGI_LOCAL_RECORD:-0}" != 1 && ! -f runs/world/2/world.json ]]; then echo 'World 2 must land before the full run.' >&2; exit 1; fi
 export EHR_FAKE=0 LEAN_STACK_SIZE_KB=65536 CODEX_REASONING_EFFORT=high
+# A default in the environment lets resume and replay inherit the recorded night tier.
+export CODEX_SERVICE_TIER="${CODEX_SERVICE_TIER:-default}"
 defaults=(--parallel --days 10 --backend codex --world runs/world/2 --personas P1,P2,P3,P4,P5 --reasoning-effort "${CODEX_REASONING_EFFORT}")
 if [[ "${VGI_LOCAL_RECORD:-0}" == 1 ]]; then
   defaults=()
@@ -44,7 +46,7 @@ pnpm --filter app lint
 fi
 mkdir -p "runs/$run_id/logs"
 # All persona workers share this Node heap inside the recording memory scope.
-NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}" pnpm --filter agent run-days "${defaults[@]}" --service-tier "${CODEX_SERVICE_TIER:-default}" \
+NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}" pnpm --filter agent run-days "${defaults[@]}" \
   --run-id "$run_id" \
   --fhir "${EHR_SAMPLE_FHIR:-fixtures/synthea/Ashly_Rippin_149fcc1f.json}" "$@" \
   2>&1 | tee -a "runs/$run_id/logs/console.txt"

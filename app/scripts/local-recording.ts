@@ -1,3 +1,4 @@
+import { contextWindowSchema, DEFAULT_CONTEXT_WINDOW, DEFAULT_LOCAL_MODEL, DEFAULT_MODEL_URL, modelEndpoint, nightProvider, recordedClimb } from "../../agent/src/harness/night-provider";
 import { assertRecordingMode } from "../../agent/src/recording-mode";
 import { execFile, spawn, type ChildProcess } from "node:child_process";
 import { randomUUID, timingSafeEqual } from "node:crypto";
@@ -21,6 +22,10 @@ const requestSchema = z
     screens: z.literal("lean"),
     backend,
     model: z.string().regex(/^(?:[A-Za-z0-9][A-Za-z0-9_./:@+-]{0,127})?$/),
+    nightProvider: nightProvider.optional(),
+    nightBaseUrl: z.string().optional(),
+    nightModel: z.string().optional(),
+    nightContextWindow: z.string().optional(),
     reasoningEffort: effort,
     world: id,
     resume: z.boolean(),
@@ -63,6 +68,16 @@ export function recordingArgs(input: unknown, parallel = true) {
     args.push("--model", config.model);
   if (config.backend === "codex")
     args.push("--reasoning-effort", config.reasoningEffort);
+  if (config.backend === "codex" && config.nightProvider) {
+    args.push("--night-provider", config.nightProvider);
+    if (config.nightProvider === "local") {
+      const url = config.nightBaseUrl ?? DEFAULT_MODEL_URL;
+      modelEndpoint(url);
+      const model = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_./:@+-]{0,127}$/).parse(config.nightModel ?? DEFAULT_LOCAL_MODEL);
+      const window = contextWindowSchema.parse(Number(config.nightContextWindow ?? DEFAULT_CONTEXT_WINDOW));
+      args.push("--night-base-url", url, "--night-model", model, "--night-context-window", String(window));
+    }
+  }
   return { config, args };
 }
 
@@ -108,6 +123,7 @@ const manifestSchema = z.object({
   personas: z.array(persona),
   screenGate: z.string().optional(),
   nightMode: z.string().optional(),
+  hillclimb: recordedClimb.optional(),
   measurementProtocol: z.object({name:z.string()}).optional(),
   parallel: z.boolean().optional(),
 });
@@ -160,6 +176,11 @@ export async function recordingOptions(root: string) {
         personas: data.personas,
         screens: "lean",
         model: data.model,
+        nightProvider: data.hillclimb?.provider ?? "codex",
+        nightBaseUrl: data.hillclimb?.basePathSha256 ? "" : data.hillclimb?.hostPort ? `http://${data.hillclimb.hostPort}/v1` : DEFAULT_MODEL_URL,
+        nightModel: data.hillclimb?.provider === "local" ? data.hillclimb.model : DEFAULT_LOCAL_MODEL,
+        nightContextWindow: data.hillclimb?.contextWindow ?? DEFAULT_CONTEXT_WINDOW,
+        reasoningEffort: data.hillclimb?.reasoningEffort ?? "high",
         world: basename(data.world),
       };
     }),

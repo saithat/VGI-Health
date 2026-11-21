@@ -1,7 +1,9 @@
 import {scriptedClimb} from "./lean-fixture.js";
 import { withData } from "./data.js";
 import { RELEASE_IDS } from '../src/release-config.js';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+import { execFileSync } from 'node:child_process';
+import { REPO_ROOT } from '../src/util.js';
 import { runDays } from '../src/run.js';
 import { RunStore } from '../src/store.js';
 import { fakeWorld, tmp } from './helpers.js';
@@ -45,4 +47,35 @@ it('reuses an exact completed LLM call from an unfinished night and preserves it
   expect(complete).toHaveBeenCalledTimes(1);
   expect(await readFile(llmRecordPath(dir, request.callId), 'utf8')).toBe(recorded);
   await expect(resumed.complete({ ...request, prompt: 'changed' })).rejects.toThrow(/refusing to overwrite/);
+});
+
+it('records the local night identity and binds it on resume and offline replay', async () => {
+  const { ReplayLlm } = await import('../src/backends/replay.js');
+  const common = { ...scriptedClimb, worldDir: await fakeWorld(1), runsRoot: await tmp('night-binding'),
+    runId:'local', days:1, personas:['P4'], llm:new ScriptedLlm() };
+  const hillclimb = {...common.hillclimb, provider:'local' as const, model:'local-fixture',
+    baseUrl:'http://localhost:9876/custom/v1', contextWindow:32000 };
+  const run = await runDays({...common, hillclimb});
+  const manifest = JSON.parse(await readFile(run.dir + '/manifest.json', 'utf8'));
+  expect(manifest.hillclimb).toMatchObject({provider:'local', model:'local-fixture', hostPort:'localhost:9876', contextWindow:32000});
+  expect(JSON.stringify(manifest.hillclimb)).not.toContain('/custom');
+  const report = execFileSync(process.execPath, [REPO_ROOT + '/scripts/report-agent-benefit.mjs', run.dir], {encoding:'utf8'});
+  expect(report).toContain('Night agent local / local-fixture');
+  const replay = { ...common, runId:'replay', llm: new ReplayLlm(run.dir) };
+  for (const difference of [{provider:'codex' as const}, {model:'different', baseUrl:hillclimb.baseUrl},
+    {contextWindow:64000, baseUrl:hillclimb.baseUrl}, {baseUrl:'http://localhost:8765/custom/v1'}, {baseUrl:'http://localhost:9876/v1'}]) {
+    await expect(runDays({...common, resume:true, hillclimb:{...common.hillclimb, ...difference}})).rejects.toThrow('Resume hillclimb configuration must match');
+    await expect(runDays({...replay, hillclimb:difference})).rejects.toThrow('Replay hillclimb configuration must match');
+  }
+  await runDays({...common, hillclimb, resume:true});
+  const copy = await runDays({...replay, hillclimb:{}});
+  expect(JSON.parse(await readFile(copy.dir + '/manifest.json', 'utf8')).hillclimb).toEqual(manifest.hillclimb);
+
+  // Older hill-climb manifests identified the hosted model at the top level only.
+  manifest.hillclimb = {wallMs:manifest.hillclimb.wallMs, reasoningEffort:'high', serviceTier:'default'};
+  await writeFile(run.dir + '/manifest.json', JSON.stringify(manifest));
+  await expect(runDays({...common, hillclimb, resume:true})).rejects.toThrow('Resume hillclimb configuration must match');
+  const legacy = await runDays({...common, resume:true});
+  expect(JSON.parse(await readFile(legacy.dir + '/manifest.json', 'utf8')).hillclimb)
+    .toMatchObject({provider:'codex', model:manifest.model});
 });

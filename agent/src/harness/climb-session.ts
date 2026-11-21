@@ -10,17 +10,17 @@ prepareLaunch,
 launchUsage,
 auditLaunch,
 type LaunchUsage,
+type AgentConfig,
 } from "./agents.js";
 import { startEgressProxy,type EgressEvent } from "./egress.js";
+import { startModelBridge } from "./model-bridge.js";
+import { DEFAULT_MODEL_URL } from "./night-provider.js";
 import { serveHarnessSpool } from "./host.js";
 import { harnessSandboxArgs,runSandboxed } from "./sandbox.js";
 import { readJson,writeJson } from "../util.js";
 import { UsageLimitError,usageLimitIn } from "../usage-limit.js";
 
-export interface ClimbSessionOptions {
-  model: string;
-  reasoningEffort: string;
-  serviceTier: string;
+export interface ClimbSessionOptions extends AgentConfig {
   wallMs: number;
   replayFrom?: string;
   /** In-process driver for synthetic verification only. */
@@ -115,27 +115,24 @@ export async function runClimbingSession(
       while (!host.final && Date.now() < host.deadline) {
         const index = launches.length;
         const home = await mkdtemp(path.join(root, "cli-home-"));
-        const spec = await prepareLaunch(
-          {
-            model: opts.model,
-            serviceTier: opts.serviceTier,
-            reasoningEffort: opts.reasoningEffort,
-          },
-          home,
-          control,
-          index,
-        );
-        const egress: EgressEvent[] = [];
+        const spec = await prepareLaunch(opts, home, control, index);
+        const egress: (EgressEvent & { route?: "model" })[] = [];
         const stop = await startEgressProxy(
           path.join(control, "egress.sock"),
           spec.hosts,
           (e) => egress.push(e),
         );
+        let stopBridge: (() => Promise<void>) | undefined;
         try {
+          const localModel = opts.provider === "local";
+          if (localModel) {
+            stopBridge = await startModelBridge(path.join(control, "model.sock"), opts.baseUrl ?? DEFAULT_MODEL_URL,
+              event => egress.push({ ...event, route: "model" }));
+          }
           const args = harnessSandboxArgs(
             {
               workspace: path.join(root, "work"),
-              control,
+              localModel, control,
               home,
               spool,
               readOnly: spec.readOnly,
@@ -174,7 +171,7 @@ export async function runClimbingSession(
               `Codex launch failed (${run.code}): ${run.stderr.slice(-1500)}`,
             );
         } finally {
-          await stop();
+          await Promise.all([stopBridge?.(), stop()]);
         }
       }
     } finally {

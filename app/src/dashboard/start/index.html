@@ -104,7 +104,13 @@
                   <option value="codex">Codex</option>
                   <option value="replay">Replay</option>
                 </select></label>
-                <label id="model-field">Model<input name="model" maxlength="128" placeholder="Use backend default" autocomplete="off"></label>
+                <label id="model-field">Codex backend model<input name="model" maxlength="128" placeholder="Use backend default" autocomplete="off"></label>
+                <label id="night-provider-field">Night agent<select name="nightProvider">
+                  <option value="codex">Codex</option><option value="local">Local model server</option>
+                </select></label>
+                <label id="night-url-field" hidden>Model server base URL<input type="url" name="nightBaseUrl" value="http://127.0.0.1:8080/v1"></label>
+                <label id="night-model-field" hidden>Night model name<input name="nightModel" maxlength="128" value="inkling-2-mini" autocomplete="off"></label>
+                <label id="night-context-field" hidden>Context window (tokens)<input type="number" name="nightContextWindow" min="2" step="1" value="131072"></label>
                 <label id="effort-field">Reasoning effort<select name="reasoningEffort">
                   <option value="low">Low</option><option value="medium">Medium</option><option value="high" selected>High</option>
                   <option value="xhigh">Extra high</option><option value="max">Max</option><option value="ultra">Ultra</option>

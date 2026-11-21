@@ -5,13 +5,14 @@
  *   /home/agent   the CLI's private state and credential copy (read-write),
  *   /spool        the night CLI's request/reply files (read-write),
  *   /run/harness  the night CLI, the entry script and the egress socket (read-only).
- * The only route out is the allowlisted CONNECT proxy socket (egress.ts). */
+ * Local sessions also expose a forward to the configured host loopback listener. */
+import { MODEL_PORT } from './night-provider.js';
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 
 export const SANDBOX_PATHS = { workspace: '/work', home: '/home/agent', control: '/run/harness', spool: '/spool' } as const;
 export const PROXY_PORT = 18_443;
-export interface SandboxMounts { workspace: string; home: string; control: string; spool: string; readOnly?: readonly (readonly [string, string])[] }
+export interface SandboxMounts { localModel?: boolean; workspace: string; home: string; control: string; spool: string; readOnly?: readonly (readonly [string, string])[] }
 
 const RUNTIME = ['/usr', '/bin', '/lib', '/lib64', '/sbin'];
 const ETC = ['/etc/ssl', '/etc/pki', '/etc/crypto-policies', '/etc/passwd', '/etc/group', '/etc/nsswitch.conf', '/etc/hosts', '/etc/localtime', '/etc/alternatives'];
@@ -27,7 +28,8 @@ export function harnessSandboxArgs(m: SandboxMounts, command: string, args: read
     '--setenv', 'TMPDIR', '/tmp', '--setenv', 'LANG', 'C.UTF-8',
     ...Object.entries(env).flatMap(([k, v]) => ['--setenv', k, v]),
     '--chdir', SANDBOX_PATHS.workspace, '--',
-    node, `${SANDBOX_PATHS.control}/entry.mjs`, `${SANDBOX_PATHS.control}/egress.sock`, String(PROXY_PORT), '--', command, ...args];
+    node, `${SANDBOX_PATHS.control}/entry.mjs`, `${SANDBOX_PATHS.control}/egress.sock`, String(PROXY_PORT),
+    ...(m.localModel ? [`${SANDBOX_PATHS.control}/model.sock`, String(MODEL_PORT)] : []), '--', command, ...args];
 }
 
 export interface SandboxRun { stdout: string; stderr: string; code: number | null; signal: string | null; timedOut: boolean; stdoutTruncated: boolean }

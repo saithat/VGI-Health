@@ -11,6 +11,10 @@ const fields = Object.fromEntries(
     "screens",
     "backend",
     "model",
+    "nightProvider",
+    "nightBaseUrl",
+    "nightModel",
+    "nightContextWindow",
     "reasoningEffort",
     "replayFrom",
   ].map((name) => [name, recordForm.elements.namedItem(name)]),
@@ -319,6 +323,15 @@ function syncBackend() {
   element("effort-field").hidden = backend !== "codex";
   element("replay-field").hidden = !replay;
   element("model-field").hidden = replay;
+  element("night-provider-field").hidden = replay;
+  const local = !replay && fields.nightProvider.value === "local";
+  for (const [label, field] of [
+    ["night-url-field", fields.nightBaseUrl], ["night-model-field", fields.nightModel],
+    ["night-context-field", fields.nightContextWindow],
+  ]) {
+    element(label).hidden = field.disabled = !local;
+    field.required = local;
+  }
   fields.replayFrom.required = replay;
 }
 
@@ -329,6 +342,7 @@ resumeRun.addEventListener("change", () => {
   else fields.runId.value = "";
 });
 
+fields.nightProvider.addEventListener("change", syncBackend);
 fields.backend.addEventListener("change", syncBackend);
 recordForm.addEventListener("change", () => {
   const values = configuration();
