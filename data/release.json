@@ -1,5 +1,5 @@
 {
-  "tag": "data-2026-11-20",
-  "data": { "file": "vgi-data-2026-11-20.tar.gz", "sha256": "aa2b9a2eb21eb10574d1ac942d75ecf3f2769a6cd712c89eeb037e76e407610b" },
+  "tag": "data-2026-11-21",
+  "data": { "file": "vgi-data-2026-11-21.tar.gz", "sha256": "135c3ca2fe348a59ea93929c6aaf9e2102c6c0f6ebc9e6106b389898ebc0db5b" },
   "sample": { "file": "vgi-run-lean-10day.tar.zst", "sha256": "3e9a2b552d0e16235f5e3885735de3c4ae4f21d9ad00166611c59b3c2e219f28", "run": "lean-10day" }
 }

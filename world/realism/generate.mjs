@@ -6,9 +6,10 @@ import { fileURLToPath } from 'node:url';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { read, write, hash, resourceKey, id, tag, ref, cc } from './common.mjs';
 import { reconcileBundle } from './reconcile.mjs';
+import { liveContextPath } from './live-context.mjs';
 import { dayContext } from './context.mjs';
 export const ROOT=process.env.VGI_DATA_ROOT ?? resolve(dirname(fileURLToPath(import.meta.url)),'../..');
-export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROOT,'fixtures/synthea/index.json'),clinical=resolve(ROOT,'fixtures/clinical')}={}) {
+export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROOT,'fixtures/synthea/index.json'),clinical=resolve(ROOT,'fixtures/clinical'),contextOut}={}) {
   const sources=[fixtures];
   // Real imported patients supply list context, without expanding the scenario cohort.
   if(existsSync(resolve(ROOT,'fixtures/synthetic-hospital/index.json'))&&fixtures!==resolve(ROOT,'fixtures/synthetic-hospital/index.json')) sources.push(resolve(ROOT,'fixtures/synthetic-hospital/index.json'));
@@ -61,16 +62,23 @@ export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROO
   for(const d of manifest.perDay) {
     const schedules=Object.fromEntries(['P1','P2','P3','P4','P5'].map(p=>[p,read(resolve(world,`day-${d.day}-${p}.json`))]));
     const context=dayContext({seed:manifest.seed,day:d.day,date:d.date,schedules,state:read(resolve(world,`state-day-${d.day}.json`)),previous:read(resolve(world,`state-day-${d.day-1}.json`)),population,charts,operationHistory,caseMix:manifest.caseMix??'legacy'});
-    const file=`context/day-${String(d.day).padStart(2,'0')}.json`;
-    write(resolve(world,file),context); generated.push(file);
+    const file=`day-${String(d.day).padStart(2,'0')}.json`;
+    write(resolve(contextOut ?? resolve(world,'context'),file),context);
+    generated.push(`context/${file}`);
   }
-  manifest.files=manifest.files.filter(f=>!f.startsWith('context/')).concat(generated);
-  manifest.clinicalData={schemaVersion:1,fixtures:relative(ROOT,clinical),context:'context/day-{DD}.json',sourceCohorts:sources.map(p=>relative(ROOT,p)),taskInputs:'unchanged imported scenario fixtures',listContextTag:'urn:vgi:world:realism|list-context'};
-  write(resolve(world,'manifest.json'),manifest,2);
+  if (!contextOut) {
+    manifest.files=manifest.files.filter(f=>!f.startsWith('context/')).concat(generated);
+    manifest.clinicalData={schemaVersion:1,fixtures:relative(ROOT,clinical),context:'context/day-{DD}.json',sourceCohorts:sources.map(p=>relative(ROOT,p)),taskInputs:'unchanged imported scenario fixtures',listContextTag:'urn:vgi:world:realism|list-context'};
+    write(resolve(world,'manifest.json'),manifest,2);
+  }
   console.log(`Clinical overlays: ${audit.patients} patients, ${overlays.length} resource changes; ${generated.length} shared day bundles`);
   return {audit,overlays,generated};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
   const args=process.argv.slice(2),arg=k=>args.includes(k)?args[args.indexOf(k)+1]:undefined;
-  augment({...(arg('--world')?{world:resolve(arg('--world'))}:{}),...(arg('--fixtures')?{fixtures:resolve(arg('--fixtures'))}:{}),...(arg('--clinical')?{clinical:resolve(arg('--clinical'))}:{})});
+  const world = arg('--world') ? resolve(arg('--world')) : resolve(ROOT,'runs/world/2');
+  const live = args.includes('--live');
+  if (live && world !== resolve(ROOT,'runs/world/2')) throw new Error('--live uses world 2 schedules');
+  augment({world, contextOut:live ? resolve(ROOT,liveContextPath) : undefined,
+    fixtures:arg('--fixtures') && resolve(arg('--fixtures')), clinical:arg('--clinical') && resolve(arg('--clinical'))});
 }
