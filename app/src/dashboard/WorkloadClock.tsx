@@ -1,6 +1,7 @@
+import {reportingDay} from './benefit-metrics.mjs';
 import type {RunData} from './data';
 export function WorkloadClock({run,persona}:{run:RunData;persona:string}) {
-  const days=run.days.filter(d=>d.persona===persona&&(!run.manifest.measurementProtocol||d.day%2===0));
+  const days=run.days.filter(d=>d.persona===persona&&(reportingDay(run.manifest.measurementProtocol,d.day)));
   const measured=days.flatMap(d=>d.workload?[d.workload]:[]);
   if(!measured.length) return <p>{run.manifest.measurementLabel ? `${run.manifest.measurementLabel}. ` : ''}Queue and shift measurements are unavailable for this recording.</p>;
   const sum=(key:'queueDelayMs'|'overtimeMs'|'tasksCarriedOver'|'overdueScheduledDoses'|'resultResponseMs'|'resultsResponded')=>measured.reduce((n,d)=>n+d[key],0);

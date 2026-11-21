@@ -32,3 +32,13 @@ export async function runFingerprints(ehr: EhrClient, world: string, root = REPO
     app: screenMode==='lean' ? 'NOT_USED_LEAN_GEOMETRY' : ehr.mode === 'real' ? z.object({appSha256:z.string().regex(/^[a-f0-9]{64}$/)}).parse(JSON.parse(await readFile(path.join(root,'app/dist/build.json'),'utf8'))).appSha256 : 'FAKE',
     wasm: await fileHash(path.join(root,'app/public/ehr/ehr-interp.wasm')) };
 }
+
+export async function leanFingerprints(root=REPO_ROOT){
+  // Bind the native adapters or their interpreted sources, whichever traceStates uses.
+  const adapters: Record<string,string> = {};
+  for (const [name, source] of [['trace-task','measure-replay/TraceTask.lean'], ['trace-contexts','trajectories/Contexts.lean']] as const) {
+    const binary = path.join(root,'scripts/measure-replay/.lake/build/bin',name);
+    adapters[name] = await fileHash(existsSync(binary) ? binary : path.join(root,'scripts',source));
+  }
+  return {...adapters,referenceGenerator:await fileHash(path.join(root,'scripts/layout-reference/generator.mjs')),layoutExecutable:await fileHash(path.join(root,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(root,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(root,'docs/methods/lean-screen-density.json')),...(existsSync(path.join(root,'docs/methods/lean-paged-density.json'))?{pagedDensityLimits:await fileHash(path.join(root,'docs/methods/lean-paged-density.json'))}:{}),windowMirror:await fileHash(path.join(root,'scripts/layout-reference/window.mjs'))};
+}

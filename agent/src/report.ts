@@ -1,7 +1,7 @@
 import {simulationModesSchema,withSimulationModes,legacyModes} from './simulation-modes.js';
 import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
-import { isMeasurementDay } from './protocol.js';
-import { compareDays, type DayPair } from '../../app/src/dashboard/benefit-metrics.mjs';
+
+import { reportingDay,hillclimbPolicy,compareDays, type DayPair } from '../../app/src/dashboard/benefit-metrics.mjs';
 /** Same-schedule canonical versus recorded costs; never feeds an overnight prompt. */
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -21,7 +21,7 @@ import { loadWorld } from './world.js';
 const { values } = parseArgs({ options: { run: { type: 'string' } } });
 if (!values.run) throw new Error('Usage: pnpm --filter agent report --run runs/<id>');
 const directory = resolveUserPath(values.run);
-const manifest = await readJson(path.join(directory, 'manifest.json'), z.object({ runId: z.string(), days: z.number(), personas: z.array(z.string()), world: z.string(), ehr: z.object({ mode: z.literal('real') }), noAgentRequired:z.boolean().optional(), measurementProtocol: z.unknown().optional(), simulationModes:simulationModesSchema.optional() }));
+const manifest = await readJson(path.join(directory, 'manifest.json'), z.object({ runId: z.string(), days: z.number(), personas: z.array(z.string()), world: z.string(), ehr: z.object({ mode: z.literal('real') }), noAgentRequired:z.boolean().optional(), measurementProtocol: z.object({name:z.string()}).optional(), simulationModes:simulationModesSchema.optional() }));
 const store = new RunStore(directory);
 const conformanceFile = path.join(directory, 'conformance.json');
 const conformance = existsSync(conformanceFile) ? await readJson(conformanceFile, z.object({
@@ -52,7 +52,7 @@ for (const persona of manifest.personas) {
     const actual = await readJson(store.dayPath(day, persona), dayResultSchema);
     if (day < manifest.days && existsSync(store.decisionPath(day, persona))) decisions.push(await store.readDecision(day, persona));
     versions.add(actual.programVersion);
-    if (manifest.measurementProtocol && !isMeasurementDay(day)) continue;
+    if (!reportingDay(manifest.measurementProtocol,day)) continue;
     const program = await store.readProgram(persona, actual.programVersion);
     const release = await releaseForPersona(await loadRelease(program.specVersion, ehr), persona);
     const baselineProgram = personalize(release.canonical, params, world.userId(persona));
@@ -91,16 +91,16 @@ for (const persona of manifest.personas) {
       perDay:canonicalPairs.map(pair=>({day:pair.after.day,canonical:compareDays([pair]),noAgent:controlPairs.filter(c=>c.after.day===pair.after.day).map(c=>compareDays([c]))[0]??null}))},
     noAgent: noAgentDays?{before:noAgentBefore,after:noAgentAfter,saving:saving(noAgentBefore,noAgentAfter),days:noAgentDays}:null,
     deployedVersions: [...versions].sort((a, b) => a - b), before, after, incomplete,
-    nights: decisions.map((d) => ({ night: d.night, outcome: d.outcome, blindTest:d.measured.test?.day??null,testNote:d.flags.filter(f=>f.startsWith('test-unmeasured')), newCalibrationData:d.night%2===1, llmCalls: d.llmCalls.length, flags: d.flags })),
+    nights: decisions.map((d) => ({ night: d.night, outcome: d.outcome, blindTest:d.measured.test?.day??null,testNote:d.flags.filter(f=>f.startsWith('test-unmeasured')), newCalibrationData:manifest.measurementProtocol?.name===hillclimbPolicy||d.night%2===1, llmCalls: d.llmCalls.length, flags: d.flags })),
   });
 }
-const report = { runId: manifest.runId, ruleConformance, worldSeed: world.manifest.seed, comparison: 'Blind even measurement days (odd days are calibration only). Same schedules/seeds: active-release role canonical versus the recorded deployed fork on each work day. Agent effects are reported against the deterministic no-agent recertify/fallback arm as well as the vendor canonical. Per-day sample sizes and completion counts are explicit; unmeasured/superseded decisions remain unavailable. Candidate counts include seeded/repair proposals; accepted means passed the checker, not necessarily deployed.', rows };
+const report = { runId: manifest.runId, ruleConformance, worldSeed: world.manifest.seed, comparison: manifest.measurementProtocol?.name===hillclimbPolicy?'Every recorded day after day one against its same-release vendor and no-agent controls.':'Blind even measurement days (odd days are calibration only). Same schedules/seeds: active-release role canonical versus the recorded deployed fork on each work day. Agent effects are reported against the deterministic no-agent recertify/fallback arm as well as the vendor canonical. Per-day sample sizes and completion counts are explicit; unmeasured/superseded decisions remain unavailable. Candidate counts include seeded/repair proposals; accepted means passed the checker, not necessarily deployed.', rows };
 await writeJson(path.join(directory,'metrics/smoke-summary.json'),report);
 console.log('| Persona | Candidates pass/reject | Deployed | Clicks before→after | Scrolls before→after | Scroll px before→after | Mouse px before→after | Keys before→after (secondary) | Incomplete |');
 console.log('|---|---:|---|---:|---:|---:|---:|---:|---:|');
 for (const r of rows) console.log(`| ${r.persona} | ${r.checkerAccepted}/${r.checkerRejected} | ${r.deployedVersions.map((v) => `v${v}`).join(', ')} | ${r.before.clicks}→${r.after.clicks} | ${r.before.scrolls}→${r.after.scrolls} | ${r.before.scrollPx??"—"}→${r.after.scrollPx??"—"} | ${r.before.mouseTravelPx??"—"}→${r.after.mouseTravelPx??"—"} | ${r.before.keystrokes}→${r.after.keystrokes} | ${r.incomplete.length} |`);
 console.log('Agent-only savings vs no-agent control (clicks / scrolls / scroll px / mouse px (keys secondary)):');
-for(const r of rows)console.log(`${r.persona}: ${r.noAgent?`${r.noAgent.saving.clicks} / ${r.noAgent.saving.scrolls} / ${r.noAgent.saving.scrollPx??"—"} / ${r.noAgent.saving.mouseTravelPx??"—"}`:'Unavailable'}; blind samples ${r.samples.map(s=>`day ${s.day}: ${s.completed}/${s.tasks}`).join(', ')}`);
+for(const r of rows)console.log(`${r.persona}: ${r.noAgent?`${r.noAgent.saving.clicks} / ${r.noAgent.saving.scrolls} / ${r.noAgent.saving.scrollPx??"—"} / ${r.noAgent.saving.mouseTravelPx??"—"}`:'Unavailable'}; measured samples ${r.samples.map(s=>`day ${s.day}: ${s.completed}/${s.tasks}`).join(', ')}`);
 console.log('| Persona | Paired modeled time klmDeciSec vendor→agent | Vendor / agent completion | Action gap captured | Time gap captured |');
 console.log('|---|---:|---|---:|---:|');
 for(const r of rows){const b=r.benefit.noAgent;console.log(`| ${r.persona} | ${b?`${b.before.klmDeciSec}→${b.after.klmDeciSec}`:'Unavailable'} | ${b?`${b.completion.before.completed}/${b.completion.before.tasks} / ${b.completion.after.completed}/${b.completion.after.tasks}`:'Unavailable'} | ${b?.gapCapturedPct.actions?.toFixed(1)??'Unavailable'}% | ${b?.gapCapturedPct.klmDeciSec?.toFixed(1)??'Unavailable'}% |`);}

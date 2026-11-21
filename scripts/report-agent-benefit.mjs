@@ -4,14 +4,14 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
-import { compareDays } from '../app/src/dashboard/benefit-metrics.mjs';
+import { reportingDay, compareDays } from '../app/src/dashboard/benefit-metrics.mjs';
 
 const read = async file => JSON.parse(await readFile(file, 'utf8'));
 export async function reportAgentBenefit(directory, options = {}) {
   const manifest = await read(path.join(directory, 'manifest.json'));
   const days = (await readdir(path.join(directory, 'days'))).flatMap(name => /^day-\d+$/.test(name) ? [Number(name.slice(4))] : []).sort((a,b) => a-b)
     .filter(day => day <= (manifest.daysCompleted ?? manifest.days))
-    .filter(day => options.days ? options.days.includes(day) : !manifest.measurementProtocol || day % 2 === 0);
+    .filter(day => options.days ? options.days.includes(day) : reportingDay(manifest.measurementProtocol,day));
   if (options.days?.some(day=>!days.includes(day))) throw Error('Requested day is not a completed recorded day');
   const nights = (await readdir(path.join(directory, 'decisions')).catch(error=>{if(error.code==='ENOENT')return [];throw error;})).filter(n => /^night-\d+$/.test(n)).sort();
   const rows = [];

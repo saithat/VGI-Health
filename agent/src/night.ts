@@ -112,6 +112,7 @@ export function invalidPatch(error: unknown): CheckResult {
 }
 
 export interface Gate {
+  workspace?:{schedule:DaySchedule;worldDir:string};
   referenceProgram?: Program;
   workload?: DaySchedule['tasks'];
   specVersion: string;
@@ -125,18 +126,28 @@ export interface Gate {
 
 /** Apply a patch to `base` and run `ehr check`. */
 export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly JsonPatchOp[], gate: Gate, screens?:ScreenChecker): Promise<{ program: Program | null; check: CheckResult }> {
+  const prepared = preparePatch(base, patch, gate);
+  if (!prepared.program) return prepared;
+  return certifyPatch(ehr, prepared.program, gate, screens);
+}
+
+export function preparePatch(base: Program, patch: readonly JsonPatchOp[], gate: Gate) {
   let program: Program;
   try {
     program = applyToProgram(base, patch, { version: gate.nextVersion, specVersion: gate.specVersion }).program;
     expandProgram(program);
     compilePresentations(program);
+    return { program };
   } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
     return { program: null, check: invalidPatch(e) };
   }
+}
+
+export async function certifyPatch(ehr: EhrClient, program: Program, gate: Gate, screens?: ScreenChecker) {
   const verdict = await ehr.check({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, ...(gate.workload ? {workload:gate.workload} : {}) });
   if(verdict==='ok'&&screens?.mode==='lean'){
-    const screen=await retryScreens(screens).check({specVersion:gate.specVersion,program});
+    const screen=await retryScreens(screens).check({specVersion:gate.specVersion,program,...gate.workspace});
     if(screen.status!=='pass')return {program,check:screenCheckRejection(screen)};
   }
   return { program, check: toCheckResult(verdict) };
@@ -213,7 +224,7 @@ export function noteRejections(state: SeedState, evaluated: readonly EvaluatedCa
   return flags;
 }
 
-export function replayDay(day: number, load: string, before: DayResult, after: DayResult): ReplayDay {
+export function replayDay(day: number, load: string, before: DayResult, after: DayResult): Omit<ReplayDay,'bounded'> {
   const { before: b, after: a } = pairedMetrics(before, after);
   return { day, load, before: b, after: a, saving: saving(b, a), pctAboveFloor: { before: pctAboveFloor(before), after: pctAboveFloor(after) } };
 }
@@ -287,7 +298,9 @@ export function boundedRefusals(r:Pick<ReplayDay,'before'|'after'>):string[] {
   return reasons;
 }
 export function learnabilityOk(replay:ReplayDay|null):boolean {
-  return !!replay?.bounded && boundedRefusals(replay.bounded).length===0;
+  const bounded=replay?.bounded;
+  return !!bounded && boundedRefusals(bounded).length===0 && (bounded.memorySource!=='all-past' ||
+    (bounded.after.clicks<=bounded.before.clicks && bounded.after.scrolls<=bounded.before.scrolls));
 }
 
 export function completionOk(r: Pick<ReplayDay,'before'|'after'> | null): boolean {
@@ -400,7 +413,7 @@ export async function deployVersion(deps: LoopDeps, persona: string, program: Pr
   const build = deps.ehr.mode === 'real'&&deps.screens.mode!=='lean' ? await retryInfrastructure('deploy:build',()=>installedBuild(undefined, deps.ehr.binary ?? undefined),true) : undefined;
   stage='screen-check';
   const referenceProgram=gate.referenceProgram ?? await noAgentReference(deps.store.dir,gate.night===undefined?Infinity:gate.night+1)({specVersion:gate.specVersion,program});
-  screenCheck = await retryScreens(deps.screens).check({ specVersion: gate.specVersion, program, ...(referenceProgram?{referenceProgram}:{}) });
+  screenCheck = await retryScreens(deps.screens).check({ specVersion: gate.specVersion, program, ...gate.workspace, ...(referenceProgram?{referenceProgram}:{}) });
   if (screenCheck.status === 'error') throw new InfrastructureError(screenCheck.message);
   if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
   stage='native-deploy';

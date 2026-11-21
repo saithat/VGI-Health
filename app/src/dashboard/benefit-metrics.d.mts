@@ -16,3 +16,5 @@ export function zeroCost():Cost;
 export function addCost(a:Cost,b:Cost):Cost;
 export function actions(m:Pick<Cost,'clicks'|'scrolls'>):number;
 export function compareDays(pairs:readonly DayPair[]):BenefitComparison;
+export const hillclimbPolicy: 'all-past-hillclimb-v1';
+export function reportingDay(protocol:{name:string}|undefined,day:number):boolean;

@@ -26,7 +26,7 @@ export class ReplayLlm implements JsonLlm {
   readonly name = 'replay' as const;
   readonly model: string;
   readonly driftedCallIds:string[]=[];
-  constructor(private readonly sourceRunDir: string, readonly options:{allowDrift?:boolean}={}) {
+  constructor(readonly sourceRunDir: string, readonly options:{allowDrift?:boolean}={}) {
     this.model = 'replay';
   }
 

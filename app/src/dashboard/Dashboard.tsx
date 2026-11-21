@@ -1,3 +1,4 @@
+import {reportingDay,hillclimbPolicy} from './benefit-metrics.mjs';
 import { WorkloadClock } from "./WorkloadClock";
 import { InterruptionWork } from "./InterruptionWork";
 import { watchRun, isRunning } from "./run-refresh";
@@ -1061,6 +1062,7 @@ function VersionList({
   const records = run.records.filter(
     (r) => r.persona === persona && r.mode !== "try-to-break-it",
   );
+  const climbing = run.manifest.measurementProtocol?.name===hillclimbPolicy;
   const blindProtocol = !!run.manifest.measurementProtocol;
   const exactAt = (version: number) => {
     const i = run.complexity?.personas
@@ -1224,7 +1226,7 @@ function VersionList({
       <div className="history-heading">
         <h3>Night by night</h3>
         <InfoTip label="How nights are measured" align="right">
-          {blindProtocol && (
+          {blindProtocol && !climbing && (
             <p>
               One canonical EHR, with role permissions and preset views. The
               agent evolves each persona’s fork. Odd days calibrate; even days
@@ -1240,7 +1242,7 @@ function VersionList({
           )}
           <p>
             Effect is the change in clicks; negative means less work.{" "}
-            {blindProtocol
+            {climbing ? "Each next-day measurement uses the deployed version and its same-release canonical." : blindProtocol
               ? "Blind tests compare after − before against the certified canonical."
               : "Exact savings compare fixed benchmark values on the workflow union."}{" "}
             For realistic effort, choose “Realistic workload” on the chart; a
@@ -1513,7 +1515,7 @@ export function Dashboard({
           Open EHR
         </a>
       </AppHeader>
-      {run && <InterruptionWork days={run.days.filter(d => !run.manifest.measurementProtocol || d.day % 2 === 0)} persona={persona} />}
+      {run && <InterruptionWork days={run.days.filter(d => reportingDay(run.manifest.measurementProtocol,d.day))} persona={persona} />}
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button

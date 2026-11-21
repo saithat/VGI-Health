@@ -26,7 +26,17 @@ export const llmCandidateSchema=baseLlmCandidate.extend({portfolio:portfolioSche
 export const llmProposalSchema=baseProposal.extend({candidates:z.array(llmCandidateSchema)});
 export const screenCheckResultSchema=baseScreenCheck.extend({mode:z.enum(['real','fake','lean'])});
 export type ScreenCheckResult=z.infer<typeof screenCheckResultSchema>;
-export const decisionRecordSchema=baseDecision.extend({screenCheck:screenCheckResultSchema.nullable(),evidence:trainSummarySchema,backend:baseDecision.shape.backend.extend({name:z.enum(['claude','codex','openai-compat','replay','scripted'])}),candidates:z.array(evaluatedCandidateSchema),exploration:z.object({
+const baseReplay=baseDecision.shape.validation.shape.replay.unwrap();
+const replayDay=baseReplay.extend({
+  bounded:baseReplay.shape.bounded.unwrap().extend({memorySource:z.enum(['all-past','train-only'])}).optional(),
+});
+export type ReplayDay=z.infer<typeof replayDay>;
+export const decisionRecordSchema=baseDecision.extend({
+  mode:z.enum([...baseDecision.shape.mode.options,'hillclimb']),
+  outcome:z.enum([...baseDecision.shape.outcome.options,'backstop']),
+  validation:baseDecision.shape.validation.extend({replay:replayDay.nullable()}),
+  measured:baseDecision.shape.measured.extend({validation:replayDay.nullable()}),
+  screenCheck:screenCheckResultSchema.nullable(),evidence:trainSummarySchema,backend:baseDecision.shape.backend.extend({name:z.enum(['claude','codex','openai-compat','replay','scripted'])}),candidates:z.array(evaluatedCandidateSchema),exploration:z.object({
   policy:z.string(),minimumEffect:z.number(),
   checker:z.object({proposed:z.number().int().nonnegative(),rejected:z.number().int().nonnegative(),rate:z.number().nullable(),checkerRejected:z.number().int().nonnegative(),invalid:z.number().int().nonnegative()}),
   candidates:z.array(z.object({id:z.string(),gross:z.number(),net:z.number(),switchCost:z.number(),fromCurrent:z.number(),fromArchive:z.number(),explorationRank:z.number()})),

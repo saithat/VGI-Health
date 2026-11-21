@@ -1,8 +1,11 @@
+import { LayoutReplyCache, PackedCache } from "./layout-reply-cache.js";
+import { mapOrdered, taskSlots } from "./replay-pool.js";
 import { BoundedMap } from './bounded-map.js';
 import { applyLayoutRules, LayoutRuleRefusal, denseOutline } from "./layout-rules.js";
 import { shapeFor } from "../../scripts/layout-reference/generator.mjs";
 import { LeanReference, referenceGeneratorVersion } from "./lean-reference.js";
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
+import { fileHash } from "./fingerprints.js";
 import { LeanLayoutRefusal } from "./lean-layout-refusal.js";
 import path from "node:path";
 import { mkdtemp, readFile, rm, appendFile, mkdir, rename } from "node:fs/promises";
@@ -17,7 +20,7 @@ import {
   geometryComponentsHash,
   geometryCacheKey,
 } from "./geometry.js";
-import { designOf, withDesign, ruleCase, appliesTo, type LayoutDesign } from "./layout-design.js";
+import { designOf, withDesign, ruleCase, appliesTo } from "./layout-design.js";
 import { expandProgram } from "./composites.js";
 import { stableStringify, sha256 } from "./program.js";
 import {
@@ -183,6 +186,7 @@ export async function vendorDensityLimits(
 export interface LeanCheckerOptions {
   artifactsDir?: string;
   runner?: LayoutRunner;
+  layoutTiming?: (elapsedMs: number) => void;
   states?: (
     input: Parameters<GeometryProvider>[0],
     spec: Spec,
@@ -201,6 +205,14 @@ const verdictOf = (reply: LayoutReply): Verdict => ({
   ...(reply.findings !== undefined ? { findings: reply.findings } : {}),
   ...(reply.error !== undefined ? { error: reply.error } : {}),
 });
+type SampleMeasurement = {
+  verdict: Verdict;
+  selection: "dense" | "fallback" | "custom" | "refused";
+  failures: {screen:string; findings:unknown[]}[];
+  admission?: Verdict;
+  geometry: GeometryAtlas["states"];
+  references?: unknown;
+};
 /** The placed boxes of an accepted paint: all `placedGeometry` reads. */
 function compactPaint(reply: LayoutReply): Paint | undefined {
   if (!reply.accepted) return undefined;
@@ -237,9 +249,16 @@ export class LeanScreenChecker implements ScreenChecker {
     );
   }
   private readonly inventories = new BoundedMap<string, string>(8);
-  private readonly checks = new BoundedMap<string, Promise<ScreenCheckResult>>(8);
+  private readonly checks = new BoundedMap<string, Promise<ScreenCheckResult>>(
+    8,
+  );
   private readonly runner: LayoutRunner;
   private readonly reference: LeanReference;
+  private layoutHash: Promise<string> | undefined;
+  private readonly sampleCache = new PackedCache<SampleMeasurement>(
+    48 * 1024 * 1024,
+  );
+  private readonly replayLayouts: LayoutReplyCache;
   readonly referenceUsage: {
     day: number;
     persona: string;
@@ -258,8 +277,32 @@ export class LeanScreenChecker implements ScreenChecker {
     private readonly ehr: EhrClient,
     private readonly opts: LeanCheckerOptions = {},
   ) {
-    this.runner = opts.runner ?? layoutRunner;
-    this.reference = new LeanReference(this.runner);
+    const run = opts.runner ?? layoutRunner;
+    this.runner = opts.layoutTiming
+      ? async (requests) => {
+          const start = performance.now();
+          try {
+            return await run(requests);
+          } finally {
+            opts.layoutTiming?.(performance.now() - start);
+          }
+        }
+      : run;
+    this.reference = new LeanReference(
+      this.runner,
+      undefined,
+      run === layoutRunner,
+    );
+    this.replayLayouts = new LayoutReplyCache(this.runner);
+  }
+  private layoutExecutableHash() {
+    this.layoutHash ??= fileHash(
+      path.join(REPO_ROOT, "lean/.lake/build/bin/ui-layout"),
+    ).catch((error) => {
+      this.layoutHash = undefined;
+      throw error;
+    });
+    return this.layoutHash;
   }
   private async spec(input: ScreenCheckInput) {
     return this.ehr.mode === "fake"
@@ -338,8 +381,14 @@ export class LeanScreenChecker implements ScreenChecker {
   }
   private async batch(requests: unknown[]): Promise<LayoutReply[]> {
     const out: LayoutReply[] = [];
-    for (let i = 0; i < requests.length; i += 32)
-      out.push(...(await this.runner(requests.slice(i, i + 32))));
+    for (let i = 0; i < requests.length; i += 32) {
+      const batch = requests.slice(i, i + 32);
+      out.push(
+        ...(await (taskSlots.getStore()
+          ? this.replayLayouts.batch(batch)
+          : this.runner(batch))),
+      );
+    }
     return out;
   }
   /** The screens as the clinical page lays them out and paints them: with
@@ -347,7 +396,9 @@ export class LeanScreenChecker implements ScreenChecker {
    * `session` operation as the page). Only admission, painting and geometry
    * read these; trace identities and recorded results keep the clinical
    * screen. Screens shared by several states stay shared. */
-  private async sessioned(states: LeanScreenState[]): Promise<LeanScreenState[]> {
+  private async sessioned(
+    states: LeanScreenState[],
+  ): Promise<LeanScreenState[]> {
     const distinct = [...new Set(states.map((s) => s.ui))];
     const replies = await this.batch(
       distinct.map((screen) => ({ op: "session", screen })),
@@ -365,7 +416,11 @@ export class LeanScreenChecker implements ScreenChecker {
     );
     return states.map((s) => ({ ...s, ui: required(shown.get(s.ui)) }));
   }
-  private async measure(input: Parameters<GeometryProvider>[0], spec: Spec) {
+  private async measure(
+    input: Parameters<GeometryProvider>[0],
+    spec: Spec,
+    needAtlas = true,
+  ) {
     const states = await this.sessioned(await this.states(input, spec)),
       design = designOf(input.program) ?? [];
     const limits = await (this.opts.limits ?? vendorDensityLimits)(
@@ -374,12 +429,31 @@ export class LeanScreenChecker implements ScreenChecker {
     );
     const limitFor = (screen: string) =>
       limits[screen] ?? { limit: 15, source: "Lean default (15)" };
+    // The same compact semantic screen serves many trace events. Compute its
+    // structural keys once without retaining it beyond this measurement.
+    const shapeKeys = new WeakMap<object, string>();
+    const placementKeys = new WeakMap<object, string>();
+    function shapeKeyOf(s: LeanScreenState) {
+      let key = shapeKeys.get(s.ui);
+      if (!key) {
+        key = sha256(stableStringify([s.screen, shapeFor(s.ui)]));
+        shapeKeys.set(s.ui, key);
+      }
+      return key;
+    }
+    function placementOf(s: LeanScreenState) {
+      let key = placementKeys.get(s.ui);
+      if (!key) {
+        key = shapeKeyOf(s) + sha256(stableStringify(occurrences(s.ui)));
+        placementKeys.set(s.ui, key);
+      }
+      return key;
+    }
     const unique = new Map<string, LeanScreenState>();
-    for (const s of states)
-      unique.set(stableStringify([s.screen, shapeFor(s.ui)]), s);
-    const observed = [...unique.values()];
-    const shapeRows = (await this.batch(
-      observed.map((s) => ({
+    for (const s of states) unique.set(shapeKeyOf(s), s);
+    const samples = [...unique.values()];
+    const shapeRows = await this.batch(
+      samples.map((s) => ({
         // Empty-family diagnostics expose the exact native erased shape,
         // without rechecking a reference family for every value change.
         // Admission still runs independently below on every distinct shape.
@@ -387,26 +461,17 @@ export class LeanScreenChecker implements ScreenChecker {
         references: [],
         screen: s.ui,
       })),
-    )).map((r) => ({ uncoveredShape: r.uncoveredShape }));
-    const representatives = new Map<
-      string,
-      { state: LeanScreenState; shape: LayoutDesign[number]["shape"] }
-    >();
-    const stateShapes = new Map<string, string>();
-    for (const [i, s] of observed.entries()) {
+    );
+    const shapes = samples.map((s, i) => {
       const shape = shapeRows[i]?.uncoveredShape;
       if (!shape) throw Error(`Native semantic shape unavailable: ${s.screen}`);
-      const key = stableStringify([s.screen, shapeFor(s.ui)]);
-      stateShapes.set(stableStringify([s.screen, shapeFor(s.ui)]), key);
-      if (!representatives.has(key))
-        representatives.set(key, { state: s, shape });
-    }
-    const samples = [...representatives.values()].map((r) => r.state),
-      shapes = [...representatives.values()].map((r) => r.shape);
+      return shape;
+    });
     const selections = samples.map((s, i) =>
       design.find(
         (c) =>
-          !ruleCase(c) && c.screen === s.screen &&
+          !ruleCase(c) &&
+          c.screen === s.screen &&
           stableStringify(c.shape) === stableStringify(shapes[i]),
       ),
     );
@@ -414,16 +479,27 @@ export class LeanScreenChecker implements ScreenChecker {
       ? []
       : design.filter(
           (c) =>
-            !ruleCase(c) && !samples.some(
+            !ruleCase(c) &&
+            !samples.some(
               (s, i) =>
                 s.screen === c.screen &&
                 stableStringify(c.shape) === stableStringify(shapes[i]),
             ),
         );
-    const ruleFailures: {screen:string; findings: unknown[]}[] = [];
-    if (!input.result) for (const c of design.filter(ruleCase)) {
-      if (!samples.some(s => appliesTo(c,s.screen))) ruleFailures.push({screen:c.screen,findings:[{rule:'layout-rule',metric:'rule screen has no native witness'}]});
-    }
+    const ruleFailures: { screen: string; findings: unknown[] }[] = [];
+    if (!input.result)
+      for (const c of design.filter(ruleCase)) {
+        if (!samples.some((s) => appliesTo(c, s.screen)))
+          ruleFailures.push({
+            screen: c.screen,
+            findings: [
+              {
+                rule: "layout-rule",
+                metric: "rule screen has no native witness",
+              },
+            ],
+          });
+      }
     const referenceResults: ("dense" | "fallback" | "custom" | "refused")[] =
       [];
     // Only each sample's verdict and its placed boxes are kept for the rest of
@@ -432,12 +508,15 @@ export class LeanScreenChecker implements ScreenChecker {
     // them for every distinct shape of a day's trace exhausted the Node heap.
     // The first state of each placement (`[screen, shape, occurrences]`) is
     // placed as soon as its shape's paint is read; the paint is then dropped.
-    const placementsByShape = new Map<string, { key: string; s: LeanScreenState }[]>();
-    {
+    const placementsByShape = new Map<
+      string,
+      { key: string; s: LeanScreenState }[]
+    >();
+    if (needAtlas) {
       const seen = new Set<string>();
       for (const s of states) {
-        const shapeKey = stableStringify([s.screen, shapeFor(s.ui)]);
-        const key = stableStringify([s.screen, shapeFor(s.ui), occurrences(s.ui)]);
+        const shapeKey = shapeKeyOf(s);
+        const key = placementOf(s);
         if (seen.has(key)) continue;
         seen.add(key);
         const list = placementsByShape.get(shapeKey) ?? [];
@@ -445,86 +524,218 @@ export class LeanScreenChecker implements ScreenChecker {
         placementsByShape.set(shapeKey, list);
       }
     }
-    const geometryByOccurrences = new Map<string, GeometryAtlas['states'][number]>();
+    const geometryByOccurrences = new Map<
+      string,
+      GeometryAtlas["states"][number]
+    >();
     const paints: Verdict[] = [];
     const families: unknown[] = [];
-    const keep = (reply: LayoutReply, references: unknown, sample: LeanScreenState) => {
-      paints.push(verdictOf(reply));
-      const geometry = compactPaint(reply);
-      if (geometry)
-        for (const { key, s } of placementsByShape.get(
-          stableStringify([sample.screen, shapeFor(sample.ui)]),
-        ) ?? [])
-          geometryByOccurrences.set(key, placedGeometry(geometry, s.ui, s.screen, ""));
-      families.push(input.result ? undefined : references);
-    };
-    const extra: { index: number; requests: unknown[] }[] = [];
-    for (const [i, s] of samples.entries()) {
-      let selected = selections[i];
+    const galleryScreens = new Set<string>();
+    const needsFamily = samples.map((sample, i) => {
+      if (input.result || !this.opts.artifactsDir) return false;
+      const needed = !galleryScreens.has(sample.screen) || Boolean(selections[i]);
+      galleryScreens.add(sample.screen);
+      return needed;
+    });
+    const extra: { index: number; reply: LayoutReply }[] = [];
+    const slots = taskSlots.getStore() ?? 1;
+    const nativeFamily = !this.opts.runner || this.opts.runner === layoutRunner;
+    const paintSample = async (s: LeanScreenState, i: number) => {
       const maxTargetsPerViewport = limitFor(s.screen).limit;
-      const entries = design.filter(ruleCase).filter(c => appliesTo(c,s.screen));
+      const failures: typeof ruleFailures = [];
+      let layouts = selections[i]?.layouts;
+      let paint: LayoutReply | undefined, admission: LayoutReply | undefined;
+      const referencesFor = (value: NonNullable<typeof layouts>) => [
+        { screen: s.ui, layouts: value },
+      ];
+      const paintFamily = async (value: NonNullable<typeof layouts>) =>
+        required(
+          (
+            await this.batch([
+              {
+                op: "family-paint",
+                references: referencesFor(value),
+                screen: s.ui,
+                viewport,
+                maxTargetsPerViewport,
+              },
+            ])
+          )[0],
+        );
+      const checkFamily = async (value: NonNullable<typeof layouts>) =>
+        required(
+          (
+            await this.batch([
+              {
+                op: "family-check",
+                references: referencesFor(value),
+                maxTargetsPerViewport,
+              },
+            ])
+          )[0],
+        );
+      const entries = design
+        .filter(ruleCase)
+        .filter((c) => appliesTo(c, s.screen));
       if (entries.length) {
-        if (selected) ruleFailures.push({screen:s.screen,findings:[{rule:'layout-rule',metric:'literal case and rules both select this shape; remove one'}]});
-        else try {
-          const rules=entries.flatMap(c=>c.rules);
-          const layouts=viewports.map(viewport=>({viewport,tree:z.json().parse(applyLayoutRules(s.ui,viewport,rules))}));
-          const references=[{screen:s.ui,layouts}];
-          const [admission]=await this.batch([{op:'family-check',references,maxTargetsPerViewport}]);
-          if(admission?.error)throw new LayoutRuleRefusal(`native family refusal: ${admission.error}`);
-          if(!admission || typeof admission.accepted!=='boolean')throw Error('Missing rule family verdict');
-          if(admission.accepted) selected={screen:s.screen,shape:required(shapes[i]),layouts};
-          else {
-            const diagnoses=await this.batch(viewports.map(viewport=>({op:'family-paint',references,screen:s.ui,viewport,maxTargetsPerViewport})));
-            ruleFailures.push({screen:s.screen,findings:[{rule:'layout-rule',metric:'expanded rules refused; reference fallback retained',kinds:rules.map(r=>r.kind)},...[...new Map([...(admission.findings??[]),...diagnoses.flatMap(d=>d.findings??[])].filter(f=>!f.warning).map(f=>[stableStringify(f),f])).values()]]});
-          }
-        } catch(error) {
-          if(!(error instanceof LayoutRuleRefusal))throw error;
-          ruleFailures.push({screen:s.screen,findings:[{rule:'layout-rule',metric:error.message}]});
-        }
-      }
-      if (selected) {
-        const references = [{ screen: s.ui, layouts: selected.layouts }];
-        keep(
-          required(
-            (
-              await this.batch([
-                {
+        if (layouts)
+          failures.push({
+            screen: s.screen,
+            findings: [
+              {
+                rule: "layout-rule",
+                metric:
+                  "literal case and rules both select this shape; remove one",
+              },
+            ],
+          });
+        else
+          try {
+            const rules = entries.flatMap((c) => c.rules);
+            const expanded = viewports.map((viewport) => ({
+              viewport,
+              tree: z.json().parse(applyLayoutRules(s.ui, viewport, rules)),
+            }));
+            // Native familyOutput checks admission at every supported viewport.
+            // A negative paint still needs the independent family verdict to
+            // distinguish a rule refusal from failure on the bound screen.
+            if (nativeFamily) paint = await paintFamily(expanded);
+            if (!paint?.accepted) admission = await checkFamily(expanded);
+            if (admission?.error)
+              throw new LayoutRuleRefusal(
+                `native family refusal: ${admission.error}`,
+              );
+            if (!paint?.accepted && typeof admission?.accepted !== "boolean")
+              throw Error("Missing rule family verdict");
+            if (paint?.accepted || admission?.accepted) layouts = expanded;
+            else {
+              const diagnoses = await this.batch(
+                viewports.map((viewport) => ({
                   op: "family-paint",
-                  references,
+                  references: referencesFor(expanded),
                   screen: s.ui,
                   viewport,
                   maxTargetsPerViewport,
-                },
-              ])
-            )[0],
-          ),
-          references,
-          s,
-        );
-        referenceResults.push("custom");
-        extra.push({
-          index: i,
-          requests: [{ op: "family-check", references, maxTargetsPerViewport }],
-        });
-      } else {
-        const result = await this.reference.get(s.ui, maxTargetsPerViewport);
-        keep(result.paint, result.references, s);
-        referenceResults.push(
-          result.dense
-            ? "dense"
-            : result.paint.accepted
-              ? "fallback"
-              : "refused",
-        );
+                })),
+              );
+              const findings = [
+                ...(admission?.findings ?? []),
+                ...diagnoses.flatMap((d) => d.findings ?? []),
+              ].filter((f) => !f.warning);
+              failures.push({
+                screen: s.screen,
+                findings: [
+                  {
+                    rule: "layout-rule",
+                    metric:
+                      "expanded rules refused; reference fallback retained",
+                    kinds: rules.map((r) => r.kind),
+                  },
+                  ...new Map(
+                    findings.map((f) => [stableStringify(f), f]),
+                  ).values(),
+                ],
+              });
+            }
+          } catch (error) {
+            if (!(error instanceof LayoutRuleRefusal)) throw error;
+            failures.push({
+              screen: s.screen,
+              findings: [{ rule: "layout-rule", metric: error.message }],
+            });
+          }
+      }
+      if (layouts) {
+        paint ??= await paintFamily(layouts);
+        if (!admission && !(nativeFamily && paint.accepted))
+          admission = await checkFamily(layouts);
+        return {
+          paint,
+          references: referencesFor(layouts),
+          selection: "custom" as const,
+          failures,
+          admission,
+        };
+      }
+      const reference = await this.reference.get(s.ui, maxTargetsPerViewport);
+      const selection = reference.dense
+        ? "dense"
+        : reference.paint.accepted
+          ? "fallback"
+          : "refused";
+      return { ...reference, selection, failures } as const;
+    };
+    const measureSample = async (
+      s: LeanScreenState,
+      i: number,
+    ): Promise<SampleMeasurement> => {
+      const placements = placementsByShape.get(shapeKeyOf(s)) ?? [];
+      // The same exact native screen can occur in several programs. Bind the
+      // result to its selected layout, applicable rules, limit, and every
+      // occurrence-to-control map used to place its boxes.
+      const key =
+        taskSlots.getStore()
+          ? sha256(
+              JSON.stringify([
+                needAtlas, needsFamily[i],
+                s.screen,
+                s.ui,
+                selections[i],
+                design.filter((c) => ruleCase(c) && appliesTo(c, s.screen)),
+                limitFor(s.screen).limit,
+                placements.map((p) => p.key),
+              ]),
+            )
+          : undefined;
+      const cached = key && this.sampleCache.get(key);
+      if (cached) return cached;
+      const result = await paintSample(s, i);
+      const paint = needAtlas ? compactPaint(result.paint) : undefined;
+      const measured: SampleMeasurement = {
+        verdict: verdictOf(result.paint),
+        selection: result.selection,
+        failures: result.failures,
+        geometry: paint
+          ? placements.map(({ s }) => placedGeometry(paint, s.ui, s.screen, ""))
+          : [],
+        ...("admission" in result && result.admission
+          ? { admission: verdictOf(result.admission) }
+          : {}),
+        ...(needsFamily[i] ? { references: result.references } : {}),
+      };
+      if (key) this.sampleCache.set(key, measured);
+      return measured;
+    };
+    // Release recursive paints and family trees after each bounded batch.
+    // Fold findings in the original shape order, irrespective of finish order.
+    for (let start = 0; start < samples.length; start += slots) {
+      const group = samples.slice(start, start + slots);
+      const results = await mapOrdered(group, slots, (sample, offset) =>
+        measureSample(sample, start + offset),
+      );
+      for (const [offset, result] of results.entries()) {
+        paints.push(result.verdict);
+        families.push(result.references);
+        const placements =
+          placementsByShape.get(shapeKeyOf(required(group[offset]))) ?? [];
+        for (const [j, geometry] of result.geometry.entries()) {
+          geometryByOccurrences.set(required(placements[j]).key, geometry);
+        }
+        referenceResults.push(result.selection);
+        ruleFailures.push(...result.failures);
+        if (result.admission)
+          extra.push({ index: start + offset, reply: result.admission });
       }
     }
-    const extras = await this.batch(extra.flatMap((e) => e.requests));
-    const failures: { screen: string; findings: unknown[] }[] = [...ruleFailures];
+    const failures: { screen: string; findings: unknown[] }[] = [
+      ...ruleFailures,
+    ];
     const rules: Record<string, number> = {};
-    for (const failure of ruleFailures) for (const f of failure.findings) {
-      const name=z.object({rule:z.string()}).parse(f).rule;
-      rules[name]=(rules[name]??0)+1;
-    }
+    for (const failure of ruleFailures)
+      for (const f of failure.findings) {
+        const name = z.object({ rule: z.string() }).parse(f).rule;
+        rules[name] = (rules[name] ?? 0) + 1;
+      }
     const fail = (screen: string, reply: LayoutReply) => {
       const findings = (reply.findings ?? []).filter((f) => !f.warning);
       if (reply.error) findings.push({ rule: "layout", metric: reply.error });
@@ -564,9 +775,8 @@ export class LeanScreenChecker implements ScreenChecker {
       if (!p.accepted || p.linked === false)
         fail(required(samples[i]).screen, p);
     });
-    extras.forEach((p, i) => {
-      if (!p.accepted)
-        fail(required(samples[required(extra[i]).index]).screen, p);
+    extra.forEach(({ reply, index }) => {
+      if (!reply.accepted) fail(required(samples[index]).screen, reply);
     });
     for (const c of unknown)
       fail(c.screen, {
@@ -582,20 +792,14 @@ export class LeanScreenChecker implements ScreenChecker {
       schemaVersion: 1,
       programHash: geometryProgramHash(input.program),
       componentsSha256: geometryComponentsHash(input.program),
-      appSha256: `lean-layout:${createHash("sha256")
-        .update(
-          await readFile(
-            path.join(REPO_ROOT, "lean/.lake/build/bin/ui-layout"),
-          ),
-        )
-        .digest("hex")}`,
+      appSha256: `lean-layout:${await this.layoutExecutableHash()}`,
       source: "recorded-fixture",
       sourceDetail: "Lean placed boxes; no Chromium or deployed React geometry",
       viewport: { width: 1440, height: 900 },
       states: [],
       traceTargets: {},
     };
-    if (!input.result)
+    if (!input.result && !taskSlots.getStore())
       this.inventories.set(
         this.coverageKey(input),
         JSON.stringify({
@@ -604,20 +808,25 @@ export class LeanScreenChecker implements ScreenChecker {
             screen: s.screen,
             shape: shapes[i],
             occurrences: occurrences(s.ui),
-            denseOutline: denseOutline(s.ui,viewport),
+            denseOutline: denseOutline(s.ui, viewport),
           })),
           limits: perScreen,
         }),
       );
-    const key = this.coverageKey(input),
-      painted = new Map(
-        samples.map((s, i) => [
-          required(
-            stateShapes.get(stableStringify([s.screen, shapeFor(s.ui)])),
-          ),
-          { s, paint: required(paints[i]), shape: shapes[i] },
-        ]),
-      );
+    const key = this.coverageKey(input);
+    const alertComponents = new Map<string, string>();
+    if (needAtlas)
+      for (const screen of expandProgram(input.program).screens) {
+        for (const component of screen.components) {
+          const alert =
+            typeof component.kind === "object" && "alert" in component.kind
+              ? z.object({ alert: z.string() }).safeParse(component.kind.alert)
+                  .data?.alert
+              : undefined;
+          if (alert !== undefined && !alertComponents.has(alert))
+            alertComponents.set(alert, component.id);
+        }
+      }
     const traceKey = sha256(stableStringify(input.result?.trace ?? [])).slice(
       0,
       12,
@@ -632,33 +841,31 @@ export class LeanScreenChecker implements ScreenChecker {
     };
     const selectedByShape = new Map(
       samples.map((s, i) => [
-        stableStringify([s.screen, shapeFor(s.ui)]),
-        referenceResults[i],
+        shapeKeyOf(s),
+        {
+          selection: referenceResults[i],
+          accepted: required(paints[i]).accepted,
+        },
       ]),
     );
     // Placement depends on the admitted shape and occurrence-to-control map,
     // not patient text. Share immutable boxes within this call, while keeping
     // each state's label and event aliases separate and in their original order.
     for (const s of states) {
-      const selected = selectedByShape.get(
-        stableStringify([s.screen, shapeFor(s.ui)]),
-      );
-      if (selected === "dense") usage.dense++;
-      else if (selected === "fallback") usage.fallback++;
-      else if (selected === "refused") usage.refused++;
+      const sample = required(selectedByShape.get(shapeKeyOf(s)));
+      if (sample.selection === "dense") usage.dense++;
+      else if (sample.selection === "fallback") usage.fallback++;
+      else if (sample.selection === "refused") usage.refused++;
       else usage.custom++;
-      const p = required(
-        painted.get(
-          required(
-            stateShapes.get(stableStringify([s.screen, shapeFor(s.ui)])),
-          ),
-        ),
-      );
-      if (!p.paint.accepted) continue;
-      const geometryKey=stableStringify([s.screen,shapeFor(s.ui),occurrences(s.ui)]);
-      const template=geometryByOccurrences.get(geometryKey);
-      if(!template)throw Error(`Missing Lean placement for ${s.screen}`);
-      const state={...template,state:`${s.state}-${traceKey}`,components:{...template.components}};
+      if (!needAtlas || !sample.accepted) continue;
+      const geometryKey = placementOf(s);
+      const template = geometryByOccurrences.get(geometryKey);
+      if (!template) throw Error(`Missing Lean placement for ${s.screen}`);
+      const state = {
+        ...template,
+        state: `${s.state}-${traceKey}`,
+        components: { ...template.components },
+      };
       if (s.sample) state.sample = s.sample;
       if (s.eventIndex !== undefined) {
         const target = `lean-event-${s.eventIndex}-${traceKey}`;
@@ -681,17 +888,8 @@ export class LeanScreenChecker implements ScreenChecker {
                 typeof tabIndex === "number" ? `${id}#tab:${tabIndex}` : id
               ];
             if (!box) {
-              const alert = expandProgram(input.program)
-                .screens.flatMap((sc) => sc.components)
-                .find(
-                  (c) =>
-                    typeof c.kind === "object" &&
-                    "alert" in c.kind &&
-                    z
-                      .object({ alert: z.object({ alert: z.string() }) })
-                      .safeParse(c.kind).data?.alert.alert === id,
-                );
-              if (alert) box = state.components[alert.id];
+              const alert = alertComponents.get(id);
+              if (alert !== undefined) box = state.components[alert];
             }
             if (box) {
               state.components[target] = box;
@@ -807,7 +1005,7 @@ export class LeanScreenChecker implements ScreenChecker {
           message: JSON.stringify({ gate: "Lean program-check", ...program }),
         };
       else {
-        const measured = await this.measure(input, spec);
+        const measured = await this.measure(input, spec, false);
         result = {
           ...base,
           pages: measured.pages,
@@ -865,8 +1063,8 @@ export class LeanScreenChecker implements ScreenChecker {
   };
   /** The admission inventory has no validation or future trace payload. */
   async promptDesign(program: ScreenCheckInput["program"]): Promise<string> {
-    const key = this.coverageKey({program,specVersion:program.specVersion});
-    if(!this.inventories.has(key))this.checks.delete(key);
+    const key = this.coverageKey({ program, specVersion: program.specVersion });
+    if (!this.inventories.has(key)) this.checks.delete(key);
     const checked = await this.check({
       program,
       specVersion: program.specVersion,

@@ -103,8 +103,7 @@ The explicit days 2–10 cohort reproduces the retained audit: action savings
 remain visible. Five rejected proposals save zero net actions; four have all
 count/time savings zero, while P2 night 7 exchanges one click for one scroll.
 
-For any complete run directory, omit `--days` to use blind even days when its
-manifest declares a measurement protocol, or all recorded days otherwise.
+For a complete [hill-climbing run](hillclimb-night.md), the default cohort starts on day 2 and includes each subsequent day. The layout at login used only earlier observations. The historical calibration protocol retains its blind even-day cohort. Recordings without a declared measurement protocol use all recorded days.
 `--days 2,4,6` and inclusive ranges select an explicit alternative cohort. Night
 outcomes always cover all recorded decisions, independently of the chosen day
 cohort. The script reads records only and prints Markdown or JSON to stdout;

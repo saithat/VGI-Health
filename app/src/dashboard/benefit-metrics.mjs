@@ -51,3 +51,8 @@ export function compareDays(pairs) {
       klmDeciSec: covered ? pct(saving.klmDeciSec, before.klmDeciSec - floor.klmDeciSec) : null },
   };
 }
+
+export const hillclimbPolicy = 'all-past-hillclimb-v1';
+export function reportingDay(protocol,day) {
+  return protocol?.name===hillclimbPolicy ? day>=2 : !protocol || day%2===0;
+}

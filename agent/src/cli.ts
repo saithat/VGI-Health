@@ -40,12 +40,14 @@ import { writeFakeWorld } from './fake/world.js';
 import { runTryToBreakIt } from './modes.js';
 import { personalize } from './program.js';
 import { loadRelease } from './releases.js';
+import {HILLCLIMB} from './protocol.js';
+import {CLIMB_WALL_MS} from './hillclimb.js';
 import { runDays } from './run.js';
 import { SEED_POLICIES, type SeedPolicy } from './seeded.js';
 import { createScreenChecker } from './screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, readJson, resolveUserPath } from './util.js';
-import { defaultScreenMode, recordedScreenGate } from './screen-mode.js';
+import { defaultScreenMode } from './screen-mode.js';
 import { loadWorld } from './world.js';
 import { evaluateQuality, historicalDecisions } from './quality.js';
 import type { QualityArm } from './quality-report.js';
@@ -79,6 +81,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
+      'night-mode':{type:'string'},'night-wall-ms':{type:'string'},
       'clock-mode':{type:'string'},'sim-model':{type:'string'},'text-cost':{type:'string'},'interruptions':{type:'string'},
       'incomplete-penalty':{type:'string'},'minimum-effect':{type:'string'},'novelty-weight':{type:'string'},'hotspots':{type:'string'},'offline-archive':{type:'string'},'historical-nightly':{type:'boolean',default:false},screens:{type:'string'},
       'generator-only':{type:'boolean',default:false}, 'discovery-nights':{type:'string'}, 'bounded-costs':{type:'boolean',default:false}, 'tailoring-sessions':{type:'boolean',default:false},
@@ -100,9 +103,18 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const simulationModes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork',simModel:values['sim-model']??'wave3',textCost:values['text-cost']??'length'});
   if(values.screens&&!['lean','browser'].includes(values.screens))throw Error('--screens must be lean or browser');
   const runsRoot=values['runs-root']?resolveUserPath(values['runs-root']):path.join(REPO_ROOT,'runs');
-  const screenMode=defaultScreenMode({screens:values.screens,resume:values.resume,archive:useArchive,generatorOnly:values['generator-only'],
-    recordedGate:values.resume&&values['run-id']?await recordedScreenGate(path.join(runsRoot,values['run-id'],'manifest.json')):undefined});
-  const summary = await runDays({ screenMode,simulationModes,structurePolicy,...(values['incomplete-penalty']!==undefined?{incompletePenalty:Number(values['incomplete-penalty'])}:{}),...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
+  const policyFile=values.resume&&values['run-id']?path.join(runsRoot,values['run-id'],'manifest.json'):
+    values.backend==='replay'&&values['replay-from']?path.join(resolveUserPath(values['replay-from']),'manifest.json'):null;
+  const recorded=policyFile?await readJson(policyFile,z.object({screenGate:z.string().optional(),
+    measurementProtocol:z.object({name:z.string()}).optional(),hillclimb:z.object({wallMs:z.number(),reasoningEffort:z.string(),serviceTier:z.string()}).optional()})):null;
+  const screenMode=defaultScreenMode({screens:values.screens,resume:!!recorded,archive:useArchive,generatorOnly:values['generator-only'],
+    recordedGate:recorded?(recorded.screenGate??'browser'):undefined});
+  const nightMode=z.enum(['classic','hillclimb']).parse(values['night-mode']??(recorded?.measurementProtocol?.name===HILLCLIMB?'hillclimb':'classic'));
+  if(recorded&&(nightMode==='hillclimb')!==(recorded.measurementProtocol?.name===HILLCLIMB))throw Error('Night mode must match the recorded policy');
+  const summary = await runDays({ screenMode,nightMode,hillclimb:{
+    wallMs:intArg(values['night-wall-ms'],'night-wall-ms',recorded?.hillclimb?.wallMs??CLIMB_WALL_MS),
+    reasoningEffort:values['reasoning-effort']??recorded?.hillclimb?.reasoningEffort??process.env['CODEX_REASONING_EFFORT']??'high',
+    serviceTier:values['service-tier']??recorded?.hillclimb?.serviceTier??process.env['CODEX_SERVICE_TIER']??'default'},simulationModes,structurePolicy,...(values['incomplete-penalty']!==undefined?{incompletePenalty:Number(values['incomplete-penalty'])}:{}),...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
     ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
     ...(values['generator-only'] ? {generatorOnly:true}:{}),
     ...(values['discovery-nights'] ? {discoveryNights:intArg(values['discovery-nights'],'discovery-nights',3)}:{}),
@@ -123,6 +135,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     log: (line) => console.log(line),
   });
   console.log(`\nrun ${summary.runId} -> ${summary.dir}`);
+  if(summary.hillclimb)console.log(`Wall-clock backstops: ${summary.hillclimb.backstops}/${summary.hillclimb.nights} hill-climbing nights`);
   console.log(`rejections logged: ${summary.rejections.length}; tempting-move kinds rejected: ${summary.seededRejectedKinds.join(', ') || 'none'}`);
   console.log(`invalid patches: ${summary.invalidPatches.length}; screen assertion failures: ${summary.screenFailures.length}; infrastructure errors: ${summary.infrastructureErrors.length}`);
   if (summary.infrastructureErrors.length) throw new Error(`${summary.infrastructureErrors.length} infrastructure errors; inspect manifest/decisions before continuing`);

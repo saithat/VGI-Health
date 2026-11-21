@@ -1,0 +1,15 @@
+name = "measure-replay"
+defaultTargets = ["trace-contexts", "trace-task"]
+
+[[require]]
+name = "ehr"
+path = "../../lean"
+
+[[lean_exe]]
+name = "trace-contexts"
+srcDir = "../trajectories"
+root = "Contexts"
+
+[[lean_exe]]
+name = "trace-task"
+root = "TraceTask"

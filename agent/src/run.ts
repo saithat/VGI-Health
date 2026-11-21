@@ -20,7 +20,7 @@ import {noAgentDay} from './no-agent.js';
 import {noAgentReference} from './vendor-reference.js';
 import { compareDays, type BenefitComparison } from '../../app/src/dashboard/benefit-metrics.mjs';
 import { assertCertified } from './certification.js';
-import { fileHash,runFingerprints,treeHash } from './fingerprints.js';
+import { fileHash,runFingerprints,treeHash,leanFingerprints } from './fingerprints.js';
 import { validationSchedules, calibrationPartition, isMeasurementDay, measurementProtocol } from './protocol.js';
 import { auditRunTranscripts } from './backends/isolation.js';
 /**
@@ -57,7 +57,13 @@ import { RunStore } from './store.js';
 import { loadWorld } from './world.js';
 import { REPO_ROOT, readJson, writeJson } from './util.js';
 
+import {CLIMB_WALL_MS,runHillclimb} from './hillclimb.js';
+import {HILLCLIMB,hillclimbProtocol} from './protocol.js';
+import type {ClimbSessionOptions} from './harness/climb-session.js';
+
 export interface RunOptions {
+  nightMode?:'hillclimb'|'classic';
+  hillclimb?: Partial<Omit<ClimbSessionOptions,'model'|'replayFrom'>>;
   screenMode?:'browser'|'lean';
   leanOptions?:LeanCheckerOptions;
   simulationModes?: SimulationModes;
@@ -115,6 +121,7 @@ export interface RunSummary {
   rejections: { night: number; persona: string; candidate: string; seeded: boolean; property: string | null; message: string | null }[];
   seededRejectedKinds: string[];
   invalidPatches: {persona:string;night:number;candidate:string}[];
+  hillclimb?:{nights:number;backstops:number};
   infrastructureErrors: {persona:string;night:number;message:string}[];
   llmErrors: { persona: string; night: number; message: string }[];
 }
@@ -154,6 +161,10 @@ export async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(
 }
 
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
+  const climbing=opts.nightMode==='hillclimb';
+  const climb={wallMs:CLIMB_WALL_MS,serviceTier:'default',reasoningEffort:'high',...opts.hillclimb,model:opts.llm.model};
+  if(climbing && (opts.screenMode!=='lean'||!(opts.llm.name==='codex'&&!climb.fixture || opts.llm instanceof ReplayLlm&&!climb.fixture || opts.llm.name==='scripted'&&climb.fixture)))throw Error('Hill climbing requires Lean screens and a Codex session, recorded replay or scripted fixture');
+  if(!Number.isSafeInteger(climb.wallMs)||climb.wallMs<=0||climb.wallMs>2147483647)throw Error('Invalid hill-climbing wall-clock backstop');
   const leanMode=opts.screenMode==='lean';
   if(leanMode&&(opts.screens||opts.geometry||opts.protocol===CADENCE_PROTOCOL||opts.generatorOnly))throw Error('Lean mode owns its screen/geometry providers and uses the core nightly loop');
   const scoring={policy:RELEASE_SCORING_POLICY,...releaseScoringSchema.parse({incompletePenalty:opts.incompletePenalty})};
@@ -215,9 +226,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed, incompletePenalty:scoring.incompletePenalty,
   };
-  const fingerprints = {...(leanMode?{referenceGenerator:await fileHash(path.join(REPO_ROOT,'scripts/layout-reference/generator.mjs')),layoutExecutable:await fileHash(path.join(REPO_ROOT,'lean/.lake/build/bin/ui-layout')),densityLimits:await fileHash(path.join(REPO_ROOT,'docs/audits/r5-per-screen.json')),recordedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-screen-density.json')),...(existsSync(path.join(REPO_ROOT,'docs/methods/lean-paged-density.json'))?{pagedDensityLimits:await fileHash(path.join(REPO_ROOT,'docs/methods/lean-paged-density.json'))}:{}),windowMirror:await fileHash(path.join(REPO_ROOT,'scripts/layout-reference/window.mjs'))}:{}),...await runFingerprints(ehr, world.dir,REPO_ROOT,leanMode?'lean':'browser'),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
+  const fingerprints = {...(leanMode?await leanFingerprints():{}),...await runFingerprints(ehr, world.dir,REPO_ROOT,leanMode?'lean':'browser'),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    measurementProtocol:z.object({name:z.string()}).optional(),hillclimb:z.unknown().optional(),
     screenGate:z.string().optional(),
     referenceUsage:z.array(z.custom<LeanScreenChecker['referenceUsage'][number]>()).optional(),
     referenceStats:z.array(z.custom<LeanScreenChecker['referenceStats']>()).optional(),
@@ -232,11 +244,14 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
     releaseDays: z.object({ v2: z.number(), v3: z.number() }), seedPolicy: z.string(),
   });
+  const climbBinding={wallMs:climb.wallMs,reasoningEffort:climb.reasoningEffort,serviceTier:climb.serviceTier};
   let previous: z.infer<typeof resumeManifestSchema> | null = null;
   if (!opts.resume && existsSync(manifestFile)) throw new Error('Run already exists; use --resume or a new run id');
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if((previous.measurementProtocol?.name===HILLCLIMB)!==climbing)throw Error('Resume night policy must match');
+    if(climbing && stableStringify(previous.hillclimb)!==stableStringify(climbBinding))throw Error('Resume hillclimb configuration must match');
     if((previous.screenGate??'browser')!==(leanMode?'lean':'browser'))throw Error('Resume screen gate must match');
     if(stableStringify(previous.scoring)!==stableStringify(scoring))throw Error('Resume release scoring policy must match');
     if(stableStringify(previous.nightlyDiscovery??null)!==stableStringify(nightlyDiscovery))throw Error('Resume nightly exploration policy/archive must match');
@@ -261,7 +276,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
     interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:leanMode?'Native scroll events page down one Lean viewport; off-screen targets use Lean clip-chain offsets':'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'R1/R2 validation constraint; release score uses penalized clicks plus scrolls'},
-    completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:concurrentPersonas,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
+    completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:concurrentPersonas,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol:climbing?hillclimbProtocol:measurementProtocol, ...(climbing?{hillclimb:climbBinding,fhirBundles:opts.fhirBundles}:{}),
     mode: opts.generatorOnly ? 'OFFLINE' : llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
@@ -371,6 +386,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     timelines.set(id, { persona: id, days: [], nights: [] });
   }),personaWorkerLimit);
 
+  const pastMemory=new Map<string,import('./schema.js').UserMemory>();
   const boundedTrainMemory=new Map<string,import('./schema.js').UserMemory>();
   const failures = new Map<string, number>();
   await writeJson(manifestFile, { ...manifestData, status: 'running' });
@@ -394,7 +410,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const resultProgram = await store.readProgram(id, result.programVersion);
       const recordedCert = await readJson(store.certPath(id, result.programVersion), (await import('./schema.js')).certificateSchema);
       assertCertified(resultProgram, recordedCert, inForce.specVersion, ehr.mode);
-      if (!isMeasurementDay(day)) {
+      // Preserve the historical checkpoints only for vendor-release nights in
+      // this mode. Discretionary decisions use the committed day result below.
+      const needsCalibration=!climbing||Object.values(releaseDays).some(login=>login>day&&login<=opts.days);
+      if (needsCalibration && !isMeasurementDay(day)) {
         const trainingSchedule = calibrationPartition(schedule, 'train');
         const trainingFile = path.join(dir,'training',`day-${day}`,`${id}.json`);
         const trainingMemory = trainMemory.get(id);
@@ -413,6 +432,15 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         boundedTrainMemory.set(id,bounded.memory);
         if(deps.screens instanceof LeanScreenChecker)deps.screens.setTrainingWorkspace(trainingSchedule,world.dir);
       }
+      if(climbing && day<opts.days){
+        const file=path.join(dir,'bounded-history',`day-${day}`,`${id}.json`);
+        const bounded=existsSync(file)?await readJson(file,dayResultSchema):result.policy==='bounded'?result:await ehr.simulate({specVersion:inForce.specVersion,
+          program:resultProgram,persona:view.params,policy:'bounded',schedule,worldDir:world.dir,seed:daySeed(world.manifest.seed,day),
+          memory:pastMemory.get(id)??{actor:resultProgram.owner,entries:[]}});
+        if(bounded.policy!=='bounded'||bounded.memory?.actor!==resultProgram.owner||bounded.day!==day||bounded.persona!==id||bounded.programVersion!==resultProgram.version)throw Error('Invalid all-past memory checkpoint');
+        if(!existsSync(file))await writeJson(file,bounded);
+        pastMemory.set(id,bounded.memory);
+      }
       const baselineFile = path.join(dir, 'baselines', `day-${String(day).padStart(2,'0')}`, `${id}.json`);
       if (!existsSync(baselineFile)) {
         const roleRelease = await releaseForPersona(inForce, id);
@@ -425,7 +453,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         await writeJson(baselineFile.replace('.json','.program.json'), canonical);
         await writeJson(baselineFile, baseline);
       }
-      await noAgentDay(deps,view,await releaseForPersona(inForce,id),schedule,makeHoldout(deps,view,await validationSchedules(Math.max(1,day-1),d=>world.schedule(d,id)),boundedTrainMemory.get(id)));
+      await noAgentDay(deps,view,await releaseForPersona(inForce,id),schedule,climbing&&!Object.values(releaseDays).includes(day)?null:makeHoldout(deps,view,await validationSchedules(Math.max(1,day-1),d=>world.schedule(d,id)),boundedTrainMemory.get(id)));
       const m = result.tasks.reduce((a, t) => ({ c: a.c + t.clicks, k: a.k + t.keystrokes, s: a.s + t.scrolls, t: a.t + t.klmDeciSec }), { c: 0, k: 0, s: 0, t: 0 });
       const baseline = await readJson(baselineFile, dayResultSchema);
       const controlFile = path.join(dir,'no-agent/days',`day-${String(day).padStart(2,'0')}`,`${id}.json`);
@@ -445,12 +473,12 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const seedState=deps.seedState;
       const { program: current } = await store.login(id);
       const declaredWorkload = (await Promise.all(Array.from({length: world.manifest.days}, (_, i) => world.schedule(i + 1, id)))).flatMap(s => s?.tasks ?? []);
-      const nightInput = {
-        declaredWorkload,
-        night: day, persona: view, release: await releaseForPersona(inForce, id), current,
-        train: store.training(id,trainDays.get(id)??[],world.dir), programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
-        holdout: makeHoldout(deps, view, await validationSchedules(day,d=>world.schedule(d,id)),boundedTrainMemory.get(id)),
-      };
+      const commonInput={declaredWorkload,night:day,persona:view,release:await releaseForPersona(inForce,id),current};
+      const calibrationInput=async()=>({
+        ...commonInput,train:store.training(id,trainDays.get(id)??[],world.dir),
+        programs:programs.get(id)??new Map<number,Program>(),history:[...(history.get(id)??[])],
+        holdout:makeHoldout(deps,view,await validationSchedules(day,d=>world.schedule(d,id)),boundedTrainMemory.get(id)),
+      });
       let res: NightResult;
       const next = nextRelease ? await releaseForPersona(nextRelease, id) : null;
       // Prepare tomorrow's independent control before gating this release's
@@ -469,9 +497,22 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
           if (candidate.candidate.seeded) seedState.injected++;
         }
         res = { record, deployed: record.deployed ? programs.get(id)?.get(record.versionAfter) ?? null : null };
-      } else if (next?.id === RELEASE_IDS.feature) res = await runSurfaceFeature(deps, { ...nightInput, next });
-      else if (next) res = await runMigration(deps, { ...nightInput, next });
-      else res = await runNight(deps, nightInput, releasePolicy ? { cadence: {
+      } else if (next?.id === RELEASE_IDS.feature) res = await runSurfaceFeature(deps, { ...await calibrationInput(), next });
+      else if (next) res = await runMigration(deps, { ...await calibrationInput(), next });
+      else if(climbing){
+        const memory=pastMemory.get(id);
+        if(!memory)throw Error('Missing bounded all-past memory');
+        const past=[];
+        const versions=new Map<number,Program>();
+        for(let d=1;d<=day;d++){
+          const result=await readJson(store.dayPath(d,id),dayResultSchema),schedule=await world.schedule(d,id);
+          if(!schedule)throw Error(`Missing day ${d}/${id}`);
+          past.push({result,schedule});
+          if(!versions.has(result.programVersion))versions.set(result.programVersion,await store.readProgram(id,result.programVersion));
+        }
+        res=await runHillclimb(deps,commonInput,past,versions,memory,{...climb,...(llm instanceof ReplayLlm?{
+          replayFrom:path.join(llm.sourceRunDir,'hillclimb',`night-${String(day).padStart(2,'0')}`,id)}:{})});
+      }else res = await runNight(deps, await calibrationInput(), releasePolicy ? { cadence: {
         structure, ...(opts.offlineArchive?{offlineArchive:opts.offlineArchive}:{}),
         cadence: releasePolicy.cadence, department: releasePolicy.departments[id] ?? 'unspecified',
         ...(opts.generatorOnly ? {generatorOnly:true}:{}),
@@ -505,15 +546,15 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   // Blind tests use recorded actual even-day measurements and their active-release canonicals.
   for (const r of records) {
     if (!r.deployed || r.versionAfter === r.versionBefore) continue;
-    const testDay = r.night % 2 ? r.night + 1 : r.night + 2;
+    const testDay = climbing || r.night % 2 ? r.night + 1 : r.night + 2;
     const file = store.dayPath(testDay, r.persona);
     if (testDay <= opts.days && existsSync(file)) {
       const actual = await readJson(file, dayResultSchema);
       if (actual.programVersion === r.versionAfter) {
         const baseline = await readJson(path.join(dir, 'baselines', `day-${String(testDay).padStart(2,'0')}`, `${r.persona}.json`), dayResultSchema);
-        r.measured.test = replayDay(testDay, 'blind-measurement', baseline, actual);
+        r.measured.test = replayDay(testDay, climbing?'next-day':'blind-measurement', baseline, actual);
         const control=await readJson(path.join(dir,'no-agent','days',`day-${String(testDay).padStart(2,'0')}`,`${r.persona}.json`),dayResultSchema);
-        r.measured.testNoAgent=replayDay(testDay,'blind-measurement-no-agent',control,actual);
+        r.measured.testNoAgent=replayDay(testDay,climbing?'next-day-no-agent':'blind-measurement-no-agent',control,actual);
       } else r.flags.push(`test-unmeasured: v${r.versionAfter} superseded before blind day ${testDay}`);
     } else r.flags.push(`test-unmeasured: blind day ${testDay} outside this run`);
     await store.writeDecision(r);
@@ -522,6 +563,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const summary: RunSummary = {
     runId,
     dir,
+    ...(climbing?{hillclimb:{nights:records.filter(r=>r.mode==='hillclimb').length,backstops:records.filter(r=>r.outcome==='backstop').length}}:{}),
     timelines: personaIds.flatMap(id=>{const timeline=timelines.get(id);return timeline?[timeline]:[];}),
     rejections: records.flatMap((r) => [
       ...r.candidates.filter((e) => e.check.status === 'fail').map((e) => ({

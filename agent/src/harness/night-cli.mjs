@@ -18,10 +18,13 @@ const USAGE = `usage: night <command> [args]
   submit <submission.json>       end the decision (once)
   submit --no-change "<hypothesis>" ["<rationale>"]
   status                         remaining budget`;
+const climbing = existsSync('/run/harness/hillclimb');
 const [command, ...argv] = process.argv.slice(2);
-if (!command || command === '--help' || command === 'help') { process.stdout.write(USAGE + '\n'); process.exit(command ? 0 : 3); }
+if (!command || command === '--help' || command === 'help') { process.stdout.write((climbing ? 'night measure [--days 1,3] <patch.json> | done <patch.json> "<summary>" | done --no-change "<reason>"' : USAGE) + '\n'); process.exit(command ? 0 : 3); }
 let file = null;
-const fileArg = ['check', 'estimate'].includes(command) ? argv[0] : command === 'submit' && argv[0] !== '--no-change' ? argv[0] : undefined;
+const needsFile = climbing ? command === 'measure' || (command === 'done' && argv[0] !== '--no-change')
+  : ['check', 'estimate'].includes(command) || (command === 'submit' && argv[0] !== '--no-change');
+const fileArg = needsFile ? (climbing && command === 'measure' && argv[0] === '--days' ? argv[2] : argv[0]) : undefined;
 if (fileArg !== undefined) {
   try { file = { name: fileArg, text: readFileSync(fileArg, 'utf8') }; }
   catch (error) { process.stdout.write(JSON.stringify({ error: `cannot read ${fileArg}: ${error.code ?? error.message}` }) + '\n'); process.exit(1); }
@@ -32,7 +35,7 @@ try {
   writeFileSync(`${SPOOL}/${id}.req.tmp`, JSON.stringify({ command, argv, file }));
   renameSync(`${SPOOL}/${id}.req.tmp`, `${SPOOL}/${id}.req.json`);
 } catch (error) { process.stdout.write(JSON.stringify({ error: `harness unavailable: ${error.code ?? error.message}` }) + '\n'); process.exit(1); }
-const response = `${SPOOL}/${id}.res.json`, deadline = Date.now() + 40 * 60_000;
+const response = `${SPOOL}/${id}.res.json`, deadline = climbing ? Infinity : Date.now() + 40 * 60_000;
 const wait = () => {
   if (existsSync(response)) {
     let reply;

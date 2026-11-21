@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import path from "node:path";
 import { z } from "zod";
-import { runNative } from "./native-process.js";
+import { nativeCancellation, nativeEnvironment, runNative } from "./native-process.js";
 import { REPO_ROOT } from "./util.js";
 export const viewport = { w: 1440 * 64, h: 900 * 64 };
 export const viewports = [
@@ -63,8 +63,12 @@ export class EhrSession {
       }
     | undefined;
   private failure: Error | undefined;
+  private readonly cancellation=nativeCancellation.getStore();
+  private readonly cancel=()=>this.child.kill('SIGKILL');
   constructor(binary: string) {
-    this.child = spawn(binary, ["serve"], { stdio: ["pipe", "pipe", "pipe"] });
+    this.cancellation?.throwIfAborted();
+    this.child = spawn(binary, ["serve"], { stdio: ["pipe", "pipe", "pipe"], env: nativeEnvironment() });
+    this.cancellation?.addEventListener('abort',this.cancel,{once:true});
     let stderr = "";
     this.child.stderr.on("data", (d) => {
       stderr = (stderr + String(d)).slice(-2000);
@@ -113,6 +117,7 @@ export class EhrSession {
     });
   }
   close() {
+    this.cancellation?.removeEventListener('abort',this.cancel);
     this.child.stdin.end();
     this.child.kill();
   }

@@ -1,3 +1,5 @@
+import {taskSlots} from './replay-pool.js';
+import {AsyncLocalStorage} from 'node:async_hooks';
 import {spawn} from 'node:child_process';
 import {InfrastructureError} from './errors.js';
 export interface NativeResult {code:number;stdout:string;stderr:string}
@@ -7,20 +9,28 @@ export function nativeTimeout(value=process.env['EHR_COMMAND_TIMEOUT_MS']):numbe
  if(!Number.isSafeInteger(ms)||ms<=0)throw new Error('EHR_COMMAND_TIMEOUT_MS must be a positive integer');
  return ms;
 }
+// A persona-night's wall clock also covers work performed by its host commands.
+export const nativeCancellation=new AsyncLocalStorage<AbortSignal>();
+export function nativeEnvironment(env: NodeJS.ProcessEnv = process.env) {
+ return taskSlots.getStore() ? {...env, LEAN_NUM_THREADS:'1'} : env;
+}
 /** Kill the complete native process group, including inherited stdout pipes. */
 export function runNative(binary:string,args:string[],opts:{timeoutMs?:number;input?:string;cwd?:string;env?:NodeJS.ProcessEnv}={}):Promise<NativeResult>{
+ const signal=nativeCancellation.getStore();
+ signal?.throwIfAborted();
  const timeoutMs=opts.timeoutMs??nativeTimeout();
  if(!Number.isSafeInteger(timeoutMs)||timeoutMs<=0)throw new Error('Native timeout must be positive');
  return new Promise((resolve,reject)=>{
   let failure:InfrastructureError|null=null,stdout='',stderr='';
-  const child=spawn(binary,args,{detached:true,stdio:['pipe','pipe','pipe'],...(opts.cwd?{cwd:opts.cwd}:{}),...(opts.env?{env:opts.env}:{})});
+  const child=spawn(binary,args,{detached:true,stdio:['pipe','pipe','pipe'],...(opts.cwd?{cwd:opts.cwd}:{}),env:nativeEnvironment(opts.env)});
   const stop=()=>{try{if(child.pid)process.kill(-child.pid,'SIGKILL');}catch{child.kill('SIGKILL');}};
+  signal?.addEventListener('abort',stop,{once:true});
   const timer=setTimeout(()=>{failure=new InfrastructureError(`ehr ${args[0]??''} timed out after ${timeoutMs}ms; native process group killed`);stop();},timeoutMs);
   child.stdout.setEncoding('utf8');child.stderr.setEncoding('utf8');
   child.stdout.on('data',(chunk:string)=>{stdout+=chunk;if(stdout.length>1<<30){failure=new InfrastructureError('Native stdout exceeded the 1GB limit');stop();}});
   child.stderr.on('data',(chunk:string)=>{stderr+=chunk;if(stderr.length>1<<30){failure=new InfrastructureError('Native stderr exceeded the 1GB limit');stop();}});
-  child.on('error',error=>{clearTimeout(timer);reject(new InfrastructureError(`ehr ${args[0]??''}: ${error.message}`));});
-  child.on('close',(code,signal)=>{clearTimeout(timer);if(failure){reject(failure);return;}if(signal){reject(new InfrastructureError(`ehr ${args[0]??''} terminated by ${signal}`));return;}resolve({code:code??1,stdout,stderr});});
+  child.on('error',error=>{signal?.removeEventListener('abort',stop);clearTimeout(timer);reject(new InfrastructureError(`ehr ${args[0]??''}: ${error.message}`));});
+  child.on('close',(code,exitSignal)=>{signal?.removeEventListener('abort',stop);clearTimeout(timer);if(signal?.aborted){reject(signal.reason);return;}if(failure){reject(failure);return;}if(exitSignal){reject(new InfrastructureError(`ehr ${args[0]??''} terminated by ${exitSignal}`));return;}resolve({code:code??1,stdout,stderr});});
   child.stdin.on('error',()=>{/* Native exit/timeout is reported by close. */});
   child.stdin.end(opts.input);
  });

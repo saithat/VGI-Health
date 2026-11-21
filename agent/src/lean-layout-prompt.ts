@@ -160,6 +160,37 @@ export function leanLayoutPrompt(parts: PromptParts, design: string, traces = '{
     ].join('\n\n')};
 }
 
+/** Attribute the physical costs of this exact trace on its bound geometry. */
+export async function screenAttribution(directory:string,result:import('./schema.js').DayResult) {
+    const path = await import('node:path');
+    const day=result.day;
+    const { loadGeometry, takeReplayAtlas } = await import('./geometry.js');
+    const { pointingTrace } = await import('../../app/src/dashboard/bounded-pointing.js');
+    const { attributePixels } = await import('./locality.js');
+    const { existsSync } = await import('node:fs');
+    const geometryFile=result.geometry?path.join(directory,'geometry',`${result.geometry.programHash}.${result.geometry.componentsSha256}.json`):'';
+    let atlas=takeReplayAtlas(result) ?? (geometryFile&&existsSync(geometryFile)?await loadGeometry(geometryFile,result,path.join(directory,'geometry')):undefined);
+    if(atlas?.appSha256.startsWith('lean-layout:')) {
+      // Old flat atlases accumulate states and overwrite their top-level event
+      // aliases. Select this exact committed trace before attributing costs.
+      const traceKey=sha256(stableStringify(result.trace)).slice(0,12);
+      const states=atlas.states.filter(s=>s.state.endsWith('-'+traceKey));
+      const traceTargets:Record<string,string>={};
+      for(const state of states)for(const id of Object.keys(state.components)) {
+        const match=/^lean-event-(\d+)-(.+)$/.exec(id);
+        if(match?.[2]===traceKey && match[1])traceTargets[match[1]]=id;
+      }
+      atlas=states.length?{...atlas,states,traceTargets}:undefined;
+    }
+    // Keep the same task-local lookahead and continuous pointer as day metrics.
+    const projected=atlas?pointingTrace(result.trace,atlas,result).map((row,index)=>{
+      const target=atlas.traceTargets?.[String(index)];
+      const event=target&&row.event===result.trace[index]?.event&&row.event&&typeof row.event==='object'?Object.fromEntries(Object.entries(row.event).map(([kind,payload])=>[kind,payload&&typeof payload==='object'?Object.fromEntries(Object.entries(payload).map(([k,v])=>[k,['comp','alert'].includes(k)?target:v])):payload])):row.event;
+      return {...row,event};
+    }):[];
+    const costs=atlas?attributePixels(projected,atlas,day):[];
+    return {atlas,costs};
+}
 /** Read only this persona's committed odd-day training partitions. */
 export async function leanTrainingLog(
   directory: string,
@@ -184,31 +215,7 @@ export async function leanTrainingLog(
     );
     if (result.day !== day || result.persona !== persona)
       throw Error("Foreign Lean training trace");
-    const { loadGeometry } = await import('./geometry.js');
-    const { pointingTrace } = await import('../../app/src/dashboard/bounded-pointing.js');
-    const { attributePixels } = await import('./locality.js');
-    const { existsSync } = await import('node:fs');
-    const geometryFile=result.geometry?path.join(directory,'geometry',`${result.geometry.programHash}.${result.geometry.componentsSha256}.json`):'';
-    let atlas=geometryFile&&existsSync(geometryFile)?await loadGeometry(geometryFile,result,path.join(directory,'geometry')):undefined;
-    if(atlas?.appSha256.startsWith('lean-layout:')) {
-      // Old flat atlases accumulate states and overwrite their top-level event
-      // aliases. Select this exact committed trace before attributing costs.
-      const traceKey=sha256(stableStringify(result.trace)).slice(0,12);
-      const states=atlas.states.filter(s=>s.state.endsWith('-'+traceKey));
-      const traceTargets:Record<string,string>={};
-      for(const state of states)for(const id of Object.keys(state.components)) {
-        const match=/^lean-event-(\d+)-(.+)$/.exec(id);
-        if(match?.[2]===traceKey && match[1])traceTargets[match[1]]=id;
-      }
-      atlas=states.length?{...atlas,states,traceTargets}:undefined;
-    }
-    // Keep the same task-local lookahead and continuous pointer as day metrics.
-    const projected=atlas?pointingTrace(result.trace,atlas,result).map((row,index)=>{
-      const target=atlas.traceTargets?.[String(index)];
-      const event=target&&row.event===result.trace[index]?.event&&row.event&&typeof row.event==='object'?Object.fromEntries(Object.entries(row.event).map(([kind,payload])=>[kind,payload&&typeof payload==='object'?Object.fromEntries(Object.entries(payload).map(([k,v])=>[k,['comp','alert'].includes(k)?target:v])):payload])):row.event;
-      return {...row,event};
-    }):[];
-    const costs=atlas?attributePixels(projected,atlas,day):[];
+    const {atlas,costs}=await screenAttribution(directory,result);
     for(const cost of costs) {
       const screen=cost.screen;
       const total=perScreen.get(screen)??{screen,clicks:0,rawScrolls:0,scrolls:0,scrollPx:0,mouseTravelPx:0};
