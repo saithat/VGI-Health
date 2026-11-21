@@ -147,6 +147,7 @@ Open the printed URL (normally http://127.0.0.1:5173). Startup downloads and ver
 [Model backends](docs/methods/model-backends.md) documents real and replay
 configuration. The [run-data contract](docs/methods/run-data.md) explains
 completed prefixes, lazy review evidence and safe local renames.
+**Replay tasks** shows cumulative mouse travel at each event. If a target lacks geometry, replay shows a dash and labels the recorded total at the final event when available.
 Incomplete tasks cost canonical effort plus 50%. Movement budgets charge copies surviving deletion of their original ([movement tests](docs/methods/interaction-validation.md)).
 Discarded-order notices expire after the 30-day discharge deadline, retaining provenance ([timing policy](docs/design/chart-timing.md)).
 

@@ -1,11 +1,10 @@
 import { programSchema } from "../../../agent/src/schema";
 import { readArtifact, recordingManifest, verifyRecordedBuild } from "../browser/data";
 import { contentHash } from "../core/buildBinding";
-import type { GeometryAtlas } from "../metrics/geometry";
 import type { InterpFactory } from "./replay";
 import { readRunJson, runArtifactPath } from "./data";
 import {
-  replayGeometrySchema,
+  geometrySliceSchema,
   trajectorySchema,
   trajectoryBundleSchema,
   type TrajectoryEntry,
@@ -33,16 +32,16 @@ export async function loadTrajectory(
     task.context.programPath,
     program,
   );
-  let geometry: GeometryAtlas | null = null;
+  let geometry: LoadedTrajectory["geometry"] = null;
   if (typeof metrics.mouseTravelPx === "number") {
     const hash = await contentHash(program);
     const componentsHash = await contentHash(design.length ? {components: [], layouts: design} : []);
     // Geometry is optional evidence. Never substitute made-up pixel totals.
     for (const suffix of [`.${componentsHash}`, ""]) {
       try {
-        const atlas = replayGeometrySchema.parse(
+        const atlas = geometrySliceSchema.parse(
           await readRunJson(
-            `/runs/${runId}/geometry/${hash}${suffix}/slices/${file}`,
+            runArtifactPath(runId, `geometry/${hash}${suffix}/slices/${file}`, prefixKey),
           ),
         );
         if (

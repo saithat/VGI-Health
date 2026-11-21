@@ -1,18 +1,16 @@
 import {replayScreen,createReferencePainter,referenceLimit} from "../lean-ui/reference";
-import { pointingTrace } from "./bounded-pointing";
+import { prepareTravel, travelLabel, type ReplayGeometry } from "./trajectory-travel";
 import { useMemo } from "react";
 import type { Program } from "../../../agent/src/schema";
 import type { LayoutDesign } from "../../../agent/src/layout-design";
 import type { UiScreen } from "../core/types";
-import type { GeometryAtlas } from "../metrics/geometry";
-import { pointerTravel } from "../metrics/geometry";
 import type { InterpFactory } from "./replay";
 import type { TrajectoryEntry } from "./trajectories-data";
 import { replayTrajectory, type Trajectory } from "./trajectory-replay";
 import { TrajectoryFrame } from "./TrajectoryFrame";
 export type LoadedTrajectory = {
   design: LayoutDesign | null;
-  geometry: GeometryAtlas | null;
+  geometry: ReplayGeometry | null;
   task: Trajectory;
   program: Program;
   spec: unknown;
@@ -55,13 +53,7 @@ export function TrajectoryPlayer({
   const next = loaded.task.trace[count];
   const prefix = loaded.task.trace.slice(0, count);
   const ops = prefix.flatMap((e) => e.ops);
-  const travel = loaded.geometry
-    ? count === 0
-      ? 0
-      : pointerTravel(pointingTrace(prefix, loaded.geometry), loaded.geometry)[loaded.task.id]?.mouseTravelPx
-    : count === loaded.task.trace.length
-      ? metrics.mouseTravelPx
-      : null;
+  const travel = useMemo(() => loaded.geometry && prepareTravel(loaded.task, loaded.geometry), [loaded]);
   return (
     <article className="trajectory-side" aria-label={label}>
       <h3>
@@ -72,9 +64,7 @@ export function TrajectoryPlayer({
         {ops.filter((o) => o === "key").length} keys ·{" "}
         {ops.filter((o) => o === "scroll").length} scrolls · {prefix.length}{" "}
         events ·{" "}
-        {typeof travel === "number"
-          ? `${travel} px mouse travel`
-          : "mouse travel —"}
+        {travelLabel(travel?.(count)?.mouseTravelPx, count === loaded.task.trace.length, metrics.mouseTravelPx)}
       </p>
       <p className="trajectory-event">
         {next ? `Next: ${JSON.stringify(next.event)}` : "Trajectory finished"}
