@@ -26,6 +26,14 @@ export const sum = rows => Object.fromEntries(metrics.map(m => [m, rows.every(r=
 const exists = async p => { try { await access(p); return true; } catch { return false; } };
 
 const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, stable(value[k])])) : value;
+/** Same bundle hash as geometryComponentsHash. A legacy run keeps a vN.components.json sidecar;
+ * a current run stores the version's layout design beside it as vN.layouts.json. */
+export async function componentsHashOf(programFile) {
+  const sidecar = suffix => programFile.replace(/\.json$/, suffix);
+  const layouts = await exists(sidecar('.layouts.json')) ? await read(sidecar('.layouts.json')) : [];
+  const bundle = await exists(sidecar('.components.json')) ? await read(sidecar('.components.json')) : layouts.length ? { components: [], layouts } : [];
+  return hash(JSON.stringify(stable(bundle)));
+}
 const shape = program => JSON.stringify(stable({ screens: program.screens, start: program.start, macros: program.macros, specVersion: program.specVersion }));
 
 export async function compute({ root = defaultRoot, runDir, files: committedFiles, outputFile, canonical, releaseDirectory, canonicalOutput, taskTimeoutMs=10000, searchBound=5000 } = {}) {
@@ -116,8 +124,7 @@ export async function compute({ root = defaultRoot, runDir, files: committedFile
           }
           const geometryFile=runDir?path.join(path.resolve(runDir),'geometry',`${hash(JSON.stringify(stable(program)))}.json`):null;
           let geometry=null;if(geometryFile&&await exists(geometryFile)){
-            const componentsFile=path.resolve(root,sourcePath).replace(/\.json$/,'.components.json'),components=await exists(componentsFile)?await read(componentsFile):[];
-            const componentHash=hash(JSON.stringify(stable(components))),variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`);
+            const componentHash=await componentsHashOf(path.resolve(root,sourcePath)),variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`);
             geometry=await readStoredGeometry(await exists(variant)?variant:geometryFile,readGeometryJson,{day});if(geometry.componentsSha256&&geometry.componentsSha256!==componentHash)geometry=null;
           }
           const costs=geometry&&measured.geometryTrace?Object.values(pointerTravel(measured.geometryTrace,geometry)):[];

@@ -56,3 +56,21 @@ test('current metric aggregation reports physical interactions and preserves una
   assert.deepEqual(sum([row,row]),{clicks:4,keystrokes:6,scrolls:2,scrollPx:1800,mouseTravelPx:10,screens:2,requiredFields:2,popups:0});
   assert.equal(sum([row,{...row,mouseTravelPx:null}]).mouseTravelPx,null);
 });
+
+test('geometry variant follows the layout design stored beside a program version', async () => {
+  const { mkdtemp, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const path = (await import('node:path')).default;
+  const { createHash } = await import('node:crypto');
+  const { componentsHashOf } = await import('./compute.mjs');
+  const sha = text => createHash('sha256').update(text).digest('hex');
+  const dir = await mkdtemp(path.join(tmpdir(), 'complexity-components-'));
+  try {
+    const program = path.join(dir, 'v2.json');
+    assert.equal(await componentsHashOf(program), sha('[]'));
+    await writeFile(path.join(dir, 'v2.layouts.json'), '[]');
+    assert.equal(await componentsHashOf(program), sha('[]'));
+    await writeFile(path.join(dir, 'v2.layouts.json'), JSON.stringify([{ screen: 's', b: 2, a: 1 }]));
+    assert.equal(await componentsHashOf(program), sha('{"components":[],"layouts":[{"a":1,"b":2,"screen":"s"}]}'));
+  } finally { await rm(dir, { recursive: true, force: true }); }
+});
