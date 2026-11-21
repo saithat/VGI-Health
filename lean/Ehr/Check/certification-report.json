@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "f10af9abbb313abd4b7b86824123648decaaf369",
+  "sourceRevision": "d8f056a5b4216aff4961ff7521af6097a0f9f8af",
   "sourceDirty": true,
-  "binarySha256": "00f4740d4ec15deb33231ac9af520bb121819694a994173f0069ef7b583b2cbb",
+  "binarySha256": "cf86555ee2a76f27c772d216d3720e4330e4c2dcdb36bbd73e6add070f85e8d1",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 34,
-  "badCount": 34,
+  "badRejected": 36,
+  "badCount": 36,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -1842,6 +1842,64 @@
         "results": [
           "ok"
         ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/59-prefilled-medication.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "bccb2d21d3eb638375203e81c1565fbb2c28043ca9a82242bda00afd1c0fb45f",
+      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
+      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "entryTraces",
+          "message": "signOrders: signOrders at w1Sign must refuse drug before signing; observed Ehr.StepResult.blocked \"confirm required: drug\"",
+          "counterexample": []
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "entryTraces",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/60-hidden-exemption.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "c1934bd85a25782018bc3f0cd791a1ba4202002e6b303f2f829570b43a352406",
+      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
+      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "entryTraces",
+          "message": "human-only.curesExemptionReason.prefill: From chartSummary, provide a reachable shown field curesExemptionReason",
+          "counterexample": []
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "entryTraces",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
         "scope": "navigation replay; not a semantic violation proof"
       }
     },

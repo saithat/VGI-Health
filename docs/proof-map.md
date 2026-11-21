@@ -16,7 +16,7 @@ run.
 flowchart TB
   subgraph guar_g["Guarantees"]
     proofs["Clinical guarantees<br/>557 theorems, 224 headline"]:::guar
-    check["Program checker<br/>421 theorems, 80 headline"]:::guar
+    check["Program checker<br/>427 theorems, 80 headline"]:::guar
     render["Screen renderer<br/>193 theorems, 12 headline"]:::guar
     layout["UI library &amp; geometry<br/>325 theorems, 93 headline"]:::guar
     commit["Commit reducers<br/>23 theorems, 8 headline"]:::guar
@@ -32,7 +32,7 @@ flowchart TB
   check --> multi
   check --> proofs
   check ==> props
-  check -.-> render
+  check --> render
   check --> specs
   commit --> core
   commit --> multi

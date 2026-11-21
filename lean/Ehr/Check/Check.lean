@@ -1,4 +1,5 @@
 import Ehr.Check.PriorAuth
+import Ehr.Check.EntryFamilies
 import Ehr.Render.NavLabels
 import Ehr.Core.CriticalRuntime
 import Ehr.Props.Navigation
@@ -447,7 +448,9 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
       (let fields := (Specs.V2.serviceElements.filter fun el => (spec.element? el.id).isSome).map (·.id)
        let status := if (spec.info? Specs.V2.priorAuthStatus.id).isSome then " and priorAuthStatus" else ""
        s!"Provide the current-line fields {String.intercalate ", " fields}, the requestPriorAuth button{status} along a route free of drug prefills.")
-      (serviceBundle spec prog)
+      (serviceBundle spec prog),
+    { property := "entryTraces", passes := (EntryWitness.entryFailure spec canonical prog).isNone
+      explain := fun _ => (EntryWitness.entryFailure spec canonical prog).bind (plain "entryTraces") }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure
