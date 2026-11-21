@@ -33,7 +33,7 @@ import {
 violationOf,type Candidate,type CheckResult,type DayResult,type DaySchedule,type DecisionRecord,type EvaluatedCandidate,
 type UserMemory,type JsonPatchOp,type LlmCallRef,type Program,type ReplayDay,type Savings,type Spec,type ScreenCheckResult,type TrainSummary,type Verdict
 } from '../../app/src/dashboard/agent-evidence.js';
-import { rejectionKind,type SeedPolicy,type SeedState } from './seeded.js';
+import { rejectionKind,type SeedState } from './seeded.js';
 import { noAgentReference } from './vendor-reference.js';
 import { screenCheckRejection,type ScreenChecker } from './screen-gate.js';
 import type { RunStore } from './store.js';
@@ -54,7 +54,7 @@ export interface LoopDeps {
   /** Offline per-version screen check; must pass before any `ehr deploy`. */
   screens: ScreenChecker;
   agent: AgentBackend;
-  seedPolicy: SeedPolicy;
+
   seedState: SeedState;
   worldDir: string;
   worldSeed: number;

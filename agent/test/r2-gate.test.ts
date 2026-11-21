@@ -24,7 +24,7 @@ function testDeps(ehr:LoopDeps['ehr']):LoopDeps {
   return {ehr,worldDir:'',worldSeed:7,store:new RunStore('unused'),runId:'test',
     screens:{mode:'fake',async check(){throw Error('unused');}},
     agent:{name:'scripted',model:'test',async proposeCandidates(){throw Error('unused');}},
-    seedPolicy:'none',seedState:{rejected:new Set(),injected:0}};
+    seedState:{rejected:new Set()}};
 }
 
 it('charges failed tasks canonical cost +50% on both arms, including time, never partial effort',()=>{

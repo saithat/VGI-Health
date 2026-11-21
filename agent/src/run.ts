@@ -46,7 +46,7 @@ import { sha256,stableStringify,personalize } from './program.js';
 import type { HistoryItem,PersonaView } from './prompts.js';
 import { loadRelease,releaseForPersona,type Release } from './releases.js';
 import { dayResultSchema,programSchema,type DecisionRecord,type Program } from '../../app/src/dashboard/agent-evidence.js';
-import { rejectionKind,type SeedPolicy,type SeedState } from './seeded.js';
+import { rejectionKind,type SeedState } from './seeded.js';
 import { RunStore } from './store.js';
 import { loadWorld } from './world.js';
 import { REPO_ROOT,readJson,writeJson } from './util.js';
@@ -72,7 +72,7 @@ export interface RunOptions {
   /** Reuse completed days/decisions and certified programs; retry only the unfinished night. */
   resume?: boolean;
   personas?: string[];
-  seedPolicy?: SeedPolicy;
+
   /** Day on which each release takes effect at login. */
   releaseDays?: { v2: number; v3: number };
   ehr?: EhrClient;
@@ -165,13 +165,13 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const nativeEhr = underlyingEhr.mode === 'real' ? retryEhr(recordingEhr(underlyingEhr, path.join(dir, 'ehr/run'), 'run')) : retryEhr(underlyingEhr);
   const store = new RunStore(dir,path.join(dir,'custom'),true);
   const recorder = new RecordingLlm(llm, dir, opts.resume ?? false);
-  const seedState: SeedState = { rejected: new Set(), injected: 0 };
+  const seedState: SeedState = { rejected: new Set() };
   const screens = new LeanScreenChecker(nativeEhr,{artifactsDir:path.join(dir,'reports/lean-screens'),...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),...opts.leanOptions});
   const rawProvider=screens.geometry;
   const provider=rawProvider?((input:Parameters<typeof rawProvider>[0])=>retryInfrastructure('geometry',()=>rawProvider(input),false)):undefined;
   const ehr=provider?geometryEhr(nativeEhr,provider,dir,true):nativeEhr;
   const deps: LoopDeps = {
-    runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
+    runId, store, ehr, screens, agent: new LlmAgent(recorder), seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed, incompletePenalty:scoring.incompletePenalty,
   };
   const fingerprints = {...await leanFingerprints(),...await runFingerprints(ehr, world.dir),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
@@ -190,7 +190,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
     createdAt: z.string(), world: z.string(), backend: z.string(), model: z.string(), personas: z.array(z.string()),
     ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
-    releaseDays: z.object({ v2: z.number(), v3: z.number() }), seedPolicy: z.string(),
+    releaseDays: z.object({ v2: z.number(), v3: z.number() }),
   });
   const climbBinding={wallMs:climb.wallMs,reasoningEffort:climb.reasoningEffort,serviceTier:climb.serviceTier};
   let previous: z.infer<typeof resumeManifestSchema> | null = null;
@@ -209,8 +209,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if((previous.replayAllowDrift??false)!==(llm instanceof ReplayLlm?llm.options.allowDrift??false:false))throw new Error('Resume replay drift policy must match');
     if (previous.world !== world.dir || previous.backend !== llm.name || previous.model !== llm.model || previous.ehr.mode !== ehr.mode ||
         JSON.stringify(previous.personas) !== JSON.stringify(personaIds) ||
-        JSON.stringify(previous.releaseDays) !== JSON.stringify(releaseDays) || previous.seedPolicy !== deps.seedPolicy) {
-      throw new Error('resume world/backend/ehr/personas/release days/seed policy must match the recorded run');
+        JSON.stringify(previous.releaseDays) !== JSON.stringify(releaseDays)) {
+      throw new Error('resume world/backend/ehr/personas/release days must match the recorded run');
     }
   }
   const manifestData = {
@@ -230,7 +230,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
     resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
     worldIsFake: world.manifest.fake ?? false, backend: llm.name, model: llm.model, ehr: { mode: ehr.mode, binary: ehr.binary },
-    seedPolicy: deps.seedPolicy, releaseDays,
+    releaseDays,
     warning: ehr.mode === 'fake' ? 'Synthetic fixture; no clinical certification' : null,
   };
   await writeJson(manifestFile, manifestData);
@@ -253,7 +253,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     const rawGeometry=workerScreens.geometry;
     const geometry=rawGeometry?((input:Parameters<typeof rawGeometry>[0])=>retryInfrastructure('geometry',()=>rawGeometry(input),false)):undefined;
     const workerEhr=geometry?geometryEhr(workerNative,geometry,dir,true):workerNative;
-    const state:SeedState={rejected:new Set(),injected:0};states.push(state);
+    const state:SeedState={rejected:new Set()};states.push(state);
     const agent={
       name:deps.agent.name,model:deps.agent.model,
       proposeCandidates:async (ctx:Parameters<typeof deps.agent.proposeCandidates>[0])=>deps.agent.proposeCandidates({...ctx,parts:leanLayoutPrompt(ctx.parts,await workerScreens.promptDesign((await store.login(id)).program),await leanTrainingLog(dir,id,Number(/^night-(\d+)/.exec(ctx.callId)?.[1]??0)))}),
@@ -439,7 +439,6 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         for (const candidate of record.candidates) {
           const kind = rejectionKind(candidate.check);
           if (kind) seedState.rejected.add(kind);
-          if (candidate.candidate.seeded) seedState.injected++;
         }
         res = { record, deployed: record.deployed ? programs.get(id)?.get(record.versionAfter) ?? null : null };
       } else if (next?.id === RELEASE_IDS.feature) res = await runSurfaceFeature(deps, { ...await calibrationInput(), next });
@@ -477,7 +476,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
 
   recordKeys.sort((a,b)=>a.night-b.night||personaIds.indexOf(a.persona)-personaIds.indexOf(b.persona));
   const records=store.decisions(recordKeys);
-  for(const state of states){for(const kind of state.rejected)seedState.rejected.add(kind);seedState.injected+=state.injected;}
+  for(const state of states){for(const kind of state.rejected)seedState.rejected.add(kind);}
   // Blind tests use recorded actual even-day measurements and their active-release canonicals.
   for (const r of records) {
     if (!r.deployed || r.versionAfter === r.versionBefore) continue;

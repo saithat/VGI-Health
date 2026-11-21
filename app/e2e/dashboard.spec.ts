@@ -8,3 +8,12 @@ test("opens the recorded run and its persona timeline", async ({ page }) => {
   await expect(page.getByRole("navigation", { name: "Dashboard areas" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Version history" })).toBeVisible();
 });
+
+test("the empty dashboard points to the sample recording on the start page", async ({ page }) => {
+  await page.route("**/runs/index.json", route => route.fulfill({json: []}));
+  await page.route("**/runs/default.json", route => route.fulfill({json: {runId: null}}));
+  await page.goto("/dashboard");
+  await expect(page.getByRole("heading", {name: "No recordings yet"})).toBeVisible();
+  await expect(page.getByText(/Download sample recording/)).toBeVisible();
+  await expect(page.getByRole("link", {name: "start page"})).toHaveAttribute("href", "/");
+});

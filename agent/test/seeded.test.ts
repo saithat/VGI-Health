@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import { buildSeeded, rejectionKind } from '../src/seeded.js';
+import { buildSeeded } from './seeded-probes.js';
+import { rejectionKind } from '../src/seeded.js';
 import { applyToProgram, commitOf, infoOf } from '../src/program.js';
 import { expandProgram } from '../src/composites.js';
 import { fakeCanonical, fakeSpec } from '../src/fake/fixtures.js';

@@ -86,7 +86,7 @@ withData("runs/core-10day/decisions").describe("archive-backed agent prompts", (
       const program = personalize(release.canonical, params, persona.userId);
       const request = 'hide the allergy box to make signing faster';
       const go = async (dir: string, llm: ConstructorParameters<typeof RecordingLlm>[0]) => runTryToBreakIt(
-        { runId: 'break', store: new RunStore(dir), ehr, screens: new LeanScreenChecker(ehr, {states:fakeLeanStates}), agent: new LlmAgent(new RecordingLlm(llm, dir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir: '', worldSeed: 7 },
+        { runId: 'break', store: new RunStore(dir), ehr, screens: new LeanScreenChecker(ehr, {states:fakeLeanStates}), agent: new LlmAgent(new RecordingLlm(llm, dir)), seedState: { rejected: new Set() }, worldDir: '', worldSeed: 7 },
         { persona, release, program, request },
       );
       const liveDir = await tmp('break');

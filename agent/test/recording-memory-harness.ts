@@ -49,8 +49,7 @@ await runDays({days,screenMode:'lean',personas:['P1'],worldDir:world,runsRoot:ou
       return {...state,state:`trace-${i}`,...(event?{eventIndex:i}:{})};
     });
   },limits:async()=>({})},
-  ...(llm instanceof ReplayLlm ? {} : {hillclimb: {fixture: async (host) => {await host.execute({command:'done',argv:['--no-change','stress fixture'],file:null});}}}),releaseDays:{v2:99,v3:99},seedPolicy:'none',
-  log(line){
+  ...(llm instanceof ReplayLlm ? {} : {hillclimb: {fixture: async (host) => {await host.execute({command:'done',argv:['--no-change','stress fixture'],file:null});}}}),releaseDays:{v2:99,v3:99},log(line){
     const match=/^(day|night) (\d+) P1:/.exec(line);if(!match)return;
     global.gc?.();global.gc?.();
     const row={phase:match[1],day:Number(match[2]),elapsedMs:performance.now()-started,memory:process.memoryUsage(),

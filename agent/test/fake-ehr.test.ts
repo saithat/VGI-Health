@@ -3,7 +3,8 @@ import { RELEASE_IDS } from '../src/release-config.js';
 import { fakeCheck } from '../src/fake/ehr-fake.js';
 import { fakeCanonical } from '../src/fake/fixtures.js';
 import { applyToProgram } from '../src/program.js';
-import { buildSeeded, rejectionKind, SEEDED_ORDER } from '../src/seeded.js';
+import { buildSeeded, SEEDED_ORDER } from './seeded-probes.js';
+import { rejectionKind } from '../src/seeded.js';
 import { fakeSpec } from '../src/fake/fixtures.js';
 import { toCheckResult } from '../src/night.js';
 

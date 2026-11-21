@@ -15,7 +15,6 @@ import { personalize } from './program.js';
 import { loadRelease } from './releases.js';
 import { CLIMB_WALL_MS } from './hillclimb.js';
 import { runDays } from './run.js';
-import { SEED_POLICIES,type SeedPolicy } from './seeded.js';
 import { LeanScreenChecker } from './lean-screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT,readJson,resolveUserPath } from './util.js';
@@ -27,12 +26,6 @@ function backendArg(v: string | undefined): BackendChoice {
   return b;
 }
 
-function seedPolicyArg(v: string | undefined): SeedPolicy {
-  if (v === undefined) return 'until-each-rejected';
-  const p = SEED_POLICIES.find((x) => x === v);
-  if (!p) throw new Error(`--seed-policy must be one of ${SEED_POLICIES.join(', ')}`);
-  return p;
-}
 
 function intArg(v: string | undefined, name: string, dflt: number): number {
   if (v === undefined) return dflt;
@@ -51,7 +44,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
       'clock-mode':{type:'string'},'sim-model':{type:'string'},'text-cost':{type:'string'},'interruptions':{type:'string'},
       'incomplete-penalty': {type:'string'}, screens: {type:'string'},
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false},
-      'run-id': { type: 'string' }, parallel:{type:'boolean',default:false},resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
+      'run-id': { type: 'string' }, parallel:{type:'boolean',default:false},resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'runs-root': { type: 'string' },
       model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' }, 'v3-day': { type: 'string' }, 'v2-day': { type: 'string' }, 'feature-day': { type: 'string' }, 'migration-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
@@ -77,7 +70,6 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     ...(values['runs-root'] ? { runsRoot: resolveUserPath(values['runs-root']) } : {}),
     ...(values['run-id'] ? { runId: values['run-id'] } : {}),
     ...(values.personas ? { personas: values.personas.split(',').map((s) => s.trim()) } : {}),
-    seedPolicy: seedPolicyArg(values['seed-policy']),
     releaseDays: { v2: intArg(values['feature-day'] ?? values['v2-day'], 'feature-day', RELEASE_DAYS.v2), v3: intArg(values['migration-day'] ?? values['v3-day'], 'migration-day', RELEASE_DAYS.v3) },
     ...(values.fhir ? { fhirBundles: values.fhir.split(',').map((f) => resolveUserPath(f.trim())) } : {}),
     log: (line) => console.log(line),
@@ -122,7 +114,7 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
   const store = new RunStore(outDir);
   const request=values.request;
   const res = await auditedOperation(path.join(outDir,'break'),llm,persona.id,null,()=>runTryToBreakIt(
-    { runId: path.basename(outDir), store, ehr, screens: retryScreens(new LeanScreenChecker(ehr)), agent: new LlmAgent(new RecordingLlm(llm, outDir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir, worldSeed: world.manifest.seed },
+    { runId: path.basename(outDir), store, ehr, screens: retryScreens(new LeanScreenChecker(ehr)), agent: new LlmAgent(new RecordingLlm(llm, outDir)), seedState: { rejected: new Set() }, worldDir, worldSeed: world.manifest.seed },
     { persona, release, program, request },
   ));
   console.log(JSON.stringify({
