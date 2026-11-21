@@ -690,7 +690,7 @@ export async function runHillclimb(
   rec.mode = "hillclimb";
   rec.backend = {
     name: opts.replayFrom ? "replay" : opts.fixture ? "scripted" : "codex",
-    model: deps.agent.model,
+    model: opts.model,
     replayOf: null,
   };
   const final = host.final;

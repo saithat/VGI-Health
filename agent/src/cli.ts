@@ -13,12 +13,12 @@ import { createEhr } from './ehr.js';
 import { runTryToBreakIt } from './modes.js';
 import { personalize } from './program.js';
 import { loadRelease } from './releases.js';
+import { nightProvider } from './harness/night-provider.js';
 import { CLIMB_WALL_MS } from './hillclimb.js';
 import { runDays } from './run.js';
 import { LeanScreenChecker } from './lean-screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT,readJson,resolveUserPath } from './util.js';
-import { assertRecordingMode } from './recording-mode.js';
 import { loadWorld } from './world.js';
 function backendArg(v: string | undefined): BackendChoice {
   const b = BACKENDS.find((x) => x === v);
@@ -40,6 +40,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
+      'night-provider':{type:'string'},'night-model':{type:'string'},'night-base-url':{type:'string'},'night-context-window':{type:'string'},
       'night-mode':{type:'string'},'night-wall-ms':{type:'string'},
       'clock-mode':{type:'string'},'sim-model':{type:'string'},'text-cost':{type:'string'},'interruptions':{type:'string'},
       'incomplete-penalty': {type:'string'}, screens: {type:'string'},
@@ -50,18 +51,17 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   });
   const llm = createBackend(backendArg(values.backend ?? 'codex'), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const simulationModes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork',simModel:values['sim-model']??'wave3',textCost:values['text-cost']??'length'});
-  const runsRoot=values['runs-root']?resolveUserPath(values['runs-root']):path.join(REPO_ROOT,'runs');
-  const policyFile=values.resume&&values['run-id']?path.join(runsRoot,values['run-id'],'manifest.json'):
-    values.backend==='replay'&&values['replay-from']?path.join(resolveUserPath(values['replay-from']),'manifest.json'):null;
-  const recorded=policyFile?await readJson(policyFile,z.object({screenGate:z.string().optional(),nightMode:z.string().optional(),
-    measurementProtocol:z.object({name:z.string()}).optional(),hillclimb:z.object({wallMs:z.number(),reasoningEffort:z.string(),serviceTier:z.string()}).optional()})):null;
-  if (recorded) assertRecordingMode(recorded);
   const screenMode = z.literal('lean').parse(values.screens ?? 'lean');
   const nightMode = z.literal('hillclimb').parse(values['night-mode'] ?? 'hillclimb');
   const summary = await runDays({ screenMode,nightMode,hillclimb:{
-    wallMs:intArg(values['night-wall-ms'],'night-wall-ms',recorded?.hillclimb?.wallMs??CLIMB_WALL_MS),
-    reasoningEffort:values['reasoning-effort']??recorded?.hillclimb?.reasoningEffort??process.env['CODEX_REASONING_EFFORT']??'high',
-    serviceTier:values['service-tier']??recorded?.hillclimb?.serviceTier??process.env['CODEX_SERVICE_TIER']??'default'},simulationModes,
+    ...(values['night-provider'] !== undefined ? {provider:nightProvider.parse(values['night-provider'])} : {}),
+    ...(values['night-model'] !== undefined ? {model:z.string().min(1).parse(values['night-model'])} : {}),
+    ...(values['night-base-url'] !== undefined ? {baseUrl:values['night-base-url']} : {}),
+    ...(values['night-context-window'] !== undefined ? {contextWindow:Number(values['night-context-window'])} : {}),
+    ...(values['night-wall-ms'] !== undefined ? {wallMs:intArg(values['night-wall-ms'],'night-wall-ms',CLIMB_WALL_MS)} : {}),
+    ...(values['reasoning-effort'] !== undefined ? {reasoningEffort:values['reasoning-effort']} : {}),
+    ...(values['service-tier'] !== undefined ? {serviceTier:values['service-tier']} : {}),
+  },simulationModes,
     ...(values['incomplete-penalty'] !== undefined ? {incompletePenalty:Number(values['incomplete-penalty'])} : {}),
     days: intArg(values.days, 'days', 10),
     resume: values.resume,parallel:values.parallel,

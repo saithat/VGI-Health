@@ -1,6 +1,6 @@
 /** Host-side egress for hill climbing: an HTTP CONNECT proxy on a private Unix socket that
  * opens TLS tunnels only to an exact host allowlist on port 443. The sandbox has no
- * network namespace of its own beyond loopback; this socket is its only way out. */
+ * network namespace of its own beyond loopback; local model traffic uses a separate fixed-destination socket. */
 import { connect, createServer, type Socket } from 'node:net';
 
 export interface EgressEvent { host: string; port: number; allowed: boolean }

@@ -58,6 +58,7 @@ tabs, buttons and macros. The agent changes only `Program`. Native `check`,
 Lean screen checks and replay validation gate deployment; `step` guards each
 interaction at runtime. The original proposal loop allows three repairs. The
 [hill-climbing night](docs/methods/hillclimb-night.md) measures changes against every past workflow. Agents can estimate a patch on selected days before requesting the full verdict. The agent closes the decision by submitting a shipping patch or keeping the current version. A wall-clock backstop also retains it. The [measurement guide](docs/methods/hillclimb-night.md#measuring-faster) covers worker limits and benchmarks for individual and concurrent measures.
+The night agent can use hosted Codex or a [local model server](docs/methods/hillclimb-night.md#local-model-server).
 
 Seeded safety probes are diagnostic and cannot deploy. The allergy probe hides
 every provider of the required allergy list on one commit screen; hiding only

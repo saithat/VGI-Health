@@ -13,6 +13,23 @@ node scripts/report-agent-benefit.mjs runs/<id>
 
 The manifest binds the measurement policy as `all-past-hillclimb-v1`. Direct `run-days` retains its previous default. Resume and recorded replay read the policy from the manifest. A fresh `scripts/run-overnight.sh <id>` selects hill climbing and runs final evaluation before conformance. A conformance failure still fails the script. Vendor feature and migration nights continue to use their release, validation and fallback procedures. Their historical calibration partitions and bounded memory are maintained independently.
 
+## Local model server
+
+On the start page, open **Record**, keep **Backend** on **Codex**, and choose **Local model server** under **Night agent**. Enter the HTTP base URL, model alias and context window in tokens. This command records one discretionary night for P4.
+
+```sh
+pnpm --filter agent run-days --backend codex --world runs/world/2 --personas P4 \
+  --days 2 --run-id inkling-p4-first-night --night-provider local \
+  --night-base-url http://127.0.0.1:8080/v1 --night-model inkling-2-mini \
+  --night-context-window 131072
+```
+
+Use a fresh run ID. Two days exercise one night. The example shows the local defaults. Hosted Codex remains the default provider. The night provider applies only to discretionary nights. Vendor-release calls use the configured backend and its model (`--model`).
+
+Codex sends Responses API requests through a private Unix socket to one host loopback port. The URL accepts `127.0.0.1`, `localhost` (IPv4) or `[::1]` and must be free of credentials, query and fragment. Local sessions have an empty internet egress allowlist and receive no hosted credential or service tier. Codex keeps the selected reasoning effort and starts auto-compaction at 80% of the specified context window.
+
+The manifest records the night provider and model. Local runs also record the host and port, context window and a digest for a custom URL path. Resume and replay check these settings. Re-enter a custom base URL when resuming. Replay uses recorded commands offline. Each launch logs bridge connections with the destination address and port.
+
 ## What the agent can see
 
 The [arm H sandbox](harness-night.md#sandbox-and-egress) provides a private workspace, file-spool commands and model-only egress. For night N the workspace contains this persona’s program, active spec, profile, traces and task costs for days 1 through N, and the program and layouts for each version actually used. The host checks day, actor, task and program identities before writing the workspace. The no-agent control, future schedules, other clinicians’ records and paths to the run store stay on the host. The release capability checker still receives its trusted workload declaration.

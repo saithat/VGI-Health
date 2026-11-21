@@ -39,12 +39,13 @@ export async function reportAgentBenefit(directory, options = {}) {
       if (record.outcome === 'validation-rejected' && replay && ['clicks','scrolls','keystrokes','klmDeciSec'].every(k => replay.saving[k] === 0)) nullValidationRejections++;
     }
   }
-  return { runId:manifest.runId, days, cohort:'Costs: identical tasks completed in both arms. Completion: all tasks. Floor: vendor floor on the paired cohort. No missing floor is treated as zero.', rows,
+  const nightAgent = {provider:manifest.hillclimb?.provider ?? manifest.backend, model:manifest.hillclimb?.model ?? manifest.model};
+  return { runId:manifest.runId, nightAgent, days, cohort:'Costs: identical tasks completed in both arms. Completion: all tasks. Floor: vendor floor on the paired cohort. No missing floor is treated as zero.', rows,
     nights:{outcomes,rawOutcomes,certifiedAttempts,checkerFailures,nullValidationRejections,zeroActionSavingRejections,migrationFallbacks} };
 }
 const fmt = (n, digits=1) => n == null ? 'Unavailable' : n.toFixed(digits);
 export function markdownReport(report) {
-  const lines = [`Run ${report.runId}; days ${report.days.join(', ')}. ${report.cohort}`, '',
+  const lines = [`Run ${report.runId} · Night agent ${report.nightAgent.provider} / ${report.nightAgent.model} · days ${report.days.join(', ')}. ${report.cohort}`, '',
     '| Persona | Vendor / agent completed | Both completed | Actions saved | Alert share | Modeled min vendor → agent | Time saved | Action gap captured | Time gap captured | Vendor / agent vs floor |',
     '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|'];
   for (const r of report.rows) lines.push(`| ${r.persona} | ${r.completion.before.completed}/${r.completion.before.tasks} / ${r.completion.after.completed}/${r.completion.after.tasks} | ${r.paired} | ${fmt(r.savedPct.actions)}% | ${fmt(r.alertSharePct,0)}% | ${fmt(r.before.klmDeciSec/600)} → ${fmt(r.after.klmDeciSec/600)} | ${fmt(r.savedPct.klmDeciSec)}% | ${fmt(r.gapCapturedPct.actions,0)}% | ${fmt(r.gapCapturedPct.klmDeciSec,0)}% | ${fmt(r.effortVsFloor.before)}× / ${fmt(r.effortVsFloor.after)}× |`);

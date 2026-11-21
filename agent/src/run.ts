@@ -53,11 +53,12 @@ import { REPO_ROOT,readJson,writeJson } from './util.js';
 
 import { CLIMB_WALL_MS,runHillclimb } from './hillclimb.js';
 import { hillclimbProtocol } from './protocol.js';
+import { contextWindowSchema, DEFAULT_CONTEXT_WINDOW, DEFAULT_LOCAL_MODEL, DEFAULT_MODEL_URL, modelEndpoint, nightProvider, recordedClimb } from './harness/night-provider.js';
 import type { ClimbSessionOptions } from './harness/climb-session.js';
 
 export interface RunOptions {
   nightMode?:'hillclimb';
-  hillclimb?: Partial<Omit<ClimbSessionOptions,'model'|'replayFrom'>>;
+  hillclimb?: Partial<Omit<ClimbSessionOptions,'replayFrom'>>;
   screenMode?:'lean';
   leanOptions?:LeanCheckerOptions;
   simulationModes?: SimulationModes;
@@ -134,13 +135,87 @@ export async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(
  if(failure)throw failure.reason;
 }
 
+const resumeManifestSchema = z.object({
+  measurementProtocol:z.object({name:z.string()}).optional(),hillclimb:recordedClimb,
+  screenGate:z.string().optional(),
+  referenceUsage:z.array(z.custom<LeanScreenChecker['referenceUsage'][number]>()).optional(),
+  referenceStats:z.array(z.custom<LeanScreenChecker['referenceStats']>()).optional(),
+  scoring:z.unknown().optional(),
+  simulationModes:simulationModesSchema.optional(),
+  nightlyDiscovery:z.unknown().optional(),
+  releasePolicy:z.unknown().optional(),
+  infrastructureRetries:z.array(z.custom<InfrastructureRetry>()).optional(), replayAllowDrift:z.boolean().optional(),driftedCallIds:z.array(z.string()).optional(),
+  fingerprints: z.unknown(),parallel:z.boolean().optional(),
+  releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
+  createdAt: z.string(), world: z.string(), backend: z.string(), model: z.string(), personas: z.array(z.string()),
+  ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
+  releaseDays: z.object({ v2: z.number(), v3: z.number() }),
+});
+
+async function readRecording(file: string) {
+  const manifest = await readJson(file, z.unknown());
+  assertRecordingMode(manifest);
+  return manifest;
+}
+
+const climbManifest = z.object({model: z.string(), hillclimb: recordedClimb});
+type ClimbManifest = z.infer<typeof climbManifest>;
+
+function resolveClimbSettings(requested: RunOptions['hillclimb'], backendModel: string,
+  previous: ClimbManifest | null, source: ClimbManifest | null) {
+  const prior = previous ?? source;
+  const providerChoice = nightProvider.parse(requested?.provider ?? prior?.hillclimb.provider ?? 'codex');
+  const local = providerChoice === 'local';
+  const {hostPort, contextWindow: priorWindow} = prior?.hillclimb ?? {};
+  const baseUrl = requested?.baseUrl ?? (hostPort ? `http://${hostPort}/v1` : DEFAULT_MODEL_URL);
+  const endpoint = local ? modelEndpoint(baseUrl) : null;
+  if (!local && (requested?.baseUrl !== undefined || requested?.contextWindow !== undefined))
+    throw Error('Night base URL and context window require the local provider');
+  const model = requested?.model ?? prior?.hillclimb.model ?? (local ? DEFAULT_LOCAL_MODEL : source?.model ?? backendModel);
+  const contextWindow = contextWindowSchema.parse(requested?.contextWindow ?? priorWindow ?? DEFAULT_CONTEXT_WINDOW);
+  const climb = {
+    ...requested, provider: providerChoice, model, baseUrl, contextWindow,
+    wallMs: requested?.wallMs ?? prior?.hillclimb.wallMs ?? CLIMB_WALL_MS,
+    serviceTier: requested?.serviceTier ?? prior?.hillclimb.serviceTier ?? process.env['CODEX_SERVICE_TIER'] ?? 'default',
+    reasoningEffort: requested?.reasoningEffort ?? prior?.hillclimb.reasoningEffort ?? process.env['CODEX_REASONING_EFFORT'] ?? 'high',
+  };
+  // The path can contain private routing information. Bind custom paths by digest.
+  const pathDigest = source && requested?.baseUrl === undefined ? source.hillclimb.basePathSha256
+    : endpoint && endpoint.pathname !== '/v1' ? sha256(endpoint.pathname) : undefined;
+  if (local && !source && previous?.hillclimb.basePathSha256 && requested?.baseUrl === undefined)
+    throw Error('Resuming this run requires its original --night-base-url (custom path)');
+  const climbBinding = {
+    wallMs: climb.wallMs, reasoningEffort: climb.reasoningEffort, provider: providerChoice, model,
+    ...(endpoint ? {hostPort: endpoint.hostPort, contextWindow,
+      ...(pathDigest ? {basePathSha256:pathDigest} : {})}
+      : {serviceTier: climb.serviceTier}),
+  };
+  for (const [operation, recorded] of [['Resume', previous], ['Replay', source]] as const) {
+    if (!recorded) continue;
+    // Manifests predating provider selection used the top-level model with hosted Codex.
+    const binding = {provider:'codex', model:recorded.model, ...recorded.hillclimb};
+    if (stableStringify(binding) !== stableStringify(climbBinding))
+      throw Error(`${operation} hillclimb configuration must match (provider, model, endpoint, context and launch settings)`);
+  }
+  return {climb, climbBinding};
+}
+
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
 
-  const climb={wallMs:CLIMB_WALL_MS,serviceTier:'default',reasoningEffort:'high',...opts.hillclimb,model:opts.llm.model};
+  const llm = opts.llm;
+  const runsRoot = opts.runsRoot ?? path.join(REPO_ROOT, 'runs');
+  const world = await loadWorld(opts.worldDir);
+  const runId = opts.runId ?? `${llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
+  const dir = path.join(runsRoot, runId);
+  const manifestFile = path.join(dir, 'manifest.json');
+  if (!opts.resume && existsSync(manifestFile)) throw new Error('Run already exists; use --resume or a new run id');
+  if (opts.resume && (!opts.runId || !existsSync(manifestFile))) throw new Error('--resume requires an existing --run-id');
+  const previous = opts.resume ? resumeManifestSchema.parse(await readRecording(manifestFile)) : null;
+  const source = llm instanceof ReplayLlm ? climbManifest.parse(await readRecording(path.join(llm.sourceRunDir, 'manifest.json'))) : null;
+  const {climb, climbBinding} = resolveClimbSettings(opts.hillclimb, llm.model, previous, source);
   if(!(opts.llm.name==='codex'&&!climb.fixture || opts.llm instanceof ReplayLlm&&!climb.fixture || opts.llm.name==='scripted'&&climb.fixture))throw Error('Hill climbing requires Lean screens and a Codex session, recorded replay or scripted fixture');
   if(!Number.isSafeInteger(climb.wallMs)||climb.wallMs<=0||climb.wallMs>2147483647)throw Error('Invalid hill-climbing wall-clock backstop');
   const scoring={policy:RELEASE_SCORING_POLICY,...releaseScoringSchema.parse({incompletePenalty:opts.incompletePenalty})};
-  const llm=opts.llm;
   if(opts.leanOptions&&['codex','claude','openai-compat'].includes(llm.name))throw Error('Live Lean runs require the native runner, native states and recorded vendor limits');
   armCrashHook(llm.name);
   if(opts.verificationRelease&&llm.name!=='scripted'&&llm.name!=='replay')throw new Error('Verification release refuses live models');
@@ -150,7 +225,6 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   // clinician pages to the records it reads, and each page action is a click.
   const simulationModes:SimulationModes=requestedModes.lists===undefined?{...requestedModes,lists:'paged'}:requestedModes;
   const underlyingEhr = withSimulationModes(opts.ehr ?? createEhr(),simulationModes);
-  const world = await loadWorld(opts.worldDir);
   if (['codex','claude','openai-compat'].includes(llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
   const personaIds = opts.personas ?? world.manifest.personas;
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
@@ -159,8 +233,6 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const personaWorkerLimit=opts.parallel&&underlyingEhr.mode==='real'?PERSONA_WORKER_LIMIT:Infinity;
   const concurrentPersonas=opts.parallel?Math.min(personaIds.length,personaWorkerLimit):1;
   const releaseDays = opts.releaseDays ?? RELEASE_DAYS;
-  const runId = opts.runId ?? `${llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
-  const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });
   const nativeEhr = underlyingEhr.mode === 'real' ? retryEhr(recordingEhr(underlyingEhr, path.join(dir, 'ehr/run'), 'run')) : retryEhr(underlyingEhr);
   const store = new RunStore(dir,path.join(dir,'custom'),true);
@@ -175,32 +247,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     worldDir: world.dir, worldSeed: world.manifest.seed, incompletePenalty:scoring.incompletePenalty,
   };
   const fingerprints = {...await leanFingerprints(),...await runFingerprints(ehr, world.dir),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
-  const manifestFile = path.join(dir, 'manifest.json');
-  const resumeManifestSchema = z.object({
-    measurementProtocol:z.object({name:z.string()}).optional(),hillclimb:z.unknown().optional(),
-    screenGate:z.string().optional(),
-    referenceUsage:z.array(z.custom<LeanScreenChecker['referenceUsage'][number]>()).optional(),
-    referenceStats:z.array(z.custom<LeanScreenChecker['referenceStats']>()).optional(),
-    scoring:z.unknown().optional(),
-    simulationModes:simulationModesSchema.optional(),
-    nightlyDiscovery:z.unknown().optional(),
-    releasePolicy:z.unknown().optional(),
-    infrastructureRetries:z.array(z.custom<InfrastructureRetry>()).optional(), replayAllowDrift:z.boolean().optional(),driftedCallIds:z.array(z.string()).optional(),
-    fingerprints: z.unknown(),parallel:z.boolean().optional(),
-    releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
-    createdAt: z.string(), world: z.string(), backend: z.string(), model: z.string(), personas: z.array(z.string()),
-    ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
-    releaseDays: z.object({ v2: z.number(), v3: z.number() }),
-  });
-  const climbBinding={wallMs:climb.wallMs,reasoningEffort:climb.reasoningEffort,serviceTier:climb.serviceTier};
-  let previous: z.infer<typeof resumeManifestSchema> | null = null;
-  if (!opts.resume && existsSync(manifestFile)) throw new Error('Run already exists; use --resume or a new run id');
-  if (opts.resume) {
-    if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
-    const saved: unknown = JSON.parse(await readFile(manifestFile, 'utf8'));
-    assertRecordingMode(saved);
-    previous = resumeManifestSchema.parse(saved);
-    if(stableStringify(previous.hillclimb)!==stableStringify(climbBinding))throw Error('Resume hillclimb configuration must match');
+  if (previous) {
     if(stableStringify(previous.scoring)!==stableStringify(scoring))throw Error('Resume release scoring policy must match');
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');

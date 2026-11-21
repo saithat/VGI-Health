@@ -29,6 +29,9 @@ export const defaultRunSchema = z.object({
   runId: z.string().regex(/^[\w-]+$/).nullable(),
 });
 export const manifestSchema = z.object({
+  backend: z.string().optional(),
+  model: z.string().optional(),
+  hillclimb: z.object({ provider: z.string().optional(), model: z.string().optional() }).optional(),
   runId: z.string(),
   days: z.number().int().positive(),
   personas: z.array(z.string()),
