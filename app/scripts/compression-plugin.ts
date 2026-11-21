@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { readdir, readFile, writeFile } from "node:fs/promises";
 import { resolve, sep } from "node:path";
 import { brotliCompress, gzip, constants } from "node:zlib";
@@ -23,19 +23,17 @@ export function compressionPlugin(): Plugin {
       ).leanSourceHash;
     },
     async closeBundle() {
+      const main = spawnSync("git", ["merge-base", "HEAD", "origin/main"], {
+        encoding: "utf8",
+      });
       await writeFile(
         resolve(output, "build-info.json"),
         JSON.stringify({
           revision: execFileSync("git", ["rev-parse", "HEAD"], {
             encoding: "utf8",
           }).trim(),
-          mainRevision: execFileSync(
-            "git",
-            ["merge-base", "HEAD", "origin/main"],
-            {
-              encoding: "utf8",
-            },
-          ).trim(),
+          // A single-branch clone can lack the main ref entirely.
+          mainRevision: main.status === 0 ? main.stdout.trim() : "",
           leanHash,
           builtAt: new Date().toISOString(),
         }),

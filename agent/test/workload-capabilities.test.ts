@@ -34,7 +34,7 @@ describe.skipIf(!available)('declined optional feature: seven retained P1 tasks'
     expect(await ehr.deploy({...input,workload,outDir})).toMatchObject({deployed:false});
     expect(existsSync(path.join(outDir,program.owner,'current.json'))).toBe(false);
     const canonical=programSchema.parse(read(path.join(REPO_ROOT,'releases/v3/personas/P1.json')));
-    const components=canonical.screens.flatMap(s=>s.components).filter(c=>['w1Labs.orderKind','w1Labs.orderCode'].includes(c.id));
+    const components=canonical.screens.flatMap(s=>s.components).filter(c=>['w1Labs.orderKind','w1Labs.orderCode','w1Labs.requestServicePriorAuth','w1Labs.priorAuthRequest'].includes(c.id));
     const restored=structuredClone(program);
     const screen=restored.screens.find(s=>s.id==='w1Labs');
     if(!screen)throw new Error('missing w1Labs');

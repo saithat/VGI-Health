@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VGI Health | Start</title>
+    <link rel="stylesheet" href="/local-start/page.css">
+    <script type="module" src="/local-start/page.js"></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <div class="container masthead-inner">
+        <a class="brand" href="/">VGI Health</a>
+        <span class="workspace">Local workspace</span>
+        <span id="stack-badge" class="stack-badge" role="status">Checking live EHR…</span>
+      </div>
+    </header>
+    <nav class="navigation" aria-label="Start page">
+      <div class="container">
+        <a id="view-nav" href="#view">View &amp; use EHR</a>
+        <a id="record-nav" href="#record">Record</a>
+      </div>
+    </nav>
+    <main class="container">
+      <section id="view-panel" aria-labelledby="view-title">
+        <div class="intro">
+          <h1 id="view-title">VGI Health workspace</h1>
+          <p>Review a recording or open the EHR as a synthetic clinician.</p>
+        </div>
+        <div class="panels">
+          <section class="card" aria-labelledby="recordings-title">
+            <div class="card-head">
+              <h2 id="recordings-title">View recordings</h2>
+              <p>Choose a completed day and layout to explore.</p>
+            </div>
+            <div class="card-body">
+              <div class="fields">
+                <label class="wide">Recording<select id="view-run" disabled></select></label>
+                <label>Persona<select id="view-persona" disabled></select></label>
+                <label>Day<select id="view-day" disabled></select></label>
+                <label>Version<select id="view-version" disabled></select></label>
+              </div>
+              <p id="view-status" class="feedback" role="status">Loading recordings…</p>
+              <div class="actions">
+                <a id="dashboard-link" class="button primary" aria-disabled="true">Dashboard</a>
+                <a id="replays-link" class="button" aria-disabled="true">Replay tasks</a>
+                <a id="compare-link" class="button" aria-disabled="true">Compare trajectories</a>
+              </div>
+            </div>
+            <footer class="card-foot"><a href="/browse">Browse EHR screens <span aria-hidden="true">→</span></a></footer>
+          </section>
+          <section class="card" aria-labelledby="ehr-title">
+            <div class="card-head">
+              <h2 id="ehr-title">Use the EHR</h2>
+              <p id="stack-explanation" aria-live="polite">Checking Postgres, Keycloak and the commit service.</p>
+            </div>
+            <div class="card-body">
+              <h3>Sign in as a clinician</h3>
+              <div id="clinical-entries" class="personas">
+                <a data-live="/lean.html?persona=P1"><strong>P1</strong> Primary care</a>
+                <a data-live="/lean.html?persona=P2"><strong>P2</strong> Emergency medicine</a>
+                <a data-live="/lean.html?persona=P3"><strong>P3</strong> Inpatient nurse</a>
+                <a data-live="/lean.html?persona=P4"><strong>P4</strong> Pediatric nurse practitioner</a>
+                <a data-live="/lean.html?persona=P5"><strong>P5</strong> Surgeon</a>
+                <a data-live="/lean.html?persona=RN2"><strong>RN2</strong> Second inpatient nurse</a>
+              </div>
+              <h3>Clinical tools</h3>
+              <div class="actions">
+                <a class="button" data-live="/?workflow=mar">MAR</a>
+                <a class="button" data-live="/?workflow=adt">ADT</a>
+                <a class="button" data-live="/?shell=encounter">Encounter shell</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+      <section id="record-panel" aria-labelledby="record-title" hidden>
+        <div class="intro">
+          <h1 id="record-title">Record a run</h1>
+          <p>Run simulated workdays and track the recording as it is written.</p>
+        </div>
+        <div class="panels">
+          <section class="card" aria-labelledby="settings-title">
+            <div class="card-head"><h2 id="settings-title">Run settings</h2></div>
+            <form id="record-form" class="card-body">
+              <div class="fields">
+                <label class="wide">Continue a run<select id="resume-run" name="resumeRun"><option value="">Start a new run</option></select></label>
+                <label>Run ID<input name="runId" required maxlength="80" pattern="[A-Za-z0-9_][A-Za-z0-9_\-]*" placeholder="my-recording" autocomplete="off"></label>
+                <label>Days<input name="days" type="number" min="1" step="1" value="10" required></label>
+                <label>World<select name="world" required></select></label>
+                <label>Screens mode<select name="screens"><option value="lean">Lean</option><option value="browser">Browser</option></select></label>
+                <fieldset class="wide">
+                  <legend>Personas</legend>
+                  <div class="checks">
+                    <label><input type="checkbox" name="persona" value="P1" checked>P1</label>
+                    <label><input type="checkbox" name="persona" value="P2" checked>P2</label>
+                    <label><input type="checkbox" name="persona" value="P3" checked>P3</label>
+                    <label><input type="checkbox" name="persona" value="P4" checked>P4</label>
+                    <label><input type="checkbox" name="persona" value="P5" checked>P5</label>
+                  </div>
+                </fieldset>
+                <label>Backend<select name="backend">
+                  <option value="codex">Codex</option><option value="claude">Claude</option>
+                  <option value="openai-compat">OpenAI-compatible</option><option value="replay">Replay</option>
+                  <option value="generator-only">Generator only (no model calls)</option>
+                </select></label>
+                <label id="model-field">Model<input name="model" maxlength="128" placeholder="Use backend default" autocomplete="off"></label>
+                <label id="effort-field">Reasoning effort<select name="reasoningEffort">
+                  <option value="low">Low</option><option value="medium">Medium</option><option value="high" selected>High</option>
+                  <option value="xhigh">Extra high</option><option value="max">Max</option><option value="ultra">Ultra</option>
+                </select></label>
+                <label id="replay-field" hidden>Replay source<select name="replayFrom"><option value="">Choose a recording</option></select></label>
+              </div>
+              <p id="backend-note" class="feedback" hidden>Generator-only recording uses browser screens.</p>
+              <p id="form-error" class="feedback error" role="alert" hidden></p>
+              <div class="actions form-actions"><button id="launch" type="submit" class="primary" disabled>Start recording</button></div>
+            </form>
+          </section>
+          <section class="card progress-card" aria-labelledby="progress-title">
+            <div class="card-head">
+              <h2 id="progress-title">Recording progress</h2>
+              <p id="memory">Checking recording memory limit…</p>
+            </div>
+            <div class="card-body">
+              <p id="recording-status" role="status">No recording started in this session.</p>
+              <progress id="recording-progress" aria-label="Completed days" hidden></progress>
+              <pre id="log" tabindex="0" aria-label="Recording log" hidden></pre>
+              <div class="actions">
+                <button id="stop" type="button" disabled>Stop recording</button>
+                <a id="open-recording" hidden>Open recording <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

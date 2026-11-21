@@ -1,4 +1,4 @@
-_README last reviewed against commit `072dc8c5` (2026-11-20)._
+_README last reviewed against commit `4730de88` (2026-11-20)._
 
 # VGI Health
 
@@ -140,22 +140,18 @@ You need Git, Node 22.18 or newer, Docker with Compose, and
 [elan](https://github.com/leanprover/elan). elan installs the pinned Lean 4.35
 on first build. pnpm comes from Node's Corepack.
 
-From scratch:
-
 ```sh
 git clone <this repository> vgi-health && cd vgi-health
 corepack enable
-node scripts/clean-clone-smoke.mjs --extract-data   # download synthetic data
-pnpm install
-make install   # build Lean, create .env, start Postgres/Keycloak, import patients
-make run       # build and serve the app
+node scripts/clean-clone-smoke.mjs --extract-data   # first time: download synthetic data
+pnpm start
 ```
 
-Open http://localhost:5173 for the clinical EHR (sign in as a persona; the
-password is `KEYCLOAK_PERSONA_PASSWORD` in `.env`) and
-http://localhost:5173/dashboard for recorded runs. The first `make install`
-takes several minutes. Rerunning `make install && make run` later reuses what is
-already built and imported.
+`pnpm start` installs dependencies, builds Lean and the app, starts Postgres
+and Keycloak, imports patients, and prints the start page URL
+(http://localhost:5173). Choose recordings, EHR personas and recording settings
+there. The first start takes several minutes; later starts reuse what is built
+and imported. `pnpm stop` stops the containers and keeps their data.
 
 The synthetic data (world, patient fixtures, exported programs) is published as
 a [release asset](https://github.com/saithat/VGI-Health/releases/tag/data-2026-11-20),

@@ -1,5 +1,5 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run run-live check verify lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
+.PHONY: start install run run-live check verify lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
 
 COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
 export TMPDIR ?= $(CURDIR)/.cache/tmp
@@ -13,6 +13,10 @@ LIVE_DAYS ?= 10
 LIVE_ARGS ?=
 SYNTHETIC_HOSPITAL ?= 1
 SEED_ARGS ?=
+
+start:
+	@command -v pnpm >/dev/null || { echo "Install pnpm 11.8.0 with npm install -g pnpm@11.8.0"; exit 1; }
+	@pnpm start
 
 # Fresh setup imports immutable baselines before starting the online writer.
 install:

@@ -1322,7 +1322,10 @@ export function Dashboard({
       ? null
       : query.get("version"),
   );
-  const [requestedDay] = useState(Number(query.get("day") ?? "1"));
+  const [requestedDay] = useState(() => {
+    const day = Number(query.get("day"));
+    return Number.isSafeInteger(day) && day > 0 ? day : undefined;
+  });
   const [view, setView] = useState(
     query.get("view")?.toLowerCase() === "compare"
       ? "Compare"
@@ -1483,6 +1486,7 @@ export function Dashboard({
         </div>
       )}
       <AppHeader active="dashboard" title="UI evolution">
+        <a href="/" target="_self">Start page</a>
         <label>
           Run{" "}
           <select
@@ -1641,7 +1645,7 @@ export function Dashboard({
                   run={run}
                   persona={persona}
                 />
-                <WorkloadClock run={run} persona={persona} />
+                <WorkloadClock run={run} persona={persona} day={requestedDay} />
                 <VersionList run={run} persona={persona} open={open} />
                 {run.files?.includes("trajectories/index.json") && (
                   <p className="trajectory-compare-entry">
@@ -1663,7 +1667,7 @@ export function Dashboard({
                     <Trajectories
                       active={view === "Trajectories"}
                       noAgentDays={run.noAgentDays}
-                      initialDay={requestedDay}
+                      initialDay={requestedDay ?? 1}
                       key={runId}
                       prefixKey={run.manifest.prefixKey}
                       runId={runId}
