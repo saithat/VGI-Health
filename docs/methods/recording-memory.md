@@ -191,8 +191,6 @@ publication follow-up changes directory visibility, not paint or result bytes.
 The required full browser pair ran serially, with four workers:
 
 ```sh
-EHR_SCREEN_WORKERS=4 node scripts/audit-alert-policy.mjs "$TMPDIR/run-leak/audit-templates"
-EHR_SCREEN_WORKERS=4 node scripts/audit-alert-policy.mjs "$TMPDIR/run-leak/audit-personas" --personas
 ```
 
 Templates: 1,956 states, 18,774 measurements, zero findings (1,810 s).

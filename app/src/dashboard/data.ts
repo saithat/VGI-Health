@@ -26,7 +26,7 @@ export const runIndexSchema = z.array(
   z.object({ id: z.string().regex(/^[\w-]+$/), files: z.array(z.string()) }),
 );
 export const defaultRunSchema = z.object({
-  runId: z.string().regex(/^[\w-]+$/),
+  runId: z.string().regex(/^[\w-]+$/).nullable(),
 });
 export const manifestSchema = z.object({
   runId: z.string(),
@@ -36,13 +36,15 @@ export const manifestSchema = z.object({
   measurementLabel: z.string().optional(),
   simulationModes: z.object({clockMode:z.enum(["continuous","legacy"]),interruptions:z.enum(["realWork","fixedCost"]),simModel:z.enum(["wave3","legacy"]).optional(),textCost:z.enum(["length","legacy"]).optional()}).optional(),
   buildBindingRequired: z.boolean().optional(),
+  screenGate: z.string().optional(),
+  nightMode: z.string().optional(),
   measurementProtocol: z.object({ name: z.string() }).optional(),
   status: z.string().optional(),
   daysCompleted: z.number().int().nonnegative().optional(),
   nightsCompleted: z.number().int().nonnegative().optional(),
   prefixKey: z.string().optional(),
   blockers: z.array(z.string()).optional(),
-  ehr: z.object({ mode: z.enum(["real", "fake"]) }),
+  ehr: z.object({ mode: z.literal("real", "This run was recorded with a removed mode") }),
 });
 const sideSchema = z.object({
   version: z.number().int().nonnegative(),
@@ -58,7 +60,7 @@ const sideSchema = z.object({
 });
 // App-only replay inputs supplement the agent run; never reinterpret clinical state here.
 export const replaySchema = z.object({
-  mode: z.enum(["mock", "wasm"]),
+  mode: z.literal("wasm"),
   contexts: z.array(
     z.object({
       persona: z.string(),

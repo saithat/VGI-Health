@@ -14,7 +14,7 @@ if [[ "${VGI_LOCAL_RECORD:-0}" == 1 ]]; then
   defaults=()
   export EHR_CONFORMANCE_TRANSPORT="${EHR_CONFORMANCE_TRANSPORT:-serve}"
 else
-  export LEAN_NUM_THREADS=6 EHR_SCREEN_WORKERS="${EHR_SCREEN_WORKERS:-6}"
+  export LEAN_NUM_THREADS=6
 fi
 # Run this wrapper in the orchestrator systemd memory scope. No RLIMIT_AS:
 # Lean thread reservation can exceed that virtual-address limit on this host.
@@ -30,7 +30,6 @@ if [[ "${VGI_LOCAL_RECORD:-0}" == 1 ]]; then
   node scripts/local-build.mjs
 elif $resume; then
   make wasm-check
-  pnpm --filter agent verify-resume --run "$run_id"
 else
 (cd lean && lake build)
 make wasm-check
@@ -43,19 +42,10 @@ pnpm --filter agent test
 pnpm --filter app test
 pnpm --filter app lint
 fi
-night_args=()
-if ! $resume; then
-  night_args=(--night-mode hillclimb)
-  for argument in "$@"; do
-    case "$argument" in
-      browser|--screens=browser|--protocol*|--night-mode*|--cadence*|--generator-only|--historical-nightly) night_args=(); break ;;
-    esac
-  done
-fi
 mkdir -p "runs/$run_id/logs"
 # All persona workers share this Node heap inside the recording memory scope.
 NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}" pnpm --filter agent run-days "${defaults[@]}" --service-tier "${CODEX_SERVICE_TIER:-default}" \
-  --run-id "$run_id" "${night_args[@]}" \
+  --run-id "$run_id" \
   --fhir "${EHR_SAMPLE_FHIR:-fixtures/synthea/Ashly_Rippin_149fcc1f.json}" "$@" \
   2>&1 | tee -a "runs/$run_id/logs/console.txt"
 pnpm trajectories --run "$run_id"

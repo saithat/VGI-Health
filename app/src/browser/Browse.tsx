@@ -1,30 +1,29 @@
 import { watchRun } from "../dashboard/run-refresh";
-import { SessionReview } from "./SessionReview";
 import { RevisionDetails } from "./RevisionDetails";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect,useMemo,useState } from "react";
 import type { KeyboardEvent } from "react";
-import { Button, Switch } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { navigate } from "../navigation";
-import { AppHeader } from "../ehr/ui/AppHeader";
-import { ClinicalIcon } from "../ehr/ui/Icons";
+import { AppHeader } from "./AppHeader";
+import { ClinicalIcon } from "./Icons";
 import { chartDateForTimelineDay } from "../data/worldChart";
-import { formatDisplayValue } from "../ehr/ui/display";
+import { formatDisplayValue } from "./display";
 import { type RunData } from "../dashboard/data";
 import {
-  ehrUrl,
-  loadCatalog,
-  personas,
-  readArtifact,
-  verdictsSchema,
-  type Catalog,
-  type ProgramEntry,
+ehrUrl,
+loadCatalog,
+personas,
+readArtifact,
+verdictsSchema,
+type Catalog,
+type ProgramEntry,
 } from "./data";
 import {
-  personaNames,
-  timelineNodes,
-  vendorReleases,
-  workloadDelta,
-  type TimelineNode,
+personaNames,
+timelineNodes,
+vendorReleases,
+workloadDelta,
+type TimelineNode,
 } from "./timeline";
 import "./browser.css";
 
@@ -45,7 +44,6 @@ function certifiedPlain(
   verdicts: Verdicts,
   run?: RunData,
 ) {
-  if (program.mock) return false;
   const record = run?.records.find(
     (record) =>
       record.versionAfter === program.version &&
@@ -87,7 +85,7 @@ function CertificateBadge({
   const property = propertyOf(verdict?.output);
   return (
     <span
-      className={`browser-badge ${program.mock ? "warning" : status === "certified" ? "success" : status === "rejected" ? "danger" : "neutral"}`}
+      className={`browser-badge ${status === "certified" ? "success" : status === "rejected" ? "danger" : "neutral"}`}
       title={
         property ||
         (status === "reference"
@@ -95,9 +93,7 @@ function CertificateBadge({
           : undefined)
       }
     >
-      {program.mock
-        ? "MOCK certificate"
-        : status === "certified"
+      {status === "certified"
           ? "✓ Certified"
           : status === "reference"
             ? "Reference"
@@ -288,7 +284,7 @@ function Timeline({
                               ? 0
                               : -1
                           }
-                          aria-label={`${persona} ${personaNames[persona]}, day ${day}, revision ${node.baseline ? 0 : node.program.version}, ${node.program.mock ? "mock authored, " : ""}${verdicts[node.program.path]?.status === "certified" || run?.certs.get(`certs/${persona}/v${node.program.version}.json`)?.verdict === "ok" || node.record?.certificate ? "certified" : "certificate not computed"}; open EHR`}
+                          aria-label={`${persona} ${personaNames[persona]}, day ${day}, revision ${node.baseline ? 0 : node.program.version}, ${verdicts[node.program.path]?.status === "certified" || run?.certs.get(`certs/${persona}/v${node.program.version}.json`)?.verdict === "ok" || node.record?.certificate ? "certified" : "certificate not computed"}; open EHR`}
                           title={node.summary}
                           onFocus={() => setSelectedKey(nodeKey(node))}
                           onMouseEnter={() => setSelectedKey(nodeKey(node))}
@@ -453,8 +449,7 @@ function Timeline({
 }
 
 export function Browse() {
-  const session = new URLSearchParams(window.location.search).get("session");
-  return session ? <SessionReview path={session} /> : <BrowseCatalog />;
+  return <BrowseCatalog />;
 }
 
 function BrowseCatalog() {
@@ -463,7 +458,6 @@ function BrowseCatalog() {
   const [runId, setRunId] = useState(query.get("run") ?? "");
   const [run, setRun] = useState<RunData>();
   const [verdicts, setVerdicts] = useState<Verdicts>({});
-  const [showMock, setShowMock] = useState(query.get("mock") === "1");
   const [error, setError] = useState("");
   const [runError, setRunError] = useState("");
   useEffect(() => {
@@ -475,9 +469,9 @@ function BrowseCatalog() {
         setCatalog(data);
         setVerdicts(checks.programs);
         setRunId((current) =>
-          data.runs.some((run) => run.id === current && (!run.mock || showMock))
+          data.runs.some((run) => run.id === current)
             ? current
-            : (data.runs.find((run) => !run.mock)?.id ?? ""),
+            : (data.runs[0]?.id ?? ""),
         );
       })
       .catch((error: unknown) => setError(String(error)));
@@ -516,18 +510,17 @@ function BrowseCatalog() {
     if (!catalog) return;
     const params = new URLSearchParams({
       ...(runId ? { run: runId } : {}),
-      ...(showMock ? { mock: "1" } : {}),
     });
     window.history.replaceState(
       null,
       "",
       `/browse?${params}${window.location.hash}`,
     );
-  }, [catalog, runId, showMock]);
+  }, [catalog, runId ]);
   const visibleRuns =
-    catalog?.runs.filter((run) => showMock || !run.mock) ?? [];
+    catalog?.runs ?? [];
   const programs =
-    catalog?.programs.filter((program) => !program.mock || showMock) ?? [];
+    catalog?.programs ?? [];
   return (
     <>
       <AppHeader active="browse" />
@@ -552,25 +545,11 @@ function BrowseCatalog() {
                 {visibleRuns.map((run) => (
                   <option key={run.id} value={run.id}>
                     {run.id}
-                    {run.mock ? " · mock (illustrative)" : " · real"}
                   </option>
                 ))}
               </select>
             </label>
-            <Switch
-              size="xs"
-              label="Show mock data"
-              checked={showMock}
-              onChange={(event) => {
-                const checked = event.currentTarget.checked;
-                setShowMock(checked);
-                if (
-                  !checked &&
-                  catalog?.runs.find((run) => run.id === runId)?.mock
-                )
-                  setRunId(catalog.runs.find((run) => !run.mock)?.id ?? "");
-              }}
-            />
+
           </div>
         </div>
         {error && <p role="alert">{error}</p>}
@@ -579,13 +558,6 @@ function BrowseCatalog() {
           <p role="status">Loading certified UI catalog…</p>
         ) : (
           <>
-            {run?.manifest.ehr.mode === "fake" && (
-              <div className="browse-context">
-                <span className="browser-badge warning">
-                  MOCK authored data
-                </span>
-              </div>
-            )}
             {runId && !run && !runError ? (
               <p role="status">Loading recorded deployments…</p>
             ) : (
@@ -688,7 +660,6 @@ function BrowseCatalog() {
                           <td>
                             {(() => {
                               const latest = catalog.runs
-                                .filter((run) => !run.mock)
                                 .flatMap((run) =>
                                   programs.filter(
                                     (program) =>
@@ -793,9 +764,7 @@ function BrowseCatalog() {
                 <section className="recorded-run" key={recorded.id}>
                   <h3>
                     {recorded.id}{" "}
-                    {recorded.mock && (
-                      <span className="browser-badge warning">MOCK</span>
-                    )}
+
                   </h3>
                   {personas.map((persona) => {
                     const revisions = programs

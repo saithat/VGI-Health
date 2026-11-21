@@ -3,7 +3,7 @@ import {
   createReferencePainter,
   referenceLimit,
 } from "../src/lean-ui/reference";
-import type { UiScreen } from "../src/ehr/ui/types";
+import type { UiScreen } from "../src/core/types";
 const ui: UiScreen = {
   banner: [],
   title: "Synthetic",
@@ -57,4 +57,20 @@ test("refused dense layout checks the fixed shell at the same limit; double refu
       throw Error("WASM failure");
     })(ui, viewport, 9),
   ).toThrow("WASM failure");
+});
+
+test("replays the recorded literal family and reports refusal without substituting a reference", () => {
+  const tree = { type: "recorded" };
+  const design = [{ screen: "absent", shape: ["bound"], layouts: [{ viewport, tree }] }];
+  let accept = true;
+  const call = (wire: string) => {
+    const request = JSON.parse(wire);
+    if (request.op === "window") return JSON.stringify({ screen: request.screen });
+    if (!request.references.length) return JSON.stringify({ uncoveredShape: ["bound"] });
+    expect(request.references[0].layouts[0].tree).toEqual(tree);
+    return JSON.stringify({ accepted: accept });
+  };
+  expect(createReferencePainter(call, design)(ui, viewport, 9).output.accepted).toBe(true);
+  accept = false;
+  expect(() => createReferencePainter(call, design)(ui, viewport, 9)).toThrow("refused the recorded layout");
 });

@@ -1,18 +1,17 @@
+import { scriptedClimb } from "./lean-fixture.js";
 import path from 'node:path';
-import { readFile } from 'node:fs/promises';
-import { scoredPair, scoredMetrics, releaseScoringSchema } from '../src/release-scoring.js';
-import { boundedRefusals, learnabilityOk, makeHoldout, validationGross, TrainEstimator, type LoopDeps, type NightInput } from '../src/night.js';
+import { scoredPair,scoredMetrics,releaseScoringSchema } from '../src/release-scoring.js';
+import { boundedRefusals,learnabilityOk,makeHoldout,validationGross,TrainEstimator,type LoopDeps,type NightInput } from '../src/night.js';
 import { summarizeTrain } from '../src/observe.js';
-import { nightlyPrompt } from '../src/prompts.js';
-import { fakeSchedule, FAKE_PERSONAS } from '../src/fake/world.js';
+import { fakeSchedule,FAKE_PERSONAS } from '../src/fake/world.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
-import { fakeCanonical, fakeSpec } from '../src/fake/fixtures.js';
-import { calibrationPartition, validationSchedules } from '../src/protocol.js';
-import { fakeWorld, markingEhr, tmp } from './helpers.js';
+import { fakeCanonical,fakeSpec } from '../src/fake/fixtures.js';
+import { calibrationPartition,validationSchedules } from '../src/protocol.js';
+import { fakeWorld,markingEhr,tmp } from './helpers.js';
 import { runDays } from '../src/run.js';
 import { ScriptedLlm } from './scripted.js';
 import { RunStore } from '../src/store.js';
-import { sha256, stableStringify } from '../src/program.js';
+import { sha256,stableStringify } from '../src/program.js';
 
 const task={task:'a',completed:true,clicks:20,scrolls:3,keystrokes:10,klmDeciSec:100,popups:0,overrides:0,searches:0,backtracks:0,mouseTravelPx:100,scrollPx:100};
 const day={day:1,persona:'P1',programVersion:0,tasks:[task],trace:[],floor:[],complaints:[]};
@@ -24,7 +23,7 @@ function firstTask(){const t=fakeSchedule(1,'P1',7).tasks[0];if(!t)throw Error('
 function testDeps(ehr:LoopDeps['ehr']):LoopDeps {
   return {ehr,worldDir:'',worldSeed:7,store:new RunStore('unused'),runId:'test',
     screens:{mode:'fake',async check(){throw Error('unused');}},
-    agent:{name:'scripted',model:'test',async proposeCandidates(){throw Error('unused');},async chooseCandidates(){throw Error('unused');}},
+    agent:{name:'scripted',model:'test',async proposeCandidates(){throw Error('unused');}},
     seedPolicy:'none',seedState:{rejected:new Set(),injected:0}};
 }
 
@@ -96,36 +95,13 @@ it('fails closed on missing bounded support or substituted tasks',async()=>{
   await expect(makeHoldout(deps,persona,fakeSchedule(1,'P1',7)).validate(program,program,'v1')).rejects.toThrow('omitted or substituted');
 });
 
-it('places failed train tasks and their unmet workflow/guard goals before other prompt evidence',()=>{
+it('records failed train tasks and their unmet workflow and guard goals',()=>{
   const schedule={...fakeSchedule(1,'P1',7),tasks:[{...firstTask(),id:'a'}]};
   const result={...day,tasks:[{...task,completed:false}],complaints:['a: missing service order']};
   const evidence=summarizeTrain('P1',program,[{schedule,result}],new Map([[0,program]]));
   expect(evidence.failedTasks?.[0]).toMatchObject({task:'a',unmetGoals:expect.arrayContaining(['a: missing service order'])});
-  const prompt=nightlyPrompt({night:1,persona,program,spec:fakeSpec('v1'),evidence,history:[]}).prompt;
-  expect(prompt.indexOf('"failedTasks"')).toBeLessThan(prompt.indexOf('"totals"'));
-  expect(prompt).toContain('missing service order');
-});
 
-it('live nightly orchestration rejects bounded-only regression and binds penalty on resume',async()=>{
-  const ehr=markingEhr(),original=ehr.simulate;
-  ehr.simulate=async i=>{
-    const result=await original(i);
-    return i.policy==='bounded'&&i.seed>=90_000_000&&i.program.version>0 ? {...result,tasks:result.tasks.map(t=>({...t,klmDeciSec:t.klmDeciSec*2}))}:result;
-  };
-  const options={structurePolicy:false as const,days:2,worldDir:await fakeWorld(2),runsRoot:await tmp('r2-live'),
-    runId:'smoke-r2-fake',personas:['P1'],releaseDays:{v2:99,v3:99},llm:new ScriptedLlm(),ehr,incompletePenalty:0.75};
-  const summary=await runDays(options),record=await new RunStore(summary.dir).readDecision(1,'P1');
-  expect(record.outcome).toBe('validation-rejected');
-  expect(record.validation.reason).toContain('R2');
-  expect(record.validation.replay?.bounded?.accepted).toBe(false);
-  expect(record.validation.replay?.scoring?.incompletePenalty).toBe(0.75);
-  expect((await new RunStore(summary.dir).login('P1')).program.version).toBe(0);
-  const checkpoint=JSON.parse(await readFile(path.join(summary.dir,'bounded-training/day-1/P1.json'),'utf8'));
-  expect(checkpoint.policy).toBe('bounded');
-  await expect(runDays({...options,resume:true,incompletePenalty:0.5})).rejects.toThrow('scoring policy must match');
-  await runDays({...options,resume:true});
 });
-
 
 it('the release estimator uses the configured canonical penalty when the deployed arm fails',async()=>{
   const ehr=createFakeEhr();ehr.check=async()=> 'ok';
@@ -145,11 +121,11 @@ it.each([['surface',{v2:2,v3:99}],['migration',{v2:99,v3:2}]] as const)('R2 bloc
   ehr.simulate=async i=>{const result=await original(i);return i.policy==='bounded'&&i.seed>=90_000_000&&i.program.version>0?
     {...result,tasks:result.tasks.map(t=>({...t,completed:false,klmDeciSec:t.klmDeciSec*2}))}:result;};
   const root=await tmp('r2-mandatory');
-  await expect(runDays({days:2,worldDir:await fakeWorld(2),personas:['P1'],runsRoot:root,runId:'mandatory',releaseDays,llm:new ScriptedLlm(),ehr})).rejects.toThrow('canonical fallback failed');
+  await expect(runDays({ ...scriptedClimb,days:2,worldDir:await fakeWorld(2),personas:['P1'],runsRoot:root,runId:'mandatory',releaseDays,llm:new ScriptedLlm(),ehr})).rejects.toThrow('canonical fallback failed');
   expect((await new RunStore(path.join(root,'mandatory')).login('P1')).program.version).toBe(0);
 });
 
-it('carries only bounded train practice across odd days and restores it without replay on resume',async()=>{
+it('carries only bounded practice across completed days and restores it without replay on resume',async()=>{
   const ehr=markingEhr(),original=ehr.simulate;
   const practices:{day:number;exposures:number}[]=[];
   ehr.simulate=async i=>{
@@ -160,13 +136,15 @@ it('carries only bounded train practice across odd days and restores it without 
     return {...result,memory:{actor:i.program.owner,entries:[{key:'practice',intent:'test',control:'test',
       place:{screen:'home',parent:'',tab:0,position:0},route:[],exposures:exposures+i.schedule.tasks.length,lastDay:i.schedule.day}]}};
   };
-  const options={structurePolicy:false as const,days:5,worldDir:await fakeWorld(5),personas:['P1'],runsRoot:await tmp('r2-memory'),
+  const options={ ...scriptedClimb,structurePolicy:false as const,days:5,worldDir:await fakeWorld(5),personas:['P1'],runsRoot:await tmp('r2-memory'),
     runId:'memory',releaseDays:{v2:99,v3:99},llm:new ScriptedLlm(),ehr};
-  const summary=await runDays(options);
-  const n=(d:number)=>calibrationPartition(fakeSchedule(d,'P1',7),'train').tasks.length;
-  expect(practices).toEqual([{day:1,exposures:0},{day:3,exposures:n(1)},{day:5,exposures:n(1)+n(3)}]);
-  const record=await new RunStore(summary.dir).readDecision(3,'P1');
-  if(record.validation.replay)expect(record.validation.replay.days).toEqual([1,3]);
-  await runDays({...options,resume:true});
-  expect(practices).toHaveLength(3);
+  await runDays(options);
+  let exposures=0;
+  expect(practices).toEqual([1,2,3,4].map(day=>{
+    const previous=exposures;
+    exposures+=fakeSchedule(day,'P1',7).tasks.length;
+    return {day,exposures:previous};
+  }));
+  await runDays({ ...scriptedClimb,...options,resume:true});
+  expect(practices).toHaveLength(4);
 });

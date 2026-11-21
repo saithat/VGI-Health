@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
 import { createBoardTransport } from "../src/lean-ui/board";
-import type { UiScreen } from "../src/ehr/ui/types";
+import type { UiScreen } from "../src/core/types";
 const screen = (modal: UiScreen["modal"] = null): UiScreen => ({
   banner: [],
   title: "Board",

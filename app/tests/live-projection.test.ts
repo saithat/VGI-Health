@@ -1,9 +1,7 @@
 import { expect, it } from "vitest";
 import type { InfoPayload } from "../../lean/generated/ehr-types";
-import { createMockInterp } from "../src/core/interp";
 import { projectLive } from "../src/core/liveSession";
 import type { Bundle, Encounter, Patient } from "../src/data/liveStore";
-import { mockFacts, mockViews } from "../src/mock/workflow";
 
 it("retains Lean queue data and gives explicit version-bound context precedence", () => {
   const patient: Patient = {
@@ -36,11 +34,11 @@ it("retains Lean queue data and gives explicit version-bound context precedence"
     rows: [{ id: "row", slot: 0, fields: [["Subject", "Review result"]] }],
   };
   const interp = {
-    ...createMockInterp(mockViews, mockFacts),
+
     facts: () =>
       JSON.stringify({
         facts: {
-          ...mockFacts,
+
           patientId: "patient",
           infoPayloads: [payload, { ...payload, info: "careIdentity" }],
           artifactBindings: [

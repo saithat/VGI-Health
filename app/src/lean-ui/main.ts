@@ -30,6 +30,10 @@ async function main() {
   const report = (value: unknown) => {
     status.textContent = value instanceof Error ? value.message : String(value);
   };
+  if (new URLSearchParams(location.search).has("program")) {
+    const {openCatalogProgram} = await import("./catalog");
+    return openCatalogProgram(root, status);
+  }
   // The exact registered callback has no query; the page's own address,
   // with its patient/MAR/board parameters, is the return URL kept across the
   // identity provider's redirect (`returnTo`).

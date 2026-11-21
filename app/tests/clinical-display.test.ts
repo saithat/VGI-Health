@@ -8,7 +8,7 @@ import {
   formatMedicationLine,
   formatSig,
   sectionCaption,
-} from "../src/ehr/ui/clinical-display";
+} from "../src/browser/clinical-display";
 
 describe("deterministic clinical display", () => {
   it.each([

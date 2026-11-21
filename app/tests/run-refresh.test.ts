@@ -8,7 +8,7 @@ const data = (status: string, day: number): RunData => ({
     days: 3,
     daysCompleted: day,
     personas: ["P1"],
-    ehr: { mode: "fake" },
+    ehr: { mode: "real" },
   },
   records: [],
   days: [],

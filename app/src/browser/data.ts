@@ -1,8 +1,6 @@
+import {assertRecordingMode} from "../../../agent/src/recording-mode";
 import { readCachedJson } from "./json-cache";
-import {
-  presentationBundleSchema,
-  type PresentationBundle,
-} from "../ehr/ui/presentation-types";
+import {layoutDesignSchema, type LayoutDesign} from "../../../agent/src/layout-design";
 import {
   assertBuildBinding,
   buildBindingSchema,
@@ -20,7 +18,6 @@ const programEntrySchema = z.object({
   label: z.string(),
   run: z.string().nullable(),
   deployed: z.boolean(),
-  mock: z.boolean(),
   version: z.number(),
   recordedCertificate: z
     .enum(["certified", "rejected"])
@@ -61,7 +58,6 @@ export const catalogSchema = z.object({
     .array(
       z.object({
         id: z.string(),
-        mock: z.boolean(),
         days: z.number(),
         createdAt: z.string(),
       }),
@@ -100,7 +96,7 @@ export async function readArtifact(path: string): Promise<unknown> {
     path === "/ehr/manifest.json" ||
     /^\/runs\/[\w-]+\/manifest\.json$/.test(path) ||
     path.includes("/certs/") ||
-    /\.(?:source|components)\.json$/.test(path);
+    /\.(?:source|layouts)\.json$/.test(path);
   return evidence ? read() : readCachedJson(path, read);
 }
 export const loadCatalog = () =>
@@ -146,7 +142,7 @@ export function ehrUrl(
   persona = program.persona,
   day?: number,
 ) {
-  return `/ehr?${new URLSearchParams({ mode: "replay", release: program.release, program: program.path, persona, ...(day === undefined ? {} : { day: String(day) }) })}`;
+  return `/lean.html?${new URLSearchParams({ release: program.release, program: program.path, persona, ...(day === undefined ? {} : { day: String(day) }) })}`;
 }
 export const verdictsSchema = z.object({
   programs: z.record(
@@ -179,20 +175,24 @@ export async function readRecordedBinding(file: string) {
   return buildBindingSchema.parse(raw);
 }
 
+export async function recordingManifest(run: string) {
+  const raw = await readArtifact(`/runs/${run}/manifest.json`);
+  assertRecordingMode(raw);
+  return z.object({buildBindingRequired: z.boolean().optional()}).parse(raw);
+}
+
 /** New run certificates bind their complete program and installed build; old recordings retain historical provenance. */
 export async function verifyRecordedBuild(
   programPath: string,
   program: unknown,
-): Promise<PresentationBundle | null> {
+): Promise<LayoutDesign> {
   const match = /^runs\/([\w-]+)\/programs\/(P[1-5])\/v(\d+)\.json$/.exec(
     programPath,
   );
-  if (!match) return null;
+  if (!match) return [];
   const [, run, persona, version] = match;
-  const manifest = z
-    .object({ buildBindingRequired: z.boolean().optional() })
-    .parse(await readArtifact(`/runs/${run}/manifest.json`));
-  if (!manifest.buildBindingRequired) return null;
+  const manifest = await recordingManifest(run ?? "");
+  if (!manifest.buildBindingRequired) throw Error("The recording has no certified build binding");
   const [binding, certificate, build, wasm] = await Promise.all([
     readRecordedBinding(`/runs/${run}/certs/${persona}/v${version}.build.json`),
     readArtifact(`/runs/${run}/certs/${persona}/v${version}.json`),
@@ -210,43 +210,23 @@ export async function verifyRecordedBuild(
     if ((await contentHash(source)) !== binding.sourceProgramSha256)
       throw new Error("Certified source program mismatch");
   }
-  const emptyHash = await contentHash([]);
-  const presentations =
-    binding.componentsSha256 === emptyHash
-      ? null
-      : presentationBundleSchema.parse(
-          await readArtifact(
-            `/runs/${run}/programs/${persona}/v${version}.components.json`,
-          ),
-        );
-  if (presentations) {
-    const identity = z
-      .object({ owner: z.string(), version: z.number() })
-      .parse(program);
-    if (
-      presentations.owner !== identity.owner ||
-      presentations.version !== identity.version
-    )
-      throw new Error("Presentation manifest belongs to another version");
-  }
+  const design = layoutDesignSchema.parse(await readArtifact('/' + programPath.replace(/\.json$/, '.layouts.json')));
   await assertBuildBinding(
     binding,
     {
       appSha256: build.appSha256,
       wasmSha256: wasm.assets["ehr-interp.wasm"] ?? "",
-      componentsSha256: presentations
-        ? await contentHash(presentations)
-        : emptyHash,
+      componentsSha256: await contentHash(design.length ? {components: [], layouts: design} : []),
     },
     program,
     certificate,
   );
-  return presentations;
+  return design;
 }
 
 /** Historical replay uses its frozen contract; aliases change display names only. */
 export function programSpecPath(program: ProgramEntry): string {
-  if (program.run && !["mock", "run1-preflight"].includes(program.run))
+  if (program.run && program.run !== "run1-preflight")
     return `/runs/${program.run}/certifications/${program.persona}/v${program.version}/spec.json`;
   if (program.path.startsWith("programs/benchmarks/releases/"))
     return `/${program.path.split("/").slice(0, 4).join("/")}/spec.json`;

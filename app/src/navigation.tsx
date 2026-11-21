@@ -1,20 +1,17 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 
 const Adt = lazy(() => import("./AdtApp").then((m) => ({ default: m.AdtApp })));
-const Live = lazy(() =>
-  import("./LiveApp").then((m) => ({ default: m.LiveApp })),
-);
+const Mar = lazy(() => import("./MarApp").then(m => ({default:m.MarApp})));
 const Browse = lazy(() =>
   import("./browser/Browse").then((m) => ({ default: m.Browse })),
 );
-const Replay = lazy(() => import("./App").then((m) => ({ default: m.App })));
 const Dashboard = lazy(() =>
   import("./dashboard/Dashboard").then((m) => ({ default: m.Dashboard })),
 );
 
 export function navigate(to: string) {
   const url = new URL(to, location.href);
-  if (url.origin !== location.origin) {
+  if (url.origin !== location.origin || url.pathname === "/lean.html") {
     location.assign(to);
     return;
   }
@@ -57,7 +54,7 @@ export function Router() {
         return;
       if (
         url.origin !== location.origin ||
-        !["/", "/browse", "/ehr", "/dashboard"].includes(
+        !["/browse", "/dashboard"].includes(
           url.pathname.replace(/\/$/, "") || "/",
         )
       )
@@ -82,10 +79,8 @@ export function Router() {
         <Browse key={`${route}:${episode}`} />
       ) : url.searchParams.get("workflow") === "adt" ? (
         <Adt key={`${route}:${episode}`} />
-      ) : url.searchParams.get("mode") === "replay" ? (
-        <Replay key={`${route}:${episode}`} />
       ) : (
-        <Live key={`${route}:${episode}`} />
+        <Mar key={`${route}:${episode}`} />
       )}
     </Suspense>
   );

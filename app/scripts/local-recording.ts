@@ -1,3 +1,4 @@
+import { assertRecordingMode } from "../../agent/src/recording-mode";
 import { execFile, spawn, type ChildProcess } from "node:child_process";
 import { randomUUID, timingSafeEqual } from "node:crypto";
 import { get, type IncomingMessage } from "node:http";
@@ -10,20 +11,14 @@ import { completedPrefix } from "../../scripts/run-prefix.mjs";
 const exec = promisify(execFile);
 const id = z.string().regex(/^[A-Za-z0-9_][A-Za-z0-9_-]{0,79}$/);
 const persona = z.enum(["P1", "P2", "P3", "P4", "P5"]);
-const backend = z.enum([
-  "codex",
-  "claude",
-  "openai-compat",
-  "replay",
-  "generator-only",
-]);
+const backend = z.enum(["codex", "replay"]);
 const effort = z.enum(["low", "medium", "high", "xhigh", "max", "ultra"]);
 const requestSchema = z
   .object({
     runId: id.refine((name) => name !== "world", "Run id is reserved"),
     days: z.string().regex(/^\d{1,9}$/, "--days must be a positive integer"),
     personas: z.array(persona).min(1).max(5),
-    screens: z.enum(["lean", "browser"]),
+    screens: z.literal("lean"),
     backend,
     model: z.string().regex(/^(?:[A-Za-z0-9][A-Za-z0-9_./:@+-]{0,127})?$/),
     reasoningEffort: effort,
@@ -61,17 +56,13 @@ export function recordingArgs(input: unknown, parallel = true) {
   ];
   if (parallel) args.push("--parallel");
   if (config.resume) args.push("--resume");
-  if (config.backend === "generator-only")
-    args.push("--generator-only", "--protocol", "certified-cadence-archive-v1");
-  else {
-    args.push("--backend", config.backend);
-    if (config.backend === "replay" && config.replayFrom)
-      args.push("--replay-from", `runs/${config.replayFrom}`);
-    if (config.model && config.backend !== "replay")
-      args.push("--model", config.model);
-    if (config.backend === "codex")
-      args.push("--reasoning-effort", config.reasoningEffort);
-  }
+  args.push("--backend", config.backend);
+  if (config.backend === "replay" && config.replayFrom)
+    args.push("--replay-from", `runs/${config.replayFrom}`);
+  if (config.model && config.backend !== "replay")
+    args.push("--model", config.model);
+  if (config.backend === "codex")
+    args.push("--reasoning-effort", config.reasoningEffort);
   return { config, args };
 }
 
@@ -115,7 +106,9 @@ const manifestSchema = z.object({
   backend: z.string(),
   model: z.string(),
   personas: z.array(persona),
-  screenGate: z.enum(["lean", "browser"]).optional(),
+  screenGate: z.string().optional(),
+  nightMode: z.string().optional(),
+  measurementProtocol: z.object({name:z.string()}).optional(),
   parallel: z.boolean().optional(),
 });
 const readJson = async (file: string): Promise<unknown> =>
@@ -158,18 +151,14 @@ export async function recordingOptions(root: string) {
     (await directories(runs)).map(async (name) => {
       const data = await readManifest(join(runs, name)).catch(() => null);
       if (data?.runId !== name) return null;
-      const choice = backend.safeParse(
-        data.backend === "scripted" &&
-          data.model === "admitted-generator-only-v1"
-          ? "generator-only"
-          : data.backend,
-      );
+      try { assertRecordingMode(data); } catch { return null; }
+      const choice = backend.safeParse(data.backend);
       return {
         id: name,
         backend: choice.success ? choice.data : null,
         days: data.days,
         personas: data.personas,
-        screens: data.screenGate ?? "browser",
+        screens: "lean",
         model: data.model,
         world: basename(data.world),
       };
@@ -306,6 +295,7 @@ export function recordingJobs(root: string) {
         throw new Error("Run already exists; use --resume or a new run id");
       if (config.resume && !previous)
         throw new Error("--resume requires an existing --run-id");
+      if (config.resume) assertRecordingMode(previous);
       if (!previous || previous.parallel) args.push("--parallel");
       const unit = `vgi-record-${randomUUID()}`;
       const useCap = await capped();

@@ -28,13 +28,13 @@ flowchart LR
   TRACES["Clinician's<br/>interaction traces"]:::trusted
   AI["AI agent<br/>proposes a new Program"]:::untrusted
   CHECK{"Lean checker<br/>check spec program"}:::proved
-  GATE{"Browser screen gate<br/>+ replay validation"}
+  GATE{"Lean layout gate<br/>+ replay validation"}
   DEPLOY(["Deploy for this<br/>clinician"])
   KEEP["Keep current screens"]
 
   TRACES --> AI --> CHECK
   RULES --> CHECK
-  CHECK -->|"violation + counterexample<br/>(≤ 3 repairs)"| AI
+  CHECK -->|"violation + counterexample"| AI
   CHECK -->|ok| GATE
   GATE -->|pass| DEPLOY
   GATE -->|fail| KEEP
@@ -46,7 +46,7 @@ One Lean code base is the single source of truth. It is compiled natively (the
 `ehr` binary: checker, simulator, deploy, commit server) and, through
 Lean → C → Emscripten, to WebAssembly that the browser runs. The clinical page
 (`/lean.html`) paints Lean's checked layout with plain DOM controls; React
-paints the encounter shell, ADT, replay, dashboard and browser. Neither holds
+hosts ADT, MAR, the dashboard and the program browser. Recorded clinical screens use the Lean painter. Neither holds
 clinical logic.
 
 ```mermaid
@@ -82,7 +82,7 @@ flowchart TB
   end
   WASM --> PAINTER
 
-  AGENT["agent/<br/>nightly discovery + release cadence"]:::untrusted
+  AGENT["agent/<br/>hill climbing + vendor migrations"]:::untrusted
   AGENT -->|"ehr check / gated release"| NATIVE
 
   subgraph BACKEND["Live authority"]
@@ -189,12 +189,15 @@ sequenceDiagram
 | Directory | Contents |
 |---|---|
 | `lean/` | Rulebook, interpreter, checker, renderer, simulator and all proofs. |
-| `app/` | Plain DOM clinical page (`/lean.html`); React encounter shell, ADT, replay, dashboard and browser. |
-| `agent/` | Nightly discovery, certified design archives, configurable release cadence and a typed review gate; simulator-only off-shift tailoring sessions (`session*.ts`). Historical nightly protocols remain available. The offline `proposal-quality` harness compares recorded prompt variants without deploying. |
+| `app/` | Lean WASM clinical and replay pages, ADT, MAR, dashboard and program browser. |
+| `agent/` | Per-persona hill climbing, Lean screen admission, vendor releases and migration, paired controls and final evaluation. |
 | `services/commit/` | Sole live store/writer: native guard, versioned patient event logs, chart/worklist projections, MAR and ADT; offline FHIR bootstrap. |
 | `wasm/` | Lean → C → Emscripten build. |
 | `world/` | Generator of simulated clinical days (patients, tasks, schedules). |
 | `conformance/` | 201 held-out rule scenarios run against every deployed revision. |
 | `releases/` | Vendor releases v1–v3 (rulebook + reference screens). |
 | `infra/` | Isolated Postgres + Keycloak + commit Compose stack; initial-state import and identity provisioning. |
-| `explore/` | Quality-diversity archive, descriptors, admitted generators and search. The standalone research harness never deploys; `agent/` reuses these modules for cadence releases. |
+
+## Removed
+
+The mock interpreter, React encounter painter, browser screen gate, experimental designer arms and cadence archive are preserved at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Their published measurements remain in the methods and audit pages.

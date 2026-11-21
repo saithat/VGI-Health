@@ -6,7 +6,6 @@ import {existsSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {pointerTravel,type GeometryAtlas} from '../../app/src/metrics/geometry.js';
-import {compilePresentations} from './presentation-compiler.js';
 import {expandProgram} from './composites.js';
 import {sha256,stableStringify} from './program.js';
 import {writeJson} from './util.js';
@@ -19,7 +18,7 @@ const point=z.object({x:z.number().finite(),y:z.number().finite()});
 export const screenGeometrySchema=z.object({screen:z.string(),state:z.string(),sample:z.string().exactOptional(),viewport:z.object({width:z.number(),height:z.number()}),components:z.record(z.string(),z.object({center:point,reveal:point,chain:z.array(z.string()),offsets:z.record(z.string(),point)})),scrollers:z.record(z.string(),z.object({maxX:z.number(),maxY:z.number(),width:z.number(),height:z.number()}))});
 export const geometryAtlasSchema=z.object({schemaVersion:z.literal(1),programHash:z.string(),componentsSha256:z.string().exactOptional(),appSha256:z.string(),viewport:z.object({width:z.literal(1440),height:z.literal(900)}),states:z.array(screenGeometrySchema),aliases:z.record(z.string(),z.array(z.string())).exactOptional(),source:z.enum(['chromium','recorded-fixture']),traceTargets:z.record(z.string(),z.string()).exactOptional()});
 export const geometryProgramHash=(program:Program)=>sha256(stableStringify(expandProgram(program)));
-export const geometryComponentsHash=(program:Program)=>sha256(stableStringify(designOf(program)?.length?{components:compilePresentations(program)??[],layouts:designOf(program)}:compilePresentations(program)??[]));
+export const geometryComponentsHash=(program:Program)=>sha256(stableStringify(designOf(program)?.length?{components:[],layouts:designOf(program)}:[]));
 export const geometryCacheKey=(program:Program)=>`${geometryProgramHash(program)}:${geometryComponentsHash(program)}`;
 export type GeometryProvider=(input:Pick<CheckInput,'specVersion'|'program'> & Partial<Pick<SimulateInput,'schedule'|'worldDir'>> & {result?:DayResult})=>Promise<GeometryAtlas|null>;
 // The measurement reads its exact atlas once more for per-screen attribution.

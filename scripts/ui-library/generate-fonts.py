@@ -6,7 +6,7 @@ from pathlib import Path
 import hashlib, json
 from fontTools.ttLib import TTFont
 ROOT=Path(__file__).resolve().parents[2]
-LEGACY=ROOT/'app/src/ehr/ui/fonts'
+LEGACY=ROOT/'app/src/fonts'
 WORLD=ROOT/'app/src/browser/ui-library/fonts'
 manifest=json.loads((WORLD/'sources.json').read_text())
 for source in manifest['sources']:

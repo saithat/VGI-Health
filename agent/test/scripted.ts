@@ -137,7 +137,7 @@ function migrate(persona: string, attempt: number): LlmProposal {
 function surface(persona: string): LlmProposal {
   if (persona === 'P1') {
     return { hypothesis: 'P1 orders imaging and specialty meds (R1.1-1)', decision: 'change', candidates: [cand('p1-priorauth', 'surfaceFeature', 'R1.1-1: prior-auth panel inline in the order composer', [
-      op('add', '/screens/[id=w1-orders]/components/[id=w1-go-sign]', comp('w1-priorauth', { priorAuthStatus: { scope: 'imaging,specialtyMed' } }, { tag: 'priorAuthPanel' })),
+      op('add', '/screens/[id=w1-orders]/components/[id=w1-go-sign]', comp('w1-priorauth', { priorAuth: { info: 'priorAuthStatus' } }, { tag: 'priorAuthPanel' })),
     ], 0)] };
   }
   return { hypothesis: `${persona} does not place orders that need prior auth`, decision: 'noChange', candidates: [] };

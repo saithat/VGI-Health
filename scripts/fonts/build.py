@@ -19,7 +19,7 @@ from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
 
 here = Path(__file__).resolve().parent
-output = here.parents[1] / 'app/src/ehr/ui/fonts'
+output = here.parents[1] / 'app/src/fonts'
 metadata = json.loads((here / 'sources.json').read_text())
 assert fontTools.__version__ == metadata['fonttools'], 'Use the pinned FontTools version'
 assert brotli.__version__ == metadata['brotli'], 'Use the pinned Brotli version'

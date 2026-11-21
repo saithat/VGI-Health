@@ -177,12 +177,18 @@ test("existing derived indexes are restricted to exactly the completed prefix an
 test("legacy marker upgrade validates task completeness before exposing the stopped prefix", async (t) => {
   const root = await mkdtemp(path.join(tmpdir(), "marker-upgrade-"));
   t.after(() => rm(root, { recursive: true, force: true }));
-  const { runFakeCadence } = await import("../agent/src/fake/cadence.js");
+  const { runDays } = await import("../agent/src/run.js");
+  const { writeFakeWorld } = await import("../agent/src/fake/world.js");
+  const { createFakeEhr } = await import("../agent/src/fake/ehr-fake.js");
+  const { scriptedClimb } = await import("../agent/test/lean-fixture.js");
   const { markCompletedRun } = await import("./mark-completed-run.mjs");
-  const { summary } = await runFakeCadence(path.join(root, "runs"), {
-    days: 2,
+  const worldDir = await writeFakeWorld(path.join(root, "world"), { days: 2, seed: 7 });
+  const id = "marker-fixture";
+  const {dir} = await runDays({
+    ...scriptedClimb, days: 2, runId: id, runsRoot: path.join(root, "runs"), worldDir,
+    personas: ["P1"], ehr: createFakeEhr(),
+    llm: {name: "scripted", model: "fixture", complete() { throw Error("Unexpected model call"); }},
   });
-  const dir = summary.dir;
   for (const n of [1, 2])
     await rm(path.join(dir, `days/day-0${n}/digest.json`));
   await rm(path.join(dir, "completion"), { recursive: true });
@@ -194,12 +200,12 @@ test("legacy marker upgrade validates task completeness before exposing the stop
   broken.floor = broken.floor.filter((row) => row.task !== omitted);
   await writeFile(file, JSON.stringify(broken));
   await assert.rejects(
-    markCompletedRun("cadence-fake", 2, 1, { root }),
+    markCompletedRun(id, 2, 1, { root }),
     /Incomplete day task set/,
   );
   assert.equal((await completedPrefix(dir)).manifest.daysCompleted, 0);
   await writeFile(file, original);
-  await markCompletedRun("cadence-fake", 2, 1, { root });
+  await markCompletedRun(id, 2, 1, { root });
   const prefix = await completedPrefix(dir);
   assert.equal(prefix.manifest.daysCompleted, 2);
   assert.equal(prefix.manifest.nightsCompleted, 1);

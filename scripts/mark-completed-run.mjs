@@ -35,8 +35,8 @@ export async function markCompletedRun(
     nights >= (manifest.daysPlanned ?? manifest.days)
   )
     throw new Error("Counts exceed the run calendar");
-  const { dayResultSchema, decisionRecordSchema } =
-    await import("../agent/src/schema.js");
+  const { interruptionDayResultSchema: dayResultSchema } = await import("../app/src/dashboard/interruption-schema.js");
+  const { decisionRecordSchema } = await import("../app/src/dashboard/agent-evidence.js");
   const { loadWorld } = await import("../agent/src/world.js");
   const { recordedWorld } = await import("./trajectories/daily-canonical.mjs");
   const world = await loadWorld(await recordedWorld({ root, manifest }));

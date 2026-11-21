@@ -2,7 +2,7 @@ import { afterEach, expect, test, vi } from "vitest";
 import { createPainter } from "../src/lean-ui/painter";
 import { screenOccurrences } from "../src/lean-ui/sources";
 import type { Drawn, Output, Part } from "../src/lean-ui/layout";
-import type { UiNode, UiScreen } from "../src/ehr/ui/types";
+import type { UiNode, UiScreen } from "../src/core/types";
 const field: UiNode = {
   field: {
     comp: "note",

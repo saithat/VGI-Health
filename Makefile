@@ -38,9 +38,7 @@ run:
 # Run agent nights on the selected world; generate it only when absent.
 run-live:
 	@set -eu; \
-	if [ -n "$${ANTHROPIC_API_KEY:-}" ]; then backend=claude; \
-	elif command -v codex >/dev/null 2>&1; then backend=codex; \
-	else echo 'run-live needs ANTHROPIC_API_KEY or an authenticated codex CLI.' >&2; exit 1; fi; \
+	backend=codex; \
 	$(MAKE) infra-up; \
 	if [ ! -f "$(LIVE_WORLD)/world.json" ]; then \
 	  pnpm --filter world gen --seed 7 --days $(LIVE_DAYS) --out $(LIVE_WORLD); \
@@ -110,19 +108,3 @@ wasm:
 
 wasm-check:
 	node scripts/wasm-assets.mjs
-
-.PHONY: rebind
-rebind:
-	pnpm --filter agent rebind --run $(RUN)
-
-# Exploration is offline research; never deploys. ML packages live outside the repo.
-.PHONY: decision-server explore-test
-decision-server:
-	sh explore/decision-server.sh $(DECISION_ARGS)
-
-# Disk-backed scratch for exploration tools; override with SCRATCH=/path.
-SCRATCH ?= $(HOME)/run-tmp
-explore-test:
-	mkdir -p $(SCRATCH)
-	TMPDIR=$(SCRATCH) pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
-	TMPDIR=$(SCRATCH) node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts

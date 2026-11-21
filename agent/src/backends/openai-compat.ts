@@ -2,8 +2,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { z } from 'zod';
 import { BackendRequestError } from '../errors.js';
 import { isRecord } from '../jsonpatch.js';
-import type { JsonLlm, JsonRequest, JsonResponse } from './types.js';
-import { runToolTurns } from '../tool-turns.js';
+import type { JsonLlm,JsonRequest,JsonResponse } from './types.js';
 
 export const schemaModeSchema = z.enum(['json_schema', 'json_object', 'prompt']);
 type SchemaMode = z.infer<typeof schemaModeSchema>;
@@ -94,32 +93,11 @@ export class OpenAICompatLlm implements JsonLlm {
   }
 
   async complete(req: JsonRequest): Promise<JsonResponse> {
-    try { return req.toolSession ? await this.toolRequest(req) : await this.request(req); }
+    try { return await this.request(req); }
     catch (error) { throw new BackendRequestError(error instanceof Error ? error.message : 'openai-compat: request failed'); }
   }
 
-  private async toolRequest(req:JsonRequest):Promise<JsonResponse>{
-    const session=req.toolSession;if(!session)throw new Error('Missing tool session');
-    const messages:unknown[]=[{role:'system',content:req.system},{role:'user',content:req.prompt}];
-    const result=await runToolTurns(req,async results=>{
-      for(const r of results)messages.push({role:'tool',tool_call_id:r.id,content:JSON.stringify(r.result)});
-      const response=await fetch(this.url,{method:'POST',redirect:'error',signal:AbortSignal.timeout(Math.min(this.timeoutMs,session.remainingMs)),
-        headers:{'Content-Type':'application/json',...(this.apiKey?{Authorization:`Bearer ${this.apiKey}`}:{})},
-        body:JSON.stringify({model:this.model,messages,tools:session.definitions.map(t=>({type:'function',function:{name:t.name,description:t.description,parameters:t.inputSchema}})),
-          tool_choice:'required',parallel_tool_calls:false,max_tokens:Math.min(this.maxTokens??16000,session.remainingTokens),...(this.temperature!==undefined?{temperature:this.temperature}:{})})});
-      if(!response.ok){await response.body?.cancel();throw new Error(`openai-compat: tool HTTP ${response.status}`);}
-      const reply=z.object({model:z.string(),usage:z.object({prompt_tokens:z.number().nonnegative(),completion_tokens:z.number().nonnegative(),prompt_tokens_details:z.object({cached_tokens:z.number()}).optional()}),
-        choices:z.array(z.object({finish_reason:z.string(),message:z.object({role:z.literal('assistant'),content:z.string().nullable().optional(),tool_calls:z.array(z.object({id:z.string(),type:z.literal('function'),function:z.object({name:z.string(),arguments:z.string()})})).optional()})})).min(1)}).parse(await response.json());
-      const choice=reply.choices[0];if(!choice||choice.finish_reason!=='tool_calls')throw new Error('openai-compat: expected complete tool_calls turn');
-      messages.push(choice.message);
-      return {calls:(choice.message.tool_calls??[]).map(c=>({id:c.id,name:c.function.name,arguments:JSON.parse(c.function.arguments)})),
-        inputTokens:reply.usage.prompt_tokens,outputTokens:reply.usage.completion_tokens,cachedInputTokens:reply.usage.prompt_tokens_details?.cached_tokens??0,servedBy:reply.model,raw:reply};
-    });
-    return {...result,backend:this.name,model:this.model,replayOf:null,promptMatched:null};
-  }
-
   private async request(req: JsonRequest): Promise<JsonResponse> {
-    if (req.queryBundle) throw new Error('openai-compat: query tools are unsupported');
     // Compile before making a paid call, including on servers with constrained decoding.
     validationSchema(req.schema);
     const body = JSON.stringify({

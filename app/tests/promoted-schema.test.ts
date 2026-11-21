@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { uiNodeSchema, type UiNode } from "../src/ehr/ui/types";
+import { uiNodeSchema, type UiNode } from "../src/core/types";
 const pane = (patient: string): UiNode => ({
   patientPane: {
     patient,

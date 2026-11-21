@@ -103,12 +103,8 @@ export function RevisionDetails({
           fullWidth
           variant="outline"
           loading={checking}
-          disabled={checking || node.program.mock}
-          title={
-            node.program.mock
-              ? "Authored mock revisions cannot be certified by this action"
-              : undefined
-          }
+          disabled={checking}
+
           onClick={() => void check()}
         >
           Re-check against current release

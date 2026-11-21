@@ -1,7 +1,6 @@
-import { fakeCanonical, fakeSpec } from '../src/fake/fixtures.js';
+import { fakeCanonical } from '../src/fake/fixtures.js';
 import { fakeSchedule, FAKE_PERSONAS } from '../src/fake/world.js';
 import { summarizeTrain, type TrainDay } from '../src/observe.js';
-import { nightlyPrompt } from '../src/prompts.js';
 import { workflowFloorGaps } from '../src/floor-evidence.js';
 import { trainSummarySchema, type TaskMetrics, type TraceEvent } from '../../app/src/dashboard/agent-evidence.js';
 vi.mock('../src/manual.js',()=>({promptContext:()=>({manual:'fixture',rules:'rules'})}));
@@ -42,6 +41,4 @@ it('excludes even days, foreign personas, unscheduled traces and incomplete or m
   expect(failed[0]).toMatchObject({tasks:1,completed:0,paired:0,gap:null});
   const evidence=summarizeTrain('P1',program,[train],new Map());
   expect(trainSummarySchema.parse(evidence).workflowFloorGaps).toEqual(base);
-  const prompt=nightlyPrompt({night:1,persona:{id:'P1',userId:'P1',params:persona},program,spec:fakeSpec('v1'),history:[],evidence});
-  expect(prompt.prompt).toContain('"klmDeciSec":140');expect(prompt.prompt).not.toContain('HOLDOUT_SECRET');
 });

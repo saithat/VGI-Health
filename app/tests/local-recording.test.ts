@@ -65,17 +65,7 @@ describe("local recording arguments", () => {
       "--replay-from",
       "runs/from-run",
     ]);
-    expect(
-      recordingArgs({
-        ...configuration,
-        backend: "generator-only",
-        screens: "browser",
-      }).args.slice(-3),
-    ).toEqual([
-      "--generator-only",
-      "--protocol",
-      "certified-cadence-archive-v1",
-    ]);
+
   });
 
   it.each([

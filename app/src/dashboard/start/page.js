@@ -298,15 +298,11 @@ async function refreshOptions() {
 
 function syncBackend() {
   const backend = fields.backend.value;
-  const generator = backend === "generator-only";
   const replay = backend === "replay";
   element("effort-field").hidden = backend !== "codex";
   element("replay-field").hidden = !replay;
-  element("model-field").hidden = generator || replay;
-  element("backend-note").hidden = !generator;
+  element("model-field").hidden = replay;
   fields.replayFrom.required = replay;
-  if (generator) fields.screens.value = "browser";
-  fields.screens.disabled = generator;
 }
 
 resumeRun.addEventListener("change", () => {

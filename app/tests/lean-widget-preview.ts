@@ -2,7 +2,7 @@
 import { loadWasmInterp } from "../src/core/wasmInterp";
 import { createReferencePainter } from "../src/lean-ui/reference";
 import { createPainter } from "../src/lean-ui/painter";
-import type { UiScreen } from "../src/ehr/ui/types";
+import type { UiScreen } from "../src/core/types";
 import type { Output } from "../src/lean-ui/layout";
 import "../src/lean-ui/painter.css";
 import {

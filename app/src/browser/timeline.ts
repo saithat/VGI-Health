@@ -3,7 +3,7 @@ import type { RunData } from "../dashboard/data";
 import { workloadAt } from "../dashboard/workload";
 import type { Catalog, ProgramEntry } from "./data";
 
-export { clinicianRoleNames as personaNames } from "../ehr/ui/personas";
+export { clinicianRoleNames as personaNames } from "./personas";
 export const vendorReleases = [
   { id: "v1", day: 0, summary: "Initial vendor EHR" },
   {

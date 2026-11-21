@@ -1,10 +1,6 @@
 # Arm E: tool-driven frozen nights
 
-E is opt-in (`proposal-quality --arms B,E`). Production discovery and the A/B/C/D
-prompt/choice policies retain their existing behavior. Only the owner decides
-whether E should become the default after reviewing a completed paired comparison.
-[Arm R](rlm-night.md) keeps E's capabilities but moves large results into a
-confined REPL, so the root model's prompt stays bounded.
+Historical method and results. The implementation and original commands are available at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Current recordings use [hill climbing](hillclimb-night.md) and the Lean screen gate.
 
 `agent/src/agent-loop.ts` supplies a compact task/persona/night identity, allowed
 moves, selector patch addressing, thirteen safety-property summaries, movement
@@ -86,16 +82,6 @@ a checker/estimator already in flight may finish after the decision deadline, bu
 cannot authorize an expired submission. No partially executed E conversation is
 automatically retried; an interrupted sample restarts under the existing resume
 protocol, retaining partial journals separately.
-
-Every attempted tool call is persisted in `samples/<decision>/E/<sample>/tools/`:
-ordered index, tool, arguments, complete result, result byte count and prior
-usage accounting. LLM recordings retain API turns or Codex transcript, tool
-events, usage and budget statistics. Tool errors redact host paths.
-`--backend replay --arms E --tool-replay-from <completed-E-output>` re-executes
-recorded calls against the frozen capability inputs, verifies every result and
-byte count, then verifies the exact submitted proposal/choice. Completed and budget-rejected E conversations have replayable tool journals; failed conversations replay their recorded refusal. E rejects prompt
-drift even though historical A/B/C/D replay can allow it. Replay token totals are
-recorded references; replay wall time is newly measured. No model is called.
 
 ## Gates and reports
 
@@ -342,34 +328,6 @@ Commands ran in this worktree. The current app `dist/` was copied with `cp -a`
 from the read-only checkout; fixtures/programs were copied locally. Source
 restoration rebased local path metadata only, retaining all legacy-binding
 mismatches in `provenance.json`. No writes to the other checkout occurred.
-
-```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=4 LEAN_NUM_THREADS=6
-export EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr
-pnpm install --offline --store-dir "$TMPDIR/vgi-pnpm-store"
-pnpm --filter agent exec tsx "$TMPDIR/prepare-BE.mts"
-node scripts/wasm-assets.mjs
-SOURCE="$PWD/runs/quality-BE-source-20261108"
-SANITY="$PWD/runs/quality-BE-sanity-20261108"
-OUT="$PWD/runs/quality-BE-20261108"
-flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter agent proposal-quality \
-  --run "$SOURCE" --out "$SANITY" --arms sanity --samples 1 --workers 2 \
-  --backend replay --model gpt-6.1-sol --reasoning-effort high --service-tier default
-pnpm --filter agent exec tsx "$TMPDIR/check-BE-inputs.mts"
-flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter agent proposal-quality \
-  --run "$SOURCE" --out "$OUT" --arms B,E --samples 2 --workers 2 \
-  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default \
-  --ledger-from "$SANITY"
-pnpm --filter agent exec tsx "$TMPDIR/check-BE-paired-inputs.mts"
-pnpm --filter agent exec tsx "$TMPDIR/check-BE-build-after.mts"
-python "$TMPDIR/summarize-BE.py"
-python "$TMPDIR/budget-BE.py"
-pnpm --filter agent exec tsx "$TMPDIR/audit-BE.mts"
-pnpm --filter agent lint
-pnpm --filter agent typecheck
-pnpm --filter agent exec vitest run test/agent-loop.test.ts test/quality.test.ts test/quality-queries.test.ts test/codex-options.test.ts --maxWorkers=2
-git diff --check
-```
 
 The paired launcher waited for sanity 35/35 before executing the displayed B/E
 command. Its exact argument vector, UTC timestamps and wall clock are in

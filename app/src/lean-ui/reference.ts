@@ -1,3 +1,6 @@
+import { appliesTo, ruleCase, type LayoutDesign } from "../../../agent/src/layout-design";
+import { applyLayoutRules } from "../../../agent/src/layout-rules";
+import { stableJson } from "../core/buildBinding";
 import {
   shapeFor,
   layoutFor,
@@ -9,7 +12,7 @@ import {
 import density from "../../../docs/methods/lean-screen-density.json";
 import audit from "../../../docs/audits/r5-per-screen.json";
 import paged from "../../../docs/methods/lean-paged-density.json";
-import type { UiScreen } from "../ehr/ui/types";
+import type { UiScreen } from "../core/types";
 import type { Output } from "./layout";
 /** Same vendor snapshots as the nightly gate; absent screens keep limit 15. */
 export function referenceLimit(
@@ -44,7 +47,7 @@ export function referenceLimit(
     .filter((s) => s.screen === screen);
   return samples.length ? Math.max(...samples.map((s) => s.maximum)) : 15;
 }
-export function createReferencePainter(call: (request: string) => string) {
+export function createReferencePainter(call: (request: string) => string, design: LayoutDesign = []) {
   const cache = new Map<string, { references: unknown; dense: boolean }>();
   return (
     rendered: UiScreen,
@@ -61,7 +64,7 @@ export function createReferencePainter(call: (request: string) => string) {
     const screen = windowed.screen;
     if (!screen) throw Error("Missing Lean window");
     const shape = shapeFor(screen),
-      key = JSON.stringify([version, shape, limit]);
+      key = JSON.stringify([version, screen.screen, shape, limit]);
     let selected = cache.get(key);
     const request = (value: unknown): Output =>
       JSON.parse(call(JSON.stringify(value)));
@@ -76,7 +79,15 @@ export function createReferencePainter(call: (request: string) => string) {
           })),
         },
       ];
-      let references = family(layoutFor);
+      const rules = design.filter(ruleCase).filter(entry => appliesTo(entry, screen.screen ?? "")).flatMap(entry => entry.rules);
+      const literals = design.filter(entry => !ruleCase(entry) && entry.screen === screen.screen);
+      const semantic = literals.length ? JSON.parse(call(JSON.stringify({op:"family-paint", references:[], screen}))).uncoveredShape : null;
+      const literal = literals.find(entry => stableJson(entry.shape) === stableJson(semantic));
+      if (literal && rules.length) throw Error("Conflicting recorded layout rules and literal layout");
+      const custom = literal?.layouts ?? (rules.length ? viewports.map(viewport => ({
+        viewport, tree: applyLayoutRules({...screen}, viewport, rules)
+      })) : null);
+      const references = custom ? [{screen: erased, layouts: custom}] : family(layoutFor);
       const check = (references: unknown) => {
         const out = request({
           op: "family-check",
@@ -88,14 +99,16 @@ export function createReferencePainter(call: (request: string) => string) {
         return out.accepted;
       };
       const dense = check(references);
+      let admitted: unknown = references;
       if (!dense) {
-        references = family(fixedShellFor);
-        if (!check(references))
+        if (custom) throw Error("Lean refused the recorded layout family");
+        admitted = family(fixedShellFor);
+        if (!check(admitted))
           throw Error(
             "Lean refused dense layout and fixed shell at screen density limit",
           );
       }
-      selected = { references, dense };
+      selected = { references: admitted, dense };
       cache.set(key, selected);
       while (cache.size > 256) {
         const oldest = cache.keys().next().value;
@@ -113,4 +126,10 @@ export function createReferencePainter(call: (request: string) => string) {
       dense: selected.dense,
     };
   };
+}
+
+export function replayScreen(call: (request: string) => string, ui: UiScreen): UiScreen {
+  const result = JSON.parse(call(JSON.stringify({op: "session", screen: ui})));
+  if (!result.screen) throw Error("Missing Lean session screen");
+  return result.screen;
 }

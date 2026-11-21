@@ -150,15 +150,6 @@ APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=o
 COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow
 ```
 
-The model-free cadence demo is also available without the local launcher.
-
-```sh
-pnpm --filter agent cadence-fake --out "$TMPDIR"/cadence-demo
-```
-
-This separate demo uses synthetic geometry and a fake checker.
-[Model backends](model-backends.md)
-
 For the full `EhrHeavy` profile, `scripts/build-ehrheavy.py [--target MODULE]`
 builds serially with about 8.3 GiB peak memory. The weekly workflow audits the
 24 seeded-defect axioms. CI builds Lean, audits axioms, runs workspace checks

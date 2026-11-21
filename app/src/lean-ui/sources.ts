@@ -1,5 +1,5 @@
 import { occurrences } from "../../../scripts/layout-reference/generator.mjs";
-import type { UiScreen } from "../ehr/ui/types";
+import type { UiScreen } from "../core/types";
 
 /** One occurrence of Lean's semantic inventory (Layout.Semantic.screenNodes):
  * its path, the role of its display part (Layout.Display.PartRole), whether it

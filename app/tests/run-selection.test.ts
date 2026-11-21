@@ -24,7 +24,7 @@ describe("default recorded demo", () => {
         [run("mock"), run("unstarted", { days: 0, replayable: false })],
         "",
       ),
-    ).toBe("mock");
+    ).toBe("unstarted");
   });
   it("chooses the newest real recording before recording length", () => {
     expect(
@@ -56,13 +56,11 @@ describe("default recorded demo", () => {
     ).toBe("starting");
   });
   it("honors explicit overrides and fails for unavailable recordings", () => {
-    expect(selectDefaultRun([run("real"), run("mock")], "mock")).toBe("mock");
+    expect(selectDefaultRun([run("real")], "real")).toBe("real");
     expect(() => selectDefaultRun([run("mock")], "missing")).toThrow(
       "not a replayable recorded run",
     );
-    expect(() => selectDefaultRun([], "")).toThrow(
-      "No replayable recorded runs",
-    );
+    expect(selectDefaultRun([], "")).toBeNull();
   });
 });
 

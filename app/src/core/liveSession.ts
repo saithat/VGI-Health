@@ -11,7 +11,7 @@ import { fhirDisplayContext } from "../data/fhirContext";
 import { keepFocusedTask, selectedRowSource } from "../data/patientDirectory";
 import { createSession } from "./session";
 import { screenJournal } from "../data/screenFingerprint";
-import type { UiScreen } from "../ehr/ui/types";
+import type { UiScreen } from "./types";
 import type { Interp } from "./interp";
 import {
   bundleResources,
@@ -85,7 +85,7 @@ export function factsContext(
   };
 }
 export function projectLive(
-  interp: Interp,
+  interp: Pick<Interp,"facts">,
   bundle: Bundle,
   user: LiveUser,
   now: string,

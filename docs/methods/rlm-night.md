@@ -1,10 +1,6 @@
 # Arm R: recursive-language-model night agent
 
-R is opt-in (`proposal-quality --arms B,R`). The default arm and production
-discovery are unchanged. R follows the Recursive Language Models design (Zhang &
-Khattab, 2025): the root model never receives the large context in its prompt.
-It writes code for a persistent REPL in which the context is a set of variables,
-sees only truncated output, and may call a sub-model on slices it chooses.
+Historical method and results. The implementation and original commands are available at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Current recordings use [hill climbing](hillclimb-night.md) and the Lean screen gate.
 
 Arm E sent every tool result back in a growing conversation. In the paired run
 all 70 E samples hit the 120,000-token cumulative ceiling before submitting
@@ -107,17 +103,6 @@ output tokens reported for root calls and sub-calls separately. The record's
 `tokens` field sums the root and any separate sub-model meter.
 
 ## Recording, replay and audit
-
-Every root call is recorded as `llm/<callId>/root-NN.json` and every sub-call
-as `llm/<callId>/sub-NNN.json`, with full request text. The summary
-`llm/<callId>.json` holds every turn's thought, code, output and error, and
-every host call with its arguments and result. Durations are kept out of the
-compared transcript. `--backend replay --tool-replay-from <run>` replays R with
-no prompt drift allowed. Root and sub-call replies come from the recordings.
-Cells, queries, checks and estimates run again, and the turn list, host results
-and submission must equal the recorded summary byte for byte. Any difference is
-a `ToolReplayDivergedError`. Each recorded Codex transcript is audited with the
-no-tool audit: the root and sub-models have no shell, MCP or web tools.
 
 ## Pilot, 2026-11-08
 
@@ -501,46 +486,6 @@ replace the removed-worktree workaround. After the completed study and final
 verification, the old symlink and then-empty parent directories were removed;
 no existing run data was deleted.
 
-```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=2 LEAN_NUM_THREADS=4
-export EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr
-DATA=/home/saithat/Projects/VGI-Health/runs
-SOURCE="$DATA/quality-BR-source-20261109"
-SANITY="$DATA/quality-BR-sanity-20261109"
-OUT="$PWD/runs"
-cd agent
-# Preserve the pilot's absent optional examples; the real directory is untouched.
-mkdir -p "$TMPDIR/BR-empty-core"
-study() {
-  bwrap --die-with-parent --bind / / --dev-bind /dev /dev \
-    --ro-bind "$TMPDIR/BR-empty-core" "$DATA/core-10day" -- "$@"
-}
-flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out "$OUT/quality-BR-sanity-20261109" --arms sanity --samples 1 --workers 2 \
-  --backend replay --model gpt-6.1-sol --reasoning-effort high --service-tier default
-study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out "$OUT/quality-BR-smoke-20261109" --arms R --samples 1 --workers 1 \
-  --decisions night-01/P1 --backend codex --model gpt-6.1-sol --reasoning-effort high \
-  --service-tier default --ledger-from "$SANITY"
-study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out "$OUT/quality-BR-smoke-replay-20261109" --arms R --samples 1 --workers 1 \
-  --decisions night-01/P1 --backend replay --model gpt-6.1-sol --reasoning-effort high \
-  --service-tier default --ledger-from "$SANITY" --tool-replay-from "$DATA/quality-BR-smoke-20261109"
-study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out "$OUT/quality-BR-20261109" --arms B,R --samples 2 --workers 2 \
-  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default --ledger-from "$SANITY"
-PILOT=night-01/P1,night-02/P2,night-04/P3,night-05/P4,night-07/P5,night-08/P1,night-09/P2
-study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out "$OUT/quality-BR-cheap-sub-20261109" --arms R --samples 1 --workers 2 \
-  --decisions "$PILOT" --backend codex --model gpt-6.1-sol --rlm-sub-model gpt-6-luna \
-  --reasoning-effort high --service-tier default --ledger-from "$SANITY"
-study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out "$OUT/quality-BR-cheap-all-20261109" --arms R --samples 1 --workers 2 \
-  --decisions "$PILOT" --backend codex --model gpt-6-luna --rlm-sub-model gpt-6-luna \
-  --reasoning-effort high --service-tier default --ledger-from "$SANITY"
-# Continue the same full command with --resume after interruption; never restart it.
-```
-
 Data and execution receipts stay untracked. No full browser audits run in this
 lane because no app source changes. Agent lint, typecheck and targeted unit tests
 are the lane checks; CI runs the remaining suite after merge.
@@ -556,28 +501,6 @@ reported current Lean manifest
 `821d62993be8eb9af8594e68f965c51a92ccf3f6a7d73ae927b0955e2fd3eacb`.
 
 From the repository root, the exact check commands were:
-
-```sh
-export TMPDIR=/home/saithat/Projects/run-tmp
-DATA=/home/saithat/Projects/VGI-Health/runs
-SOURCE="$DATA/quality-BR-source-20261109"
-npm_config_manage_package_manager_versions=false pnpm --filter agent lint
-npm_config_manage_package_manager_versions=false pnpm --filter agent typecheck
-agent/node_modules/.bin/vitest run --root agent test/rlm.test.ts test/quality.test.ts \
-  test/quality-queries.test.ts test/codex-options.test.ts --maxWorkers=2
-node scripts/wasm-assets.mjs
-agent/node_modules/.bin/tsx "$TMPDIR/check-BR-digests.mts"
-python "$TMPDIR/check-BR-sanity.py"
-agent/node_modules/.bin/tsx "$TMPDIR/audit-BR-smoke.mts"
-agent/node_modules/.bin/tsx "$TMPDIR/summarize-BR.mts" "$DATA/quality-BR-20261109"
-agent/node_modules/.bin/tsx "$TMPDIR/verify-BR-data.mts"
-agent/node_modules/.bin/tsx "$TMPDIR/verify-BR-pilots.mts"
-agent/node_modules/.bin/tsx "$TMPDIR/summarize-BR.mts" "$DATA/quality-BR-cheap-sub-20261109"
-agent/node_modules/.bin/tsx "$TMPDIR/summarize-BR.mts" "$DATA/quality-BR-cheap-all-20261109"
-agent/node_modules/.bin/tsx "$TMPDIR/compare-BR-pilots.mts"
-agent/node_modules/.bin/tsx "$TMPDIR/build-BR.mts" after
-git diff --check
-```
 
 Identical helper copies are retained in the new source directory, alongside
 exact command vectors, timestamps, exit codes and logs. The data verifier

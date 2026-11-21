@@ -55,7 +55,7 @@ before signing ([full-resolution video](app/shots/video/p1-visit.mp4)).
 
 The Lean `Spec` is the rulebook; a JSON `Program` describes screens, fields,
 tabs, buttons and macros. The agent changes only `Program`. Native `check`,
-browser screen checks and replay validation gate deployment; `step` guards each
+Lean screen checks and replay validation gate deployment; `step` guards each
 interaction at runtime. The original proposal loop allows three repairs. The
 [hill-climbing night](docs/methods/hillclimb-night.md) measures changes against every past workflow. Agents can estimate a patch on selected days before requesting the full verdict. The agent closes the decision by submitting a shipping patch or keeping the current version. A wall-clock backstop also retains it. The [measurement guide](docs/methods/hillclimb-night.md#measuring-faster) covers worker limits and benchmarks for individual and concurrent measures.
 
@@ -74,7 +74,7 @@ flowchart LR
 
 `lean/` owns the interpreter, checker, renderer, simulator and proofs; `wasm/`
 builds the browser interpreter. `app/` paints and reviews its output. `agent/`
-proposes and evaluates layouts, `explore/` supplies an archive and search, and
+measures proposed layouts on completed days, and
 `world/` generates synthetic clinical days. `services/commit/` is the sole live
 writer; `infra/` supplies Postgres and Keycloak identity.
 
@@ -105,7 +105,6 @@ Historical certificates have not been rebound to this runtime.
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
 | Agent vs vendor layouts (retained recording) | On tasks both completed, agents save 1.9–10.7% of clicks plus scrolls and capture 2–8% of the modeled-time gap to the theoretical floor. P1's agent layout fails 7 tasks needing a release feature it declined. [Analysis](docs/audits/agent-benefit-20261113.md). |
 | Learnability gate replay | 5 of 28 retained shipped decisions have measured R2 refusals; 9 pass validation, 12 lack full pixel evidence and 2 exceed replay limits. Independent counterfactuals, not a new recording. [Policy and matrix](docs/methods/learnability-validation.md#retained-recording-replay). |
-| Layout optimization pilot | One frozen P1 context accepts B and refuses D after D adds three validation clicks; both selected designs have structural distance 0.004717 and zero native rejection rate. This does not establish improvement or broader exploration. [Discovery policy and pilot](docs/methods/discovery-and-cadence.md). |
 
 The experimental Lean painter keeps each patient’s row actions, urgent controls and dialog in their pane. A two-patient ED note stayed dense at all 36 checkpoints through signing. [Board measurements](docs/audits/dense-boards.md).
 
@@ -295,9 +294,7 @@ appropriateness and the uncalibrated rates are not validated.
 | Completion interaction rules | [Scenario checker](docs/methods/completion-checker.md): acknowledgment before commit and Back retention; general property 6 and patient-switch durability remain open. |
 | Anti-gaming design rules | [Metric gaming](docs/design/metric-gaming.md): at most 2 copies of a control per program and 1 per screen, with added copies charged to the stability budget; at most 15 active targets per 1440×900 viewport in Lean G10, plus per-screen vendor-reference limits on rendered screens (57 for absent ids); high-alert medication notices cannot be removed per clinician; declared workflow context stays within 8 goto hops of commit screens, with explicit context policies required after v3; navigation labels match titles/equivalent aliases within 4 words. These are new specifications. |
 | Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G11, safety-text preservation, the display parts and wording Lean decides for every node, long lists shown one page at a time with their position, flagged count and pager ([bounded lists](docs/methods/ui-library.md#bounded-lists)), and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
-| Release and user-model choices | [Cadence](docs/methods/discovery-and-cadence.md) uses a provisional effect floor, movement proxy and auto-approval; [bounded learning and preferences](docs/methods/simulation.md) are uncalibrated. [Tool-driven arm E](docs/methods/agent-loop.md) stays opt-in: in the 35-decision B/E paired run B accepted 88.6% and E 0%, because every E sample hit its 120K cumulative token ceiling before submitting, a ceiling B did not have. [Arm R](docs/methods/rlm-night.md), an opt-in recursive-language-model agent with a confined REPL, submitted within budget on all 70 full-study samples but accepted 57/70 versus B’s 58/70, using 1.86× the input tokens and 1.43× the charged sample wall time. |
 
-The [full 35-decision paired B/R study](docs/methods/rlm-night.md#full-paired-results) accepted 81.4% for R versus 82.9% for B; the [Luna-root pilot](docs/methods/rlm-night.md#cheaper-model-pilots) accepted 2/7. R remains opt-in.
 
 ## Open problems
 
@@ -326,18 +323,7 @@ retains supersession links and a reproducible citation/recency verifier
   not estimates from clinician observations. Completion parity with the expert
   is a regression requirement on the sampled and full persona workdays, not a
   theorem. Patient-directory selection still uses the shared fixed policy.
-- **Clinician participation and design exploration are limited.** Historical
-  nightly runs deploy a greedy patch or disjoint bundle. The opt-in cadence
-  protocol keeps certified, screen-gated alternatives in a quality-diversity
-  archive, preserves unchosen train estimates and known duds, and ships through
-  a configurable schedule and review hook. Optional bounded switch costs and
-  tailoring sessions now connect that archive to the bounded clinician's
-  relearning estimate and private choice function. Defaults retain the movement
-  proxy and auto-approval. Sessions export train-only comparisons and friction
-  to later nightly prompts. The admitted generator changes layout tags, density and shortcuts and can
-  move review components or complete groups through the same certification gates.
-  Its finite public placement enumeration still bounds which tastes can be recovered. There is
-  no live in-app choice/flag control, human calibration or live cadence study.
+- **Clinician participation is simulated.** Hill climbing measures proposed changes against completed days. Future days and the final evaluation report how well each change generalizes. [Hill-climbing method](docs/methods/hillclimb-night.md).
 
 ## Documentation
 
@@ -351,9 +337,8 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Simulation and calibration | [Bounded clinician](docs/methods/simulation.md), [workload/interruptions](docs/methods/workload-and-interruptions.md), [simulation clocks](docs/methods/wave3-simulation.md), [workflow phases](docs/methods/workflow-phases.md), [public-evidence calibration plan](docs/design/workflow-calibration.md) |
 | Clinical scenario policies | [Medication outcomes](docs/methods/medication-outcomes.md), [information needs](docs/methods/information-needs.md), [ADT](docs/methods/adt.md) |
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
-| Plain DOM clinical page | [Lean painter and widget inventory](docs/methods/lean-painter.md), [rich widgets and patient-scoped boards](docs/methods/painter-parity.md), and the [cut-over checklist](docs/design/lean-ui-cutover.md); the encounter shell and ADT keep React |
+| Plain DOM clinical page | [Lean painter and widget inventory](docs/methods/lean-painter.md), [rich widgets and patient-scoped boards](docs/methods/painter-parity.md), and the [cut-over checklist](docs/design/lean-ui-cutover.md); ADT and MAR keep React |
 | Interface research | [UI library](docs/methods/ui-library.md), [Lean nightly designs](docs/methods/design-discovery.md), [dense reference layouts](docs/methods/reference-layouts.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |
-| Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md), [RLM arm R](docs/methods/rlm-night.md), [harness-native arm H](docs/methods/harness-night.md) (Claude Code CLI in a confined workspace: 60/70 accepted vs B's 58/70 in the full study; B ran on Codex `gpt-6.1-sol` and H on Claude Opus 5.5, so the gap is not a harness-only effect; opt-in) |
 | Local evidence and data | [Run data](docs/methods/run-data.md), [recording memory and geometry storage](docs/methods/recording-memory.md), [conformance](docs/methods/conformance.md), [Synthetic Hospital](docs/methods/synthetic-hospital.md), [organization names and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
 
 ## Data sources

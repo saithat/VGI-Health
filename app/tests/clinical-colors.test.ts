@@ -1,6 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { clinicalTokens } from "../src/ehr/ui/theme";
-import { sectionTone, severityTone, statusTone } from "../src/ehr/ui/display";
+import { describe,expect,it } from "vitest";
+import { clinicalTokens } from "../src/theme";
 const luminance = (hex: string) => {
   const rgb = (hex.slice(1).match(/../g) ?? [])
     .map((part) => parseInt(part, 16) / 255)
@@ -35,54 +34,5 @@ describe("meaningful clinical palette", () => {
     expect(contrast(clinicalTokens.appBar, "#FFFFFF")).toBeGreaterThanOrEqual(
       4.5,
     );
-  });
-  it("maps only explicitly supplied statuses", () => {
-    expect(["Final", "Certified", "Signed"].map(statusTone)).toEqual([
-      "green",
-      "green",
-      "green",
-    ]);
-    expect(["Pending", "Due soon", "Held"].map(statusTone)).toEqual([
-      "yellow",
-      "yellow",
-      "yellow",
-    ]);
-    expect(["Rejected", "Overdue"].map(statusTone)).toEqual(["red", "red"]);
-    expect(["Draft", "Cancelled"].map(statusTone)).toEqual(["gray", "gray"]);
-    expect(["Inbox", "Cosign required"].map(statusTone)).toEqual([
-      "violet",
-      "violet",
-    ]);
-    expect(statusTone("Active")).toBeUndefined();
-    expect(
-      ["needs-action", "on-hold", "not-done", "cosign-required"].map(
-        statusTone,
-      ),
-    ).toEqual(["yellow", "yellow", "gray", "violet"]);
-    expect(severityTone("passive")).toBe("yellow");
-    expect(severityTone("warning")).toBe("orange");
-    expect(severityTone("interruptive")).toBe("red");
-  });
-  it("uses clinical section categories rather than alternating decoration", () => {
-    expect(sectionTone("Code Status / Precautions")).toBe("orange");
-    expect(
-      [
-        "Allergies",
-        "Medications",
-        "Lab results",
-        "Assessment & Plan",
-        "Progress Notes",
-        "Schedule",
-      ].map(sectionTone),
-    ).toEqual(["red", "green", "orange", "yellow", "violet", "blue"]);
-    expect(
-      [
-        "Schedule",
-        "ED Track Board",
-        "Unit Census",
-        "OR Schedule",
-        "Inbox",
-      ].map(sectionTone),
-    ).toEqual(["blue", "orange", "green", "yellow", "violet"]);
   });
 });

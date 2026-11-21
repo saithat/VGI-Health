@@ -1,12 +1,8 @@
 # Screen validation and recertification
 
-[Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
+Historical method and results. The implementation and original commands are available at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Current recordings use [hill climbing](hillclimb-night.md) and the Lean screen gate.
 
-`ColumnsNode` uses the group's container width: two columns from 48em and three
-from 75em, each capped by its child count. Narrow-region regressions cover
-768–1920px and doubled text alongside the physical screen matrix. Recheck an
-offline candidate with `pnpm --filter agent exec tsx src/offline-columns-check.ts
---comparison <comparison-directory> --out <scratch>`.
+New deployments use native Lean layout-family admission across supported viewports. Clinical replay checks the app, WASM, program and layout bindings before painting. The following measurements describe the retired browser gate.
 
 ## Cache and execution
 
@@ -32,7 +28,7 @@ and values above six are capped at six (browser workers also respect the existin
 memory budget). Parallel `run-days` divides the default four-worker budget
 across persona checkers and limits explicitly requested workers to six in total.
 Distinct uncached trees run through this bounded Playwright pool.
-`scripts/recertify-runs.mjs --runs core-10day --out <scratch>` concurrently
+The historical recertification tool concurrently
 runs native deploy/export checks with isolated output directories, then batches
 all revisions by presentation bundle through the same browser gate. A file
 manifest avoids command-line size limits. Reports preserve persona/revision/tree
@@ -129,16 +125,6 @@ all reference states, including active-modal and background phases. Corrupt/inco
 cache records miss; `EHR_SCREEN_CACHE=0` bypasses both measurement caches. Only the
 candidate runs the full screen matrix. Geometry receipts may be reused independently;
 offline whole-version admission receipts are re-evaluated against today's reference.
-
-```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=4
-export pnpm_config_verify_deps_before_run=false EHR_SCREEN_WORKERS=4
-node scripts/audit-action-density.mjs "$TMPDIR/r5-per-screen-density"
-node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/check-r5-p2.mts \
-  --out "$TMPDIR/r5-p2-final"
-node scripts/audit-alert-policy.mjs "$TMPDIR/r5-per-screen-templates"
-node scripts/audit-alert-policy.mjs "$TMPDIR/r5-per-screen-personas" --personas
-```
 
 The density collector reads every current vendor/release, retained revision and
 release-matched no-agent state on adult-allergic, pediatric and surgical sample
@@ -241,50 +227,3 @@ That earlier full template and persona audit pair ran once, sequentially, checki
 records commands, bindings, coverage, captures and timings. The
 [prior verification report](../audits/realism-wave1-verification-20261107.md)
 retains the earlier evidence and measurements.
-
-## Reproduction
-
-Compare cold and warm certification with one shared lock, sequential commands
-and a fresh cache root for each cold experiment:
-
-```sh
-export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true EHR_SCREEN_WORKERS=4
-export EHR_SCREEN_CACHE_DIR="$TMPDIR/screen-recert-cache"
-flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
-  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-recert-cold"
-flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
-  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-recert-warm"
-node scripts/compare-screen-results.mjs \
-  "$TMPDIR/screen-recert-cold/recertification.json" \
-  "$TMPDIR/screen-recert-warm/recertification.json"
-flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
-  node --test scripts/screen-cache-browser.test.mjs
-```
-
-The browser integration test compares real serial, four-worker, cold, warm and
-cache-disabled per-tree verdicts and physical samples, including a deliberately
-disabled urgent acknowledgment. For full audits, select a separate fresh cache
-root, run templates then `--personas` sequentially, then repeat with that same
-root for warm reports. Compare each output's `result.json` with
-`scripts/compare-screen-results.mjs`; `elapsedMs`, cache hits/misses and physical
-coverage are retained in reports. Compare a cache-disabled recording report too;
-optionally rebuild after one small painter change, confirm misses, and restore
-and rebuild before certificate installation.
-
-`node scripts/migrate-neutral-terms.mjs --recertify-only --runs
-core-10day` skips terminology/identity rewrites and selects only
-those recordings. It retains frozen spec/canonical/previous inputs, applies
-native and whole-version screen gates, updates build bindings, remeasures the
-preserved schedules, regenerates trajectories (including existing same-task
-baseline controls), and verifies strict WASM replay. Results are written to
-`runs/recertification-report.json`; model choices remain recorded inputs.
-Before remeasurement, incompatible atlas generations are renamed intact into
-`migration/geometry-history/`, with byte-hash receipts; current measurements
-use a new active `geometry/` namespace. The adapter still refuses mismatched
-program/component/build bindings. Status remains pending until measurement and
-regenerated replay verification finish.
-The final status is written before computing the run digest, so the digest covers
-the passed manifest as well as the remeasured files. Canonical hashing emits
-sorted JSON incrementally, preserving the digest protocol without duplicating
-large retained screen exports into another tree and full serialized string.
-Rejected recertifications cannot supply conformance targets.

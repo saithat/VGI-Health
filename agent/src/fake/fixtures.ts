@@ -91,7 +91,8 @@ export function fakeSpec(version: string): Spec {
   // v1.1: optional prior-auth feature, new component kind, no new requirements.
   spec.version = RELEASE_IDS.feature;
   spec.infos.push({ id: 'priorAuth', label: 'Prior-authorization status', version: '' });
-  spec.design.catalog.push('priorAuthStatus');
+  spec.design.catalog.push('priorAuth');
+  spec.infos.push({ id: 'priorAuthStatus', label: 'Prior authorization status', version: '' });
   if (version === RELEASE_IDS.feature) return spec;
   if (version !== RELEASE_IDS.migration) throw new Error(`fake spec: unknown version ${version}`);
   // v3: antibiotic indication required and shown to nurses.
@@ -264,7 +265,7 @@ export function fakeCanonical(version: string): Program {
   if (version === RELEASE_IDS.base) return p;
   p.specVersion = RELEASE_IDS.feature;
   p.version = 1;
-  addTo(p, 'w1-orders', [c('w1-priorauth', { priorAuthStatus: { scope: 'imaging,specialtyMed' } }, { label: 'Prior authorization', tag: 'priorAuthPanel' })], 'w1-go-sign');
+  addTo(p, 'w1-orders', [c('w1-priorauth', { priorAuth: { info: 'priorAuthStatus' } }, { label: 'Prior authorization', tag: 'priorAuthPanel' })], 'w1-go-sign');
   if (version === RELEASE_IDS.feature) return p;
   p.specVersion = RELEASE_IDS.migration;
   p.version = 2;

@@ -5,7 +5,7 @@ import type {
   JsonPatchOp,
   Program,
 } from "../dashboard/agent-evidence";
-import { fieldCaption, sectionCaption } from "../ehr/ui/clinical-display";
+import { fieldCaption, sectionCaption } from "./clinical-display";
 
 export interface RevisionChange {
   label: string;

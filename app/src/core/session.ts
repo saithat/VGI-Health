@@ -6,8 +6,8 @@ import type {
   PatientContext,
   ScreenView,
 } from "../../../lean/generated/ehr-types";
-import type { UiScreen } from "../ehr/ui/types";
-import type { Html } from "../ehr/html";
+import type { UiScreen } from "./types";
+import type { Html } from "./html";
 import type { Interp } from "./interp";
 import { installButtonAudit } from "./buttonAudit";
 

@@ -47,12 +47,12 @@ export async function recheckRevision(
   const catalog = z
     .object({
       programs: z.array(
-        z.object({ path: z.string(), persona: z.string(), mock: z.boolean() }),
+        z.object({ path: z.string(), persona: z.string() }),
       ),
     })
     .parse(await buildCatalog());
   const entry = catalog.programs.find(
-    (p) => p.path === path && p.persona === persona && !p.mock,
+    (p) => p.path === path && p.persona === persona,
   );
   if (!entry)
     throw new Error("Choose a recorded revision or certified role baseline.");

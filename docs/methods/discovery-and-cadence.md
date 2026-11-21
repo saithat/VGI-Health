@@ -1,5 +1,7 @@
 # Discovery and release cadence
 
+Historical method and results. The implementation and original commands are available at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Current recordings use [hill climbing](hillclimb-night.md) and the Lean screen gate.
+
 [Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
 
 ## Hotspot portfolio
@@ -48,15 +50,6 @@ The floor is provisional: the frozen B data has 179 positive train candidates
 (minimum 1/day, lower quartile 23/day, median 40/day); 20 fall below 5 before
 relearning cost. This is a selection policy, not a fitted clinical threshold.
 
-`run-days --minimum-effect 5 --novelty-weight 0.25 --hotspots 8 --incomplete-penalty 0.5` configures
-this policy; `RunOptions.structurePolicy` supplies the same values. Manifests bind
-these values and imported archive hashes; resume rejects changes. Explicit
-`--historical-nightly` (`structurePolicy: false`) is restricted to scripted/replay
-verification, including the existing cadence fake and offline tailoring comparison.
-New single-night reruns restore their source run's policy and train ledger after
-fingerprint verification. Historical live reruns use `proposal-quality` with
-recomputed evidence; scripted/replay reruns retain their original policy.
-
 `explore/structure.ts` measures structural Jaccard distance over screens, component
 kinds, placements and sibling edges; label/density/shortcut changes have zero
 distance. `explore/archive.ts` exposes exploration ranking with a novelty bonus
@@ -85,17 +78,7 @@ native, identity, screen, train, online relearning, effect, validation and deplo
 gates again. Search requires explicit passing native and screen evidence before admission;
 it never deploys or treats novelty as certification evidence.
 
-The frozen-decision `proposal-quality` evaluator adds arm D (the new prompt and
-shipping rules) beside unchanged B. Reports include accepted-change rate, measured
-train/net/validation effect, rejection rate and structural distance of accepted
-changes. These offline acceptances are hypothetical releases; screen checks and
-deployment are skipped. Nonempty historical ledgers still require a completed,
-exactly bound `--ledger-from` sanity run. First-night comparisons with no earlier
-candidate history may omit it because their ledger is empty. Use a small declared
-`--decisions` subset and `--samples 1 --arms B,D --service-tier default`; no new
-model calls occur with `--backend replay`, which tests plumbing only.
-
-Arm E is an opt-in tool-driven frozen-night agent (`--arms B,E`), with a minimal
+Arm E was a tool-driven frozen-night agent, with a minimal
 starting prompt and train-only program, geometry, trace, spec, checker and estimator
 queries. Claude tool use, OpenAI-compatible function calling and confined Codex MCP
 share decision budgets and recorded tool-result replay. Reports include query-cache
@@ -150,10 +133,7 @@ there is no pooled department score or automatic cross-clinician deployment.
 Archives persist across nights and `--resume` within a run, not across unrelated
 runs. Retry reads only snapshots strictly earlier than the unfinished night.
 Manifests bind cadence, department mappings, review/switch-cost identities and
-exploration source fingerprints; resume refuses a changed policy. The native
-`verify-resume` preflight checks exploration fingerprints for cadence runs too.
-The single-night `night` command refuses cadence runs because it cannot restore
-their archive and external review/cost hooks; use `run-days --resume`.
+exploration source fingerprints. The historical implementation refused to resume with a changed policy.
 
 A complete bundle's release score is daily train click-plus-scroll saving minus
 `switchCost(prev, next, clinicianContext)`. Pixel improvements still pass the
@@ -217,11 +197,6 @@ there is no live clinician review control.
 The self-contained fake path uses synthetic geometry and the fake checker,
 certifies nothing, and makes no live model calls:
 
-```sh
-pnpm --filter agent cadence-fake --out "$TMPDIR"/cadence-demo
-pnpm --filter agent exec vitest run test/cadence.test.ts --maxWorkers=2
-```
-
 It exercises accumulation, weekly shipping, cross-night bundles, review vetoes,
 switch-cost blocking, screen rejection, train-only feedback and resume. Manual examples select the first accepted and rejected candidates in sorted
 night/persona order from `runs/core-10day/decisions`; missing optional
@@ -231,13 +206,6 @@ its layouts exceed D5 and are excluded from current replay and audits. The brows
 checker. Run the template audit and then `--personas` sequentially under the
 shared browser lock, using disk-backed `TMPDIR`; neither builds Lean. Use targeted
 subsets during iteration:
-
-```sh
-export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
-export EHR_BIN=./lean/.lake/build/bin/ehr
-flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-templates"
-flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-personas" --personas
-```
 
 The retained live recording supplies browser regression inputs and three same-task
 canonical trajectory controls (days 1, 4 and 7 for P3). `scripts/export-replay.mjs` projects the

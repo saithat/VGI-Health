@@ -60,19 +60,8 @@ checks, the [fresh local stack](methods/live-validation.md#local-setup-and-live-
 ```sh
 export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
 make wasm
-node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day
-node scripts/audit-alert-policy.mjs "$TMPDIR/audit-templates"
-node scripts/audit-alert-policy.mjs "$TMPDIR/audit-personas" --personas
-APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test live --project=desktop --project=narrow --workers=2
 COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow --workers=2
-pnpm --filter app shots
 ```
-
-Keep the audit pair sequential under the shared browser lock (acquired by the
-audit script); wrap other heavy browser commands in
-`flock "$TMPDIR/vgi-browser-heavy.lock"` as in the
-[live validation commands](methods/live-validation.md). Re-certification, full WCAG/screen
-audits, the live e2e/MAR/ADT stack, WASM builds and screenshots are manual checks.
 
 `scripts/clean-clone-test.sh` validates an offline build and recorded browser
 flows in a scratch clone; it needs no live stack or credentials.

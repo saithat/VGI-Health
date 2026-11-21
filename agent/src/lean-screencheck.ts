@@ -13,7 +13,7 @@ import { tmpdir } from "node:os";
 import { z } from "zod";
 import type { GeometryAtlas } from "../../app/src/metrics/geometry.js";
 import type { EhrClient } from "./ehr.js";
-import type { ScreenChecker, ScreenCheckInput } from "./screencheck.js";
+import type { ScreenChecker, ScreenCheckInput } from "./screen-gate.js";
 import type { GeometryProvider } from "./geometry.js";
 import {
   geometryProgramHash,

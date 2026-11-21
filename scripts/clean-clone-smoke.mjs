@@ -57,30 +57,11 @@ try {
     if (response.status() >= 400)
       failed.push(`${response.status()} ${response.url()}`);
   });
-  // The default clinical entry opens the Lean page; the React encounter
-  // shell remains selectable.
+  // The clinical entry opens the Lean page.
   await page.goto(`${base}/`);
   await expect(page).toHaveURL(/\/lean\.html$/);
   await expect(page.getByRole("button", { name: "Sign in as P1" })).toBeVisible();
   console.log("Lean clinical sign-in loaded");
-  await page.goto(`${base}/?shell=encounter`);
-  await expect(page.getByRole("heading", { name: "Choose a clinician" })).toBeVisible();
-  await expect(page.getByRole("button", { name: /^P1 · / })).toBeVisible();
-  console.log("Live clinician sign-in loaded");
-  for (const persona of ["P1", "P2", "P3", "P4", "P5"]) {
-    await page.goto(`${base}/ehr?mode=replay&persona=${persona}&inspect=1`);
-    await page.getByRole("button", { name: "Inspector", exact: true }).click();
-    await expect(page.getByLabel("Persona", { exact: true })).toHaveValue(
-      persona,
-    );
-    await page.getByRole("button", { name: "Close inspector", exact: true }).click();
-    await page.getByRole("button", { name: /^Open chart:/ }).first().click();
-    const banner = page.getByRole("banner", { name: "Patient banner" }).first();
-    await expect(banner).toBeVisible();
-    await expect(banner).toContainText(/MRN|DOB|born/i);
-    await expect(page.getByRole("alert")).toHaveCount(0);
-    console.log(`${persona}: EHR patient banner loaded`);
-  }
   await page.goto(`${base}/dashboard`);
   await expect(
     page.getByRole("navigation", { name: "Dashboard areas" }),
@@ -88,13 +69,6 @@ try {
   await expect(
     page.getByRole("heading", { name: "Evolution", exact: true }),
   ).toBeVisible();
-  await expect(page.getByRole("alert")).toHaveCount(0);
-  // Exercise a recorded EHR pair through the current version drawer.
-  await page.locator(".version-row:not(.baseline-row)").first().click();
-  await page.getByRole("dialog").getByRole("button", {
-    name: "Before / after on screen", exact: true,
-  }).click();
-  await expect(page.locator(".paired-screens :is(.ehr-shell, .clinical-banner)")).toHaveCount(2);
   await expect(page.getByRole("alert")).toHaveCount(0);
   const wasm = await page.request.get(`${base}/ehr/ehr-interp.wasm`);
   expect(wasm.ok()).toBe(true);

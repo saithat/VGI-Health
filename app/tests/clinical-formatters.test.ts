@@ -13,9 +13,9 @@ import {
   observationValue,
   resultTone,
   vitalCaption,
-} from "../src/ehr/ui/clinical-formatters";
-import { fieldCaption } from "../src/ehr/ui/clinical-display";
-import type { Pair } from "../src/ehr/ui/types";
+} from "../src/browser/clinical-formatters";
+import { fieldCaption } from "../src/browser/clinical-display";
+import type { Pair } from "../src/core/types";
 
 describe("read-only clinical display projections", () => {
   it("shortens known terms without truncating unknown tests or narratives", () => {
@@ -199,7 +199,7 @@ it("preserves invalid human dates and seconds while compacting valid wall-clock 
 });
 
 it("groups only consecutive, same-time vitals and retains their original metadata", async () => {
-  const { vitalGroups } = await import("../src/ehr/ui/clinical-formatters");
+  const { vitalGroups } = await import("../src/browser/clinical-formatters");
   const raw: Pair[][] = [
     [["Record", "Systolic BP 136 mmHg (today)"]],
     [["Record", "Diastolic BP 82 mmHg (today)"]],
@@ -218,7 +218,7 @@ it("groups only consecutive, same-time vitals and retains their original metadat
 
 it("compacts MAR documentation while preserving explicit dose units, route, site and reason", async () => {
   const { medicationTaskCaption } =
-    await import("../src/ehr/ui/clinical-formatters");
+    await import("../src/browser/clinical-formatters");
   const row: Pair[] = [
     ["Medication", "insulin lispro"],
     ["Recorded dose", "4"],

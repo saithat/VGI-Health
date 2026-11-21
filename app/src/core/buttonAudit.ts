@@ -1,5 +1,5 @@
 import type { State } from "../../../lean/generated/ehr-types";
-import type { UiScreen } from "../ehr/ui/types";
+import type { UiScreen } from "./types";
 
 /** Opt-in inspection seam for the browser audit. Checkpoints are opaque: tests
  * can restore an observed episode, but cannot manufacture clinical state. */

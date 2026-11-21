@@ -1,4 +1,3 @@
-import { presentationBoundary } from "./scripts/presentation-lint.mjs";
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 
@@ -53,13 +52,11 @@ export default tseslint.config(
       boundary: {
         rules: {
           "single-data-module": boundary,
-          presentation: presentationBoundary,
         },
       },
     },
     rules: {
       "boundary/single-data-module": "error",
-      "boundary/presentation": "error",
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-non-null-assertion": "error",
       "@typescript-eslint/ban-ts-comment": [

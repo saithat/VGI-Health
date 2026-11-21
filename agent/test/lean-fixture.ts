@@ -26,3 +26,10 @@ export const fakeLeanStates = async (
       modal: null,
     },
   }));
+
+export const scriptedClimb = {
+  leanOptions: {states: fakeLeanStates, limits: async () => ({})},
+  hillclimb: {fixture: async (host: import("../src/hillclimb.js").ClimbHost) => {
+    await host.execute({command:"done",argv:["--no-change","fixture"],file:null});
+  }},
+};
