@@ -11,6 +11,7 @@ import {
 } from "../../../scripts/historical-releases.mjs";
 import { z } from "zod";
 import { complexitySchema, type ComplexityData } from "./complexity-data";
+import { specReviewSchema } from "./spec-review-data";
 import {
   decisionRecordSchema,
   dayResultSchema,
@@ -407,4 +408,12 @@ export async function submitBreakAttempt(
   )
     throw new Error(z.object({ error: z.string() }).parse(body).error);
   return liveBreakSchema.parse(body);
+}
+
+/** Rebuilt from the Lean sources by the local server on every request. */
+export async function loadSpecReview() {
+  const response = await fetch("/spec-review.json", { cache: "no-store" });
+  if (!response.ok)
+    throw new Error(`Spec review requires the local server (${response.status})`);
+  return specReviewSchema.parse(await response.json());
 }

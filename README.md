@@ -114,7 +114,7 @@ personas and the simplified or absent departments, interfaces and production
 capabilities. The system uses synthetic patients and is not a deployable product.
 Run reports and the dashboard show completion, modeled time and the share of the
 floor gap captured alongside actions. Hill climbing measures changes against
-the clinician’s completed days. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md).
+the clinician’s completed days. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md). The dashboard’s **Spec review** tab lists every Lean statement still awaiting owner review, read from the source on each load.
 
 ### Simulated hospital
 

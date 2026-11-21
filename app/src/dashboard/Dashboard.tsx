@@ -41,6 +41,9 @@ const CompareTrajectories = lazy(() =>
   })),
 );
 import { WorkflowComplexity, personas } from "./WorkflowComplexity";
+const SpecReview = lazy(() =>
+  import("./SpecReview").then((m) => ({ default: m.SpecReview })),
+);
 import { Drawer, Modal } from "@mantine/core";
 import { programAt } from "./data";
 import { workloadAt, versionsFor } from "./workload";
@@ -51,6 +54,7 @@ const views = [
   "Compare",
   "Releases",
   "Try to break it",
+  "Spec review",
 ];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
@@ -1548,8 +1552,8 @@ export function Dashboard({
       </nav>
       <main className="dash-content">
         <div className="page-heading">
-          {view === "Releases" ? (
-            <h2>Releases</h2>
+          {view === "Releases" || view === "Spec review" ? (
+            <h2>{view}</h2>
           ) : (
             <h2>
               {personas.find((p) => p.id === persona)?.name ?? persona}
@@ -1563,7 +1567,7 @@ export function Dashboard({
               into every fork and are re-certified.
             </p>
           </InfoTip>
-          {run && (
+          {run && view !== "Spec review" && (
             <span className="run-banner" role="status">
               {run.manifest.warning ??
                 `${runId} · Real checker · ${run.manifest.daysCompleted ?? run.manifest.days} completed days${isRunning(run.manifest.status) ? ` of ${run.manifest.days} · refreshing every 30 s` : ""}`}
@@ -1575,7 +1579,7 @@ export function Dashboard({
             className="persona-selector"
             role="group"
             aria-label="Persona"
-            hidden={view === "Releases"}
+            hidden={view === "Releases" || view === "Spec review"}
           >
             {personas.map((p) => (
               <button
@@ -1604,12 +1608,17 @@ export function Dashboard({
             ))}
           </div>
         </div>
-        {error && (
+        {view === "Spec review" && (
+          <Suspense fallback={<p role="status">Loading spec review…</p>}>
+            <SpecReview />
+          </Suspense>
+        )}
+        {error && view !== "Spec review" && (
           <p className="failure-message" role="alert">
             Unable to load recorded run: {error}
           </p>
         )}
-        {!error && !run && (
+        {!error && !run && view !== "Spec review" && (
           <p role="status">
             {index.length && !index.some((e) => e.id === runId)
               ? `Run “${runId}” is not in the static index. Select an available run.`

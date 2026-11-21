@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import react from "@vitejs/plugin-react";
 import { runsPlugin } from "./scripts/runs-plugin";
 import { tailscalePlugin } from "./scripts/tailscale-plugin";
+import { specReviewPlugin } from "./scripts/spec-review-plugin";
 
 /** Same-origin guarded commit authority. */
 const commitProxy = {
@@ -47,6 +48,7 @@ export default defineConfig({
     react(),
     runsPlugin(),
     catalogPlugin(),
+    specReviewPlugin(),
     tailscalePlugin(),
     tryBreakPlugin(),
     compressionPlugin(),

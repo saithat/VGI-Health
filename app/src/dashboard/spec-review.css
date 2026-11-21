@@ -1,0 +1,130 @@
+.spec-review {
+  display: grid;
+  gap: 8px;
+  max-width: 1200px;
+}
+.spec-intro {
+  margin: 0;
+  color: var(--clinical-muted);
+  max-width: 80ch;
+}
+.spec-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 0;
+}
+.spec-stats dt {
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.spec-stats dd {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--clinical-ink);
+}
+.spec-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+}
+.spec-filters label {
+  display: grid;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.spec-filters input {
+  min-width: 280px;
+}
+.spec-shown {
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.spec-file {
+  margin: 0;
+  border: 1px solid var(--clinical-border);
+  border-radius: 4px;
+  background: var(--clinical-surface);
+}
+.spec-file > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.spec-file > summary:hover {
+  background: var(--clinical-hover);
+}
+.spec-file-name {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+.spec-count {
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.spec-module-note {
+  margin: 8px 10px;
+  padding: 8px;
+  background: var(--clinical-yellow-tint);
+  color: var(--clinical-yellow-ink);
+  border-radius: 3px;
+  white-space: pre-wrap;
+}
+.spec-item {
+  border-top: 1px solid var(--clinical-border);
+  padding: 8px 10px;
+  display: grid;
+  gap: 4px;
+}
+.spec-item header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+}
+.spec-kind {
+  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--clinical-gray-tint);
+  color: var(--clinical-muted);
+}
+.spec-kind-theorem,
+.spec-kind-lemma {
+  background: var(--clinical-green-tint);
+  color: var(--clinical-green-ink);
+}
+.spec-name {
+  font-weight: 600;
+  color: var(--clinical-ink);
+}
+.spec-where {
+  font-size: 12px;
+  color: var(--clinical-muted);
+  font-family: ui-monospace, monospace;
+}
+.spec-note {
+  margin: 0;
+  white-space: pre-wrap;
+  color: var(--clinical-ink);
+}
+.spec-scope {
+  margin: 0;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.spec-code {
+  margin: 0;
+  padding: 8px;
+  overflow-x: auto;
+  background: var(--clinical-canvas);
+  border: 1px solid var(--clinical-border);
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 1.4;
+}
