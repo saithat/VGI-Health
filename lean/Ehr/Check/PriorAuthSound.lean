@@ -45,18 +45,50 @@ private theorem bfs_closed (p : Program) (edges : ScreenId → List Hop) (a : Sc
         exact ih _ _ (fun r hr => (List.mem_append.mp hr).elim (hs r) (hg r)) hg
   exact loop _ _ _ (by simpa [good]) (by simpa [good])
 
+/-- New specification for owner review. A drug-neutral transition creates no drug capture. -/
+def DrugFrame (before after : State) : Prop :=
+  ∀ x ∈ after.captured, x.element = drugElement → x ∈ before.captured
+
+private theorem neutral_prefill (sp : Spec) (f : Facts) (s : State) (cs : List Component)
+    (hn : cs.all drugNeutral) : DrugFrame s (cs.foldl (prefillField sp f) s) := by
+  induction cs generalizing s with
+  | nil => exact fun _ h _ => h
+  | cons c cs ih =>
+    simp only [List.all_cons, Bool.and_eq_true] at hn
+    have one : DrugFrame s (prefillField sp f s c) := by
+      intro x hx he
+      unfold prefillField at hx
+      split at hx
+      · rename_i e slot pf hk
+        split at hx
+        · exact hx
+        · dsimp only at hx
+          split at hx
+          · exact hx
+          · split at hx
+            · exact hx
+            · rename_i y hy
+              rcases List.mem_append.mp hx with hx | hx
+              · exact hx
+              · obtain rfl := List.mem_singleton.mp hx
+                have eq := (Ehr.Proofs.prefillRecord_element hy).symm.trans he
+                have none : pf = .none := by simpa [drugNeutral, hk, eq] using hn.1
+                simp [none, prefillRecord] at hy
+      · exact hx
+    exact fun x hx he => one x (ih _ hn.2 x hx he) he
+
 /-- Fixed-shown goto edges compose to a run of successful human clicks. -/
-private theorem context_route (sp p f u a z) (ids : IdsUnique p) (hz : z ∈ contextDestinations sp p a)
+private theorem clinical_route (sp p f u a) (service : Bool) (ids : IdsUnique p)
+    (row : ScreenId × List Hop) (hr : row ∈ bfs p (clinicalEdges p service) a)
     (s : State) (hs : s.screen = a) (modal : s.popup? = none) :
-    ∃ es t, OkRun sp p f u s es t ∧ t.screen = z ∧ t.popup? = none := by
-  obtain ⟨row, filtered, rfl⟩ := List.mem_map.mp hz
-  have hr := (List.mem_filter.mp filtered).1
-  refine bfs_closed p (contextEdges p) a
-    (fun z => ∃ es t, OkRun sp p f u s es t ∧ t.screen = z ∧ t.popup? = none)
-    ⟨[], s, .nil s, hs, modal⟩ ?_ row hr
+    ∃ es t, OkRun sp p f u s es t ∧ t.screen = row.1 ∧ t.popup? = none ∧ (service = true → DrugFrame s t) := by
+  refine bfs_closed p (clinicalEdges p service) a
+    (fun z => ∃ es t, OkRun sp p f u s es t ∧ t.screen = z ∧ t.popup? = none ∧ (service = true → DrugFrame s t))
+    ⟨[], s, .nil s, hs, modal, fun _ _ h _ => h⟩ ?_ row hr
   intro x h hop he
-  obtain ⟨es, t, ran, screen, clear⟩ := h
-  obtain ⟨c, hc, hhop⟩ := List.mem_filterMap.mp he
+  obtain ⟨es, t, ran, screen, clear, keep⟩ := h
+  obtain ⟨edge, neutral⟩ := List.mem_filter.mp he
+  obtain ⟨c, hc, hhop⟩ := List.mem_filterMap.mp edge
   cases hk : c.kind with
   | button act =>
     cases act <;> simp [hk, gotoOf?] at hhop
@@ -76,7 +108,11 @@ private theorem context_route (sp p f u a z) (ids : IdsUnique p) (hz : z ∈ con
     have event : step sp p f u .human t (.click c.id) = (arrived, .ok) := by
       simp [step, clear, clickedMacro?, shown, hk, stepCore, stepEvent, clickCore, goTo, lookup, arrived]
     have frame := Ehr.Proofs.prefillScreen_frame sp p f { t with screen := dest, history := t.screen :: t.history }
-    exact ⟨_, arrived, ran.append (.cons event (.nil _)), frame.2.2.2.2.1, frame.2.2.2.1.trans clear⟩
+    refine ⟨_, arrived, ran.append (.cons event (.nil _)), frame.2.2.2.2.1, frame.2.2.2.1.trans clear, ?_⟩
+    intro on x hx drug
+    apply keep on x _ drug
+    apply neutral_prefill sp f { t with screen := dest, history := t.screen :: t.history }
+      (p.compsOf dest) (by simpa [on] using neutral) x hx drug
   | _ => all_goals simp [hk, gotoOf?] at hhop
 
 private theorem context_fuel (cs l n c m) (h : contextShownAux cs l n c) (hm : n ≤ m) :
@@ -135,21 +171,21 @@ private theorem context_reveal (sp p f u cs goal) (ids : (cs.map Component.id).N
     (n c) (g : contextShownAux cs goal n c) (len : n ≤ cs.length + 1)
     (s : State) (atScreen : p.compsOf s.screen = cs) (modal : s.popup? = none) :
     ∃ es t, OkRun sp p f u s es t ∧ t.screen = s.screen ∧ t.popup? = none ∧
-      contextShownAux cs t n c := by
+      t.captured = s.captured ∧ contextShownAux cs t n c := by
   induction n generalizing c with
   | zero => contradiction
   | succ n ih =>
     simp only [contextShownAux, Bool.and_eq_true] at g
     cases hp : c.parent? with
-    | none => exact ⟨[], s, .nil _, rfl, modal, by simpa [contextShownAux, hp] using g.1⟩
+    | none => exact ⟨[], s, .nil _, rfl, modal, rfl, by simpa [contextShownAux, hp] using g.1⟩
     | some id =>
       cases hf : cs.find? (·.id == id) with
       | none => simp [hp, hf] at g
       | some par =>
         simp only [hp, hf, Bool.and_eq_true] at g
-        obtain ⟨es, t, ran, screen, clear, shown⟩ := ih par g.2.2 (by omega)
+        obtain ⟨es, t, ran, screen, clear, captures, shown⟩ := ih par g.2.2 (by omega)
         by_cases already : parentOpen t par c
-        · exact ⟨es, t, ran, screen, clear, by simpa [contextShownAux, hp, hf, already, shown] using g.1⟩
+        · exact ⟨es, t, ran, screen, clear, captures, by simpa [contextShownAux, hp, hf, already, shown] using g.1⟩
         have lookup := context_lookup sp p f t cs ids (screen ▸ atScreen) par n
           (List.mem_of_find?_eq_some hf) shown (by omega) (by
             intro a popup h; simp [parentOpen, h] at g)
@@ -168,7 +204,7 @@ private theorem context_reveal (sp p f u cs goal) (ids : (cs.map Component.id).N
               cases k : a.kind <;> simp only [parentOpen, k, Bool.false_eq_true] at ha ⊢
               case group => simp [opened] at ha ⊢; grind
               case tabs => exact ha) n par shown g.2.2
-            refine ⟨_, opened, ran.append (.cons event (.nil _)), screen, clear, ?_⟩
+            refine ⟨_, opened, ran.append (.cons event (.nil _)), screen, clear, captures, ?_⟩
             simp [contextShownAux, hp, hf, still, parentOpen, hk, opened, g.1]
         | tabs =>
           have target : goal.tabOf par.id = c.tab := by simpa [parentOpen, hk] using goalOpen
@@ -188,9 +224,36 @@ private theorem context_reveal (sp p f u cs goal) (ids : (cs.map Component.id).N
                 simpa only [State.tabOf, selected, List.find?_cons, beq_eq_false_iff_ne.mpr (Ne.symm eq), Bool.false_eq_true, ↓reduceIte,
                   List.find?_filter, pred] using ha
             all_goals exact ha) n par shown g.2.2
-          refine ⟨_, selected, ran.append (.cons event (.nil _)), screen, clear, ?_⟩
+          refine ⟨_, selected, ran.append (.cons event (.nil _)), screen, clear, captures, ?_⟩
           simp [contextShownAux, hp, hf, still, parentOpen, hk, selected, State.tabOf, g.1]
         | _ => all_goals simp [parentOpen, hk] at goalOpen
+
+theorem reach_control (sp p f u workflow kind start) (service : Bool)
+    (ids : IdsUnique p) (row : ScreenId × List Hop) (route : row ∈ bfs p (clinicalEdges p service) start)
+    (available : priorAuthDestination p workflow kind row.1)
+    (ordinary : ∀ a popup, kind ≠ .alert a popup)
+    (s : State) (atStart : s.screen = start) (modal : s.popup? = none) :
+    ∃ (es : List Event) (t : State) (c : Component), OkRun sp p f u s es t ∧
+      t.screen = row.1 ∧ t.popup? = none ∧ (p.screen? t.screen).map Screen.workflow = some workflow ∧
+      c.kind = kind ∧ shownComp? sp p f t c.id = some c ∧
+      (itemView sp f t (p.compsOf t.screen) c).shown ∧ (service = true → DrugFrame s t) := by
+  obtain ⟨path, arrived, go, here, clear, keep⟩ := clinical_route sp p f u _ service ids row route s atStart modal
+  cases look : p.screen? row.1 with
+  | none => simp [priorAuthDestination, look] at available
+  | some dst =>
+    simp only [priorAuthDestination, look, Option.any_some, Bool.and_eq_true,
+      beq_iff_eq, List.any_eq_true] at available
+    obtain ⟨wf, c, member, ck, showable⟩ := available
+    have unique := ids.2 dst (List.mem_of_find?_eq_some look)
+    have comps : p.compsOf arrived.screen = dst.components := by simp [Program.compsOf, here, look]
+    obtain ⟨events, t, reveal, screen, free, captures, visible⟩ :=
+      context_reveal sp p f u _ _ unique _ _ showable (Nat.le_refl _) arrived comps clear
+    rw [← screen] at comps
+    have lookup := context_lookup sp p f t _ unique comps c _ member visible (Nat.le_refl _) (ck ▸ ordinary)
+    refine ⟨_, t, c, go.append reveal, screen.trans here, free, by simp [screen, here, look, wf], ck, lookup, ?_, fun on x hx => keep on x (captures ▸ hx)⟩
+    have test := List.find?_some (p := fun x : Component =>
+      x.id == c.id && compShown sp f t (p.compsOf t.screen) x) lookup
+    exact (Bool.and_eq_true_iff.mp test).2
 
 private theorem reach_request_control (sp p f u workflow kind start dest)
     (ids : IdsUnique p) (route : dest ∈ contextDestinations sp p start)
@@ -201,23 +264,11 @@ private theorem reach_request_control (sp p f u workflow kind start dest)
       t.screen = dest ∧ t.popup? = none ∧ (p.screen? t.screen).map Screen.workflow = some workflow ∧
       c.kind = kind ∧ shownComp? sp p f t c.id = some c ∧
       (itemView sp f t (p.compsOf t.screen) c).shown := by
-  obtain ⟨path, arrived, go, here, clear⟩ := context_route sp p f u _ _ ids route s atStart modal
-  cases look : p.screen? dest with
-  | none => simp [priorAuthDestination, look] at available
-  | some dst =>
-    simp only [priorAuthDestination, look, Option.any_some, Bool.and_eq_true,
-      beq_iff_eq, List.any_eq_true] at available
-    obtain ⟨wf, c, member, ck, showable⟩ := available
-    have unique := ids.2 dst (List.mem_of_find?_eq_some look)
-    have comps : p.compsOf arrived.screen = dst.components := by simp [Program.compsOf, here, look]
-    obtain ⟨events, t, reveal, screen, free, visible⟩ :=
-      context_reveal sp p f u _ _ unique _ _ showable (Nat.le_refl _) arrived comps clear
-    rw [← screen] at comps
-    have lookup := context_lookup sp p f t _ unique comps c _ member visible (Nat.le_refl _) (ck ▸ ordinary)
-    refine ⟨_, t, c, go.append reveal, screen.trans here, free, by simp [screen, here, look, wf], ck, lookup, ?_⟩
-    have test := List.find?_some (p := fun x : Component =>
-      x.id == c.id && compShown sp f t (p.compsOf t.screen) x) lookup
-    exact (Bool.and_eq_true_iff.mp test).2
+  obtain ⟨row, hr, rfl⟩ := List.mem_map.mp route
+  have edges : clinicalEdges p false = contextEdges p := by funext x; simp [clinicalEdges]
+  obtain ⟨es, t, c, go, hz, free, wf, hk, hl, hv, _⟩ := reach_control sp p f u workflow kind start false
+    ids row (edges ▸ (List.mem_filter.mp hr).1) available ordinary s atStart modal
+  exact ⟨es, t, c, go, hz, free, wf, hk, hl, hv⟩
 
 /-- New specification for owner review. From an open service composer, a human
 can navigate and reveal the button, then its field, through successful interpreter
@@ -236,7 +287,9 @@ theorem accepted_servicePriorAuth (sp prev can p) (h : check sp prev can p = .ok
       (itemView sp f t (p.compsOf t.screen) field).shown := by
   have all := (check_ok_iff sp prev can p).mp h
   have pass : p.screens.all (priorAuthAvailable sp p) = true :=
-    all _ (List.getLast_mem (l := rules sp prev can p) (by simp [rules]))
+    by
+      simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at all
+      repeat' first | exact all.1 | replace all := all.2
   have avail := List.all_eq_true.mp pass scr hs
   have absent : (sp.element? priorAuthElement).isNone = false := by
     cases he : sp.element? priorAuthElement <;> simp_all
@@ -252,7 +305,9 @@ theorem accepted_servicePriorAuth (sp prev can p) (h : check sp prev can p = .ok
 
 #print axioms unique_lookup
 #print axioms bfs_closed
-#print axioms context_route
+#print axioms neutral_prefill
+#print axioms clinical_route
+#print axioms reach_control
 #print axioms context_fuel
 #print axioms context_keep
 #print axioms context_lookup

@@ -249,21 +249,41 @@ add('v3.mar-indication-shown', 'Release v3 antibiotic MAR review', 'Antibiotic i
 
 for (const service of ['imaging', 'procedure']) add(`v2.prior-auth.${service}`, 'Release v2 optional service prior auth',
   'Service has no drug line/alerts; human request captured; repeated request preserves it',
-  t => ['P1', 'P5'].includes(t.persona) && hasElement(t, 'priorAuthRequest') &&
+  t => hasElement(t, 'orderKind') && hasElement(t, 'orderCode') && hasElement(t, 'priorAuthRequest') &&
     t.program.screens.some(s => s.components.some(c => ['orderKind','orderCode','priorAuthRequest'].includes(c.kind?.field?.element) || c.kind?.button?.action === 'requestPriorAuth')), f => {
     const ctx = context('signOrders', { service }), d = f.driver(ctx);
-    d.enter('orderKind', code(service)); d.enter('orderCode', code('70551'));
+    // Screen-entry prefills run on hidden fields as well. Stay on a service-only
+    // route even when a shorter route goes through a medication composer.
+    const canEnter = screen => screen.components.every(c =>
+      c.kind?.field?.element !== 'drug' || (c.kind.field.prefill ?? 'none') === 'none');
+    let workflow;
+    const find = (predicate, description) => d.find((c, s) =>
+      (workflow === undefined || s.workflow === workflow) && predicate(c), description, { canEnter });
+    const enter = (element, value) => {
+      const c = find(c => c.kind?.field?.element === element && c.kind.field.slot === 'current', element);
+      workflow = d.screen.workflow;
+      assert(d.step({ enter: { comp: c.id, value } }, `enter ${element}`) === 'ok', `Service entry refused: ${element}`);
+    };
+    enter('orderKind', code(service));
+    enter('orderCode', code('70551'));
+    if (hasElement(f.target, 'imagingPriority')) enter('imagingPriority', code('routine'));
     assert(!d.state.captured.some(x => x.element === 'drug'), 'Service incorrectly became a medication');
-    const request = d.find(c => c.kind?.button?.action === 'requestPriorAuth', 'request prior auth');
+    const requestAction = c => c.kind?.button?.action === 'requestPriorAuth';
+    const request = find(requestAction, 'request prior auth');
     const r = d.step({ click: { comp: request.id } }, 'attempt automatic prior-auth request');
     assert(r?.blocked?.reason?.includes('human entry'), 'Never-prefill prior auth request was automated');
-    d.enter('priorAuthRequest', flag(true));
+    enter('priorAuthRequest', flag(true));
+    assert(d.capture('priorAuthRequest')?.confirmed && d.capture('priorAuthRequest')?.byHuman,
+      'Authorization request lacks confirmed human input');
+    if (f.target.spec.infos.some(i => i.id === 'priorAuthStatus')) find(info('priorAuthStatus'), 'authorization status');
     const saved = JSON.stringify(d.capture('priorAuthRequest'));
-    d.step({ click: { comp: request.id } }, 'repeat prior-auth request');
+    const repeat = find(requestAction, 'repeat prior auth');
+    d.step({ click: { comp: repeat.id } }, 'repeat prior-auth request');
     assert(JSON.stringify(d.capture('priorAuthRequest')) === saved, 'Request overwrote confirmed prior auth');
+    assert(!d.state.captured.some(x => x.element === 'drug'), 'Authorization navigation introduced a medication');
     assert(!d.view.items.some(i => i.shown && i.firing && i.comp.kind?.alert), 'Service triggered a drug alert');
     return { d, observed: `${service} request captured as human; no drug line or drug alert; repeat preserved value` };
-  }, {notApplicableReason:'Outside P1/P5 service prior auth, or this optional service surface is absent from the tested program/spec'});
+  }, {notApplicableReason:'The release lacks the service bundle or the program omits the optional service surface'});
 
 const interruptive = [
   ['drugAllergyOrder', 'signOrders', { drug: 'amoxicillin', facts: facts({ allergyClasses: ['penicillin'] }) }],
@@ -358,7 +378,7 @@ add('alerts.no-false-alarms', 'A2 false alarms', 'No allergy, interaction, care 
   for (const screen of d.program.screens) {
     const component = screen.components.find(c => c.kind === 'banner');
     if (!component || !d.route(screen.id)) continue;
-    d.find(c => c.id === component.id, 'screen patient banner');
+    d.find(c => c === component, 'screen patient banner');
     assert(!d.view.items.some(i => i.shown && i.comp.kind?.alert && !i.firing), 'Nonfiring alert shown');
     assert(!d.state.popup, 'False popup while navigating trigger-free patient');
   }
@@ -418,7 +438,7 @@ add('design.banner', 'Core patient landmark / D1', 'Every reachable screen shows
     if (!d.route(sc.id)) continue;
     const candidate = sc.components.find(c => c.kind === 'banner');
     assert(candidate, `Patient banner missing on ${sc.title}`);
-    d.find(c => c.id === candidate.id, 'patient banner');
+    d.find(c => c === candidate, 'patient banner');
     assert(d.view.items.filter(i => i.shown && i.comp.kind === 'banner').length === 1, 'Expected one shown patient banner');
     count++;
   }

@@ -4,6 +4,7 @@ export class Failure extends Error {
 }
 export const assert = (condition, message) => { if (!condition) throw new Failure(message); };
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const locationKey = (screen, component) => JSON.stringify([screen, component]);
 const action = c => c.kind?.button?.action;
 export const field = (element, slot) => c => c.kind?.field?.element === element &&
   (slot === undefined || c.kind.field.slot === 'current' || c.kind.field.slot.fixed?.n === slot);
@@ -79,7 +80,8 @@ export class Driver {
       commits: this.state.commits, popup: this.state.popup ?? null });
     return out.result;
   }
-  route(target, unavailable = new Set()) {
+  route(target, unavailable = new Set(), canEnter) {
+    const allowed = id => !canEnter || this.program.screens.some(s => s.id === id && canEnter(s));
     const walk = advanced => {
       const queue = [[this.state.screen, [], this.state.history]], visited = new Set();
       while (queue.length) {
@@ -89,7 +91,7 @@ export class Driver {
         visited.add(id);
         const screen = this.program.screens.find(s => s.id === id);
         for (const c of screen?.components ?? []) {
-          if (unavailable.has(c.id)) continue;
+          if (unavailable.has(locationKey(id, c.id))) continue;
           let next = action(c)?.goto?.screen;
           let nextHistory = advanced ? [id, ...history] : history;
           if (advanced && action(c) === 'back' && history.length) {
@@ -97,14 +99,14 @@ export class Driver {
           }
           if (advanced && c.kind?.macro) {
             const macro = this.program.macros.find(m => m.id === c.kind.macro.id);
-            if (macro?.steps.length && macro.steps.every(s => s.goto)) {
+            if (macro?.steps.length && macro.steps.every(s => s.goto && allowed(s.goto.screen))) {
               let from = id;
               nextHistory = history;
               for (const step of macro.steps) { nextHistory = [from, ...nextHistory]; from = step.goto.screen; }
               next = from;
             }
           }
-          if (next && !visited.has(next)) queue.push([next, [...path, c], nextHistory]);
+          if (next !== undefined && !visited.has(next) && allowed(next)) queue.push([next, [...path, c], nextHistory]);
         }
       }
       return null;
@@ -117,7 +119,7 @@ export class Driver {
     if (this.view.items.some(i => i.comp.id === c.id && i.shown)) return true;
     if (seen.has(c.id)) return false;
     seen.add(c.id);
-    if (c.parent) {
+    if (c.parent != null) {
       const p = this.screen.components.find(x => x.id === c.parent);
       if (!p || !this.reveal(p, seen)) return false;
       const item = this.view.items.find(i => i.comp.id === p.id);
@@ -126,26 +128,27 @@ export class Driver {
     }
     return this.view.items.some(i => i.comp.id === c.id && i.shown);
   }
-  find(predicate, description, { workflow, optional = false } = {}) {
+  find(predicate, description, { workflow, optional = false, canEnter } = {}) {
     if (this.program.patientSelection && !this.state.patientContext?.patient)
       throw new Failure(`No patient open: select a patient before finding ${description}`, 'no-patient-open');
     if (this.program.patientSelection && this.state.patientContext?.bound !== this.facts.sourcePatientId)
       throw new Failure(`Patient chart is loading: cannot find ${description}`, 'patient-not-bound');
     const activeBinding = c => !c.kind?.field || c.kind.field.slot === 'current' || c.kind.field.slot.fixed?.n === this.state.currentSlot ? 0 : 1;
-    const candidates = this.program.screens.flatMap(s => s.components.filter(predicate).map(c => ({ s, c, route: this.route(s.id) })))
+    const candidates = this.program.screens.flatMap(s => s.components.filter(c => predicate(c, s)).map(c => ({ s, c, route: this.route(s.id, undefined, canEnter) })))
       .filter(x => x.route !== null)
       .sort((a, b) => Number(b.s.workflow === workflow) - Number(a.s.workflow === workflow) || activeBinding(a.c) - activeBinding(b.c) || a.route.length - b.route.length);
     for (const { s, c } of candidates) {
       const unavailable = new Set();
       const bound = this.program.screens.reduce((n, sc) => n + sc.components.length, 1);
       for (let attempt = 0; attempt < bound; attempt++) {
-        const path = this.route(s.id, unavailable);
+        const path = this.route(s.id, unavailable, canEnter);
         if (path === null) break;
         let reached = true;
         for (const navigation of path) {
-          if (!this.reveal(navigation)) { unavailable.add(navigation.id); reached = false; break; }
+          const key = locationKey(this.state.screen, navigation.id);
+          if (!this.reveal(navigation)) { unavailable.add(key); reached = false; break; }
           const result = this.step({ click: { comp: navigation.id } }, `navigate toward ${description}`);
-          if (result !== 'ok') { unavailable.add(navigation.id); reached = false; break; }
+          if (result !== 'ok') { unavailable.add(key); reached = false; break; }
         }
         if (reached) {
           if (this.reveal(c)) return c;

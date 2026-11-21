@@ -53,6 +53,17 @@ def main (args : List String) : IO Unit := do
   let partialService := rewrite v2 fun c => match c.kind with
     | .button .requestPriorAuth | .field "priorAuthRequest" _ _ => none
     | _ => some c
+  -- New specification for owner review. These mutations retain the old commit
+  -- routes, so each finding identifies the missing clinical capability.
+  let authOnly := rewrite v2 fun c => match c.kind with
+    | .field "orderKind" _ _ | .field "orderCode" _ _ | .field "imagingPriority" _ _ => none
+    | _ => some c
+  let identity := ((components release).find? fun c => match c.kind with | .field "patientIdReentry" .. => true | _ => false).get!
+  let elsewhere := (rewrite release fun c => if c == identity then none else some c).updateScreen
+    "w2Message" fun s => { s with components := s.components ++ [{ identity with parent? := none }] }
+  let oneLine := rewrite release fun c => if c.kind == .button .newOrderLine then none else some c
+  let strayResult := release.updateScreen "chartSummary" fun s =>
+    { s with components := s.components ++ [{ id := "criticalNotice", kind := .alert "criticalResult" false, label := "Critical result" }] }
   let cases := [("36-cures-without-review", "completable", cures),
     ("37-stale-dosing-weight", "capturesAllOnce", linked),
     ("38-cross-patient-panel", "writesOnly", foreign),
@@ -62,6 +73,10 @@ def main (args : List String) : IO Unit := do
     ("50-context-removed", "contextRetained", noContext),
     ("51-misleading-navigation", "navigation", wrongNav),
     ("52-stuffed-navigation", "navigation", stuffedNav),
-    ("54-partial-service", "servicePriorAuth", partialService)]
+    ("54-partial-service", "servicePriorAuth", partialService),
+    ("55-authorization-only", "serviceBundle", authOnly),
+    ("56-identity-outside-workflow", "patientIdentityReview", elsewhere),
+    ("57-no-next-medication-line", "medicationLines", oneLine),
+    ("58-critical-without-follow-up", "criticalFollowThrough", strayResult)]
   for (name, _, p) in cases do writeJson root s!"lean/Ehr/Check/bad/{name}.json" p
   writeJson root "lean/Ehr/Check/conformance-bad-programs.json" (cases.map fun (name, prop, _) => (s!"lean/Ehr/Check/bad/{name}.json", prop))

@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "d0cf1f692cb2b5237c335a943776ddb7606d351c",
+  "sourceRevision": "f10af9abbb313abd4b7b86824123648decaaf369",
   "sourceDirty": true,
-  "binarySha256": "da4dfbd041cfe111050dff841eda9f29b3144d098f04056103e06494ddaaa05a",
+  "binarySha256": "00f4740d4ec15deb33231ac9af520bb121819694a994173f0069ef7b583b2cbb",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 30,
-  "badCount": 30,
+  "badRejected": 34,
+  "badCount": 34,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -95,7 +95,7 @@
       "spec": "releases/v2/spec.json",
       "programSha256": "8f8b8ef61ebba89920714c5cd3b4d2a836c1732f4ff42f6e53774ddfadbe37f0",
       "specSha256": "2306fcae6176c7a4220465977452e09666895f8ac6cc1529096f62fdc156b5da",
-      "canonicalSha256": "f48aa4849711933904d606b8a9d07afd7267882d3bc4e4d44f111438abe02328",
+      "canonicalSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
       "previous": "releases/v1/personas/P1.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -105,9 +105,9 @@
       "program": "releases/v2/personas/P2.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "e3ede859d0ace9b0282922fc3ff12e36498dad3f2d8347d4b2d8c8f984a87919",
+      "programSha256": "582227cd56734cfe5960d5d5faaf556624ae17f66401ec47aa75cb20e7511b76",
       "specSha256": "2306fcae6176c7a4220465977452e09666895f8ac6cc1529096f62fdc156b5da",
-      "canonicalSha256": "f48aa4849711933904d606b8a9d07afd7267882d3bc4e4d44f111438abe02328",
+      "canonicalSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
       "previous": "releases/v1/personas/P2.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -119,7 +119,7 @@
       "spec": "releases/v2/spec.json",
       "programSha256": "6a39f1b537611d6c9250460427d9e46bcacd25853bf3113a8a387096ae121eda",
       "specSha256": "2306fcae6176c7a4220465977452e09666895f8ac6cc1529096f62fdc156b5da",
-      "canonicalSha256": "f48aa4849711933904d606b8a9d07afd7267882d3bc4e4d44f111438abe02328",
+      "canonicalSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
       "previous": "releases/v1/personas/P3.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -129,9 +129,9 @@
       "program": "releases/v2/personas/P4.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "0fec7d746c0ded131e13ed91a2cdd7abb6d02f7c97659e75545419dbbf70856b",
+      "programSha256": "fa11269155e7661de99206a92f0146707d0da71ff246ad3070212274182063a1",
       "specSha256": "2306fcae6176c7a4220465977452e09666895f8ac6cc1529096f62fdc156b5da",
-      "canonicalSha256": "f48aa4849711933904d606b8a9d07afd7267882d3bc4e4d44f111438abe02328",
+      "canonicalSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
       "previous": "releases/v1/personas/P4.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -143,7 +143,7 @@
       "spec": "releases/v2/spec.json",
       "programSha256": "5b63f67bc58e064744826a3cae7153ea6acc79947fc2c02e2f8f09beaca3f086",
       "specSha256": "2306fcae6176c7a4220465977452e09666895f8ac6cc1529096f62fdc156b5da",
-      "canonicalSha256": "f48aa4849711933904d606b8a9d07afd7267882d3bc4e4d44f111438abe02328",
+      "canonicalSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
       "previous": "releases/v1/personas/P5.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -155,7 +155,7 @@
       "spec": "releases/v3/spec.json",
       "programSha256": "2bd2f5d3f6d37a61482208b26ce0597d4b36208e0d654e61978796c50214853f",
       "specSha256": "54a32c62e4f79947683af66dd85813186b20b21d9a83acc7f72c0558f79cb940",
-      "canonicalSha256": "2eaa336b223a75eb893d3ee4077d6af818fff4beab95fdbfd9a0c9801f2c902d",
+      "canonicalSha256": "09e231253bf05b7ebacd4b22489b57a6773a6f81f0350805475584500c63354c",
       "previous": "releases/v2/personas/P1.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -165,9 +165,9 @@
       "program": "releases/v3/personas/P2.json",
       "group": "persona",
       "spec": "releases/v3/spec.json",
-      "programSha256": "8dd749b592f62d61769ab877ca67ab38ead88d1eb06a7be2c33e21da8e7c5e51",
+      "programSha256": "e13e51614c7047adfdcdef8ccbe7815746e3c401a06fcabfef2c7c4c439bf161",
       "specSha256": "54a32c62e4f79947683af66dd85813186b20b21d9a83acc7f72c0558f79cb940",
-      "canonicalSha256": "2eaa336b223a75eb893d3ee4077d6af818fff4beab95fdbfd9a0c9801f2c902d",
+      "canonicalSha256": "09e231253bf05b7ebacd4b22489b57a6773a6f81f0350805475584500c63354c",
       "previous": "releases/v2/personas/P2.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -179,7 +179,7 @@
       "spec": "releases/v3/spec.json",
       "programSha256": "e36fdb4d8b2c9c36d511e6bf6c8d6bded3277bce352818897c23fe3873002554",
       "specSha256": "54a32c62e4f79947683af66dd85813186b20b21d9a83acc7f72c0558f79cb940",
-      "canonicalSha256": "2eaa336b223a75eb893d3ee4077d6af818fff4beab95fdbfd9a0c9801f2c902d",
+      "canonicalSha256": "09e231253bf05b7ebacd4b22489b57a6773a6f81f0350805475584500c63354c",
       "previous": "releases/v2/personas/P3.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -189,9 +189,9 @@
       "program": "releases/v3/personas/P4.json",
       "group": "persona",
       "spec": "releases/v3/spec.json",
-      "programSha256": "fa56b19a18524463c4e3ddf3423f0216ea6e02c86342a7a06cb098cb2016505c",
+      "programSha256": "909c258f35f911e3be224f885219085dd9cff7900ba46cc3be760e169205b51c",
       "specSha256": "54a32c62e4f79947683af66dd85813186b20b21d9a83acc7f72c0558f79cb940",
-      "canonicalSha256": "2eaa336b223a75eb893d3ee4077d6af818fff4beab95fdbfd9a0c9801f2c902d",
+      "canonicalSha256": "09e231253bf05b7ebacd4b22489b57a6773a6f81f0350805475584500c63354c",
       "previous": "releases/v2/personas/P4.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -203,7 +203,7 @@
       "spec": "releases/v3/spec.json",
       "programSha256": "da3c1e915adbae2380d4940b17de0794ba3fc9fe1c6f298aa0c887a05c0e42eb",
       "specSha256": "54a32c62e4f79947683af66dd85813186b20b21d9a83acc7f72c0558f79cb940",
-      "canonicalSha256": "2eaa336b223a75eb893d3ee4077d6af818fff4beab95fdbfd9a0c9801f2c902d",
+      "canonicalSha256": "09e231253bf05b7ebacd4b22489b57a6773a6f81f0350805475584500c63354c",
       "previous": "releases/v2/personas/P5.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -1605,7 +1605,7 @@
       "spec": "releases/v2/spec.json",
       "programSha256": "0022100c411cf65195923bf77be87871c317d9eeb0f7a004d5f186d21852e423",
       "specSha256": "2306fcae6176c7a4220465977452e09666895f8ac6cc1529096f62fdc156b5da",
-      "canonicalSha256": "f48aa4849711933904d606b8a9d07afd7267882d3bc4e4d44f111438abe02328",
+      "canonicalSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
       "previous": "lean/Ehr/Check/bad/54-partial-service.json",
       "exitCode": 1,
       "verdict": {
@@ -1639,6 +1639,207 @@
         "eventCount": 2,
         "results": [
           "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/55-authorization-only.json",
+      "group": "bad",
+      "spec": "releases/v2/spec.json",
+      "programSha256": "52eb10b8b7eb352f4a3c4229a9c5de271f741ed1a265d0e4466f0d30e395dc07",
+      "specSha256": "2306fcae6176c7a4220465977452e09666895f8ac6cc1529096f62fdc156b5da",
+      "canonicalSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
+      "previous": "lean/Ehr/Check/bad/55-authorization-only.json",
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "serviceBundle",
+          "message": "w1Orders (W1): Provide the current-line fields priorAuthRequest, orderKind, orderCode, imagingPriority, the requestPriorAuth button and priorAuthStatus along a route free of drug prefills.",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "serviceBundle",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/56-identity-outside-workflow.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "150a0bfc1a9d332ba6d9770e58cf2a0d66cf8b0164512977834c42e136bdd3f9",
+      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
+      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "patientIdentityReview",
+          "message": "w1Sign (W1): Pin the allergy list at medication commit and provide the workflow\u2019s identity re-entry or wristband scan.",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "patientIdentityReview",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 4,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/57-no-next-medication-line.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "eee60b1e43c908721944180af6d9e83fa20006cdd804723dacc3c05f7f81c175",
+      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
+      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "medicationLines",
+          "message": "w1Sign (W1): Provide reachable current-line drug and dose fields and an add-line action, and remove linked dose prefills that could copy a correction between lines.",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "medicationLines",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 4,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/58-critical-without-follow-up.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "04746bd1eb75143118ff134ce0dace3478a69a2c461b87a7620300ad1fdfcbb3",
+      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
+      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "chartSummary"
+          ],
+          "property": "criticalFollowThrough",
+          "message": "chartSummary (chart): Provide a reachable result acknowledgment in the workflow showing the critical result.",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.chartWorkspace.chartSummary"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "criticalFollowThrough",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 1,
+        "results": [
           "ok"
         ],
         "scope": "navigation replay; not a semantic violation proof"
@@ -1745,7 +1946,7 @@
       "group": "reference",
       "status": "reference",
       "reason": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
-      "programSha256": "f48aa4849711933904d606b8a9d07afd7267882d3bc4e4d44f111438abe02328",
+      "programSha256": "74afb859c3098d067e60f104a42f6d5d08c3926945edf486cbc93cf4cc08f0ce",
       "spec": "releases/v2/spec.json"
     },
     {
@@ -1753,7 +1954,7 @@
       "group": "reference",
       "status": "reference",
       "reason": "Vendor reference for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
-      "programSha256": "2eaa336b223a75eb893d3ee4077d6af818fff4beab95fdbfd9a0c9801f2c902d",
+      "programSha256": "09e231253bf05b7ebacd4b22489b57a6773a6f81f0350805475584500c63354c",
       "spec": "releases/v3/spec.json"
     }
   ]

@@ -133,3 +133,62 @@ test('semantic navigation supports a start screen whose navigation uses goto mac
   prepare(d, context('administerMed')); d.finish('administerMed');
   assert.ok(d.state.commits.includes('administerMed'));
 });
+
+test('a hidden shortcut and a usable detour can reuse a screen-local ID', { skip: !binary || !existsSync(binary) }, async () => {
+  const native = new Native(binary, { transport: 'serve' });
+  const work = mkdtempSync(path.join(tmpdir(), 'conformance-detour-'));
+  try {
+    for (const persona of ['P1', 'P2', 'P3', 'P4', 'P5']) {
+      const program = read(`releases/v2/personas/${persona}.json`);
+      const chart = program.screens.find(s => s.id === 'chartSummary');
+      const home = program.screens.find(s => s.id === program.start);
+      const link = (id, target, label, size = 'normal') => ({
+        id, kind: { button: { action: { goto: { screen: target } } } },
+        label, size, visibility: 'always', tab: 0, tag: id,
+      });
+      chart.components = [...chart.components.filter(c => !c.kind?.button),
+        link('toList', home.id, home.title, 'tiny'), link('toDirectory', 'directory', 'Directory')];
+      program.screens.push({ id: 'directory', title: 'Directory', workflow: 'chart',
+        components: [{ ...chart.components.find(c => c.kind === 'banner'), id: 'directory.banner' },
+          link('toList', home.id, home.title)] });
+      const input = path.join(work, persona + '.json');
+      const baseline = path.join(root, 'releases/v2/personas', persona + '.json');
+      writeFileSync(input, JSON.stringify(program));
+      const verdict = spawnSync(binary, ['check', '--spec', path.join(root, 'releases/v2/spec.json'),
+        '--program', input, '--canonical', baseline, '--prev', baseline], { encoding: 'utf8' });
+      assert.equal(verdict.status, 0, verdict.stderr || verdict.stdout);
+      const d = new Driver(native, read('releases/v2/spec.json'), program, context('signOrders').facts);
+      d.find(c => chart.components.includes(c) && c.kind === 'banner', 'chart banner');
+      const start = d.trace.length;
+      d.find(c => home.components.includes(c) && c.kind === 'banner', 'home banner');
+      assert.deepEqual(d.trace.slice(start).map(t => [t.event.click.comp, t.screen, t.result]),
+        [['toDirectory', 'directory', 'ok'], ['toList', home.id, 'ok']], persona);
+    }
+  } finally {
+    await native.close();
+    rmSync(work, { recursive: true, force: true });
+  }
+});
+
+test('service entry can bypass a rooming route that would prefill a drug', { skip: !binary || !existsSync(binary) }, async () => {
+  const native = new Native(binary, { transport: 'serve' });
+  try {
+    const program = read('releases/v2/personas/P1.json'), spec = read('releases/v2/spec.json');
+    const screen = id => program.screens.find(s => s.id === id);
+    screen('w1Rooming').components.push({
+      id: 'medicationDefault', kind: { field: { element: 'drug', slot: 'current', prefill: { default: { value: 'metformin' } } } },
+      label: 'Medication', tag: 'medication', size: 'tiny', visibility: 'always', tab: 0,
+    });
+    const target = { program, spec, persona: 'P1', semanticRelease: 'v2' };
+    const scenario = scenarioCatalog.find(s => s.id === 'v2.prior-auth.imaging');
+    assert.throws(() => scenario.run(fixtures(native, target)), /no reachable shown control for orderKind/);
+    screen('w2Inbox').components.push({
+      id: 'service', kind: { button: { action: { goto: { screen: 'w1Labs' } } } },
+      label: screen('w1Labs').title, tag: 'service', size: 'normal', visibility: 'always', tab: 0,
+    });
+    const { d } = scenario.run(fixtures(native, target));
+    assert.ok(d.trace.some(t => t.screen === 'w2Inbox'));
+    assert.equal(d.capture('drug'), undefined);
+    assert.equal(d.capture('priorAuthRequest').byHuman, true);
+  } finally { await native.close(); }
+});

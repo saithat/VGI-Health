@@ -1,4 +1,4 @@
-import { Driver, assert, info, field } from './driver.mjs';
+import { Driver, assert, info, commit } from './driver.mjs';
 import { directory } from './workspace.mjs';
 import { text, code } from './clinical.mjs';
 
@@ -62,9 +62,11 @@ export const selectionScenarios = [
     assert(JSON.stringify(d.render(a.display)).includes('heldout-A_PRIVATE_ALLERGY'), 'A private marker was not visible before switching');
     // Establish a real human capture. The selected field is semantic, not tied
     // to an activity's component identifier or layout.
-    const identity = d.program.screens.flatMap(s => s.components).find(field('patientIdReentry'));
-    if (identity) d.enter('patientIdReentry', text(`${a.facts.identity.initials}/${a.facts.identity.sex}/${a.facts.identity.ageYears}`));
-    else d.enter('wristbandScan', code(a.facts.patientId));
+    const prescribing = d.program.screens.some(s => s.components.some(commit('signOrders')));
+    const identity = prescribing ? 'patientIdReentry' : 'wristbandScan';
+    const identityValue = facts => prescribing
+      ? text(`${facts.identity.initials}/${facts.identity.sex}/${facts.identity.ageYears}`) : code(facts.patientId);
+    d.enter(identity, identityValue(a.facts));
     assert(d.state.captured.length > 0, 'A capture was not established before switch');
     d.openPatient('heldout-B', { bind: false });
     assert(!d.state.captured.length && !d.state.receipts.length && !d.state.acked.length && !d.state.commits.length, 'A clinical state survived selecting B');
@@ -77,6 +79,13 @@ export const selectionScenarios = [
     const rendered = JSON.stringify(d.render(b.display));
     assert(rendered.includes('heldout-B_PRIVATE_ALLERGY') && rendered.includes('HB-902'), 'B chart failed to show B data');
     assert(!rendered.includes('heldout-A_PRIVATE_ALLERGY') && !rendered.includes('HA-701') && !b.facts.allergyClasses.includes('penicillin'), 'A clinical data leaked into B chart');
-    return { d, observed: 'A→B: the B chart starts without A captures/reviews/alerts/commits (A unsigned work stays in the stored A draft); stale A source refused; mixed-bundle B projection contains only B clinical data' };
+    const cm = prescribing ? 'signOrders' : 'administerMed';
+    const stale = d.enter(identity, identityValue(a.facts), { refusal: true });
+    assert(stale?.blocked && !d.capture(identity), 'B accepted patient A identity evidence');
+    assert(d.clickCommit(cm)?.blocked && !d.state.commits.includes(cm), 'B proceeded before identity review');
+    assert(d.view.items.some(i => i.shown && info('allergyList')(i.comp)), 'B allergies absent at medication commit');
+    d.enter(identity, identityValue(b.facts));
+    assert(d.capture(identity)?.byHuman, 'B identity could not be confirmed');
+    return { d, observed: 'A→B: A identity refused on B, B allergy list shown at medication commit, B identity confirmed. The B chart starts without A captures/reviews/alerts/commits (A unsigned work stays in the stored A draft); stale A source refused; mixed-bundle B projection contains only B clinical data' };
   }),
 ];

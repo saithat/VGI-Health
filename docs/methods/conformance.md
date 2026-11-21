@@ -64,3 +64,55 @@ The independent runner still exercises rejected recordings. Its result and
 the current checker verdict answer different questions. The [scenario-by-scenario
 audit](../audits/conformance-formal-coverage.md) gives both results and the
 remaining guarantees to formalize.
+
+**New specification for owner review.** A request button or request field also
+opts its workflow into the service composer when the release declares the
+service bundle. In v2 and v3 the current-line fields are `orderKind`,
+`orderCode`, `imagingPriority` and `priorAuthRequest`. The request button
+precedes human entry, followed by the declared `priorAuthStatus` display.
+Acceptance supplies this ordered route from the surface and from chart entry.
+Entering the initial screens or following the route cannot introduce a drug
+capture, including a default on a hidden field. The native service scenarios
+exercise a route without drug prefills and check the resulting captures. The
+ED and pediatric layouts now provide the service fields alongside the
+authorization controls they already advertised. This models access to a
+service request as a distinct clinical task. CMS describes its 2024 prior
+authorization rule for medical items and services and explicitly excludes
+drugs from the rule's prior authorization provisions. [Release bundle](../../lean/Ehr/Specs/V2.lean) · [Service route proof](../../lean/Ehr/Check/WorkflowSound.lean) · [CMS final rule fact sheet (2024)](https://www.cms.gov/newsroom/fact-sheets/cms-interoperability-prior-authorization-final-rule-cms-0057-f)
+
+## Patient identification, medication lines and critical results
+
+- **New specification for owner review. Patient switches.** From a selected
+  chart, the clinician can reach human identity re-entry and order signing, or
+  wristband scanning and administration, in the same workflow. The allergy
+  list is already visible at each medication commit. Opening another patient
+  clears active reviews. Binding reloads that patient's receipts and can
+  restore that patient's own unsigned work. A successful commit checks the
+  identity text or wristband against the currently bound facts. This addresses
+  wrong-chart orders and makes allergy information available at the decision.
+  The 2025 SAFER guides recommend verifying patient identity during care and
+  maintaining structured allergy information for order entry.
+  [Patient identification](https://healthit.gov/resources/2025-safer-guide-patient-identification/) · [Computerized provider order entry](https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf)
+- **New specification for owner review. Dose correction.** A medication
+  signing workflow offers current-line drug selection and dose entry on both
+  sides of its add-line action. The checker rejects linked dose prefills
+  because the interpreter's linked lookup can fall back to another slot.
+  Editing a dose preserves other lines' doses. Advancing a selected drug line
+  checks its own applicable requirements, and signing checks every matching
+  line with its own confirmed values. This lets clinicians correct an order
+  while retaining unit, weight and prescribing safeguards on later orders.
+  The 2025 SAFER CPOE guide recommends checking dosing ranges, units and
+  patient-specific parameters when prescribing. [Computerized provider order entry](https://healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf)
+- **New specification for owner review. Critical results.** A workflow that
+  surfaces a critical-result alert must offer a reachable result action in
+  that workflow. The urgent strip also shows a result-specific clinical
+  action field while an available ticket is unresolved. The responsible
+  clinician can enter the action on the bound chart. Inbox signing and UI
+  acknowledgement preserve the obligation. Clinical resolution requires
+  receipt and a documented action. The 2025 SAFER guide recommends assigning
+  follow-up responsibility and tracking action on abnormal results.
+  [Test results reporting and follow-up](https://healthit.gov/resources/2025-safer-guide-test-results-reporting-and-follow-up/) · [Critical-result lifecycle](../../lean/Ehr/Multi/Critical.lean)
+
+The checker reports the screen, workflow and missing capability. The Lean
+proofs connect these checks to shown native controls, patient binding, line
+guards and ticket actions. [Workflow rules](../../lean/Ehr/Check/PriorAuth.lean) · [Soundness theorems](../../lean/Ehr/Check/WorkflowSound.lean)
