@@ -116,3 +116,29 @@ drugs from the rule's prior authorization provisions. [Release bundle](../../lea
 The checker reports the screen, workflow and missing capability. The Lean
 proofs connect these checks to shown native controls, patient binding, line
 guards and ticket actions. [Workflow rules](../../lean/Ehr/Check/PriorAuth.lean) · [Soundness theorems](../../lean/Ehr/Check/WorkflowSound.lean)
+
+## Entry and medication witnesses
+
+For the v1–v3 persona contracts, checker acceptance now implies that the clinician has a trace satisfying each applicable entry fixture. The scope is the five declared workloads, the suite's specified records and the program submitted for checking. A persona canonical determines its workload independently of the candidate's controls. The mixed vendor reference uses the candidate's persona, with the suite's role fallback when the persona is unknown. Existing mathematical examples with a custom reference retain their own contracts. [Fixture and workload definitions](../../lean/Ehr/Check/EntryCases.lean)
+
+Each witness begins at native initialization. With patient selection enabled it clicks a supplied row, verifies the selected patient and hydrates the chart. Intermediate navigation consists of successful native goto, expand and tab events. The search proposes shortest goto routes with at most one visit per screen, bounds ancestor traversal by the number of components plus one, and replays events through the CLI's `runStep`. A signature allows at most 20 commit attempts with distinct intervening popup keys and human acknowledgments. Search failure names the fixture and failed observation. A layout may have additional routes outside these bounds. [Witness relation](../../lean/Ehr/Check/EntryWitness.lean)
+
+The 76 core entry scenarios share 11 ordered prefixes. At each ordinary omission the checker tries the commit on a fork, verifies the first unmet guard entry and the full native refusal, and verifies that the commit was absent. From the shared prefix it enters the sample and verifies the confirmed human value on the active line. A manual linked-field variant checks the refusal. Its automatic counterpart checks the expected value and exact source provenance. Medication edits additionally require an empty code to leave the existing drug intact. The complete path signs. The two-line fixtures advance a completed first line, preserve its confirmed value, elicit a named refusal on the second line and sign after correcting that line. The weight fixtures use the suite's lb and kg inputs, dated FHIR bundles and changed linked source. [Core assertions](../../lean/Ehr/Check/EntryCases.lean) · [Medication assertions](../../lean/Ehr/Check/EntryMedication.lean)
+
+For each declared, surfaced human-only field, the checker reproduces the suite's change to the first matching field. One copy receives a default, the other a macro and button sharing the field's parent and tab. From fresh initialization on each copy the witness observes the absence of any capture, then enters and confirms the human sample. The macro case also clicks the shown probe and checks the human-only refusal. The acceptance theorem establishes that the injection exists for every applicable field. [Probe transformations](../../lean/Ehr/Check/EntryHumanOnly.lean) · [Soundness theorems](../../lean/Ehr/Check/EntryFamilySound.lean)
+
+These statements formalize existing scenario requirements. They certify the existence of a conforming native execution for each fixture. The JavaScript driver's route choice, arbitrary records and progress from every reachable state remain separate questions. The matrix includes a metformin prefill that masks the empty-order refusal and a pre-op-only control that hides the human exemption input in the probe encounter. Both previously passed. The matrix now has 15 accepted personas and 36 rejected bad programs. [Certification matrix](../../lean/Ehr/Check/certification-report.json)
+
+### Checker wall time
+
+Each cell gives the previous and updated native `ehr check` wall times in milliseconds on the same machine. The comparison alternated binary order for seven pairs per input and took each binary's median. Arguments matched the certification matrix, including the previous release persona for v2 and v3. The mixed-role canonicals kept their existing role refusal.
+
+| Release | Mixed canonical | P1 | P2 | P3 | P4 | P5 |
+|---|---:|---:|---:|---:|---:|---:|
+| v1 | 900 → 948 | 742 → 770 | 758 → 779 | 779 → 777 | 764 → 789 | 783 → 822 |
+| v2 | 935 → 984 | 744 → 776 | 739 → 772 | 726 → 752 | 730 → 783 | 812 → 855 |
+| v3 | 929 → 985 | 746 → 776 | 739 → 778 | 746 → 771 | 747 → 784 | 826 → 868 |
+
+Across the 15 deployable personas, the sum of medians increased from 11.381 s to 11.851 s (4.1%). The largest individual increase was 7.1%, for v2/P4. The 25% budget held for all 18 inputs.
+
+As a separate check on the night path, the five initial `ehr.check` calls in hillclimb-3day's `lean-timings.jsonl` took 837, 852, 760, 771 and 915 ms in P1–P5 order. Replaying their recorded program, previous program, frozen specification and persona canonical with the updated CLI took 796, 777, 765, 780 and 837 ms (five-run medians). The recorded times include the host wrapper. [Preflight measurement](../../agent/src/run.ts)
