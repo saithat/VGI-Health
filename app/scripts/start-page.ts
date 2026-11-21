@@ -1,3 +1,5 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { randomBytes } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
@@ -37,6 +39,9 @@ export function startPage(root: string, server: ViteDevServer["httpServer"]) {
   const dir = join(root, "app/src/dashboard/start");
   const token = randomBytes(32).toString("hex");
   const jobs = recordingJobs(root);
+  const source = () => readFile(join(root, "fixtures/.vgi-data-source"), "utf8")
+    .then(value => value.trim(), () => "existing local data");
+  let download: Promise<unknown> | undefined;
   server?.once("close", jobs.close);
   return async (
     req: IncomingMessage,
@@ -87,7 +92,7 @@ export function startPage(root: string, server: ViteDevServer["httpServer"]) {
             jobs.status(),
             jobs.capped(),
           ]);
-          return send(200, { stack, recording, capped, csrf: token });
+          return send(200, { stack, recording, capped, dataSource: await source(), clinicalDate: process.env.VGI_STACK_DATE, csrf: token });
         }
         if (endpoint === "options")
           return send(200, await recordingOptions(root));
@@ -99,6 +104,13 @@ export function startPage(root: string, server: ViteDevServer["httpServer"]) {
         return send(403, {
           error: "Recording requests must come from the local start page.",
         });
+      if (endpoint === "sample") {
+        await jsonBody(req);
+        download ??= promisify(execFile)(process.execPath, [join(root, "scripts/fetch-data.mjs"), "--sample"], { cwd: root })
+          .finally(() => { download = undefined; });
+        await download;
+        return send(200, { installed: true });
+      }
       if (endpoint === "launch") await jobs.launch(await jsonBody(req));
       else if (endpoint === "stop") {
         await jsonBody(req);

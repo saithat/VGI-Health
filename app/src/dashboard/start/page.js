@@ -40,12 +40,12 @@ function saveSettings(key, value) {
   }
 }
 
-function request(path, body, csrf) {
+function request(path, body, csrf, timeout = 20000) {
   return new Promise((resolve, reject) => {
     const req = new XMLHttpRequest();
     req.open(body === undefined ? "GET" : "POST", path);
     req.responseType = "json";
-    req.timeout = 20000;
+    req.timeout = timeout;
     req.onload = () => {
       if (req.status >= 200 && req.status < 300 && req.response !== null)
         resolve(req.response);
@@ -196,10 +196,8 @@ async function loadViewRun(preferred) {
 }
 
 async function refreshViews() {
-  const [index, selection] = await Promise.all([
-    request("/runs/index.json"),
-    request("/runs/default.json").catch(() => ({})),
-  ]);
+  const index = await request("/runs/index.json");
+  const selection = index.length ? await request("/runs/default.json").catch(() => ({})) : {};
   const saved = readSettings("vgi.start.view");
   runs = index
     .filter((run) => run.replayable)
@@ -226,6 +224,25 @@ for (const select of [daySelect, versionSelect]) {
     viewLinks(runs.find((run) => run.id === runSelect.value)),
   );
 }
+
+let downloading = false;
+const sampleButton = element("sample-download");
+sampleButton.addEventListener("click", async () => {
+  if (!csrf || downloading) return;
+  downloading = sampleButton.disabled = true;
+  const status = element("sample-status");
+  status.textContent = "Downloading and verifying the recording…";
+  try {
+    await request(api + "sample", {}, csrf, 0);
+    await refreshViews();
+    status.textContent = "Sample recording available.";
+  } catch (error) {
+    status.textContent = error.message;
+  } finally {
+    downloading = false;
+    sampleButton.disabled = !csrf;
+  }
+});
 
 let configurations = { worlds: [], runs: [] };
 let csrf;
@@ -380,7 +397,7 @@ function showRecording(next) {
   }
 }
 
-function showStack(stack) {
+function showStack(stack, date) {
   const badge = element("stack-badge");
   const labels = {
     starting: "EHR starting",
@@ -393,8 +410,11 @@ function showStack(stack) {
   badge.dataset.state = stack.state;
   const detail = element("stack-explanation");
   if (detail.textContent !== stack.message) detail.textContent = stack.message;
-  for (const link of document.querySelectorAll("[data-live]"))
-    updateLink(link, stack.state === "running" ? link.dataset.live : "");
+  for (const link of document.querySelectorAll("[data-live]")) {
+    const href = link.dataset.live;
+    const dated = date ? href + (href.includes("?") ? "&" : "?") + "date=" + encodeURIComponent(date) : href;
+    updateLink(link, stack.state === "running" ? dated : "");
+  }
 }
 
 let pollGeneration = 0;
@@ -404,7 +424,9 @@ async function poll() {
     const status = await request(api + "status");
     if (generation !== pollGeneration) return;
     csrf = status.csrf;
-    showStack(status.stack);
+    element("data-source").textContent = status.dataSource;
+    sampleButton.disabled = downloading;
+    showStack(status.stack, status.clinicalDate);
     element("memory").textContent = status.capped
       ? "24 GB memory limit"
       : "No memory cap · systemd user scopes unavailable";
@@ -412,6 +434,7 @@ async function poll() {
   } catch (error) {
     if (generation !== pollGeneration) return;
     csrf = undefined;
+    sampleButton.disabled = true;
     showStack({ state: "unavailable", message: error.message });
     syncButtons();
   } finally {

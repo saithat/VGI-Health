@@ -232,12 +232,19 @@ export function convertPatient(row, { referenceDate, formulary, lookup = () => u
       personaFits: personaFits(row, referenceDate), shiftDays, sourceNewestDate: new Date(latest).toISOString().slice(0, 10), newestDate: shifted(new Date(latest).toISOString().slice(0, 10)),
       encounters: ordered.length, codedConditions, textOnlyConditions: conditions.size - codedConditions } };
 }
-export async function exportCohort({ count, output = resolve(root, 'fixtures/synthetic-hospital') } = {}) {
+const dataRoot = process.env.VGI_DATA_ROOT ?? root;
+
+export async function exportCohort({ count, output = resolve(dataRoot, 'fixtures/synthetic-hospital') } = {}) {
   await verifyCache();
   const rows = (await readFile(resolve(cache, 'patient_profiles.jsonl'), 'utf8')).trim().split('\n').map((line) => JSON.parse(line));
   const db = JSON.parse(execFileSync('python3', [resolve(import.meta.dirname, 'inspect-db.py'), resolve(cache, 'benchmark_v1.3.db')], { maxBuffer: 32 * 1024 * 1024 }));
-  const synthea = JSON.parse(await readFile(resolve(root, 'fixtures/synthea/index.json'), 'utf8'));
-  const referenceDate = synthea.referenceDate;
+  // A fresh restore converts this cohort before Synthea runs. Both generators
+  // use the same fixed Synthea reference date in that case.
+  const referenceDate = await readFile(resolve(dataRoot, 'fixtures/synthea/index.json'), 'utf8')
+    .then(text => JSON.parse(text).referenceDate, error => {
+      if (error.code !== 'ENOENT') throw error;
+      return (process.env.REF_DATE ?? '20261031').replace(/^(\d{4})(\d{2})(\d{2})$/, '$1-$2-$3');
+    });
   const formulary = readFormulary(await readFile(resolve(root, 'lean/Ehr/Formulary.lean'), 'utf8'));
   await mkdir(output, { recursive: true });
   const patients = [];
@@ -268,7 +275,7 @@ export async function exportCohort({ count, output = resolve(root, 'fixtures/syn
   console.log(JSON.stringify({ patients: patients.length, resourceCounts, selectedFor: index.selectedForCounts, fits: index.personaFitCounts, bytes: patients.reduce((n, p) => n + p.bytes, 0) }, null, 2));
   return index;
 }
-export const SECTIONS_PATH = resolve(root, 'fixtures/synthetic-hospital-sections.json');
+export const SECTIONS_PATH = resolve(dataRoot, 'fixtures/synthetic-hospital-sections.json');
 /** Chart sections for world note text (synthetic-benchmark): every released
  * encounter_ehr_sections row with its setting, the encounter's sex, age
  * and matched local scenarios. Organization and clinician names are replaced
@@ -294,7 +301,7 @@ export async function exportSections(rows, path = SECTIONS_PATH) {
   const file = { label: 'synthetic-benchmark', source: { repository: source.repository, commit: source.commit }, encounters: out };
   const text = JSON.stringify(file) + '\n';
   await writeFile(path, text);
-  return { file: relative(root, path), encounters: out.length, sections: data.sections.length, bytes: Buffer.byteLength(text), sha256: sha256(text) };
+  return { file: relative(dataRoot, path), encounters: out.length, sections: data.sections.length, bytes: Buffer.byteLength(text), sha256: sha256(text) };
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const args = process.argv.slice(2);

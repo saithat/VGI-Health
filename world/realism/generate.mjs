@@ -7,7 +7,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { read, write, hash, resourceKey, id, tag, ref, cc } from './common.mjs';
 import { reconcileBundle } from './reconcile.mjs';
 import { dayContext } from './context.mjs';
-export const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
+export const ROOT=process.env.VGI_DATA_ROOT ?? resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROOT,'fixtures/synthea/index.json'),clinical=resolve(ROOT,'fixtures/clinical')}={}) {
   const sources=[fixtures];
   // Real imported patients supply list context, without expanding the scenario cohort.

@@ -62,7 +62,8 @@ function intArg(args: string[], name: string, dflt: number): number {
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2).filter((a) => a !== "--");
-  const root = repoRoot();
+  const sourceRoot = repoRoot();
+  const root = process.env.VGI_DATA_ROOT ?? sourceRoot;
   const seed = intArg(args, "seed", 1);
   const days = intArg(args, "days", 10);
   const policy = arg(args, "policy") ?? "expert";
@@ -107,7 +108,7 @@ async function main(): Promise<void> {
   write("world.json", { seed, days, personas: PERSONAS });
   files.push("world.json");
   if (adt === "realistic") {
-    const native = nativeAdt(process.env.EHR_BIN ?? join(root, "lean/.lake/build/bin/ehr"));
+    const native = nativeAdt(process.env.EHR_BIN ?? join(sourceRoot, "lean/.lake/build/bin/ehr"));
     try { write("adt.json", await simulateAdt(run, native.apply)); }
     finally { native.close(); }
     files.push("adt.json");
@@ -174,7 +175,7 @@ async function main(): Promise<void> {
   });
 
   // Presentation context has an independent deterministic stream and never changes tasks/state.
-  execFileSync(process.execPath, [join(root, "world/realism/generate.mjs"), "--world", outDir,
+  execFileSync(process.execPath, [join(sourceRoot, "world/realism/generate.mjs"), "--world", outDir,
     "--fixtures", fixtures, "--clinical", outDir === join(root, "runs/world/2")
       ? join(root, "fixtures/clinical") : join(outDir, "clinical")], { stdio: "inherit" });
 

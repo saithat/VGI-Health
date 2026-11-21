@@ -90,3 +90,20 @@ test('busy days retain unhandled abnormal results and refill requests', { skip }
   assert.equal(worklist(entries, 'P1-refills').length,
     data.schedules.P1.tasks.filter((t) => t.workflow === 'W7').length + backlogRefills);
 });
+
+test('imports routed inbox messages without manufacturing prescriptions or lab reports', () => {
+  const task = { id: 'call', workflow: 'W2', persona: 'P1', patientId: 'a', startMin: 1,
+    todayResources: [{ resourceType: 'Task', id: 'call-inbox', code: { text: 'inbox-call' },
+      for: { reference: 'Patient/a' }, owner: { reference: 'Practitioner/P1' } }] };
+  const data = { day: 1, date: '2026-11-02', schedules: { P1: { tasks: [task] } },
+    state: { inboxBacklog: [], today: { ed: { arrivals: [] }, ward: { censusAtShiftStart: [] } }, surgicalCases: [] } };
+  const importDay = () => buildResources(data, { a: 'Patient/server-a' }, practitioners);
+  const entries = importDay();
+  const inbox = worklist(entries, 'P1-inbox');
+  assert.equal(inbox.length, 1);
+  assert.equal(inbox[0].code.text, 'inbox-call');
+  assert.equal(inbox[0].for.reference, 'Patient/server-a');
+  assert.ok(!entries.some(e => ['MedicationRequest', 'DiagnosticReport'].includes(e.resource.resourceType)));
+  task.workflow = 'W7';
+  assert.throws(importDay, /no current prescription/);
+});

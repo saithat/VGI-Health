@@ -136,28 +136,14 @@ gaps. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md
 
 ## How to run
 
-You need Git, Node 22.18 or newer, Docker with Compose, and
-[elan](https://github.com/leanprover/elan). elan installs the pinned Lean 4.35
-on first build. pnpm comes from Node's Corepack.
+Prerequisites are Git, Node 22.18+, pnpm 11.8.0, curl, tar, [elan](https://github.com/leanprover/elan), and Docker with Compose for live sign-in.
 
 ```sh
-git clone <this repository> vgi-health && cd vgi-health
-corepack enable
-node scripts/clean-clone-smoke.mjs --extract-data   # first time: download synthetic data
+git clone https://github.com/saithat/VGI-Health.git && cd VGI-Health
 pnpm start
 ```
 
-`pnpm start` installs dependencies, builds Lean and the app, starts Postgres
-and Keycloak, imports patients, and prints the start page URL
-(http://localhost:5173). Choose recordings, EHR personas and recording settings
-there. The first start takes several minutes; later starts reuse what is built
-and imported. `pnpm stop` stops the containers and keeps their data.
-
-The synthetic data (world, patient fixtures, exported programs) is published as
-a [release asset](https://github.com/saithat/VGI-Health/releases/tag/data-2026-11-20),
-not in git. A 10-day recording for the dashboard is in the same release;
-extract it at the repository root. [Live setup and validation](docs/methods/live-validation.md) covers
-ports, accounts, MAR/ADT and integration tests.
+Open the printed URL (normally http://127.0.0.1:5173). Startup downloads and verifies the synthetic data, or regenerates it if the release is unavailable. Select **Download sample recording** for the dashboard. Later starts reuse local data and builds. `pnpm stop` stops the containers and keeps their data. [Setup, fallback prerequisites and validation](docs/methods/live-validation.md).
 
 For a self-contained cadence demo after installing dependencies:
 
