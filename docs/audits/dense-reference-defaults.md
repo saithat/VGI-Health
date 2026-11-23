@@ -1,5 +1,8 @@
 # Dense reference defaults
 
+
+The historical `nightly-benchmark.mjs` command below has been retired; it described a fixed one-day P3 recording rather than a reusable benchmark.
+
 The shared `dense-reference-v12` generator supplies default geometry to the
 opt-in Lean nightly mode and the experimental `/lean.html` page. Missing custom
 shape cases receive this default; matching custom cases must pass independently.

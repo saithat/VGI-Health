@@ -1,5 +1,8 @@
 # Realism wave 2 verification — 2026-11-08
 
+
+The historical `workload-clock-smoke.mjs` command in this record has been retired with its fixed-cohort migration check; maintained workload/context tests remain available.
+
 Reviewed code: `680199218f9e8e144bb6f4981b0dd9657e432c60`. Work stayed on `main`; nothing was pushed. The documentation/capture commit follows the code commits listed below.
 
 ## Changes

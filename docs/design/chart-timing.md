@@ -445,3 +445,5 @@ require that archive. Recording re-certification and pushing are intentionally
 excluded; the certified app hash changes and recordings need re-certification
 after integration. No data under `runs/`, `fixtures/`, `programs/` or
 `verdicts.json` is staged or re-certified.
+
+Manual timing exports: `node --experimental-strip-types scripts/export-entry-time-screens.mjs "$TMPDIR/entry-time"` writes native late-entry and exact-boundary screens after building `ehr`.

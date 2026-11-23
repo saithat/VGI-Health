@@ -152,3 +152,9 @@ EHR_FAKE=0 pnpm --filter agent run-days --screens lean --backend replay \
   --replay-from runs/<recorded lean run> --days 1 --personas P1,P2,P3,P4,P5 \
   --world runs/world/2 --run-id <new id>
 ```
+
+Manual presentation check: `node scripts/presentations/check-wasm.mjs` compares the existing 16-presentation corpus and fictional FHIR projections through native and packaged WASM interpreters.
+
+Manual review resources: `node scripts/presentations/seeded-review-resources.mjs WORLD DAY "$TMPDIR/review-resources.json"` exports seeder resources offline from a restored world and its fixture index.
+
+Manual acute fixtures: `node scripts/acute-review-fixtures.mjs "$TMPDIR/acute-review"` builds synthetic P2/P3 review bundles from the local Synthea source chart.
