@@ -1,5 +1,4 @@
 import path from "node:path";
-import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { it, expect, vi } from "vitest";
 import type { TrainDay } from "../src/observe.js";
@@ -111,6 +110,31 @@ it("exports only own observed days on their actual versions", async () => {
   expect(() => climbWorkspace(input, [first], versions)).toThrow(
     /Missing observed day/,
   );
+});
+
+it.each([4, 5])("scores %i actions without charging or limiting rearrangements", async saved => {
+  const inner = createFakeEhr(), release = await loadRelease("v1", inner);
+  const params = FAKE_PERSONAS[0];
+  if (!params) throw Error("Missing P1");
+  const current = {...release.canonical, id:params.id, owner:params.id};
+  release.spec.design.stabilityBudget = 0;
+  const simulate = async (input:Parameters<typeof inner.simulate>[0]) => {
+    const day = await inner.simulate(input);
+    return {...day,tasks:day.tasks.map((t,i)=>({...t,completed:true,
+      clicks:20-(input.program.version===1 && i===0?saved:0)}))};
+  };
+  const schedule = fakeSchedule(1,params.id,7);
+  const days = [{schedule,result:await simulate({program:current,specVersion:"v1",worldDir:"",persona:params,schedule,seed:1})}];
+  const ops = current.screens.flatMap((screen,i)=>screen.components.flatMap((c,j)=>c.parent?[]:[{
+    op:"replace" as const,path:`/screens/${i}/components/${j}/tab`,value:c.tab+1,
+  }]));
+  const result = await climbingGate({ehr:{...inner,simulate},store:new RunStore(await tmp("gross-saving")),
+    worldDir:"",worldSeed:7,screens:{mode:"lean",check:async()=>({mode:"lean",status:"pass",pages:1,
+      bundles:[],failingFiles:[],failingScreens:[],message:""})}},
+    {night:1,current,release,persona:{id:params.id,userId:params.id,params}},days,
+    {actor:params.id,entries:[]},Infinity).measure(ops);
+  expect(result, JSON.stringify(result)).toMatchObject({ships:saved===5,net:saved});
+  expect(result).not.toHaveProperty("movement");
 });
 
 it("keeps serial verdict bytes, reuses partial measurements, and stops at either failed gate", async () => {
@@ -616,12 +640,12 @@ it("seals done while letting Codex emit its final turn usage", async () => {
 }, 20000);
 
 
-it("preserves the first-search README byte for byte and the 60-byte launch prompt", () => {
+it("documents gross savings for both searches and preserves the launch prompt", () => {
   const first = climbReadme("P1", "physician");
   expect(climbReadme("P1", "physician", "first")).toBe(first);
-  // Captured from the README before night-search was introduced.
-  expect(createHash("sha256").update(first).digest("hex")).toBe(
-    "36164a7f7c4b382db745af6333cf9799bb6e102338b174a97b7c87e313c9bad6");
+  expect(first).toContain("Savings must reach five actions per day.");
+  expect(first).not.toContain("movement");
+  expect(climbReadme("P1", "physician", "climb")).not.toContain("movement");
   expect(Buffer.byteLength(CLIMB_PROMPT)).toBe(60);
 });
 

@@ -44,13 +44,13 @@ theorem alertBudget_sound (can p : Program)
   apply List.mem_eraseDups.mpr
   exact (hrc z).mpr (verifiedReachable_sound can z hz)
 
-/-- Accepted programs meet both popup and layout stability budgets (property 8). -/
+/-- Accepted programs meet the popup budget (property 8). -/
 theorem accepted_budgets (sp prev can p) (h : check sp prev can p = .ok) :
     WithinBudgets sp prev can p := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hb, hs⟩
-  exact ⟨alertBudget_sound can p (of_decide_eq_true hb), of_decide_eq_true hs.1⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hb, _⟩
+  exact alertBudget_sound can p (of_decide_eq_true hb)
 
 #print axioms popupRequestCount_mono
 #print axioms alertBudget_sound

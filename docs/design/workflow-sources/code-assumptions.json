@@ -566,11 +566,11 @@
     {
       "id": "A48",
       "parameter": "Release movement proxy",
-      "current": "One extra click-equivalent per displaced observed use/day; not measured learning",
+      "current": "Removed; bounded-clinician replay measures relearning directly",
       "code_refs": [
         "agent/src/cadence.ts:55"
       ],
-      "disposition": "Retain as a labeled selection-policy proxy; SED aggregate times cannot validate movement relearning.",
+      "disposition": "Removed from release selection; historical provenance retained.",
       "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; agent/src/cadence.ts:55"
     },
     {

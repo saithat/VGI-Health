@@ -40,7 +40,7 @@ try {
         args.push('--prev', previous);
       }
       const nativeVerdict = JSON.parse(execFileSync(binary, args, { cwd: root, encoding: 'utf8', timeout: 120_000 }));
-      assert.equal(nativeVerdict, 'ok', `${persona}/${version}: R3/R7`);
+      assert.equal(nativeVerdict, 'ok', `${persona}/${version}: R3`);
       const density = JSON.parse(execFileSync(layout, [], {
         input: JSON.stringify({ op: 'program-check', spec, program }) + '\n',
         encoding: 'utf8', timeout: 120_000,
@@ -58,7 +58,7 @@ try {
   assert.equal(shipped.length, 28);
   assert.equal(shipped.filter(d => d.refused).length, 0, 'R1 newly refuses a shipped change');
   console.log(JSON.stringify({
-    scope: 'Offline combined R1/R3/R5/R7 checks on frozen inputs and metrics; no recording writes or recertification. G10 covers the fixed Lean shell, not React geometry.',
+    scope: 'Offline combined R1/R3/R5 checks on frozen inputs and metrics; no recording writes or recertification. G10 covers the fixed Lean shell, not React geometry.',
     nativeSha256: digest(await readFile(binary)), layoutSha256: digest(await readFile(layout)),
     summary: { revisions: revisions.length, nativeAccepted: revisions.length,
       densityAccepted: revisions.length, decisions: interaction.decisions.length,

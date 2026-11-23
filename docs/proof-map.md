@@ -25,7 +25,7 @@ flowchart TB
   end
   subgraph spec_g["Specification"]
     core["Rulebook &amp; interpreter<br/>38 theorems, 1 headline"]:::spec
-    props["Safety properties<br/>26 theorems, 0 headline"]:::spec
+    props["Safety properties<br/>23 theorems, 0 headline"]:::spec
     specs["Hospital rules &amp; formulary<br/>6 theorems, 0 headline"]:::spec
   end
   check ==> core

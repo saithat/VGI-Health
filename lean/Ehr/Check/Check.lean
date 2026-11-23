@@ -346,14 +346,6 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
         let m := popupRequestCount canonical (verifiedReachable canonical)
         some { property := "budgets", message := s!"the program asks for {n} popups; the canonical program has {m}"
                screen? := ((allComps prog).find? fun sc => match sc.2.kind with | .alert _ true => true | _ => false).map (·.1.id) } },
-    { property := "budgets", passes := decide (StabilityBudget spec prev prog)
-      explain := fun _ =>
-        match prev with
-        | some p =>
-          let moved := movedTags p prog
-          some { property := "budgets"
-                 message := s!"{moved.length} components moved since the previous version (budget {spec.design.stabilityBudget}): {", ".intercalate moved}" }
-        | none => none },
     { property := "navigation", passes := decide (NavigationSane prog)
       explain := fun _ => navigationFinding prog },
     { property := "patientSelection", passes := canonical.patientSelection? != some true || prog.patientSelection? == some true
@@ -386,18 +378,6 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
             (copyTag prog c).bind fun t =>
               if programCopies prog t ≤ spec.design.copyBudget then none
               else some s!"R3: the program has {programCopies prog t} copies of {t} (copy budget {spec.design.copyBudget}); {c.id} on screen {scr.id} is one" ) },
-    -- R3, new specification for owner review: copies added since the previous
-    -- version count against the stability budget.
-    { property := "copyBudget", passes := decide (CopyStability spec prev prog)
-      explain := fun _ =>
-        match prev with
-        | some p =>
-          let moved := movedTags p prog
-          let added := addedCopies p prog
-          some { property := "copyBudget"
-                 message := s!"R3: {moved.length} components moved and {added.length} copies added since the previous version (stability budget {spec.design.stabilityBudget}); added copies: {", ".intercalate (added.map fun k => k.1 ++ "/" ++ k.2)}"
-                 screen? := added.head?.map (·.1) }
-        | none => none },
     -- R4, new specification: bounded context access from every commit screen.
     { property := "contextRetained", passes := Specs.DesignPolicies.contextsDeclared spec && contextRetained spec prog
       explain := fun _ =>

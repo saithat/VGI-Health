@@ -21,6 +21,7 @@ export function modelEndpoint(value: string) {
 }
 
 export const recordedClimb = z.object({
+  objective: z.literal('gross-actions-v1').optional(),
   search: nightSearch.default('first'),
   wallMs: z.number(), reasoningEffort: z.string(),
   provider: nightProvider.optional(), model: z.string().optional(), serviceTier: z.string().optional(),

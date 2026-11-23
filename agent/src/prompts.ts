@@ -50,7 +50,6 @@ Lean types; JSON uses constructor-keyed objects ({"field": {"element": "...", "s
 - Enter once: no element may be asked twice on one path unless the later one is a pre-filled link or copy.
 - Alerts: the interpreter opens condition-triggered interruptive alerts at the commit automatically, even when the component has popup=false. popup=true requests an immediate screen popup and is rejected for interruptive alerts by noFalseAlarms. Preserve certified interruptive alert components and their popup=false settings; passive alerts never pop up. Removable-tier alerts may be made passive or removed. Do not bundle unrelated safety or macro edits into workflow optimizations.
 - Every commit stays reachable from the start screen, and every screen keeps the patient banner.
-- Stability budget: at most N components may be moved (to a different screen, parent, or tab) per version. Copies (a new component with copyOf = the original's id) do not count, so prefer copying frequently used actions or info over moving them.
 - Do not edit the program's id, version, owner, role, or specVersion; the loop sets them. The shared patientSelection binding is immutable and must remain enabled.
 
 ## Moves
@@ -78,7 +77,7 @@ const json = (x: unknown) => JSON.stringify(x,(key,value)=>/wallTime|timeSinksBy
 function header(title: string, persona: PersonaView, program: Program, spec: Spec): string {
   return [
     `# ${title}`,
-    `Persona ${persona.id} (user ${persona.userId}, role ${persona.params.role}). Current program version ${program.version}, spec ${spec.version}. Stability budget: ${spec.design.stabilityBudget} moved components per version.`,
+    `Persona ${persona.id} (user ${persona.userId}, role ${persona.params.role}). Current program version ${program.version}, spec ${spec.version}.`,
     '',
     '## Persona behavior parameters',
     json(persona.params),

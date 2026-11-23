@@ -303,28 +303,6 @@ def WithinClicks (p : Program) (n : Nat) (z : ScreenId) : Prop :=
 def ReachableScreen (p : Program) (z : ScreenId) : Prop :=
   ∃ hops, GotoPath p p.start hops z
 
-/-- New specification (R7): where a retained tag sits, preferring its original
-component. If the original was deleted, its first surviving copy represents
-the tag, even if `copyOf` still names the deleted component. Adding copies
-beside a retained original does not displace it. -/
-def placeOf (p : Program) (t : String) : Option (ScreenId × Option CompId) :=
-  let original := p.screens.findSome? fun scr =>
-    (scr.components.find? fun c => c.tag == t && c.copyOf?.isNone).map fun c => (scr.id, c.parent?)
-  match original with
-  | some place => some place
-  | none => p.screens.findSome? fun scr =>
-      (scr.components.find? fun c => c.tag == t).map fun c => (scr.id, c.parent?)
-
-/-- New specification (R7): retained tags displaced between `prev` and `prog`:
-same tag, different screen or parent, including a surviving copy after deletion
-of its original. Copies beside a retained original and empty tags do not count. -/
-def movedTags (prev prog : Program) : List String :=
-  ((allComps prog).filterMap fun sc =>
-      if sc.2.tag != "" then some sc.2.tag else none).eraseDups.filter fun t =>
-    match placeOf prev t, placeOf prog t with
-    | some a, some b => a != b
-    | _, _ => false
-
 /-- New specification for owner review (R3): the original a copy refers to, the
 first non-copy component with that ID in screen order. -/
 def copySource? (p : Program) (cid : CompId) : Option Component :=
@@ -347,13 +325,6 @@ def screenCopies (p : Program) (scr : Screen) (t : String) : Nat :=
 /-- New specification for owner review (R3): copies in the program counted against tag `t`. -/
 def programCopies (p : Program) (t : String) : Nat :=
   ((allComps p).filter fun sc => copyTag p sc.2 == some t).length
-
-/-- New specification for owner review (R3): copies in `prog` (by screen and
-component ID) that were not copies on that screen in `prev`. -/
-def addedCopies (prev prog : Program) : List (ScreenId × CompId) :=
-  ((allComps prog).filterMap fun sc =>
-      if sc.2.copyOf?.isSome then some (sc.1.id, sc.2.id) else none).eraseDups.filter fun k =>
-    !(allComps prev).any fun sc => sc.2.copyOf?.isSome && sc.1.id == k.1 && sc.2.id == k.2
 
 /-- The number of popup requests (alert components with `popup := true`) on
 screens reachable from the start screen. -/

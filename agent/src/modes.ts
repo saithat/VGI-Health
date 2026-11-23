@@ -166,7 +166,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   }
   rec.validation.accepted = true;
   rec.validation.reason = 'validation replay within count/pixel/typing/time tolerances with full completion';
-  rec.userResponse = userResponse(deps, night, persona.id, best.componentsMoved ?? 0);
+  rec.userResponse = userResponse(deps, night, persona.id);
   if (rec.userResponse.response === 'reverted') {
     if (rec.release) rec.release.surfaced = false;
     const out = await recertify('simulated user reverted the surfaced feature');

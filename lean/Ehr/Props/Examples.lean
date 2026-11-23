@@ -140,16 +140,6 @@ theorem yesterday_weight_prefill_rejected : ¬ QuantityPrefillsKeepUnits spec
         { id := "weightField", kind := .field "weight" (.fixed 0) (.fromRecord "weightYesterday") }] }] } := by
   decide
 
-/-! ## Property 8: budgets -/
-
-/-- Going back to the tiny program moves two components (the meds table and
-the allergy panel go back into the tab container). -/
-theorem two_components_moved : movedTags goodProgram program = ["meds", "signAllergies"] := by decide
-
-/-- With a stability budget of 5, two moves are within budget. -/
-theorem two_moves_within_budget : StabilityBudget spec (some goodProgram) program := by
-  intro p hp; cases hp; decide
-
 /-! ## Alerts -/
 
 /-- A1: no macro step touches an alert component. -/

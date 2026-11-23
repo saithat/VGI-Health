@@ -17,7 +17,7 @@ import {
 } from '../schema.js';
 import { isRecord } from '../jsonpatch.js';
 import {
-  commitOf, componentsMoved, fieldElement, gotoOf, infoOf, kindPayload, kindTag, markReviewedOf, programHash, sha256,
+  commitOf, fieldElement, gotoOf, infoOf, kindPayload, kindTag, markReviewedOf, programHash, sha256,
 } from '../program.js';
 import { hash32, rng } from '../util.js';
 import { fakeCanonical, fakeSpec } from './fixtures.js';
@@ -256,11 +256,6 @@ export function fakeCheck(i: CheckInput): Verdict {
     }
   }
 
-  // budgets: stability.
-  const moved = componentsMoved(i.prev, p);
-  if (moved > spec.design.stabilityBudget) {
-    return violation('WithinBudgets', `${moved} components moved; the stability budget is ${spec.design.stabilityBudget}`, [], []);
-  }
   return 'ok';
 }
 

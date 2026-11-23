@@ -5,24 +5,20 @@ namespace Ehr.Check
 open Ehr Ehr.Props
 
 /-- New specification for owner review: accepted programs meet the copy budget
-for every tag (at most one copy per screen, at most `copyBudget` per program),
-and copies added since the previous version are charged, together with moved
-tags, to `stabilityBudget`. -/
+for every tag (at most one copy per screen, at most `copyBudget` per program). -/
 theorem accepted_copyBudget (sp prev can p) (h : check sp prev can p = .ok) :
-    CopyBudget sp p ∧ CopyStability sp prev p := by
+    CopyBudget sp p := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
-    hcopies, hstable, _⟩
-  exact ⟨copyBudget_of_checked sp p (of_decide_eq_true hcopies), of_decide_eq_true hstable⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcopies, _⟩
+  exact copyBudget_of_checked sp p (of_decide_eq_true hcopies)
 
 /-- New specification for owner review: per-tag form, for any tag string. -/
 theorem accepted_copyBudget_tag (sp prev can p) (h : check sp prev can p = .ok) (t : String) :
     (∀ scr ∈ p.screens, screenCopies p scr t ≤ 1) ∧ programCopies p t ≤ sp.design.copyBudget :=
-  (accepted_copyBudget sp prev can p h).1 t
+  accepted_copyBudget sp prev can p h t
 
 #print axioms accepted_copyBudget
 #print axioms accepted_copyBudget_tag
 #print axioms copyBudget_of_checked
-#print axioms copyStability_stability
 end Ehr.Check

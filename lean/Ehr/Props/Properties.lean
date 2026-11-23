@@ -336,15 +336,6 @@ def AlertBudget (canonical prog : Program) : Prop :=
     (∀ z, z ∈ rp ↔ ReachableScreen prog z ∧ (prog.screen? z).isSome) →
     popupRequestCount prog rp.eraseDups ≤ popupRequestCount canonical rc.eraseDups
 
-/-- At most `stabilityBudget` components moved since the previous version
-(moved: same tag, different screen or parent; copies do not count). Needs the
-checker. -/
-def StabilityBudget (spec : Spec) (prev : Option Program) (prog : Program) : Prop :=
-  ∀ p, prev = some p → (movedTags p prog).length ≤ spec.design.stabilityBudget
-
-instance (spec : Spec) (prev : Option Program) (prog : Program) : Decidable (StabilityBudget spec prev prog) := by
-  unfold StabilityBudget; infer_instance
-
 /-- **R3, copy budget.** New specification for owner review. For every tag, at
 most one copy on any screen and at most `spec.design.copyBudget` copies in the
 program. Copies are counted against their original's tag (`copyTag`). -/
@@ -362,16 +353,6 @@ def CopyBudgetChecked (spec : Spec) (prog : Program) : Prop :=
 
 instance (spec : Spec) (prog : Program) : Decidable (CopyBudgetChecked spec prog) := by
   unfold CopyBudgetChecked; infer_instance
-
-/-- **R3, copies against the stability budget.** New specification for owner
-review. Moved tags plus copies added since the previous version stay within
-`stabilityBudget`. -/
-def CopyStability (spec : Spec) (prev : Option Program) (prog : Program) : Prop :=
-  ∀ p, prev = some p →
-    (movedTags p prog).length + (addedCopies p prog).length ≤ spec.design.stabilityBudget
-
-instance (spec : Spec) (prev : Option Program) (prog : Program) : Decidable (CopyStability spec prev prog) := by
-  unfold CopyStability; infer_instance
 
 private theorem filter_length_zero {α : Type} (l : List α) (p : α → Bool)
     (h : ∀ x ∈ l, p x = false) : (l.filter p).length = 0 := by
@@ -407,16 +388,10 @@ theorem copyBudget_of_checked (spec : Spec) (prog : Program)
         simpa using this)
       omega
 
-/-- Counting added copies only strengthens the existing stability budget. -/
-theorem copyStability_stability (spec : Spec) (prev : Option Program) (prog : Program)
-    (h : CopyStability spec prev prog) : StabilityBudget spec prev prog := by
-  intro p hp
-  have := h p hp
-  omega
-
-/-- **Property 8, budgets.** -/
-def WithinBudgets (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
-  AlertBudget canonical prog ∧ StabilityBudget spec prev prog
+/-- **Property 8, popup budget.** The legacy spec/previous-version arguments
+are retained for statement compatibility; movement is unrestricted. -/
+def WithinBudgets (_spec : Spec) (_prev : Option Program) (canonical prog : Program) : Prop :=
+  AlertBudget canonical prog
 
 /-! ## Alerts: shown when they matter, and no fatigue -/
 

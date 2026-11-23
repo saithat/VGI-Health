@@ -131,7 +131,7 @@ structure AlertSpec where
 structure DesignRules where
   maxDepth : Nat
   minTextSize : Nat                -- legibility: Size.tiny is below this
-  stabilityBudget : Nat            -- max components moved per accepted version
+  stabilityBudget : Nat            -- unused legacy JSON field for frozen spec hashes
   landmarks : List InfoId          -- e.g. ["patientBanner"]: must be on every screen
   catalog : List String            -- allowed component kind tags
   copyBudget : Nat := 2            -- R3 (new specification): copies of one tag per program; ≤ 1 per screen
@@ -183,7 +183,7 @@ structure Component where
   size : Size := .normal
   hotkey : Option String := none
   tag : String := ""               -- stable semantic tag used by agent patches and stability tracking
-  copyOf : Option CompId := none   -- marks a copy: R3 limits copies and charges added ones to the stability budget; deleting the original charges the move (R7)
+  copyOf : Option CompId := none   -- marks a copy: R3 limits copies per tag, per screen and per program
 
 structure Screen where
   id : ScreenId
