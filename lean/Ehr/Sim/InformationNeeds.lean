@@ -51,10 +51,6 @@ structure Need where
   inventory : List Row := []
   deriving DecidableEq, Repr, Inhabited
 
-def window : Question → Nat
-  | .latest _ _ w | .trend _ _ w | .flagged _ _ w | .threshold _ _ w _ => w
-  | .active _ => 0
-
 def relevant (q : Question) (now : Int) (s : Sample) : Bool :=
   match q with
   | .latest m u w | .trend m u w | .flagged m u w | .threshold m u w _ =>

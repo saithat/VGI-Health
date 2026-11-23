@@ -161,7 +161,7 @@ runs unit tests, 202 canonical conformance scenarios, the 15-accepted/36-rejecte
 certification matrix, and Postgres integration/protocol tests. Archive-backed
 tests skip without local data. CI checks packaged WASM evidence but does not
 rebuild WASM. Full Comparator verification is `make verify`; browser audits,
-WASM rebuilds and live e2e remain manual. [Manual diagnostics and cleanup decisions](docs/methods/code-cleanup.md) lists retained offline tools.
+WASM rebuilds and live e2e remain manual. [Manual diagnostics and cleanup decisions](docs/methods/code-cleanup.md) lists retained offline tools and explains which Lean helpers are retained for tests, APIs and specification review.
 [Reproduction and CI](docs/reproduction.md)
 contains the exact commands, local prerequisites and browser-lock discipline.
 

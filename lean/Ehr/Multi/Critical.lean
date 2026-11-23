@@ -60,10 +60,6 @@ def step (now : Nat) (actor : String) (t : Ticket) (a : Action) : Ticket :=
     if action.trimAscii.toString == "" || !t.receivedBy.contains actor || t.resolution.isSome then t
     else { t with resolution := some ⟨actor, now, action⟩ }
 
-/-- Any finite interleaving of actors, followed by the fair minute service. -/
-def minute (now : Nat) (t : Ticket) (actions : List (String × Action)) : Ticket :=
-  advance now (actions.foldl (fun t a => step now a.1 t a.2) t)
-
 theorem immediate_delivery (t : Ticket) :
     (advance t.result.availableAt t).deliveredAt.isSome = true := by
   simp only [advance, Nat.lt_irrefl, ↓reduceIte]
