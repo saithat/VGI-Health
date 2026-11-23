@@ -150,7 +150,7 @@ chunks.append('\nend Ehr.Specs.Rules.Features\n')
 # Placement manifest is deterministic. Existing commits are augmented on their
 # actual screens; new related artifacts are linked from their source workflow.
 workflow={c:byid[owner(c)]['workflows'][0] for c in new}
-place=['import Ehr.Core.Types\nnamespace Ehr.Canonical.Features\n', '/-- Dedicated artifact screens, by owning workflow. -/\ndef artifacts : List (ScreenId × String × CommitId) :=\n  '+ls(['('+q('feature.'+c)+', '+q(workflow[c])+', '+q(c)+')' for c in new])+'\n', '/-- All phase contracts stay pinned across navigation. -/\ndef phaseInfos : List InfoId := '+ls([q(d['info']) for d in DISPLAY if 'scope' in d and '.phase' in d['scope'] and d['info'] not in []])+' |>.eraseDups\n', '/-- Explicit synthetic entry examples, never release prefills. -/\ndef samples : List (ElementId × String) := '+ls(['('+q(e)+', '+q(sample)+')' for e,(_,sample) in elements.items()])+'\n', '\nend Ehr.Canonical.Features\n']
+place=['import Ehr.Core.Types\nnamespace Ehr.Canonical.Features\n', '/-- Dedicated artifact screens, by owning workflow. -/\ndef artifacts : List (ScreenId × String × CommitId) :=\n  '+ls(['('+q('feature.'+c)+', '+q(workflow[c])+', '+q(c)+')' for c in new])+'\n', '\nend Ehr.Canonical.Features\n']
 route_pairs=sorted({(w,'feature.'+x['commit']) for xs in [TEMP,PAT,VAL,EXP] for x in xs if x.get('commit') in new for w in byid[x['id']]['workflows']})
 place.insert(-1,'\n/-- Source workflow routes preserve shared-service context and Back history. -/\ndef routes : List (String × ScreenId) := '+ls(['('+q(w)+', '+q(screen)+')' for w,screen in route_pairs])+'\n')
 (ROOT/'lean/Ehr/Canonical/FeaturePlacements.lean').write_text(''.join(place))

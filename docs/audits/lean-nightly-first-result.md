@@ -1,5 +1,7 @@
 # Lean nightly mode: first local result
 
+The historical `snapshot-density.mjs` command below was a one-time freezer and has been retired; the frozen vendor-density JSON is retained.
+
 [Mode, commands and limitations](../methods/design-discovery.md)
 
 These are synthetic local experiments, with native clinical admission and Lean

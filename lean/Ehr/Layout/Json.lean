@@ -153,11 +153,6 @@ def drawnLineWidths (d : Drawn) : List Nat :=
   | none => []
   | some t => d.lines.map fun s => textAdvance t s.toList
 
-def drawnGlyphWidths (d : Drawn) : List (List Nat) :=
-  match d.box.info.text with
-  | none => []
-  | some t => d.lines.map fun s => s.toList.map (advance t)
-
 def lineWidths (data : Content) (p : Placed) : List Nat := drawnLineWidths (bind data p)
 
 def paintTree (data : Content) : Tree → Json

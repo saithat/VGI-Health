@@ -358,8 +358,6 @@ theorem encoded_predicate (s : Session) (P : Screen → Prop) :
 different facts; modality is resolved within a pane, with a separate global rail. -/
 def paneMeaning (s : Session) : String × Screen := (s.patient, meaning (screen s))
 
-def meaningOf (sessions : List Session) : List (String × Screen) := sessions.map paneMeaning
-
 def PerceivesIn (s : Session) (moment : Moment) (fact : Fact) : Prop :=
   Perceives (meaning (screen s)) moment fact
 

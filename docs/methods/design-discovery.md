@@ -242,3 +242,5 @@ state growth, including workspaces, panels, modalities and release changes.
 The current screen fidelity, browser rendering and assistive-technology
 assumptions also remain. This mode does not switch the deployed painter or
 justify replacing those checks for real users.
+
+Manual diagnostics: `node scripts/discovery/gate-benchmark.mjs "$TMPDIR/gate"` checks six native families; `node scripts/discovery/rules-benchmark.mjs "$TMPDIR/rules"` checks eight rules through the screen gate (requires built `ui-layout`).

@@ -201,19 +201,6 @@ theorem dialog_opens_inside (invoker) : (openDialog invoker).focus = 0 ∧
     (openDialog invoker).isOpen = true := ⟨rfl,rfl⟩
 
 
-def keys : List Key := [.left,.right,.up,.down,.home,.end,.ctrlHome,.ctrlEnd,.enter,.space,.tab,.shiftTab,.escape,.pageUp,.pageDown]
-
-/-- Native transition tables can be consumed by a painter without duplicating
-these semantics in JavaScript. -/
-def table (profile : String) (rows cols : Nat) : List (Nat × Key × State) :=
-  (List.range (rows*cols)).flatMap fun focus => keys.map fun key =>
-    let s : State := { focus, selected := focus }
-    (focus,key,match profile with
-      | "tabs" => tabs (rows*cols) s key
-      | "listbox" => listbox (rows*cols) s key
-      | "dialog" => dialog (rows*cols) s key
-      | "alert-dialog" => alertDialog (rows*cols) s key
-      | _ => grid rows cols s key)
 
 #print axioms next_inside
 #print axioms prev_inside

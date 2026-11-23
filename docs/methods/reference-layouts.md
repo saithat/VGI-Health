@@ -333,3 +333,5 @@ records the current native admission results and actual clinical-page screenshot
 pairs. CI excludes `scripts/layout-reference/*` from the JavaScript-only job,
 then builds `ui-layout` and runs these tests in the Lean job. No binary-presence
 skip hides the layout tests.
+
+Manual paired board reports: `node --import ./agent/node_modules/tsx/dist/loader.mjs scripts/layout-reference/board-report.mjs --before BEFORE.json --after AFTER.json --recordings-root ROOT` compares existing visited reports and bound geometry without recording again.

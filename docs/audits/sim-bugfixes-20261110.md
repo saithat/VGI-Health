@@ -1,5 +1,7 @@
 # Simulator review fixes — 2026-11-10
 
+The historical `wave3-sim-smoke.mjs` reproduction command has been retired; it depended on frozen comparison recordings and the pre-change control executable. The results below remain historical evidence.
+
 Base: `1d372721`, branch `lane/sim-bugfixes`. All four findings reproduce.
 The changes are confined to simulator/CLI code, regressions and methods.
 No theorem statement or proof changed; protected clinical sources, app, WASM,

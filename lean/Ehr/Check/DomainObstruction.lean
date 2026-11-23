@@ -20,7 +20,6 @@ theorem newCommit_witness (ep : Episode) (es : List Event) (s : State)
 
 def preopFacts : Facts :=
   { replayFacts with encounterKind? := some "preop", medToGive? := some "acetaminophen" }
-def npUser : User := { id := "np-domain-witness", role := .np }
 
 private theorem signingPolicy :
     (specV1.commit? "signOrders").map (·.encounterRoles?) = some (some [preopSigningRoles]) := by

@@ -30,7 +30,6 @@ supplies behavioral expectations. Saved reports retain source-digested refresh
 provenance for the complete critical-result path and version-bound nursing
 fixture, alongside the independently rerun full-suite evidence.
 
-
 The high-alert order notice now has an interruptive conformance case, raising the
 catalog to 202 scenarios. The earlier removable-notice case applies only to a
 specification that still declares it removable, preserving frozen recordings;
@@ -197,3 +196,7 @@ Each timing pair runs the pre-change and current native `ehr check` on identical
 | P5 | 794.0 → 866.8 | 758.0 → 878.1 | 763.5 → 832.2 |
 
 The sum of the 18 medians increased from 13.600 s to 14.354 s (5.5%). The largest increase was 15.8% for v2/P5. Both are within the 25% check-time budget.
+
+## Manual retained-checker audit
+
+`python scripts/audit-retained-checks.py [--vendors] RUN...` prints current native checker verdicts against restored, frozen run bindings without changing their records; use `--binary PATH` to select the executable. This opt-in audit is separate from routine canonical conformance tests.
