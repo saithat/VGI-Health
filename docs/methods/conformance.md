@@ -30,7 +30,6 @@ supplies behavioral expectations. Saved reports retain source-digested refresh
 provenance for the complete critical-result path and version-bound nursing
 fixture, alongside the independently rerun full-suite evidence.
 
-
 The high-alert order notice now has an interruptive conformance case, raising the
 catalog to 202 scenarios. The earlier removable-notice case applies only to a
 specification that still declares it removable, preserving frozen recordings;

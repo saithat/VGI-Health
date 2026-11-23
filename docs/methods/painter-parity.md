@@ -100,7 +100,6 @@ specifications for review. Explicit confirmation metadata is scoped per pane,
 so another patient's confirmation button cannot suppress a required pending
 confirmation control.
 
-
 ## Measured cases
 
 At 1440×900, warm Node WASM family-paint samples (milliseconds) were:

@@ -264,7 +264,6 @@ vaccine.administered, verbalOrder.countersigned, verbalOrder.given,
 verbalOrder.recorded, vis.provided
 ```
 
-
 ## 4. Order reconciliation at transfer and discharge (*new specification*, hospital policy)
 
 - **Order drafts.** An order draft is an unsigned capture of an order-line
@@ -351,7 +350,6 @@ commit service and the app. Historical codecs remain compatible, but new
 absolute-clock captures and new controls change replay output, and the facts
 input gains `extraActivities`. The certified app hash changes, the packaged WASM
 must be rebuilt, and `runs/core-10day` needs one re-certification.
-
 
 ## Verification
 

@@ -1,6 +1,5 @@
 # Layout rules and evidence-first nightly prompts
 
-
 The historical `prompt-measure.mjs` command below has been retired with its stopped-recording prompt comparison; the gate benchmarks remain available.
 
 This is a local software and synthetic-simulation check. It establishes no

@@ -1,6 +1,5 @@
 # Dense reference defaults
 
-
 The historical `nightly-benchmark.mjs` command below has been retired; it described a fixed one-day P3 recording rather than a reusable benchmark.
 
 The shared `dense-reference-v12` generator supplies default geometry to the
@@ -186,7 +185,6 @@ node scripts/layout-reference/visited.mjs --out "$TMPDIR/paging/probe/<run>-<per
   --personas <persona> --frozen-snapshots <native-screens> --probe-limit 999
 node scripts/layout-reference/vendor-limits.mjs --visited <merged visited.json>
 ```
-
 
 ## Evidence scope
 

@@ -1,6 +1,5 @@
 Continuous workload lane, 2026-11-08
 
-
 The historical `workload-clock-smoke.mjs` harness listed below has been retired with its fixed-cohort migration check; maintained workload/context tests remain available.
 
 This lane changes the default native expert and bounded measurement semantics to
