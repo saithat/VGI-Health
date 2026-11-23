@@ -1,7 +1,7 @@
 import Ehr.Check.ReviewEncounters
 
 namespace Ehr.Check.ReviewTrace
-open Ehr Ehr.Props
+open Ehr Ehr.Props EntryWitness
 
 /-- New specification for owner review. Observe the two native service requests
 in the same workflow as human order entry. The second click preserves the
@@ -20,12 +20,12 @@ def serviceCases (sp : Spec) (p : Program) : List ClinicalCase := Id.run do
   let req := fun c : Component => c.kind == .button .requestPriorAuth
   let request : Checkpoint := inWorkflow ⟨"refuse automatic prior auth", req, fun i s c => do
     unless !s.captured.any (·.element == "drug") do throw "Use a service route free of medication prefills"
-    let r := fire i s (.click c.id)
+    let r := dispatch i s (.click c.id)
     unless r.result == .blocked "human entry required: priorAuthRequest" do
       throw s!"Expected a human-entry refusal, observed {repr r.result}"
     return r.state, fun _ _ => true⟩
   let repeatRequest : Checkpoint := inWorkflow ⟨"repeat prior auth", req, fun i s c => do
-    let t := (fire i s (.click c.id)).state
+    let t := (dispatch i s (.click c.id)).state
     unless !t.captured.any (·.element == "drug") &&
         !(runView ⟨sp, p, i.facts, i.user, t⟩).items.any (fun item =>
           item.shown && item.firing && (alertOf? item.comp.kind).isSome) do
@@ -43,6 +43,6 @@ def serviceCases (sp : Spec) (p : Program) : List ClinicalCase := Id.run do
       (if (sp.element? "imagingPriority").isSome then [field "imagingPriority" (.code "routine")] else []) ++
       [request, field "priorAuthRequest" (.flag true)] ++ tail ++
       [{repeatRequest with preserves := sameCapture}]
-    ⟨"v2.prior-auth." ++ kind, encounterInput sp p clinicalFacts, steps, true⟩
+    ⟨"v2.prior-auth." ++ kind, encounterInput sp p (facts ""), steps, true⟩
 
 end Ehr.Check.ReviewTrace

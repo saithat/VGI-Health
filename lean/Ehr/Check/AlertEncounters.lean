@@ -2,7 +2,7 @@ import Ehr.Check.ReviewEncounters
 import Ehr.Render.PatientWorkspace
 
 namespace Ehr.Check.ReviewTrace
-open Ehr Ehr.Props Ehr.Render
+open Ehr Ehr.Props EntryWitness Ehr.Render
 
 /-- New specification for owner review. Stand at a shown commit before
 navigating to an optional or passive alert, without signing yet. -/
@@ -18,7 +18,7 @@ def observeAlert (id : AlertId) (workflow : Option String) : Checkpoint :=
     unless (runView ⟨i.spec, i.program, i.facts, i.user, s⟩).items.any (fun it =>
       it.comp.id == c.id && it.shown && it.firing) do throw s!"Show firing {id}"
     if workflow.isSome then
-      let t := (fire i s (.click c.id)).state
+      let t := (dispatch i s (.click c.id)).state
       unless t.popup?.isNone do throw s!"Keep {id} inline"
       return t
     return s, fun _ _ => true⟩
@@ -26,7 +26,7 @@ def observeAlert (id : AlertId) (workflow : Option String) : Checkpoint :=
 /-- New specification for owner review. Full interrupt, passive and removable
 alert encounters, including the predecessor's interaction severity trigger. -/
 def alertCases (sp : Spec) (p : Program) (workflows : List String) (cm : CommitId) : List ClinicalCase := Id.run do
-  let base := clinicalFacts
+  let base := (facts "")
   let antibiotic : List (ElementId × Value) := [("drug", .code "amoxicillin"), ("dose", .qty 10000 .mg)]
   let allergy := {base with allergyClasses := ["penicillin"]}
   let alert := fun id f vals omitted => completeCase sp p cm ("alert." ++ id) [] f vals omitted (some id)
@@ -57,7 +57,7 @@ def alertCases (sp : Spec) (p : Program) (workflows : List String) (cm : CommitI
     let minor := {base with medToGive? := some "amoxicillin",
                             interactions? := if old then none else some [⟨"heldout-minor", .minor⟩],
                             currentMedClasses := if old then ["vitaminKAntagonist"] else []}
-    return [alert "drugAllergyAdmin" med [] omitted, alert "highAlertAdmin" (factsFor cm) [] [],
+    return [alert "drugAllergyAdmin" med [] omitted, alert "highAlertAdmin" (facts cm) [] [],
       inline "minorInteractionPopup" minor [] omitted none]
   | "approveRefill" =>
     return [alert "interactionRefill" {base with medToGive? := some "metformin", currentMedClasses := ["iodinatedContrast"]} [] [],
@@ -76,16 +76,16 @@ allergy version on that very chart and a matching new human acknowledgment. -/
 def changedAllergy (sp : Spec) (p : Program) : ClinicalCase :=
   let cm := "signOrders"
   let id := "drugAllergyOrder"
-  let f := {clinicalFacts with allergyClasses := ["penicillin"]}
+  let f := {(facts "") with allergyClasses := ["penicillin"]}
   let vals := [("drug", Value.code "amoxicillin"), ("dose", Value.qty 10000 .mg)]
   let changed : Checkpoint := ⟨"review changed allergy version", fun c => (alertOf? c.kind).any (·.1 == id),
     fun i s c => do
-      let same := (fire i s (.click c.id)).state
+      let same := (dispatch i s (.click c.id)).state
       unless same.popup?.isNone do throw "Previously acknowledged allergy evidence interrupted again"
       let fresh := {i with facts := {i.facts with allergyVersion := i.facts.allergyVersion + 1}}
-      let next := (fire fresh same (.click c.id)).state
+      let next := (dispatch fresh same (.click c.id)).state
       unless next.popup?.any (·.1 == id) do throw "Updated allergy evidence must interrupt"
-      applyOk fresh next (.ack id), fun _ _ => true⟩
+      advance fresh next (.ack id), fun _ _ => true⟩
   ⟨"alerts.changed-data-reinterrupts", encounterInput sp p f, prepare sp cm f vals ++ [finish cm, changed], false⟩
 
 /-- New specification for owner review. Render exactly the suite's empty chart
@@ -109,24 +109,24 @@ def criticalCases (sp : Spec) (p : Program) : List ClinicalCase := Id.run do
   let result : Multi.Critical.Result := ⟨"heldout-critical", "heldout-A", "Critical potassium",
     p.owner, "heldout-covering", 19990, 30, none⟩
   let ticket : Multi.Critical.Ticket := { result }
-  let f := {clinicalFacts with abnormalResult := true, criticalResults? := some [ticket]}
+  let f := {(facts "") with abnormalResult := true, criticalResults? := some [ticket]}
   let follow : Checkpoint := {(atCommit cm) with act := fun i s c => do
     let urgent := fun t => criticalAlerts ((clinicalUi i t).urgent?.getD [])
     let pending := fun t => (CriticalRuntime.tickets i.facts t).head?.any (·.resolution.isNone)
     unless urgent s == ["passive"] && s.popup?.isNone do throw "Show one passive urgent result"
-    let ack := (fire i s (.ack "criticalResult")).state
+    let ack := (dispatch i s (.ack "criticalResult")).state
     unless pending ack && urgent ack == ["passive"] do throw "UI acknowledgment cleared the result"
     let signed ← (finish cm).act i ack c
     unless pending signed && urgent signed == ["passive"] do throw "Inbox signature cleared the result"
     let button := fun t label => (uiAtomsList (clinicalUi i t).workspace).findSome? fun n =>
       match n with | .button id title _ true _ _ => if title == label then some id else none | _ => none
     let some receive := button signed "Receive critical result" | throw "Enable receipt for the responsible clinician"
-    let received ← applyOk i signed (.click receive)
+    let received ← advance i signed (.click receive)
     let some field := (uiAtomsList (clinicalUi i received).workspace).findSome? (fun n => match n with
       | .field id "Clinical action taken" .. => some id | _ => none) | throw "Show the clinical action field"
-    let documented ← applyOk i received (.enter field (.text action))
+    let documented ← advance i received (.enter field (.text action))
     let some resolve := button documented "Record action and resolve" | throw "Enable resolution after documentation"
-    let resolved ← applyOk i documented (.click resolve)
+    let resolved ← advance i documented (.click resolve)
     unless ((resolved.criticalResults?.getD []).head?.bind (·.resolution)).any (fun r =>
       r.actor == result.responsible && r.action == action) && (urgent resolved).isEmpty do throw "Record resolution and clear the urgent result"
     return resolved}
@@ -136,7 +136,7 @@ def criticalCases (sp : Spec) (p : Program) : List ClinicalCase := Id.run do
       throw "Suppress future and resolved critical results everywhere"
     return s}
   let negative := fun (name : String) (t : Multi.Critical.Ticket) => (⟨name, encounterInput sp p
-    {clinicalFacts with criticalResults? := some [t]}, [suppressed], false⟩ : ClinicalCase)
+    {(facts "") with criticalResults? := some [t]}, [suppressed], false⟩ : ClinicalCase)
   return [⟨"criticalResult.followThrough", encounterInput sp p f, prepare sp cm f [] ++ [follow], false⟩,
     negative "criticalResult.future" {ticket with result := {result with availableAt := 30000}},
     negative "criticalResult.resolved" {ticket with resolution := some ⟨p.owner, 20000, action⟩}]

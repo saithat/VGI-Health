@@ -6,7 +6,7 @@ open Ehr Ehr.Props
 
 /-- New specification for owner review. Reuse the same ordered, active-slot
 steps with a different drug, identity or a selected subset of fields. -/
-def prepare (i : Scene) (drug : String) (es : List ElementId) : Trial Unit := do
+def supplyFields (i : Scene) (drug : String) (es : List ElementId) : Trial Unit := do
   for e in es do
     if e == "patientIdReentry" then enter i e (.text (identityText i.facts.identity))
     else supply i "signOrders" drug e false
@@ -15,7 +15,7 @@ def prepare (i : Scene) (drug : String) (es : List ElementId) : Trial Unit := do
 correcting its kg source requires re-confirmation before signature. -/
 def pounds (i : Scene) : Trial Unit := do
   openChart i.toInitInput
-  prepare i "metformin" (fields "signOrders")
+  supplyFields i "metformin" (fields "signOrders")
   enter i "weight" (.qty 1540 .lb)
   refusal i "signOrders" "weight"
   enter i "weight" (.qty 700 .kg)
@@ -30,7 +30,7 @@ copy is revisited after a 20 kg correction; a mismatch cannot sign, and the
 corrected values can be signed in that episode. -/
 def refreshWeight (i : Scene) : Trial Unit := do
   openChart i.toInitInput
-  prepare i "metformin" ["visitDiagnosis", "patientIdReentry", "weight"]
+  supplyFields i "metformin" ["visitDiagnosis", "patientIdReentry", "weight"]
   let old ← visit i "dosing weight linked to weight" fun s c => match c.kind with
     | .field "dosingWeight" slot (.linked "weight") => resolveSlot s slot == s.currentSlot
     | _ => false
@@ -47,7 +47,7 @@ def refreshWeight (i : Scene) : Trial Unit := do
   if (capturedAt? t "dosingWeight" t.currentSlot).any (!·.confirmed) then
     let _ ← act i.toInitInput (.confirm c.id)
     pure ()
-  prepare i "metformin" ((fields "signOrders").filter fun e => !["weight","dosingWeight"].contains e)
+  supplyFields i "metformin" ((fields "signOrders").filter fun e => !["weight","dosingWeight"].contains e)
   let t ← current
   if !(capturedAt? t "dosingWeight" t.currentSlot).any (·.value == .qty 200 .kg) then
     let sign ← button i "signOrders"
@@ -64,7 +64,7 @@ def medicationLines (i : Scene) (antibiotic : Bool) : Trial Unit := do
   let cm := "signOrders"
   let drug := if antibiotic then "amoxicillin" else "oxycodone"
   let e := if antibiotic then "abxIndication" else "refills"
-  prepare i drug (fields cm)
+  supplyFields i drug (fields cm)
   if antibiotic then
     fork (refusal i cm e)
     enter i e (.code "respiratory-infection")
@@ -81,7 +81,7 @@ def medicationLines (i : Scene) (antibiotic : Bool) : Trial Unit := do
     "Place the add-line action on a medication composer"
   applyOk i.toInitInput (.click next.id)
   require ((← current).currentSlot == before.currentSlot + 1) "Advance to the next medication slot"
-  prepare i drug ((fields cm).dropWhile (· != "drug"))
+  supplyFields i drug ((fields cm).dropWhile (· != "drug"))
   if !antibiotic then enter i e (.qty 30 .none)
   let t ← current
   require ((capturedAt? t e before.currentSlot).any fun x => x.confirmed &&
@@ -117,7 +117,7 @@ def staleCase (sp : Spec) (p : Program) : Scene × Trial Unit := Id.run do
     let _ ← field i "weight"
     require (!(← current).captured.any (·.element == "weight")) "Do not prefill yesterday's weight"
     require (fresh.toOption.any fun o => o.facts.weightToday? == some (700,.kg)) "Project today's 70 kg observation"
-    prepare i "metformin" (fields cm)
+    supplyFields i "metformin" (fields cm)
     finish i cm)
 
 end Ehr.Check.EntryWitness
