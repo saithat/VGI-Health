@@ -13,7 +13,7 @@ import { createEhr } from './ehr.js';
 import { runTryToBreakIt } from './modes.js';
 import { personalize } from './program.js';
 import { loadRelease } from './releases.js';
-import { nightProvider } from './harness/night-provider.js';
+import { nightProvider,nightSearch } from './harness/night-provider.js';
 import { CLIMB_WALL_MS } from './hillclimb.js';
 import { runDays } from './run.js';
 import { LeanScreenChecker } from './lean-screencheck.js';
@@ -41,7 +41,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     args: argv,
     options: {
       'night-provider':{type:'string'},'night-model':{type:'string'},'night-base-url':{type:'string'},'night-context-window':{type:'string'},
-      'night-mode':{type:'string'},'night-wall-ms':{type:'string'},
+      'night-search':{type:'string'},'night-mode':{type:'string'},'night-wall-ms':{type:'string'},
       'clock-mode':{type:'string'},'sim-model':{type:'string'},'text-cost':{type:'string'},'interruptions':{type:'string'},
       'incomplete-penalty': {type:'string'}, screens: {type:'string'},
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false},
@@ -54,6 +54,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const screenMode = z.literal('lean').parse(values.screens ?? 'lean');
   const nightMode = z.literal('hillclimb').parse(values['night-mode'] ?? 'hillclimb');
   const summary = await runDays({ screenMode,nightMode,hillclimb:{
+    ...(values['night-search'] !== undefined ? {search:nightSearch.parse(values['night-search'])} : {}),
     ...(values['night-provider'] !== undefined ? {provider:nightProvider.parse(values['night-provider'])} : {}),
     ...(values['night-model'] !== undefined ? {model:z.string().min(1).parse(values['night-model'])} : {}),
     ...(values['night-base-url'] !== undefined ? {baseUrl:values['night-base-url']} : {}),

@@ -33,6 +33,9 @@ const replayDay=baseReplay.extend({
 export type ReplayDay=z.infer<typeof replayDay>;
 export const decisionRecordSchema=baseDecision.extend({
   mode:z.enum([...baseDecision.shape.mode.options,'hillclimb']),
+  hillclimb:z.object({search:z.enum(['first','climb']),measures:z.number().int().nonnegative(),
+    passingMeasures:z.number().int().nonnegative(),bestNet:z.number().nullable(),
+    completion:z.enum(['done','backstop-best','backstop-current'])}).optional(),
   outcome:z.enum([...baseDecision.shape.outcome.options,'backstop']),
   validation:baseDecision.shape.validation.extend({replay:replayDay.nullable()}),
   measured:baseDecision.shape.measured.extend({validation:replayDay.nullable()}),

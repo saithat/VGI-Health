@@ -11,6 +11,7 @@ const fields = Object.fromEntries(
     "screens",
     "backend",
     "model",
+    "nightSearch",
     "nightProvider",
     "nightBaseUrl",
     "nightModel",
@@ -342,6 +343,10 @@ resumeRun.addEventListener("change", () => {
   else fields.runId.value = "";
 });
 
+fields.replayFrom.addEventListener("change", () => {
+  const prior = configurations.runs.find((run) => run.id === fields.replayFrom.value);
+  if (prior) fields.nightSearch.value = prior.nightSearch ?? "first";
+});
 fields.nightProvider.addEventListener("change", syncBackend);
 fields.backend.addEventListener("change", syncBackend);
 recordForm.addEventListener("change", () => {

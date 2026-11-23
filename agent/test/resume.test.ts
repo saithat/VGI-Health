@@ -54,15 +54,15 @@ it('records the local night identity and binds it on resume and offline replay',
   const common = { ...scriptedClimb, worldDir: await fakeWorld(1), runsRoot: await tmp('night-binding'),
     runId:'local', days:1, personas:['P4'], llm:new ScriptedLlm() };
   const hillclimb = {...common.hillclimb, provider:'local' as const, model:'local-fixture',
-    baseUrl:'http://localhost:9876/custom/v1', contextWindow:32000 };
+    baseUrl:'http://localhost:9876/custom/v1', contextWindow:32000, search:'climb' as const };
   const run = await runDays({...common, hillclimb});
   const manifest = JSON.parse(await readFile(run.dir + '/manifest.json', 'utf8'));
-  expect(manifest.hillclimb).toMatchObject({provider:'local', model:'local-fixture', hostPort:'localhost:9876', contextWindow:32000});
+  expect(manifest.hillclimb).toMatchObject({search:'climb', provider:'local', model:'local-fixture', hostPort:'localhost:9876', contextWindow:32000});
   expect(JSON.stringify(manifest.hillclimb)).not.toContain('/custom');
   const report = execFileSync(process.execPath, [REPO_ROOT + '/scripts/report-agent-benefit.mjs', run.dir], {encoding:'utf8'});
   expect(report).toContain('Night agent local / local-fixture');
   const replay = { ...common, runId:'replay', llm: new ReplayLlm(run.dir) };
-  for (const difference of [{provider:'codex' as const}, {model:'different', baseUrl:hillclimb.baseUrl},
+  for (const difference of [{search:'first' as const,baseUrl:hillclimb.baseUrl},{provider:'codex' as const}, {model:'different', baseUrl:hillclimb.baseUrl},
     {contextWindow:64000, baseUrl:hillclimb.baseUrl}, {baseUrl:'http://localhost:8765/custom/v1'}, {baseUrl:'http://localhost:9876/v1'}]) {
     await expect(runDays({...common, resume:true, hillclimb:{...common.hillclimb, ...difference}})).rejects.toThrow('Resume hillclimb configuration must match');
     await expect(runDays({...replay, hillclimb:difference})).rejects.toThrow('Replay hillclimb configuration must match');
@@ -77,5 +77,5 @@ it('records the local night identity and binds it on resume and offline replay',
   await expect(runDays({...common, hillclimb, resume:true})).rejects.toThrow('Resume hillclimb configuration must match');
   const legacy = await runDays({...common, resume:true});
   expect(JSON.parse(await readFile(legacy.dir + '/manifest.json', 'utf8')).hillclimb)
-    .toMatchObject({provider:'codex', model:manifest.model});
+    .toMatchObject({search:'first',provider:'codex', model:manifest.model});
 });

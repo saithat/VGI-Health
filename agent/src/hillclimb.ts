@@ -57,7 +57,9 @@ export const CLIMB_PROMPT =
 export const CLIMB_WALL_MS = 2 * 60 * 60 * 1000;
 export const estimateInstruction =
   "Use `night measure --days 1,3 patch.json` for an estimate. Shipping requires every past day.";
-export function climbReadme(persona: string, role: string) {
+export const keepClimbingInstruction =
+  "A passing measure is a step, not the finish. Keep the passing patch as your new working base and look for the next improvement on top of it. Re-measure the combined patch against the deployed version. Once further changes stop helping, finish with `night done` on the best combined patch.";
+export function climbReadme(persona: string, role: string, search: "first" | "climb" = "first") {
   return `You are redesigning the EHR for ${persona}, a simulated ${role}. Reduce daily clicks plus scrolls while preserving completion, learnability, typing effort and modeled time. The checker enforces the clinical, screen and movement rules.
 
 persona.json describes this clinician. days/N.json contains their recorded tasks and trace on the program in versions/V.json. program.json is your working copy of the deployed program, including its layouts. spec.json is the active rulebook.
@@ -66,7 +68,7 @@ Edit the working copy and run \`node patch.mjs > patch.json\`, or write an RFC 6
 
 ${estimateInstruction}
 
-Finish with \`night done patch.json "summary"\`. Say what you changed and why in a few sentences. A refusal gives the reason so you can keep working. To retain the current version, use \`night done --no-change "reason"\`.`;
+${search === "climb" ? keepClimbingInstruction + "\n\n" : ""}Finish with \`night done patch.json "summary"\`. Say what you changed and why in a few sentences. A refusal gives the reason so you can keep working. To retain the current version, use \`night done --no-change "reason"\`.`;
 }
 type Context = Pick<
   NightInput,
@@ -100,10 +102,11 @@ export function climbWorkspace(
   input: Context,
   days: readonly TrainDay[],
   versions: ReadonlyMap<number, Program>,
+  search: "first" | "climb" = "first",
 ) {
   const json = (v: unknown) => JSON.stringify(v, null, 1);
   const files: Record<string, string> = {
-    "README.md": climbReadme(input.persona.id, input.current.role),
+    "README.md": climbReadme(input.persona.id, input.current.role, search),
     "program.json": json(source(input.current)),
     "spec.json": json(input.release.spec),
     "persona.json": json(input.persona.params),
@@ -541,6 +544,17 @@ export class ClimbHost {
     measurement?: Measurement;
   } | null = null;
   measures = 0;
+  passingMeasures = 0;
+  best: { patch: JsonPatchOp[]; measurement: Measurement & { net: number } } | null = null;
+  saveWorkspaceBest?: (patch: JsonPatchOp[]) => Promise<void>;
+  completion(search: "first" | "climb" = "first") {
+    return this.final ? "done" : search === "climb" && this.best ? "backstop-best" : "backstop-current";
+  }
+  decision(search: "first" | "climb" = "first") {
+    return this.final ?? (search === "climb" && this.best
+      ? { ...this.best, summary: "Wall-clock backstop: ship best fully measured passing patch" }
+      : null);
+  }
   constructor(
     private measure: (
       patch: JsonPatchOp[],
@@ -552,12 +566,21 @@ export class ClimbHost {
       reply: HarnessReply,
       elapsedMs: number,
     ) => Promise<void>,
+    private saveBest: (patch: JsonPatchOp[]) => Promise<void> = async () => {},
   ) {}
   async execute(raw: unknown): Promise<HarnessReply> {
     const start = Date.now(),
       reply = await this.command(raw);
     await this.record(raw, reply, Date.now() - start);
     return reply;
+  }
+  /** Reproduce an unusable deadline reply without replaying its interrupted work. */
+  async replayBackstop(raw: unknown, reply: HarnessReply) {
+    const request = harnessRequestSchema.parse(raw);
+    const interrupted = reply.output !== null && typeof reply.output === "object" &&
+      "reason" in reply.output && reply.output.reason === "Wall-clock backstop";
+    if (request.command === "measure" && interrupted) this.measures++;
+    await this.record(raw, reply, 0);
   }
   private async command(raw: unknown): Promise<HarnessReply> {
     let estimateRequested = false;
@@ -627,6 +650,17 @@ export class ClimbHost {
     try {
       const result = await this.measure(patch, days);
       if (Date.now() >= this.deadline) return fail("Wall-clock backstop");
+      let isBest = false;
+      if (!done && !days && result.ships && "net" in result) {
+        this.passingMeasures++;
+        if (!this.best || result.net > this.best.measurement.net) {
+          const saved = structuredClone({ patch, measurement: result });
+          await this.saveBest(saved.patch);
+          await this.saveWorkspaceBest?.(saved.patch);
+          this.best = saved;
+          isBest = true;
+        }
+      }
       if (done && result.ships)
         this.final = { summary, patch, measurement: result };
       const { program: _program, ...report } = result;
@@ -636,7 +670,10 @@ export class ClimbHost {
         void _ships;
         return { exit: 0, output: { estimate: true, days, ...estimate } };
       }
-      return { exit: done && !result.ships ? 1 : 0, output: report };
+      return { exit: done && !result.ships ? 1 : 0, output: {
+        ...report,
+        ...(!done && this.best ? { best: { isBest, net: this.best.measurement.net, patch: "best.json" } } : {}),
+      } };
     } catch (error) {
       if (error instanceof InvalidDays) return fail(error.message);
       if (error instanceof Deadline || Date.now() >= this.deadline)
@@ -660,7 +697,7 @@ export async function runHillclimb(
 ) {
   const start = Date.now(),
     deadline = start + opts.wallMs;
-  const files = climbWorkspace(input, past, versions),
+  const files = climbWorkspace(input, past, versions, opts.search),
     { gate, measure } = climbingGate(deps, input, past, memory, deadline);
   const dir = path.join(
     deps.store.dir,
@@ -680,6 +717,7 @@ export async function runHillclimb(
         elapsedMs,
       });
     },
+    patch => writeJson(path.join(dir, "best.json"), patch),
   );
   const launches = await runClimbingSession(host, files, dir, opts);
   const rec = emptyRecord(
@@ -693,9 +731,12 @@ export async function runHillclimb(
     model: opts.model,
     replayOf: null,
   };
-  const final = host.final;
+  const completion = host.completion(opts.search);
+  rec.hillclimb = { search: opts.search ?? "first", measures: host.measures,
+    passingMeasures: host.passingMeasures, bestNet: host.best?.measurement.net ?? null, completion };
+  const final = host.decision(opts.search);
   const result = final?.measurement;
-  rec.hypothesis = final?.summary ?? "Wall-clock backstop";
+  rec.hypothesis = final?.summary ?? "Wall-clock backstop: keep current program";
   rec.validation.reason = rec.hypothesis;
   rec.outcome = final ? "no-change" : "backstop";
   if (result?.ships && result.program && result.replay && final?.patch) {
@@ -730,12 +771,13 @@ export async function runHillclimb(
     rec.outcome = "deployed";
   }
   await writeJson(path.join(dir, "session.json"), {
+    replyVersion: 2,
+    ...rec.hillclimb,
     prompt: CLIMB_PROMPT,
     workspaceSha256: workspaceHash(files),
     outcome: rec.outcome,
     summary: rec.hypothesis,
     commands,
-    measures: host.measures,
     wallMs: Date.now() - start,
     launches,
   });

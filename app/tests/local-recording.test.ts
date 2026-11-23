@@ -68,6 +68,11 @@ describe("local recording arguments", () => {
 
   });
 
+  it.each(["first","climb"])("passes night search %s for fresh runs, resume and replay", nightSearch => {
+    for (const change of [{},{resume:true},{backend:"replay",replayFrom:"recorded"}])
+      expect(recordingArgs({...configuration,...change,nightSearch}).args.slice(-2)).toEqual(["--night-search",nightSearch]);
+  });
+
   it("passes the local night settings separately from the release backend model", () => {
     const local = { ...configuration, nightProvider:"local", nightModel:"inkling-2-mini",
       nightBaseUrl:"http://[::1]:8888/v1", nightContextWindow:"64000" };
@@ -87,6 +92,7 @@ describe("local recording arguments", () => {
     { personas: ["P1", "P1"] },
     { personas: ["P6"] },
     { backend: "shell" },
+    { nightSearch: "novelty" },
     { days: "1 --resume" },
     { reasoningEffort: "fast" },
     { screens: "audit" },

@@ -1,4 +1,4 @@
-import { contextWindowSchema, DEFAULT_CONTEXT_WINDOW, DEFAULT_LOCAL_MODEL, DEFAULT_MODEL_URL, modelEndpoint, nightProvider, recordedClimb } from "../../agent/src/harness/night-provider";
+import { contextWindowSchema, DEFAULT_CONTEXT_WINDOW, DEFAULT_LOCAL_MODEL, DEFAULT_MODEL_URL, modelEndpoint, nightProvider, nightSearch, recordedClimb } from "../../agent/src/harness/night-provider";
 import { assertRecordingMode } from "../../agent/src/recording-mode";
 import { execFile, spawn, type ChildProcess } from "node:child_process";
 import { randomUUID, timingSafeEqual } from "node:crypto";
@@ -22,6 +22,7 @@ const requestSchema = z
     screens: z.literal("lean"),
     backend,
     model: z.string().regex(/^(?:[A-Za-z0-9][A-Za-z0-9_./:@+-]{0,127})?$/),
+    nightSearch: nightSearch.optional(),
     nightProvider: nightProvider.optional(),
     nightBaseUrl: z.string().optional(),
     nightModel: z.string().optional(),
@@ -68,6 +69,7 @@ export function recordingArgs(input: unknown, parallel = true) {
     args.push("--model", config.model);
   if (config.backend === "codex")
     args.push("--reasoning-effort", config.reasoningEffort);
+  if (config.nightSearch) args.push("--night-search", config.nightSearch);
   if (config.backend === "codex" && config.nightProvider) {
     args.push("--night-provider", config.nightProvider);
     if (config.nightProvider === "local") {
@@ -176,6 +178,7 @@ export async function recordingOptions(root: string) {
         personas: data.personas,
         screens: "lean",
         model: data.model,
+        nightSearch: data.hillclimb?.search ?? "first",
         nightProvider: data.hillclimb?.provider ?? "codex",
         nightBaseUrl: data.hillclimb?.basePathSha256 ? "" : data.hillclimb?.hostPort ? `http://${data.hillclimb.hostPort}/v1` : DEFAULT_MODEL_URL,
         nightModel: data.hillclimb?.provider === "local" ? data.hillclimb.model : DEFAULT_LOCAL_MODEL,

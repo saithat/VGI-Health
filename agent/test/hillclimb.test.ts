@@ -1,9 +1,10 @@
 import path from "node:path";
+import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
 import { it, expect, vi } from "vitest";
 import type { TrainDay } from "../src/observe.js";
 import { RunStore } from "../src/store.js";
-import { climbWorkspace, climbingGate, ClimbHost } from "../src/hillclimb.js";
+import { CLIMB_PROMPT, climbReadme, climbWorkspace, climbingGate, ClimbHost } from "../src/hillclimb.js";
 import { runClimbingSession } from "../src/harness/climb-session.js";
 import * as sandbox from "../src/harness/sandbox.js";
 import * as agents from "../src/harness/agents.js";
@@ -87,6 +88,11 @@ it("exports only own observed days on their actual versions", async () => {
     "days/2.json",
   ]);
   expect(files["versions/2.json"]).toBeUndefined();
+  expect(climbWorkspace(input, days, versions, "first")).toEqual(files);
+  const climb = climbWorkspace(input, days, versions, "climb");
+  expect(climb["README.md"]).toBe(climbReadme(params.id, current.role, "climb"));
+  expect(climb["README.md"]).toContain("A passing measure is a step, not the finish.");
+  expect({...climb, "README.md":files["README.md"]}).toEqual(files);
   expect(Buffer.byteLength(files["README.md"] ?? "")).toBeLessThan(3000);
   for (const { result } of days)
     expect(JSON.parse(files[`days/${result.day}.json`] ?? "")).toMatchObject({
@@ -337,7 +343,8 @@ it("measures all nine past days, refuses and accepts done, carries memory, and e
         request("done", patch, "Reduced effort for this clinician."),
       );
       expect(accepted.exit).toBe(0);
-      expect(accepted.output).toEqual(measured.output);
+      expect(measured.output).toMatchObject({best:{isBest:true,net:6,patch:"best.json"}});
+      expect(accepted.output).toEqual(expect.objectContaining({ships:true,net:6}));
       expect(accepted.output).toMatchObject({
         ships: true,
         net: 6,
@@ -404,6 +411,24 @@ it("measures all nine past days, refuses and accepts done, carries memory, and e
     ehr,
   });
   expect(replay.timelines[0]?.nights[0]?.outcome).toBe("deployed");
+  const legacyDir = path.join(result.dir,"hillclimb/night-01/P1");
+  const legacySession = await read(path.join(legacyDir,"session.json"));
+  delete legacySession.replyVersion;
+  delete legacySession.search;
+  delete legacySession.completion;
+  await writeFile(path.join(legacyDir,"session.json"),JSON.stringify(legacySession));
+  for (let index=1; index<=legacySession.commands; index++) {
+    const file = path.join(legacyDir,"commands",index+".json"), entry = await read(file);
+    delete entry.reply.output.best;
+    await writeFile(file,JSON.stringify(entry));
+  }
+  const legacyManifest = await read(path.join(result.dir,"manifest.json"));
+  delete legacyManifest.hillclimb.search;
+  await writeFile(path.join(result.dir,"manifest.json"),JSON.stringify(legacyManifest));
+  const legacyReplay = await runDays({days:2,worldDir:(await read(path.join(result.dir,"manifest.json"))).world,
+    runsRoot:await tmp("climb-legacy"),runId:"legacy",screenMode:"lean",leanOptions,
+    releaseDays:{v2:20,v3:30},personas:["P1"],llm:new ReplayLlm(result.dir),ehr});
+  expect(legacyReplay.timelines[0]?.nights[0]?.outcome).toBe("deployed");
   const report = await read(path.join(result.dir, "final-eval/P1.json"));
   expect(report.versions.map((r: { version: number }) => r.version)).toEqual([
     0, 1,
@@ -542,6 +567,9 @@ it("seals done while letting Codex emit its final turn usage", async () => {
     .mockImplementation(async (args, _input, _wall, _limit, stop) => {
       const spool = args[args.indexOf("/spool") - 1];
       if (!spool) throw Error("Missing private spool");
+      const work = args[args.indexOf("/work") - 1];
+      if (!work) throw Error("Missing workspace");
+      expect(await readFile(path.join(work,"README.md"),"utf8")).toBe(climbReadme("P1","physician","climb"));
       await writeFile(
         path.join(spool, "usage.req.json"),
         JSON.stringify(retain),
@@ -570,9 +598,10 @@ it("seals done while letting Codex emit its final turn usage", async () => {
   try {
     const usage = await runClimbingSession(
       host,
-      { "program.json": "{}" },
+      { "program.json": "{}", "README.md":climbReadme("P1","physician","climb") },
       dir,
       {
+        search: "climb",
         wallMs: 20000,
         model: "fixture",
         reasoningEffort: "high",
@@ -585,3 +614,97 @@ it("seals done while letting Codex emit its final turn usage", async () => {
     launch.mockRestore();
   }
 }, 20000);
+
+
+it("preserves the first-search README byte for byte and the 60-byte launch prompt", () => {
+  const first = climbReadme("P1", "physician");
+  expect(climbReadme("P1", "physician", "first")).toBe(first);
+  // Captured from the README before night-search was introduced.
+  expect(createHash("sha256").update(first).digest("hex")).toBe(
+    "36164a7f7c4b382db745af6333cf9799bb6e102338b174a97b7c87e313c9bad6");
+  expect(Buffer.byteLength(CLIMB_PROMPT)).toBe(60);
+});
+
+// The fake clinician saves six actions for each of two independent edits.
+function stackingEhr() {
+  const inner = createFakeEhr();
+  return {...inner, simulate:async (input:Parameters<typeof inner.simulate>[0]) => {
+    const day = await inner.simulate(input);
+    const steps = Number(input.program.screens[0]?.title === "Fixture improvement") +
+      Number(input.program.screens[1]?.title === "Second improvement");
+    return {...day, tasks:day.tasks.map((t,i)=>({...t,completed:true,clicks:20-(i===0?steps*6:0)}))};
+  }};
+}
+const combined = [...patch, {op:"replace",path:"/screens/1/title",value:"Second improvement"}];
+
+it.each(["done-best", "done-first", "done-keep", "backstop-best", "backstop-first", "backstop-empty", "backstop-estimate", "backstop-interrupted"] as const)(
+  "stacks passing patches and handles %s without changing the gate", async ending => {
+    let expireOnReplay = false, deadline = 0;
+    const inner = stackingEhr();
+    const ehr = {...inner, simulate:async (input:Parameters<typeof inner.simulate>[0]) => {
+      if (expireOnReplay && input.program.screens[0]?.title === "Late improvement")
+        vi.spyOn(Date,"now").mockReturnValue(deadline+1);
+      return inner.simulate(input);
+    }};
+    const fixture = async (host:ClimbHost) => {
+      const estimated = ending === "backstop-estimate";
+      if (ending !== "backstop-empty") {
+        const first = request("measure", patch);
+        if (estimated) first.argv = ["--days", "1", "p.json"];
+        expect(await host.execute(first)).toMatchObject(estimated
+          ? {output:{estimate:true,net:6}} : {output:{ships:true,net:6,best:{isBest:true,net:6,patch:"best.json"}}});
+        if (!estimated) {
+          expect(await host.execute(request("measure", combined))).toMatchObject({
+            output:{ships:true,net:12,best:{isBest:true,net:12,patch:"best.json"}}});
+          expect(await host.execute(request("measure", patch))).toMatchObject({
+            output:{ships:true,net:6,best:{isBest:false,net:12,patch:"best.json"}}});
+          expect(await host.execute(request("measure", []))).toMatchObject({output:{ships:false,best:{isBest:false,net:12}}});
+          expect(host.best?.patch).toEqual(combined);
+        }
+      }
+      if (ending.startsWith("done-")) {
+        if (ending === "done-keep") expect(await host.execute(retain)).toMatchObject({exit:0,output:{done:true}});
+        else {
+          const shipping = ending === "done-best" ? combined : patch;
+          expect(await host.execute(request("done",shipping,"Chosen combined patch"))).toMatchObject({exit:0,output:{ships:true}});
+        }
+      } else if (ending === "backstop-interrupted") {
+        expireOnReplay = true;
+        deadline = host.deadline;
+        expect(await host.execute(request("measure",[{op:"replace",path:"/screens/0/title",value:"Late improvement"}]))).
+          toMatchObject({exit:1,output:{reason:"Wall-clock backstop"}});
+      } else {
+        // Simulate the guard without waiting for a two-hour session.
+        vi.spyOn(Date,"now").mockReturnValue(host.deadline+1);
+        expect(await host.execute(retain)).toMatchObject({exit:1});
+      }
+    };
+    const worldDir = await fakeWorld(2), runsRoot = await tmp("climb-stack");
+    const common = {days:2,worldDir,runsRoot,runId:"stack",nightMode:"hillclimb" as const,
+      screenMode:"lean" as const,leanOptions,personas:["P1"],llm:new ScriptedLlm(),ehr};
+    let result;
+    try {
+      result = await runDays({...common,hillclimb:{fixture,search:ending==="backstop-first"?"first":"climb"}});
+    } finally { vi.spyOn(Date,"now").mockRestore(); }
+    const best = !["backstop-empty","backstop-estimate"].includes(ending);
+    const shipped = !["done-keep","backstop-first","backstop-empty","backstop-estimate"].includes(ending);
+    const session = await read(path.join(result.dir,"hillclimb/night-01/P1/session.json"));
+    expect(session).toMatchObject({search:ending==="backstop-first"?"first":"climb",passingMeasures:best?3:0,
+      bestNet:best?12:null,outcome:shipped?"deployed":ending==="done-keep"?"no-change":"backstop",
+      completion:ending.startsWith("done-")?"done":shipped?"backstop-best":"backstop-current"});
+    const report = JSON.parse(execFileSync(process.execPath,[path.join(REPO_ROOT,"scripts/report-agent-benefit.mjs"),result.dir,"--json"],{encoding:"utf8"}));
+    expect(report.nights.climbs).toMatchObject([{persona:"P1",night:1,passingMeasures:best?3:0,bestNet:best?12:null}]);
+    const decision = result.timelines[0]?.nights[0];
+    expect(decision).toMatchObject({versionAfter:shipped?1:0,hillclimb:{passingMeasures:best?3:0,bestNet:best?12:null}});
+    expect(result.hillclimb).toMatchObject({backstops:ending.startsWith("backstop-")?1:0,passingMeasures:best?3:0,
+      results:[{persona:"P1",night:1,passingMeasures:best?3:0,bestNet:best?12:null}]});
+    const store = new RunStore(result.dir);
+    const program = await store.readProgram("P1",shipped?1:0);
+    expect(program.screens[1]?.title === "Second improvement").toBe(shipped && ending!=="done-first");
+    if (best) expect(await read(path.join(result.dir,"hillclimb/night-01/P1/best.json"))).toEqual(combined);
+    // Replaying an expired session uses its measured commands, not the new wall clock.
+    const replay = await runDays({...common,runId:"copy",hillclimb:{},llm:new ReplayLlm(result.dir)});
+    expect(replay.timelines[0]?.nights[0]).toEqual(decision);
+    await expect(runDays({...common,runId:"mismatch",hillclimb:{search:ending==="backstop-first"?"climb":"first"},
+      llm:new ReplayLlm(result.dir)})).rejects.toThrow("Replay hillclimb configuration must match");
+  },60000);

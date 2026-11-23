@@ -22,6 +22,7 @@ import { UsageLimitError,usageLimitIn } from "../usage-limit.js";
 
 export interface ClimbSessionOptions extends AgentConfig {
   wallMs: number;
+  search?: "first" | "climb";
   replayFrom?: string;
   /** In-process driver for synthetic verification only. */
   fixture?: (host: ClimbHost) => Promise<void>;
@@ -38,11 +39,16 @@ export async function runClimbingSession(
     const session = await readJson(
       path.join(opts.replayFrom, "session.json"),
       z.object({
+        search: z.enum(["first", "climb"]).default("first"),
+        replyVersion: z.number().optional(),
+        completion: z.enum(["done", "backstop-best", "backstop-current"]).optional(),
         workspaceSha256: z.string(),
         outcome: z.enum(["backstop", "no-change", "deployed"]),
         commands: z.number().int().nonnegative(),
       }),
     );
+    if (session.search !== (opts.search ?? "first"))
+      throw Error("Hill-climbing replay search mismatch");
     if (session.workspaceSha256 !== workspaceHash(files)) {
       // Older sessions saw the identical workspace without the estimate hint.
       const legacy = {...files, "README.md": files["README.md"]?.replace(estimateInstruction + "\n\n", "") ?? ""};
@@ -59,22 +65,31 @@ export async function runClimbingSession(
       );
       // An interrupted command produced no usable measurement. The guard is a wall-clock observation.
       if (
-        session.outcome === "backstop" &&
+        (session.outcome === "backstop" || session.completion?.startsWith("backstop-")) &&
         index === session.commands &&
         z
-          .object({ reason: z.literal("Wall-clock backstop") })
+          .object({ reason: z.enum(["Wall-clock backstop", "Session ended"]) })
           .safeParse(entry.reply.output).success
-      )
+      ) {
+        await host.replayBackstop(entry.request, entry.reply);
         break;
-      if (
-        stableStringify(await host.execute(entry.request)) !==
-        stableStringify(entry.reply)
-      )
+      }
+      const actual = await host.execute(entry.request);
+      // Historical commands predate the additive best-patch report.
+      if (!session.replyVersion && actual.output && typeof actual.output === "object") {
+        const {best: _best, ...legacy} = z.record(z.string(), z.unknown()).parse(actual.output);
+        void _best;
+        actual.output = legacy;
+      }
+      if (stableStringify(actual) !== stableStringify(entry.reply))
         throw Error(`Hill-climbing replay diverged at command ${index}`);
     }
-    const outcome = host.final?.measurement
+    if (session.completion && session.completion !== host.completion(opts.search))
+      throw Error("Hill-climbing replay completion mismatch");
+    const decision = host.decision(opts.search);
+    const outcome = decision?.measurement
       ? "deployed"
-      : host.final
+      : decision
         ? "no-change"
         : "backstop";
     if (session.outcome !== outcome)
@@ -90,6 +105,7 @@ export async function runClimbingSession(
   const root = await prepareWorkspace(files, "program.json");
   const control = path.join(root, "control"),
     spool = path.join(root, "spool");
+  host.saveWorkspaceBest = patch => writeJson(path.join(root, "work", "best.json"), patch);
   let failure: unknown;
   const stopSession = new AbortController();
   try {
@@ -178,6 +194,7 @@ export async function runClimbingSession(
       await stopHost();
     }
   } finally {
+    delete host.saveWorkspaceBest;
     await rm(root, { recursive: true, force: true });
   }
   return launches;
