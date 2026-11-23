@@ -2,9 +2,10 @@
 
 [Overview](../../README.md) · [Core model](core-model.md) · [Discovery and cadence](../methods/discovery-and-cadence.md)
 
-Status: **all seven rules R1–R7 implemented** ([R3](#r3-copy-budget-implemented),
-[R5](#r5-screen-action-density-g10-implemented)); the R7 regression exposed and fixed a
-dangling-copy gap (new specification). R4 and R6 are new specifications. See the
+Status: **R1–R6 implemented** ([R3](#r3-copy-budget-implemented),
+[R5](#r5-screen-action-density-g10-implemented)). Movement charges, displacement
+budgets and the R7 regression rule have been removed. Relearning is measured
+by bounded-clinician replay. R4 and R6 are new specifications. See the
 [retained-decision replay](../methods/interaction-validation.md).
 Rules marked *new specification* are new definitions and stay flagged in Lean.
 
@@ -14,9 +15,8 @@ A nightly change ships when all of these hold:
 
 1. **Release score**: the change saves at least 5 clicks plus scrolls per train day
    in a replay of the *expert* simulated clinician (incomplete tasks cost their
-   matched canonical effort plus a configurable 50% penalty), after subtracting the
-   usage-weighted movement proxy (one click-equivalent per observed daily use of
-   each displaced control) (`agent/src/structure-policy.ts`, `agent/src/night.ts`).
+   matched canonical effort plus a configurable 50% penalty). Net equals gross
+   daily saving (`agent/src/hillclimb.ts`).
 2. **Validation gate** on the pooled holdouts from all past odd calibration days: every task still completes, clicks
    and scrolls do not regress, scroll pixels and mouse travel stay within 2%
    plus 1px rounding slack, and at least one of the four improves
@@ -27,7 +27,7 @@ A nightly change ships when all of these hold:
    the same 2% bounds. Popups, overrides, searches and backtracks are not separately gated.
 3. **Formal checks**: properties 1–9 (`lean/Ehr/Props/Properties.lean`), D1–D6
    (`core-model.md`), the geometry rules G1–G11 (`docs/methods/ui-library.md`),
-   `StabilityBudget`, the R3 copy budget, `AlertBudget` and the identity movement budget.
+   the R3 copy budget and `AlertBudget`.
 4. **Rendered screen gate**: the deployed React painter passes semantic fidelity,
    physical/urgency checks and R5's per-screen vendor-reference target limits at 1440×900.
    `CliScreenChecker` supplies this check before the sole nightly deployment path.
@@ -47,7 +47,6 @@ reproduces the retained audit. These are reporting changes, not a new score.
 | P2/P4/D2, `CommitScreenShowsReviews` | Hiding required review items, or moving them off the commit screen |
 | P5, `NoAutomationAttempts` | Prefilling or macro-entering human-only steps; macro commits or acks |
 | P6 completable (option D) | Removing the controls a feasible workflow needs |
-| P8 `StabilityBudget`, movement proxy, identity budget | Large reshuffles; renaming tags to hide a move |
 | P9, D4, `AlertBudget` | Suppressing alerts or turning interruptive alerts passive |
 | D3, D5, D6 | Empty labels, fake primary buttons, orphan screens, nav groups with more than 12 entries; R6 also checks navigation label honesty and word count |
 | R4 `ContextRetained` | Removing declared workflow context or moving it beyond `maxDepth` from a commit screen |
@@ -59,20 +58,19 @@ reproduces the retained audit. These are reporting changes, not a new score.
 
 | # | Gaming move | Why it scores | Status |
 |---|---|---|---|
-| V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | Copies are exempt from `StabilityBudget` and from the movement proxy. The expert clinician pays nothing for clutter. | Closed by R3 in the checker. The movement proxy still ignores copies. |
+| V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | The expert clinician pays nothing for clutter. | Closed by R3 in the checker. |
 | V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: separate R5 gates cover Lean geometry and the deployed React painter. Each existing React screen is bounded by that persona's no-agent reference on identical data; absent screen ids use the vendor-calibrated fallback of 57. New/merged screens and unmodeled scanning costs remain partly open; R1 and R2 constrain other costs. |
 | V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | R4 closes removal beyond the context bound and refuses missing policies after v3; deliberately empty policies remain possible, and the information-needs simulator is not connected to the score. |
 | V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
 | V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The expert has no discovery cost. | Closed by R2 on sampled past holdouts; the user model remains uncalibrated. |
 | V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | R6 bounds navigation labels and restricts them to titles or declared aliases. |
-| V7 | **Two-night move.** Copy a control on night N, then delete the original on night N+1. | Previously a survivor still marked `copyOf` was ignored by `movedTags`. | R7 fixed: the movement proxy charges deletion; `StabilityBudget` counts the surviving tag's displacement with or without `copyOf`. Night N is also charged by R3 (an added copy counts against `stabilityBudget`). |
 | V8 | **Default to the usual answer.** Set field defaults to the most common train value. | Saves keystrokes only, so the score does not move. It does create default-acceptance risk. | Low impact; `defaultConfirm` already requires a human confirm. |
 | V9 | **Page records away.** Shorten a long list by paging it, so controls below it need no scrolling and records the clinician needs are out of sight. | A short page removes the reveal scrolling past the list; records on other pages cost nothing if the clinician never pages. | Closed for Lean-painted screens, see [bounded lists](#bounded-lists-paging-is-not-free). |
 
 ## Proposed rules
 
 Each rule targets one or more of the vectors above. Rules R1–R4 close the
-high-impact ones; R5–R7 are smaller.
+high-impact ones; R5–R6 address density and labels.
 
 **R1. Full-cost validation gate** (gate change, no Lean change). On validation, add
 keystrokes and `klmDeciSec` to the no-regression set, with the same 2% tolerance
@@ -104,8 +102,7 @@ night 1; P1's learner cost doubles) and 1 expert-gate refusal (P2, night 4);
 limits. These are independent counterfactuals; the recording remains unchanged.
 
 **R3. Copy budget** (*new specification*, Lean `Props`). For every tag: at most one
-copy per screen, and at most `spec.design.copyBudget` copies per program. Copies
-added since the previous version count against `stabilityBudget`. Closes V1 and V7.
+copy per screen, and at most `spec.design.copyBudget` copies per program. Closes V1.
 Default proposal: `copyBudget = 2`, to be checked against the copy counts already in
 the retained programs.
 
@@ -130,24 +127,11 @@ largest count in the current release programs. This Lean fixed-shell default sta
 label equals its target screen's title or one of its declared aliases, and labels
 have at most `maxLabelWords` words (default 4). Closes V6.
 
-**R7. Two-night move test** (test only). Add a regression test for V7 that copies a
-control on one night, deletes the original on the next, and expects the movement
-proxy and `StabilityBudget` to charge it. The promoted-copy case passed, but
-leaving the survivor's `copyOf` set exposed a Lean gap: the move list was empty
-and even a zero stability budget passed. **New specification:** `placeOf`
-prefers the original for a tag and otherwise uses its first surviving copy;
-`movedTags` includes retained copy tags. The second-night move is now charged
-with or without clearing `copyOf`; adding copies beside an original remains
-free under this movement rule (R3 governs copy counts separately). This required
-a narrowly scoped edit in `lean/Ehr/Props/Basics.lean` under the explicit
-instruction to fix an uncharged R7 case; R3/R5 definitions and files were left
-alone. The `StabilityBudget` statement itself is unchanged.
-
 ## R3: copy budget (implemented)
 
 *New specification.* Lean: `copyTag`, `screenCopies`, `programCopies`,
-`addedCopies` (`lean/Ehr/Props/Basics.lean`); `CopyBudget`, `CopyBudgetChecked`,
-`CopyStability` (`lean/Ehr/Props/Properties.lean`); `spec.design.copyBudget`
+(`lean/Ehr/Props/Basics.lean`); `CopyBudget`, `CopyBudgetChecked`
+(`lean/Ehr/Props/Properties.lean`); `spec.design.copyBudget`
 (default 2, omitted from spec JSON at the default).
 
 - A copy counts against its **original's tag**: `copyOf` names a component ID, and
@@ -156,19 +140,16 @@ alone. The `StabilityBudget` statement itself is unchanged.
   renaming copies does not open a new budget. In every retained program the copy's
   tag differs from the original's, so keying by the copy's tag would count nothing.
 - The checker refuses with property `copyBudget` when a screen holds two copies of
-  one tag, when a program holds more than `copyBudget` copies of one tag, or when
-  moved tags plus added copies exceed `stabilityBudget`. An added copy is a copy
-  (by screen and component ID) that was not a copy on that screen in the previous
-  version. Messages name the screen, tag, counts and budget.
+  one tag or when a program holds more than `copyBudget` copies of one tag.
+  Messages name the screen, tag, counts and budget.
 - Theorems: `copyBudget_of_checked` (the executable check implies the bound for
-  every tag string), `copyStability_stability` (R3 implies the existing
-  `StabilityBudget`), `accepted_copyBudget` and `accepted_copyBudget_tag`
-  (checker acceptance implies both parts). Axioms: `propext`, `Classical.choice`,
-  `Quot.sound`. `StabilityBudget` is unchanged; R3 is an extra rule.
+  every tag string), `accepted_copyBudget` and `accepted_copyBudget_tag`
+  (checker acceptance implies the copy cap). Axioms: `propext`, `Classical.choice`,
+  `Quot.sound`.
 - Bad-program suite: `lean/Ehr/Check/bad/41-copy-spray.json` copies the P1 "Review
   and sign" button onto three screens and fails `copyBudget`. Lean regressions in
   `lean/Ehr/Check/CopyTests.lean` cover the per-screen, per-program, renamed-copy
-  and stability cases.
+  cases, including acceptance of copies with a previous program.
 
 Measured copy counts (copies per program; largest count for one tag):
 
@@ -182,8 +163,7 @@ Measured copy counts (copies per program; largest count for one tag):
 | P5 v0–v4 | 0 | 0 | 0 |
 
 No retained program has more than one copy of any tag, so the default
-`copyBudget = 2` refuses none of them by itself. The stability part is reported
-below.
+`copyBudget = 2` refuses none of them by itself.
 
 ## R5: screen action density, G10 (implemented)
 
@@ -518,7 +498,7 @@ their theorem statements and clinical obligations are preserved. The 33 retained
 program/spec/input hash triples are unchanged. App inputs and packaged WASM were
 not changed; full browser verification remains separate from these native checks.
 
-## Retained recording against R3 and R5
+## Historical retained recording against R3 and R5
 
 Every certified revision in `runs/core-10day/certifications` (33 bindings) was
 re-checked offline with the native checker, using its recorded spec, canonical
@@ -527,7 +507,6 @@ and previous program. The recording was not changed.
 | Rule | Revisions refused | Detail |
 |---|---|---|
 | R3 copy budget | 0 of 33 | At most one copy of any tag (default budget 2), never two on one screen. |
-| R3 stability charge | 0 of 33 | Most copies added in one version: 4 (P3 v4), within the recorded `stabilityBudget` of 8 together with that version's moved tags. |
 | R5 / G10 | 0 of 33 | Fixed-shell counts reach 11 (first viewport) and 15 (scroll window), equal to the default limit; `program-check` accepts all 51 release and recorded programs. |
 
 No shipped revision was refused by those checks, so nothing was grandfathered. The R5
@@ -535,7 +514,7 @@ result follows from the shell capacity above, not from the recording's
 restraint. The release certification matrix also still accepts all 15 personas
 (with their previous release as `prev`).
 
-## Retained recording against the combined rules
+## Historical retained recording against the combined rules
 
 `scripts/replay-design-rules.mjs` combines the checks without changing any
 recording files or issuing certificates. It reads all 33 retained revision
@@ -570,20 +549,6 @@ retained matrix exits with an error. G10 admission here covers the fixed Lean
 shell, whose capacity is 15; it does not establish a React density bound or
 new clinical outcomes. The recorded certificates remain historical build
 bindings, even if the layouts pass the current offline rules.
-
-The combined Lean regression in `Ehr.Examples.TwoNightMoveTests` checks that
-R3 charges the first-night copy, R7 charges the second-night displacement for
-both promoted and dangling copies, and a retained copy is not charged as newly
-added on the second night. Zero stability budget refuses each charged change;
-a budget of one accepts it. No property or theorem statement changed during
-integration.
-
-An integration correction also removes the R3 component docstring's obsolete
-claim that a copy can never count as a move. The generated TypeScript vocabulary
-now describes R7's surviving-copy displacement, matching the interpreter and
-manual. Both 35-context prompt snapshot sets are refreshed because their prompts
-embed these live property docstrings and generated types; the recorded prompts
-and decisions are not rewritten.
 
 ### Combined verification
 

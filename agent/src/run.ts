@@ -186,6 +186,7 @@ function resolveClimbSettings(requested: RunOptions['hillclimb'], backendModel: 
   if (local && !source && previous?.hillclimb.basePathSha256 && requested?.baseUrl === undefined)
     throw Error('Resuming this run requires its original --night-base-url (custom path)');
   const climbBinding = {
+    objective: 'gross-actions-v1' as const,
     search: climb.search, wallMs: climb.wallMs, reasoningEffort: climb.reasoningEffort, provider: providerChoice, model,
     ...(endpoint ? {hostPort: endpoint.hostPort, contextWindow,
       ...(pathDigest ? {basePathSha256:pathDigest} : {})}
@@ -193,6 +194,8 @@ function resolveClimbSettings(requested: RunOptions['hillclimb'], backendModel: 
   };
   for (const [operation, recorded] of [['Resume', previous], ['Replay', source]] as const) {
     if (!recorded) continue;
+    if (recorded.hillclimb.objective !== 'gross-actions-v1')
+      throw Error(`${operation} requires the original revision for a recording with movement charges; start a new run for gross-actions-v1`);
     // Manifests predating provider selection used the top-level model with hosted Codex.
     const binding = {provider:'codex', model:recorded.model, ...recorded.hillclimb};
     if (stableStringify(binding) !== stableStringify(climbBinding))

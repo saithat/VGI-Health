@@ -129,7 +129,7 @@ confirmed value; declared auto-links eliminate transcription (property 2). -/
 theorem accepted_capturesAllOnce (sp prev can p) (h : check sp prev can p = .ok) :
     CapturesAllOnce sp p := by
   have ht := accepted_structural sp prev can p h
-  exact ⟨ht.2.2.2.2.2.2.2.2.2.2.2.1, fun facts user _ =>
+  exact ⟨ht.2.2.2.2.2.2.2.2.2.2.2, fun facts user _ =>
     ⟨commitCapturesAll ⟨sp, p, facts, user⟩, enteredOnce ⟨sp, p, facts, user⟩⟩⟩
 
 #print axioms enteredOnce_at

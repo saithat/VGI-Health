@@ -51,7 +51,7 @@ export const candidateSchema = z.object({
   summary: str,
   moveType: moveTypeSchema,
   rationale: str,
-  /** Component tags or ids the patch touches (for the dashboard and stability). */
+  /** Component tags or ids the patch touches (for dashboard change reporting). */
   targets: z.array(str),
   patch: jsonPatchSchema,
   predicted: savingsSchema,

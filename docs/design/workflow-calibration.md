@@ -145,7 +145,7 @@ A48–A50 extend the inventory to the README’s explicitly provisional tailorin
 
 | Family | README-described tailoring/measurement assumption | Code anchors |
 |---|---|---|
-| A48 Release movement proxy | One extra click-equivalent per displaced observed use/day; not measured learning | `agent/src/cadence.ts:55` |
+| A48 Release movement proxy | Removed; bounded-clinician replay measures relearning directly | `agent/src/hillclimb.ts` |
 | A49 Relearning reference and pixel projection | Latest two matched train schedules; three practice blocks then a fourth warm reference; signed first-k excess. Ignored remembered clicks project an ordinal-slot reveal point, with no extra clinical event | `agent/src/bounded-tailoring.ts:38`; `app/src/dashboard/bounded-pointing.ts:9` |
 | A50 Off-shift preferences and fallback time | Fallback 0.5min/move+0.25min/other change; seeded chooser click weight[.5,1.5),scroll[1,4),relearning[1,6),threshold[0,2); optional offline local allergy/dose preference weights and sensitivity1..3 | `agent/src/session.ts:295`; `agent/src/session-simulator.ts:9`; `agent/src/offline-preferences.ts:17` |
 

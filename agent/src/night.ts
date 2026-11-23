@@ -98,7 +98,7 @@ export interface Gate {
   referenceProgram?: Program;
   workload?: DaySchedule['tasks'];
   specVersion: string;
-  /** Previous version for the stability budget. */
+  /** Previous version bound into certification. */
   prev: Program;
   canonical: Program;
   nextVersion: number;
@@ -330,11 +330,11 @@ export function backendInfo(agent: AgentBackend, calls: readonly LlmCallRef[]): 
   return { name, model: first?.model ?? agent.model, replayOf: null };
 }
 
-export function userResponse(deps: LoopDeps, night: number, persona: string, moved: number): DecisionRecord['userResponse'] {
-  const probability = Math.min(0.3, 0.05 + 0.03 * moved);
+export function userResponse(deps: LoopDeps, night: number, persona: string): DecisionRecord['userResponse'] {
+  const probability = 0.05;
   const draw = rng(hash32(`${deps.worldSeed}:${night}:${persona}:user`))();
   return draw < probability
-    ? { response: 'reverted', probability, reason: `simulated user reverted the change at login (p=${probability.toFixed(2)}, ${moved} components moved)` }
+    ? { response: 'reverted', probability, reason: `simulated user reverted the change at login (p=${probability.toFixed(2)})` }
     : { response: 'accepted', probability, reason: `simulated user kept the change (revert p=${probability.toFixed(2)})` };
 }
 

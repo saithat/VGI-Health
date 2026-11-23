@@ -74,8 +74,7 @@ it('records the local night identity and binds it on resume and offline replay',
   // Older hill-climb manifests identified the hosted model at the top level only.
   manifest.hillclimb = {wallMs:manifest.hillclimb.wallMs, reasoningEffort:'high', serviceTier:'default'};
   await writeFile(run.dir + '/manifest.json', JSON.stringify(manifest));
-  await expect(runDays({...common, hillclimb, resume:true})).rejects.toThrow('Resume hillclimb configuration must match');
-  const legacy = await runDays({...common, resume:true});
-  expect(JSON.parse(await readFile(legacy.dir + '/manifest.json', 'utf8')).hillclimb)
-    .toMatchObject({search:'first',provider:'codex', model:manifest.model});
+  await expect(runDays({...common, hillclimb, resume:true})).rejects.toThrow('requires the original revision');
+  await expect(runDays({...common, resume:true})).rejects.toThrow('requires the original revision');
+  await expect(runDays({...replay, runId:'old-policy', hillclimb:{}})).rejects.toThrow('requires the original revision');
 });

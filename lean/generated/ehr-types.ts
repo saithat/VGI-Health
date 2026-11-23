@@ -780,7 +780,7 @@ export interface DesignRules {
    */
   minTextSize: number;
   /**
-   * Maximum components moved per accepted version.
+   * Unused legacy JSON field retained for historical spec hashes. No movement limit.
    */
   stabilityBudget: number;
   /**
@@ -938,13 +938,12 @@ export interface Component {
   size: Size;
   hotkey?: string;
   /**
-   * Stable semantic tag used by agent patches and stability tracking.
+   * Stable semantic tag used by agent patches and change reporting.
    */
   tag: string;
   /**
-   * Marks a copy. R3 (`CopyBudget`, `CopyStability`) limits copies per tag and
-   * charges added copies to the stability budget. R7 charges a surviving copy's
-   * displacement after its original is deleted, even when this reference remains.
+   * Marks a copy. R3 (`CopyBudget`) limits copies per tag, per screen
+   * and per program to limit clutter.
    */
   copyOf?: CompId;
 }

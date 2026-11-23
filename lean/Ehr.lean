@@ -35,7 +35,6 @@ import Ehr.Core.DeficienciesTests
 import Ehr.Api
 import Ehr.Examples.Tiny
 import Ehr.Examples.TinyTests
-import Ehr.Examples.TwoNightMoveTests
 import Ehr.Examples.ApiTests
 import Ehr.Sim.Goals
 import Ehr.Sim.GoalsTests

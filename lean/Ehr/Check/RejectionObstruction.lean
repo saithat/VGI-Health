@@ -32,10 +32,10 @@ theorem unusedWorkflow_self_satisfies :
 there are no required commits and no requested popups. -/
 theorem unusedWorkflow_satisfies :
     Satisfies unusedWorkflowSpec none unusedWorkflowCanonical emptyProgram := by
-  obtain ⟨wf, cap, writes, reviews, human, _, units, budget, alerts, falseAlarms, once, tiers, nav⟩ :=
+  obtain ⟨wf, cap, writes, reviews, human, _, units, _, alerts, falseAlarms, once, tiers, nav⟩ :=
     unusedWorkflow_self_satisfies
   refine ⟨⟨wf.1, wf.2.1, wf.2.2.1, wf.2.2.2.1, ?_, wf.2.2.2.2.2⟩,
-    cap, writes, reviews, human, ?_, units, ⟨?_, budget.2⟩, alerts, falseAlarms, once, tiers, nav⟩
+    cap, writes, reviews, human, ?_, units, ?_, alerts, falseAlarms, once, tiers, nav⟩
   · intro c hc
     simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
   · intro facts user _ _ s _ c hc

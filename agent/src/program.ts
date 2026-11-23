@@ -1,6 +1,6 @@
 import {designOf,withDesign,layoutDesignSchema} from './layout-design.js';
 import { expandProgram } from './composites.js';
-/** Helpers over UI programs: patching, personalization, stability, hashing. */
+/** Helpers over UI programs: patching, personalization, change reporting, hashing. */
 import { createHash } from 'node:crypto';
 import { applyPatch, isRecord } from './jsonpatch.js';
 import { programSchema, type Component, type JsonPatchOp, type PersonaParams, type Program, type Screen } from './schema.js';
@@ -126,8 +126,8 @@ export function isBackButton(c: Component): boolean {
 
 /**
  * Components moved between two versions: same id, different screen, parent,
- * or tab. Copies (`copyOf`) and new components are not moves (BRIEF 5a,
- * stability budget). Informational only; the Lean checker enforces the budget.
+ * or tab. Copies (`copyOf`) and new components are not moves.
+ * Informational only; movement is neither charged nor limited.
  */
 export function componentsMoved(before: Program, after: Program): number {
   const old = componentById(expandProgram(before));

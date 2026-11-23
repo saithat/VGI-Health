@@ -2,7 +2,7 @@
 
 [Overview](../../README.md) · [Design rules](../design/metric-gaming.md) · [Discovery and cadence](discovery-and-cadence.md)
 
-R1 is a release-policy change. Validation requires equal nonzero task counts and complete task completion, no click or scroll-count regression, and at most 2% growth in keystrokes and modeled time (`klmDeciSec`). Scroll pixels and mouse travel retain their 2% plus 1px allowance. Missing or nonfinite metrics refuse validation. A nightly improvement still requires a strict improvement in clicks, scrolls, scroll pixels or mouse travel. Typing/time improvements alone do not qualify. The release score stays daily click-plus-scroll savings minus switch cost.
+R1 is a release-policy change. Validation requires equal nonzero task counts and complete task completion, no click or scroll-count regression, and at most 2% growth in keystrokes and modeled time (`klmDeciSec`). Scroll pixels and mouse travel retain their 2% plus 1px allowance. Missing or nonfinite metrics refuse validation. A nightly improvement still requires a strict improvement in clicks, scrolls, scroll pixels or mouse travel. Typing/time improvements alone do not qualify. The release score stays daily click-plus-scroll savings; the current [hill-climbing gate](hillclimb-night.md#measurement-and-completion) has no movement charge.
 
 Full completion was already enforced by `completionOk`, by `interactionAcceptable`, and again before deployment. Tests exercise lost completions, missing/substituted task counts, zero tasks, the exact 2% boundary, zero baselines, nonfinite or absent costs, and typing/time-only improvements.
 
@@ -33,19 +33,7 @@ export TMPDIR=/home/saithat/Projects/run-tmp CI=true
 pnpm --filter agent exec tsx src/replay-interaction-gate.ts ../runs/core-10day > "$TMPDIR/rules-gate-retained.json"
 ```
 
-## Two-night movement regression
-
-`agent/test/cadence.test.ts` adds a copy on one night and deletes the original on the next. Two observed original-control uses cost two click-equivalents after deletion, whether the survivor retains `copyOf` or is promoted by clearing it. Adding the copy alone costs zero.
-
-`Ehr.Examples.TwoNightMoveTests` checks both promotion and a survivor retaining a dangling `copyOf`: `movedTags` includes the control tag, a zero `StabilityBudget` rejects it and a one-move budget accepts it. Before the fix, the dangling-copy variant returned `[]` and passed a zero budget. **New specification:** `placeOf` prefers the original component of a tag, then falls back to the first surviving copy; `movedTags` includes retained copy tags. Adding copies beside an original remains free. The `StabilityBudget` statement is unchanged. A narrow edit to `Props/Basics.lean` was necessary under the instruction to fix an uncharged R7 case; no R3/R5 file or definition changed.
-
-The native regression checks **all 33 retained revisions** against their frozen
-`certifications/<persona>/<version>/{inputs,spec}.json` inputs, including the
-recorded previous and canonical programs. All pass; R7 retroactively refuses
-none. Current release specs are not substituted for those historical inputs.
-This check writes no new certificates or build bindings.
-
-## Verification scope
+## Historical verification scope
 
 
 Verified with disk-backed scratch and at most four test/browser workers:
@@ -60,7 +48,6 @@ pnpm --filter agent lint
 # Run without EHR_BIN to retain the suite's ordinary native prerequisite skips:
 env -u EHR_BIN pnpm --filter agent test --maxWorkers=4 --exclude test/workload-capabilities.test.ts
 pnpm --filter agent exec vitest run test/quality-golden.test.ts test/night.test.ts test/interaction-gate.test.ts test/replay-interaction-gate.test.ts --maxWorkers=4
-pnpm --filter agent exec vitest run test/movement-native.test.ts --maxWorkers=1
 pnpm --filter app build
 pnpm --filter @vgi/commit typecheck
 pnpm --filter @vgi/commit lint
@@ -86,6 +73,6 @@ An initial unfiltered agent suite also found six tests in
 `runs/world/2-original` schedules. They were not filled with synthetic stand-ins.
 The initial missing app bundle and prompt-policy hash prerequisites were
 resolved by building the app and refreshing both 35-context prompt golden sets
-for the documented R1/R7 policy. Recording files remain unchanged. No certified
+for the then-current policy. Recording files remain unchanged. No certified
 app source or lockfile changed; packaged WASM and recorded certificates were
 not rebuilt or rebound here.

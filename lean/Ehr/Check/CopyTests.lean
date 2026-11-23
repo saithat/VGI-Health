@@ -43,15 +43,19 @@ def renamed : Program := withCopies goodProgram
 #guard propertyOf (check spec none goodProgram doubled) == some "copyBudget"
 #guard propertyOf (check spec none goodProgram renamed) == some "copyBudget"
 
-/-- Added copies are charged to the stability budget, even with no moved tags. -/
-def tight : Spec := { spec with design := { spec.design with stabilityBudget := 1 } }
-#guard addedCopies goodProgram twoCopies == [("rooming", "copyA"), ("sign", "copyB")]
-#guard addedCopies twoCopies twoCopies == []
-#guard decide (StabilityBudget tight (some goodProgram) twoCopies)
-#guard !decide (CopyStability tight (some goodProgram) twoCopies)
-#guard propertyOf (check tight (some goodProgram) goodProgram twoCopies) == some "copyBudget"
-#guard propertyOf (check tight (some twoCopies) goodProgram twoCopies) == none
-#guard propertyOf (check spec (some goodProgram) goodProgram twoCopies) == none
+-- Movement is unrestricted, including added copies with a previous program.
+#guard propertyOf (check { spec with design := { spec.design with stabilityBudget := 0 } }
+  (some goodProgram) goodProgram twoCopies) == none
+
+/-- An expanded container changes every retained control's parent without
+changing required visibility, workflow routes or copy counts. -/
+def regrouped : Program :=
+  { goodProgram with screens := goodProgram.screens.map fun scr =>
+      { scr with components :=
+          { id := scr.id ++ ".controls", kind := .group false false, label := "Controls" } ::
+          scr.components.map (fun c => { c with parent? := some (scr.id ++ ".controls") }) } }
+#guard propertyOf (check { spec with design := { spec.design with stabilityBudget := 0 } }
+  (some goodProgram) goodProgram regrouped) == none
 
 -- Spec JSON keeps legacy bytes at the defaults and round-trips other values.
 #guard (Lean.toJson spec.design).getObjVal? "copyBudget" |>.toOption |>.isNone

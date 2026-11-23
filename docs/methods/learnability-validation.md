@@ -21,7 +21,7 @@ Schedules retain their dates, cases, choices, ordering and independent validatio
 seed namespace. Each partition is simulated as a separate dated workload; metrics
 are summed across partitions. The release effect floor uses the exact aggregate
 click-plus-scroll difference divided by the number of calibration days, before
-subtracting daily switch cost. Rounded display savings cannot satisfy the floor.
+with no movement charge (net equals gross). Rounded display savings cannot satisfy the floor.
 
 For the retained 10-day world (`runs/world/2`), tasks per persona and night are:
 

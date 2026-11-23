@@ -22,13 +22,12 @@ saving,
 summarizeTrain,
 type TrainDay,
 } from "./observe.js";
-import { componentsMoved,sha256,stableStringify } from "./program.js";
+import { sha256,stableStringify } from "./program.js";
 import {
 RELEASE_SCORING_POLICY,
 releaseScoringSchema,
 scoredMetrics,
 } from "./release-scoring.js";
-import { usageWeightedSwitchCost } from "./switch-cost.js";
 import { layoutRuleSchema } from "./layout-rules.js";
 import { designOf } from "./layout-design.js";
 import { screenAttribution } from "./lean-layout-prompt.js";
@@ -60,11 +59,11 @@ export const estimateInstruction =
 export const keepClimbingInstruction =
   "A passing measure is a step, not the finish. Keep the passing patch as your new working base and look for the next improvement on top of it. Re-measure the combined patch against the deployed version. Once further changes stop helping, finish with `night done` on the best combined patch.";
 export function climbReadme(persona: string, role: string, search: "first" | "climb" = "first") {
-  return `You are redesigning the EHR for ${persona}, a simulated ${role}. Reduce daily clicks plus scrolls while preserving completion, learnability, typing effort and modeled time. The checker enforces the clinical, screen and movement rules.
+  return `You are redesigning the EHR for ${persona}, a simulated ${role}. Reduce daily clicks plus scrolls while preserving completion, learnability, typing effort and modeled time. The checker enforces the clinical and screen rules.
 
 persona.json describes this clinician. days/N.json contains their recorded tasks and trace on the program in versions/V.json. program.json is your working copy of the deployed program, including its layouts. spec.json is the active rulebook.
 
-Edit the working copy and run \`node patch.mjs > patch.json\`, or write an RFC 6902 patch against the deployed version directly. Run \`night measure patch.json\` to certify it and replay all past days with the expert and bounded clinicians. Inspect the verdict, totals and breakdowns. Iterate as often as needed. Savings must cover movement and reach five actions per day. Both clinicians must finish every task, with at most 2% more keys and modeled time. Bounded clicks and scrolls must each hold.
+Edit the working copy and run \`node patch.mjs > patch.json\`, or write an RFC 6902 patch against the deployed version directly. Run \`night measure patch.json\` to certify it and replay all past days with the expert and bounded clinicians. Inspect the verdict, totals and breakdowns. Iterate as often as needed. Savings must reach five actions per day. Both clinicians must finish every task, with at most 2% more keys and modeled time. Bounded clicks and scrolls must each hold.
 
 ${estimateInstruction}
 
@@ -381,13 +380,6 @@ export function climbingGate(
         reason: [check.property, check.message].filter(Boolean).join(": "),
         check,
       };
-    const moved = componentsMoved(current, program);
-    if (moved > release.spec.design.stabilityBudget)
-      return {
-        ships: false,
-        reason: `Identity movement ${moved} exceeds budget ${release.spec.design.stabilityBudget}`,
-        check,
-      };
     if (!days && candidate.full) return candidate.full;
     const result = await score(
       program,
@@ -504,17 +496,11 @@ export function climbingGate(
         accepted: !boundedReasons.length,
       },
     };
-    const movement = await usageWeightedSwitchCost(current, program, {
-      clinician: persona.id,
-      role: current.role,
-      department: "unspecified",
-      train: selected,
-    });
-    const net = validationGross(replay) - movement.cost,
+    const net = validationGross(replay),
       minimum = minimumDailySaving;
     if (net < minimum)
       reasons.push(
-        `Daily net saving ${net} below ${minimum} (movement charge ${movement.cost})`,
+        `Daily saving ${net} below ${minimum}`,
       );
     return {
       ships: !reasons.length,
@@ -523,7 +509,6 @@ export function climbingGate(
       program,
       replay,
       net,
-      movement: movement.cost,
       details,
       delta: {
         expert: saving(expert.before, expert.after),
@@ -771,7 +756,7 @@ export async function runHillclimb(
     rec.outcome = "deployed";
   }
   await writeJson(path.join(dir, "session.json"), {
-    replyVersion: 2,
+    replyVersion: 3,
     ...rec.hillclimb,
     prompt: CLIMB_PROMPT,
     workspaceSha256: workspaceHash(files),

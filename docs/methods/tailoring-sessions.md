@@ -1,5 +1,7 @@
 # Offline tailoring sessions (simulator only)
 
+This page records an earlier experimental workflow. Current releases use the [hill-climbing gate](hillclimb-night.md#measurement-and-completion), with no movement charge or displacement budget; relearning is measured by bounded-clinician replay.
+
 Historical method and results. The implementation and original commands are available at [pre-cleanup-2026-11-20](https://github.com/saithat/VGI-Health/tree/pre-cleanup-2026-11-20). Current recordings use [hill climbing](hillclimb-night.md) and the Lean screen gate.
 
 [Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
