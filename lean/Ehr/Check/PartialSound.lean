@@ -13,7 +13,7 @@ private theorem accepted_pins (sp prev can p) (h : check sp prev can p = .ok) :
     reviewsPinned sp p = true ∧ landmarksPinned sp p = true ∧ passivePinned sp p = true := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, hr, _, hl, _, hp, _, _⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, hr, _, hl, hp, _⟩
   simp only [Bool.and_eq_true] at hp
   exact ⟨hr, hl, hp.1⟩
 
@@ -23,31 +23,12 @@ theorem accepted_pinRules (sp prev can p) (h : check sp prev can p = .ok) :
     reviewsPinned sp p = true ∧ landmarksPinned sp p = true ∧ passivePinned sp p = true :=
   accepted_pins sp prev can p h
 
-private theorem accepted_depth (sp prev can p) (h : check sp prev can p = .ok) :
-    RequiredWithinDepth sp can p := by
-  have hall := (check_ok_iff sp prev can p).mp h
-  simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hd, _, _, _⟩
-  intro cm hcm rq hrq heq relevant
-  have hr := List.all_eq_true.mp (List.all_eq_true.mp hd cm hcm) rq hrq
-  simp only [heq, relevant, Bool.not_true, bne_self_eq_false, Bool.false_or, List.any_eq_true, Bool.and_eq_true] at hr
-  obtain ⟨sc, hsc, hf, hp⟩ := hr
-  cases hfield : fieldOf? sc.2.kind with
-  | none => simp [hfield] at hf
-  | some f =>
-    simp only [hfield, Option.any_some, beq_iff_eq] at hf
-    cases hpath : shortPathTo p sp.design.maxDepth sc.1.id with
-    | none => simp [hpath] at hp
-    | some hops =>
-      exact ⟨sc, hsc, ⟨f, by simp [hfield], hf⟩,
-        shortPathTo_sound _ _ _ _ hpath⟩
-
-/-- Accepted programs have catalog/ID/reference/depth correctness and all
+/-- Accepted programs have catalog/ID/reference correctness and all
 landmarks on every reachable screen (property 1). -/
 theorem accepted_wellFormed (sp prev can p) (h : check sp prev can p = .ok) :
     WellFormed sp can p := by
   have ht := accepted_structural sp prev can p h
-  refine ⟨ht.1, ht.2.1, ht.2.2.1, ht.2.2.2.1, accepted_depth _ _ _ _ h, ?_⟩
+  refine ⟨ht.1, ht.2.1, ht.2.2.1, ht.2.2.2.1, ?_⟩
   intro facts user _
   exact landmarksPinned_sound ⟨sp, p, facts, user⟩ ht.2.2.2.1.1
     (accepted_pins _ _ _ _ h).2.1
@@ -65,13 +46,13 @@ theorem accepted_reviewsBeforeCommit (sp prev can p) (h : check sp prev can p = 
 required units when any commit occurs (property 7). -/
 theorem accepted_units (sp prev can p) (h : check sp prev can p = .ok) : UnitsRight sp p := by
   have ht := accepted_structural sp prev can p h
-  exact ⟨ht.2.2.2.2.2.2.2.2.2.2.1, fun facts user _ => commitUnitsRight ⟨sp, p, facts, user⟩⟩
+  exact ⟨ht.2.2.2.2.2.2.2.2.2.1, fun facts user _ => commitUnitsRight ⟨sp, p, facts, user⟩⟩
 
 /-- Accepted programs cannot suppress an alert via a macro; interruptive
 alerts must be acknowledged and passive workflow alerts are shown (A1). -/
 theorem accepted_alertsFire (sp prev can p) (h : check sp prev can p = .ok) : AlertsFire sp p := by
   have ht := accepted_structural sp prev can p h
-  exact ⟨ht.2.2.2.2.2.2.2.2.1, fun facts user _ =>
+  exact ⟨ht.2.2.2.2.2.2.2.1, fun facts user _ =>
     ⟨interruptiveHandled ⟨sp, p, facts, user⟩,
       passivePinned_sound ⟨sp, p, facts, user⟩ (accepted_pins _ _ _ _ h).2.2⟩⟩
 
@@ -80,4 +61,6 @@ theorem accepted_alertsFire (sp prev can p) (h : check sp prev can p = .ok) : Al
 #print axioms accepted_reviewsBeforeCommit
 #print axioms accepted_units
 #print axioms accepted_alertsFire
+#print axioms accepted_pins
+
 end Ehr.Check

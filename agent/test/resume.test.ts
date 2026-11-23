@@ -71,6 +71,11 @@ it('records the local night identity and binds it on resume and offline replay',
   const copy = await runDays({...replay, hillclimb:{}});
   expect(JSON.parse(await readFile(copy.dir + '/manifest.json', 'utf8')).hillclimb).toEqual(manifest.hillclimb);
 
+  manifest.hillclimb.objective = 'gross-actions-v1';
+  await writeFile(run.dir + '/manifest.json', JSON.stringify(manifest));
+  await expect(runDays({...common, resume:true})).rejects.toThrow('modeled-time-v1');
+  await expect(runDays({...replay, runId:'gross-policy'})).rejects.toThrow('modeled-time-v1');
+
   // Older hill-climb manifests identified the hosted model at the top level only.
   manifest.hillclimb = {wallMs:manifest.hillclimb.wallMs, reasoningEffort:'high', serviceTier:'default'};
   await writeFile(run.dir + '/manifest.json', JSON.stringify(manifest));

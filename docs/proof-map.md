@@ -16,16 +16,16 @@ run.
 flowchart TB
   subgraph guar_g["Guarantees"]
     proofs["Clinical guarantees<br/>557 theorems, 224 headline"]:::guar
-    check["Program checker<br/>432 theorems, 91 headline"]:::guar
+    check["Program checker<br/>417 theorems, 89 headline"]:::guar
     render["Screen renderer<br/>193 theorems, 12 headline"]:::guar
-    layout["UI library &amp; geometry<br/>325 theorems, 93 headline"]:::guar
+    layout["UI library &amp; geometry<br/>316 theorems, 92 headline"]:::guar
     commit["Commit reducers<br/>23 theorems, 8 headline"]:::guar
     protocol["Commit service protocol<br/>53 theorems, 30 headline"]:::guar
     multi["Multi-actor models<br/>26 theorems, 0 headline"]:::guar
   end
   subgraph spec_g["Specification"]
     core["Rulebook &amp; interpreter<br/>38 theorems, 1 headline"]:::spec
-    props["Safety properties<br/>23 theorems, 0 headline"]:::spec
+    props["Safety properties<br/>22 theorems, 0 headline"]:::spec
     specs["Hospital rules &amp; formulary<br/>6 theorems, 0 headline"]:::spec
   end
   check ==> core
@@ -308,226 +308,225 @@ flowchart LR
   n223["Runtime.workspace_shape"]:::head
   n224["Check.NoNewHuman.humanCaptured"]:::other
   n225["Check.accepted_alertsFire"]:::other
-  n226["Check.accepted_budgets"]:::other
-  n227["Check.accepted_capturesAllOnce"]:::other
-  n228["Check.accepted_humanOnlyKept"]:::other
-  n229["Check.accepted_navigation"]:::other
-  n230["Check.accepted_noFalseAlarms"]:::other
-  n231["Check.accepted_noRepeatInterruptions"]:::other
-  n232["Check.accepted_pinRules"]:::other
-  n233["Check.accepted_reviewsBeforeCommit"]:::other
-  n234["Check.accepted_severityTiers"]:::other
-  n235["Check.accepted_units"]:::other
-  n236["Check.accepted_wellFormed"]:::other
-  n237["Check.accepted_writesOnly"]:::other
-  n238["Check.check_ok_iff"]:::other
-  n239["Check.enteredOnce_at"]:::other
-  n240["Check.entryMet_iff"]:::other
-  n241["Check.goTo_names"]:::other
-  n242["Check.goTo_noNewHuman"]:::other
-  n243["Check.goTo_writesState"]:::other
-  n244["Check.humanStepsByHuman"]:::other
-  n245["Check.interruptsOnce_at"]:::other
-  n246["Check.landmarksPinned_at"]:::other
-  n247["Check.onlyHumanCommitsAndAcks_at"]:::other
-  n248["Check.popupUnacked_step"]:::other
-  n249["Check.reachable_humanCaptured"]:::other
-  n250["Check.reachable_screenNames"]:::other
-  n251["Check.reviewMet_iff"]:::other
-  n252["Check.step_noNewHuman"]:::other
-  n253["Check.writesAllowed"]:::other
-  n254["Proofs.HypothesisExamples.current_certificate_planned"]:::lemma
-  n255["Proofs.HypothesisExamples.sign_button_present"]:::lemma
-  n256["Proofs.HypothesisExamples.weight_field_present"]:::lemma
-  n257["Proofs.MacroSafe.humanOnly"]:::lemma
-  n258["Proofs.MacroSafe.of_eq"]:::lemma
-  n259["Proofs.MacroSafe.refl"]:::lemma
-  n260["Proofs.T0_entry_values_allowed"]:::lemma
-  n261["Proofs.canPopup_not_passive"]:::lemma
-  n262["Proofs.entryMet_witness"]:::lemma
-  n263["Proofs.foldMacro_safe"]:::lemma
-  n264["Proofs.goTo_popup"]:::lemma
-  n265["Proofs.goTo_safe"]:::lemma
-  n266["Proofs.init_popup"]:::lemma
-  n267["Proofs.macroStep_eq_macroAct"]:::lemma
-  n268["Proofs.mem_popupCandidates"]:::lemma
-  n269["Proofs.prefillScreen_frame"]:::lemma
-  n270["Proofs.prefillScreen_popup"]:::lemma
-  n271["Proofs.prefillScreen_safe"]:::lemma
-  n272["Proofs.reviewMet_sound"]:::lemma
-  n273["Proofs.runMacro_safe"]:::lemma
-  n274["Proofs.stepCore_macro_safe"]:::lemma
-  n275["Proofs.step_guarded"]:::lemma
-  n276["Proofs.step_popup"]:::lemma
-  n277["Proofs.valueSatisfies_cosign"]:::lemma
-  n278["Render.D3_all_buttons"]:::other
-  n279["Render.D3_honest_actions"]:::other
-  n280["Render.D6_field_labels"]:::other
-  n281["Runtime.BoundEpisode.Hydrates.bound"]:::lemma
-  n282["Runtime.BoundEpisode.Hydrates.unbound"]:::lemma
-  n283["Runtime.ClinicalWitness.accepted"]:::lemma
-  n284["Runtime.ClinicalWitness.user_role"]:::lemma
-  n285["Runtime.EpisodeAccepted.enteredOnce"]:::lemma
-  n286["Runtime.EpisodeAccepted.interruptsOnce"]:::lemma
-  n287["Runtime.EpisodeAccepted.landmarksShown"]:::lemma
-  n288["Runtime.EpisodeAccepted.onlyHumanCommitsAndAcks"]:::lemma
-  n289["Runtime.FixedAccepted.alertsOnlyWhenTrue"]:::lemma
-  n290["Runtime.FixedAccepted.writesAllowed"]:::lemma
-  n291["Runtime.Hydrated.bound"]:::lemma
-  n292["Runtime.Hydrated.eq"]:::lemma
-  n293["Runtime.Hydrated.hydrates"]:::lemma
-  n294["Runtime.Hydrated.patient"]:::lemma
-  n295["Runtime.Hydrated.unheld"]:::lemma
-  n296["Runtime.InEpisode.hydrates"]:::lemma
-  n297["Runtime.Settled.idle"]:::lemma
-  n298["Runtime.Settled.unacked"]:::lemma
-  n299["Runtime.Witness.accepted"]:::lemma
-  n300["Runtime.Witness.chart_hydrates"]:::lemma
-  n301["Runtime.Witness.reopen_hydrates"]:::lemma
-  n302["Runtime.Witness.workspace_noNavigation"]:::lemma
-  n303["Runtime.actionStatus_critical"]:::lemma
-  n304["Runtime.alertHolds_critical"]:::lemma
-  n305["Runtime.alertShownInline_critical"]:::lemma
-  n306["Runtime.alertsAcked_critical"]:::lemma
-  n307["Runtime.alertsOnlyWhenTrue_from"]:::lemma
-  n308["Runtime.applies_critical"]:::lemma
-  n309["Runtime.bound_of_context"]:::lemma
-  n310["Runtime.bound_patient"]:::lemma
-  n311["Runtime.chart_commits"]:::lemma
-  n312["Runtime.chart_unbound"]:::lemma
-  n313["Runtime.clickedMacro_critical"]:::lemma
-  n314["Runtime.clinicalEval_critical"]:::lemma
-  n315["Runtime.commitButtonShown_critical"]:::lemma
-  n316["Runtime.commitCapturesAll_from"]:::lemma
-  n317["Runtime.commitReviewsMet_from"]:::lemma
-  n318["Runtime.commitScreenShowsReviews_from"]:::lemma
-  n319["Runtime.commitUnitsRight_from"]:::lemma
-  n320["Runtime.compShown_critical"]:::lemma
-  n321["Runtime.cosignIsSecondUser_from"]:::lemma
-  n322["Runtime.draft_bind"]:::lemma
-  n323["Runtime.draft_lookup"]:::lemma
-  n324["Runtime.enteredOnce_from"]:::lemma
-  n325["Runtime.entryMetIn_critical"]:::lemma
-  n326["Runtime.find_filter_ne"]:::lemma
-  n327["Runtime.guardBase_critical"]:::lemma
-  n328["Runtime.handled_or_core"]:::lemma
-  n329["Runtime.humanEntries_from"]:::lemma
-  n330["Runtime.hydrates_hydrated"]:::lemma
-  n331["Runtime.infoShownIn_critical"]:::lemma
-  n332["Runtime.init_context"]:::lemma
-  n333["Runtime.init_critical"]:::lemma
-  n334["Runtime.input_notPassive"]:::lemma
-  n335["Runtime.input_popup"]:::lemma
-  n336["Runtime.interruptiveHandled_from"]:::lemma
-  n337["Runtime.itemView_critical"]:::lemma
-  n338["Runtime.lookup_filter_ne"]:::lemma
-  n339["Runtime.lookup_filter_self"]:::lemma
-  n340["Runtime.obligationViews_critical"]:::lemma
-  n341["Runtime.onlyHumanCommitsAndAcks_from"]:::lemma
-  n342["Runtime.others_getD"]:::lemma
-  n343["Runtime.passiveShownInline_from"]:::lemma
-  n344["Runtime.prefillScreen_keepsHistory"]:::lemma
-  n345["Runtime.restorable_spec"]:::lemma
-  n346["Runtime.reviewMetIn_critical"]:::lemma
-  n347["Runtime.runMacro_context"]:::lemma
-  n348["Runtime.runMacro_critical"]:::lemma
-  n349["Runtime.runMacro_drafts"]:::lemma
-  n350["Runtime.screenNames_from"]:::lemma
-  n351["Runtime.session_closed"]:::lemma
-  n352["Runtime.session_core"]:::lemma
-  n353["Runtime.session_handled"]:::lemma
-  n354["Runtime.session_open"]:::lemma
-  n355["Runtime.session_query"]:::lemma
-  n356["Runtime.settled_bind"]:::lemma
-  n357["Runtime.settled_step"]:::lemma
-  n358["Runtime.start_critical"]:::lemma
-  n359["Runtime.stepCore_context"]:::lemma
-  n360["Runtime.stepCore_critical"]:::lemma
-  n361["Runtime.stepCore_drafts"]:::lemma
-  n362["Runtime.step_keepsHistory"]:::lemma
-  n363["Runtime.step_popup_blocks"]:::lemma
-  n364["Runtime.unselected_unbound"]:::lemma
-  n365["Runtime.workspace_cases"]:::lemma
-  n366["Runtime.workspace_first"]:::lemma
-  n367["Runtime.writesAllowed_from"]:::lemma
-  n0 --> n268
-  n0 --> n276
+  n226["Check.accepted_capturesAllOnce"]:::other
+  n227["Check.accepted_humanOnlyKept"]:::other
+  n228["Check.accepted_navigation"]:::other
+  n229["Check.accepted_noFalseAlarms"]:::other
+  n230["Check.accepted_pinRules"]:::other
+  n231["Check.accepted_reviewsBeforeCommit"]:::other
+  n232["Check.accepted_severityTiers"]:::other
+  n233["Check.accepted_units"]:::other
+  n234["Check.accepted_wellFormed"]:::other
+  n235["Check.accepted_writesOnly"]:::other
+  n236["Check.check_ok_iff"]:::other
+  n237["Check.enteredOnce_at"]:::other
+  n238["Check.entryMet_iff"]:::other
+  n239["Check.goTo_names"]:::other
+  n240["Check.goTo_noNewHuman"]:::other
+  n241["Check.goTo_writesState"]:::other
+  n242["Check.humanStepsByHuman"]:::other
+  n243["Check.interruptsOnce"]:::other
+  n244["Check.interruptsOnce_at"]:::other
+  n245["Check.landmarksPinned_at"]:::other
+  n246["Check.onlyHumanCommitsAndAcks_at"]:::other
+  n247["Check.popupUnacked_step"]:::other
+  n248["Check.reachable_humanCaptured"]:::other
+  n249["Check.reachable_screenNames"]:::other
+  n250["Check.reviewMet_iff"]:::other
+  n251["Check.step_noNewHuman"]:::other
+  n252["Check.writesAllowed"]:::other
+  n253["Proofs.HypothesisExamples.current_certificate_planned"]:::lemma
+  n254["Proofs.HypothesisExamples.sign_button_present"]:::lemma
+  n255["Proofs.HypothesisExamples.weight_field_present"]:::lemma
+  n256["Proofs.MacroSafe.humanOnly"]:::lemma
+  n257["Proofs.MacroSafe.of_eq"]:::lemma
+  n258["Proofs.MacroSafe.refl"]:::lemma
+  n259["Proofs.T0_entry_values_allowed"]:::lemma
+  n260["Proofs.canPopup_not_passive"]:::lemma
+  n261["Proofs.entryMet_witness"]:::lemma
+  n262["Proofs.foldMacro_safe"]:::lemma
+  n263["Proofs.goTo_popup"]:::lemma
+  n264["Proofs.goTo_safe"]:::lemma
+  n265["Proofs.init_popup"]:::lemma
+  n266["Proofs.macroStep_eq_macroAct"]:::lemma
+  n267["Proofs.mem_popupCandidates"]:::lemma
+  n268["Proofs.prefillScreen_frame"]:::lemma
+  n269["Proofs.prefillScreen_popup"]:::lemma
+  n270["Proofs.prefillScreen_safe"]:::lemma
+  n271["Proofs.reviewMet_sound"]:::lemma
+  n272["Proofs.runMacro_safe"]:::lemma
+  n273["Proofs.stepCore_macro_safe"]:::lemma
+  n274["Proofs.step_guarded"]:::lemma
+  n275["Proofs.step_popup"]:::lemma
+  n276["Proofs.valueSatisfies_cosign"]:::lemma
+  n277["Render.D3_all_buttons"]:::other
+  n278["Render.D3_honest_actions"]:::other
+  n279["Render.D6_field_labels"]:::other
+  n280["Runtime.BoundEpisode.Hydrates.bound"]:::lemma
+  n281["Runtime.BoundEpisode.Hydrates.unbound"]:::lemma
+  n282["Runtime.ClinicalWitness.accepted"]:::lemma
+  n283["Runtime.ClinicalWitness.user_role"]:::lemma
+  n284["Runtime.EpisodeAccepted.enteredOnce"]:::lemma
+  n285["Runtime.EpisodeAccepted.interruptsOnce"]:::lemma
+  n286["Runtime.EpisodeAccepted.landmarksShown"]:::lemma
+  n287["Runtime.EpisodeAccepted.onlyHumanCommitsAndAcks"]:::lemma
+  n288["Runtime.FixedAccepted.alertsOnlyWhenTrue"]:::lemma
+  n289["Runtime.FixedAccepted.writesAllowed"]:::lemma
+  n290["Runtime.Hydrated.bound"]:::lemma
+  n291["Runtime.Hydrated.eq"]:::lemma
+  n292["Runtime.Hydrated.hydrates"]:::lemma
+  n293["Runtime.Hydrated.patient"]:::lemma
+  n294["Runtime.Hydrated.unheld"]:::lemma
+  n295["Runtime.InEpisode.hydrates"]:::lemma
+  n296["Runtime.Settled.idle"]:::lemma
+  n297["Runtime.Settled.unacked"]:::lemma
+  n298["Runtime.Witness.accepted"]:::lemma
+  n299["Runtime.Witness.chart_hydrates"]:::lemma
+  n300["Runtime.Witness.reopen_hydrates"]:::lemma
+  n301["Runtime.Witness.workspace_noNavigation"]:::lemma
+  n302["Runtime.actionStatus_critical"]:::lemma
+  n303["Runtime.alertHolds_critical"]:::lemma
+  n304["Runtime.alertShownInline_critical"]:::lemma
+  n305["Runtime.alertsAcked_critical"]:::lemma
+  n306["Runtime.alertsOnlyWhenTrue_from"]:::lemma
+  n307["Runtime.applies_critical"]:::lemma
+  n308["Runtime.bound_of_context"]:::lemma
+  n309["Runtime.bound_patient"]:::lemma
+  n310["Runtime.chart_commits"]:::lemma
+  n311["Runtime.chart_unbound"]:::lemma
+  n312["Runtime.clickedMacro_critical"]:::lemma
+  n313["Runtime.clinicalEval_critical"]:::lemma
+  n314["Runtime.commitButtonShown_critical"]:::lemma
+  n315["Runtime.commitCapturesAll_from"]:::lemma
+  n316["Runtime.commitReviewsMet_from"]:::lemma
+  n317["Runtime.commitScreenShowsReviews_from"]:::lemma
+  n318["Runtime.commitUnitsRight_from"]:::lemma
+  n319["Runtime.compShown_critical"]:::lemma
+  n320["Runtime.cosignIsSecondUser_from"]:::lemma
+  n321["Runtime.draft_bind"]:::lemma
+  n322["Runtime.draft_lookup"]:::lemma
+  n323["Runtime.enteredOnce_from"]:::lemma
+  n324["Runtime.entryMetIn_critical"]:::lemma
+  n325["Runtime.find_filter_ne"]:::lemma
+  n326["Runtime.guardBase_critical"]:::lemma
+  n327["Runtime.handled_or_core"]:::lemma
+  n328["Runtime.humanEntries_from"]:::lemma
+  n329["Runtime.hydrates_hydrated"]:::lemma
+  n330["Runtime.infoShownIn_critical"]:::lemma
+  n331["Runtime.init_context"]:::lemma
+  n332["Runtime.init_critical"]:::lemma
+  n333["Runtime.input_notPassive"]:::lemma
+  n334["Runtime.input_popup"]:::lemma
+  n335["Runtime.interruptiveHandled_from"]:::lemma
+  n336["Runtime.itemView_critical"]:::lemma
+  n337["Runtime.lookup_filter_ne"]:::lemma
+  n338["Runtime.lookup_filter_self"]:::lemma
+  n339["Runtime.obligationViews_critical"]:::lemma
+  n340["Runtime.onlyHumanCommitsAndAcks_from"]:::lemma
+  n341["Runtime.others_getD"]:::lemma
+  n342["Runtime.passiveShownInline_from"]:::lemma
+  n343["Runtime.prefillScreen_keepsHistory"]:::lemma
+  n344["Runtime.restorable_spec"]:::lemma
+  n345["Runtime.reviewMetIn_critical"]:::lemma
+  n346["Runtime.runMacro_context"]:::lemma
+  n347["Runtime.runMacro_critical"]:::lemma
+  n348["Runtime.runMacro_drafts"]:::lemma
+  n349["Runtime.screenNames_from"]:::lemma
+  n350["Runtime.session_closed"]:::lemma
+  n351["Runtime.session_core"]:::lemma
+  n352["Runtime.session_handled"]:::lemma
+  n353["Runtime.session_open"]:::lemma
+  n354["Runtime.session_query"]:::lemma
+  n355["Runtime.settled_bind"]:::lemma
+  n356["Runtime.settled_step"]:::lemma
+  n357["Runtime.start_critical"]:::lemma
+  n358["Runtime.stepCore_context"]:::lemma
+  n359["Runtime.stepCore_critical"]:::lemma
+  n360["Runtime.stepCore_drafts"]:::lemma
+  n361["Runtime.step_keepsHistory"]:::lemma
+  n362["Runtime.step_popup_blocks"]:::lemma
+  n363["Runtime.unselected_unbound"]:::lemma
+  n364["Runtime.workspace_cases"]:::lemma
+  n365["Runtime.workspace_first"]:::lemma
+  n366["Runtime.writesAllowed_from"]:::lemma
+  n0 --> n267
+  n0 --> n275
   n3 --> n4
   n4 --> n5
-  n4 --> n266
-  n5 --> n261
-  n5 --> n268
-  n5 --> n276
-  n6 --> n255
-  n6 --> n278
+  n4 --> n265
+  n5 --> n260
+  n5 --> n267
+  n5 --> n275
+  n6 --> n254
+  n6 --> n277
   n7 --> n24
   n8 --> n5
-  n9 --> n254
+  n9 --> n253
   n9 --> n28
-  n10 --> n254
+  n10 --> n253
   n10 --> n29
   n11 --> n22
   n12 --> n30
   n13 --> n2
   n14 --> n23
-  n15 --> n255
-  n15 --> n279
-  n16 --> n256
-  n16 --> n280
-  n20 --> n275
-  n21 --> n260
+  n15 --> n254
+  n15 --> n278
+  n16 --> n255
+  n16 --> n279
+  n20 --> n274
+  n21 --> n259
   n22 --> n20
   n22 --> n33
-  n22 --> n272
+  n22 --> n271
   n23 --> n22
   n24 --> n20
   n24 --> n33
-  n24 --> n262
-  n24 --> n277
+  n24 --> n261
+  n24 --> n276
   n25 --> n17
   n25 --> n18
-  n25 --> n257
+  n25 --> n256
   n25 --> n19
-  n25 --> n273
+  n25 --> n272
   n26 --> n17
   n26 --> n18
-  n26 --> n257
+  n26 --> n256
   n26 --> n19
-  n26 --> n274
-  n27 --> n269
+  n26 --> n273
+  n27 --> n268
   n29 --> n28
   n30 --> n28
-  n31 --> n267
+  n31 --> n266
   n32 --> n17
   n32 --> n18
-  n32 --> n257
+  n32 --> n256
   n32 --> n19
   n32 --> n31
-  n32 --> n263
+  n32 --> n262
   n34 --> n31
+  n35 --> n257
   n35 --> n258
-  n35 --> n259
   n36 --> n0
-  n36 --> n335
+  n36 --> n334
   n36 --> n215
   n37 --> n2
-  n38 --> n266
+  n38 --> n265
   n38 --> n39
   n39 --> n5
-  n39 --> n334
+  n39 --> n333
   n39 --> n215
+  n41 --> n282
   n41 --> n283
-  n41 --> n284
-  n41 --> n289
+  n41 --> n288
   n41 --> n93
   n42 --> n186
+  n44 --> n290
   n44 --> n291
-  n44 --> n292
-  n44 --> n294
+  n44 --> n293
   n45 --> n46
   n48 --> n20
   n48 --> n110
-  n49 --> n260
+  n49 --> n259
   n49 --> n110
   n50 --> n22
   n50 --> n110
@@ -535,15 +534,15 @@ flowchart LR
   n51 --> n110
   n52 --> n24
   n52 --> n110
-  n53 --> n300
-  n54 --> n286
-  n54 --> n288
+  n53 --> n299
+  n54 --> n285
+  n54 --> n287
   n54 --> n53
   n54 --> n60
-  n55 --> n285
+  n55 --> n284
   n55 --> n53
   n55 --> n60
-  n56 --> n287
+  n56 --> n286
   n56 --> n53
   n56 --> n60
   n56 --> n143
@@ -551,36 +550,36 @@ flowchart LR
   n60 --> n92
   n63 --> n218
   n65 --> n219
-  n66 --> n238
-  n71 --> n301
+  n66 --> n236
+  n71 --> n300
   n71 --> n86
   n71 --> n92
   n72 --> n57
   n79 --> n218
   n81 --> n216
   n84 --> n83
-  n84 --> n302
+  n84 --> n301
   n84 --> n117
   n85 --> n200
-  n86 --> n238
-  n87 --> n290
-  n87 --> n299
+  n86 --> n236
+  n87 --> n289
+  n87 --> n298
   n87 --> n93
-  n92 --> n232
-  n92 --> n236
-  n92 --> n237
-  n92 --> n307
+  n92 --> n230
+  n92 --> n234
+  n92 --> n235
+  n92 --> n306
   n92 --> n103
   n92 --> n104
   n92 --> n105
   n92 --> n106
   n92 --> n107
+  n92 --> n315
   n92 --> n316
   n92 --> n317
   n92 --> n318
-  n92 --> n319
-  n92 --> n321
-  n92 --> n324
+  n92 --> n320
+  n92 --> n323
   n92 --> n124
   n92 --> n127
   n92 --> n128
@@ -595,26 +594,26 @@ flowchart LR
   n92 --> n140
   n92 --> n141
   n92 --> n145
-  n92 --> n329
-  n92 --> n336
+  n92 --> n328
+  n92 --> n335
   n92 --> n159
   n92 --> n160
-  n92 --> n341
-  n92 --> n343
+  n92 --> n340
+  n92 --> n342
   n92 --> n191
   n92 --> n192
   n92 --> n195
   n92 --> n210
-  n92 --> n367
+  n92 --> n366
   n93 --> n225
+  n93 --> n226
   n93 --> n227
-  n93 --> n228
-  n93 --> n230
+  n93 --> n229
   n93 --> n231
   n93 --> n233
+  n93 --> n234
   n93 --> n235
-  n93 --> n236
-  n93 --> n237
+  n93 --> n243
   n93 --> n166
   n93 --> n168
   n93 --> n169
@@ -629,105 +628,103 @@ flowchart LR
   n93 --> n179
   n93 --> n180
   n93 --> n183
-  n94 --> n234
+  n94 --> n232
   n94 --> n38
   n95 --> n225
   n95 --> n226
   n95 --> n227
   n95 --> n228
   n95 --> n229
-  n95 --> n230
-  n95 --> n231
+  n95 --> n232
+  n95 --> n233
   n95 --> n234
   n95 --> n235
-  n95 --> n236
-  n95 --> n237
   n96 --> n156
   n96 --> n162
-  n97 --> n314
+  n97 --> n313
   n99 --> n18
   n99 --> n19
+  n99 --> n263
   n99 --> n264
-  n99 --> n265
+  n99 --> n269
   n99 --> n270
-  n99 --> n271
   n102 --> n101
   n102 --> n119
-  n102 --> n365
+  n102 --> n364
   n103 --> n224
-  n103 --> n242
-  n103 --> n249
-  n104 --> n241
-  n104 --> n250
+  n103 --> n240
+  n103 --> n248
+  n104 --> n239
+  n104 --> n249
+  n105 --> n240
   n105 --> n242
-  n105 --> n244
-  n106 --> n264
-  n106 --> n266
-  n107 --> n243
-  n107 --> n253
-  n108 --> n306
-  n108 --> n327
-  n109 --> n247
+  n106 --> n263
+  n106 --> n265
+  n107 --> n241
+  n107 --> n252
+  n108 --> n305
+  n108 --> n326
+  n109 --> n246
   n109 --> n110
   n109 --> n112
   n110 --> n157
   n110 --> n163
-  n111 --> n240
+  n111 --> n238
   n111 --> n33
   n111 --> n48
-  n112 --> n293
+  n112 --> n292
   n112 --> n100
   n112 --> n151
   n113 --> n33
   n113 --> n48
-  n114 --> n251
+  n114 --> n250
   n114 --> n33
   n114 --> n48
   n115 --> n49
-  n116 --> n332
+  n116 --> n331
   n116 --> n212
-  n117 --> n344
-  n117 --> n362
+  n117 --> n343
+  n117 --> n361
   n118 --> n119
   n121 --> n102
   n121 --> n198
   n121 --> n199
-  n121 --> n352
-  n122 --> n322
+  n121 --> n351
+  n122 --> n321
   n122 --> n121
   n123 --> n142
-  n124 --> n304
+  n124 --> n303
   n124 --> n97
-  n124 --> n305
+  n124 --> n304
   n124 --> n125
-  n125 --> n296
+  n125 --> n295
   n125 --> n142
-  n126 --> n281
-  n126 --> n296
-  n126 --> n309
+  n126 --> n280
+  n126 --> n295
+  n126 --> n308
   n126 --> n131
-  n127 --> n325
+  n127 --> n324
   n127 --> n134
   n128 --> n134
-  n128 --> n346
-  n129 --> n315
+  n128 --> n345
+  n129 --> n314
   n129 --> n125
-  n129 --> n346
-  n130 --> n308
+  n129 --> n345
+  n130 --> n307
   n130 --> n134
-  n131 --> n281
+  n131 --> n280
   n131 --> n40
-  n131 --> n296
-  n131 --> n309
+  n131 --> n295
+  n131 --> n308
   n131 --> n144
   n131 --> n146
   n131 --> n212
-  n132 --> n308
+  n132 --> n307
   n132 --> n134
-  n133 --> n313
+  n133 --> n312
   n133 --> n134
   n134 --> n40
-  n134 --> n296
+  n134 --> n295
   n134 --> n126
   n134 --> n142
   n134 --> n144
@@ -738,67 +735,67 @@ flowchart LR
   n137 --> n125
   n137 --> n134
   n138 --> n125
-  n138 --> n331
+  n138 --> n330
   n139 --> n116
   n139 --> n126
   n140 --> n134
+  n141 --> n303
   n141 --> n304
-  n141 --> n305
   n141 --> n125
   n142 --> n40
-  n142 --> n296
+  n142 --> n295
   n142 --> n126
   n142 --> n144
   n142 --> n146
-  n142 --> n358
+  n142 --> n357
   n142 --> n213
   n143 --> n126
-  n144 --> n328
+  n144 --> n327
   n144 --> n221
   n145 --> n125
-  n146 --> n281
+  n146 --> n280
   n146 --> n40
-  n146 --> n282
-  n146 --> n366
+  n146 --> n281
+  n146 --> n365
   n147 --> n149
   n150 --> n154
-  n151 --> n247
-  n151 --> n292
+  n151 --> n246
+  n151 --> n291
   n151 --> n45
   n151 --> n102
-  n151 --> n311
-  n151 --> n330
-  n152 --> n366
+  n151 --> n310
+  n151 --> n329
+  n152 --> n365
   n153 --> n154
-  n154 --> n366
+  n154 --> n365
   n156 --> n99
   n157 --> n99
   n158 --> n99
-  n159 --> n245
-  n159 --> n248
-  n160 --> n246
-  n160 --> n350
+  n159 --> n244
+  n159 --> n247
+  n160 --> n245
+  n160 --> n349
   n162 --> n215
   n163 --> n215
   n164 --> n215
   n165 --> n181
-  n166 --> n304
+  n166 --> n303
   n166 --> n97
-  n166 --> n305
+  n166 --> n304
   n166 --> n167
   n167 --> n181
-  n168 --> n325
+  n168 --> n324
   n168 --> n174
   n169 --> n174
-  n169 --> n346
-  n170 --> n315
+  n169 --> n345
+  n170 --> n314
   n170 --> n167
-  n170 --> n346
-  n171 --> n308
+  n170 --> n345
+  n171 --> n307
   n171 --> n174
-  n172 --> n308
+  n172 --> n307
   n172 --> n174
-  n173 --> n313
+  n173 --> n312
   n173 --> n174
   n174 --> n181
   n174 --> n182
@@ -807,50 +804,50 @@ flowchart LR
   n176 --> n174
   n177 --> n167
   n177 --> n174
-  n178 --> n331
+  n178 --> n330
   n178 --> n167
   n179 --> n174
+  n180 --> n303
   n180 --> n304
-  n180 --> n305
   n180 --> n167
-  n181 --> n333
+  n181 --> n332
   n181 --> n182
   n182 --> n119
   n182 --> n213
   n183 --> n167
-  n184 --> n323
-  n184 --> n338
-  n184 --> n342
+  n184 --> n322
+  n184 --> n337
+  n184 --> n341
   n185 --> n101
   n185 --> n120
   n185 --> n155
   n185 --> n186
   n185 --> n222
   n186 --> n120
-  n186 --> n363
-  n187 --> n245
-  n187 --> n295
-  n187 --> n297
+  n186 --> n362
+  n187 --> n244
+  n187 --> n294
+  n187 --> n296
   n187 --> n100
   n187 --> n102
   n189 --> n47
+  n189 --> n296
   n189 --> n297
-  n189 --> n298
-  n189 --> n357
+  n189 --> n356
   n190 --> n158
   n190 --> n164
-  n191 --> n345
+  n191 --> n344
   n191 --> n194
-  n192 --> n345
+  n192 --> n344
   n192 --> n194
-  n195 --> n345
+  n195 --> n344
   n195 --> n194
-  n198 --> n326
-  n198 --> n342
+  n198 --> n325
+  n198 --> n341
   n198 --> n184
-  n199 --> n339
-  n199 --> n342
-  n200 --> n298
+  n199 --> n338
+  n199 --> n341
+  n200 --> n297
   n200 --> n52
   n200 --> n109
   n200 --> n111
@@ -861,163 +858,165 @@ flowchart LR
   n200 --> n201
   n200 --> n203
   n200 --> n204
-  n201 --> n245
-  n201 --> n247
+  n201 --> n244
+  n201 --> n246
   n201 --> n102
   n201 --> n202
+  n201 --> n350
   n201 --> n351
   n201 --> n352
-  n201 --> n353
   n201 --> n205
+  n201 --> n353
   n201 --> n354
-  n201 --> n355
   n202 --> n44
-  n202 --> n292
-  n202 --> n295
+  n202 --> n291
+  n202 --> n294
   n202 --> n100
   n202 --> n184
   n202 --> n193
   n202 --> n194
-  n202 --> n351
-  n202 --> n354
-  n203 --> n239
+  n202 --> n350
+  n202 --> n353
+  n203 --> n237
   n203 --> n102
   n203 --> n202
+  n203 --> n350
   n203 --> n351
   n203 --> n352
-  n203 --> n353
   n203 --> n205
+  n203 --> n353
   n203 --> n354
-  n203 --> n355
-  n204 --> n252
+  n204 --> n251
   n204 --> n47
   n204 --> n102
   n204 --> n105
   n204 --> n202
+  n204 --> n350
   n204 --> n351
   n204 --> n352
-  n204 --> n353
   n204 --> n205
+  n204 --> n353
   n204 --> n354
   n204 --> n355
-  n204 --> n356
-  n205 --> n312
+  n205 --> n311
   n205 --> n198
   n205 --> n199
-  n205 --> n351
-  n205 --> n354
+  n205 --> n350
+  n205 --> n353
   n206 --> n199
   n207 --> n208
+  n208 --> n280
   n208 --> n281
-  n208 --> n282
   n208 --> n98
-  n209 --> n311
+  n209 --> n310
   n209 --> n106
   n209 --> n208
   n210 --> n208
   n211 --> n207
-  n212 --> n347
-  n212 --> n359
-  n213 --> n313
-  n213 --> n348
-  n213 --> n360
-  n214 --> n349
-  n214 --> n361
+  n212 --> n346
+  n212 --> n358
+  n213 --> n312
+  n213 --> n347
+  n213 --> n359
+  n214 --> n348
+  n214 --> n360
   n215 --> n101
   n215 --> n118
   n215 --> n223
   n216 --> n126
-  n218 --> n310
+  n218 --> n309
   n218 --> n126
   n219 --> n217
-  n219 --> n364
-  n220 --> n303
-  n220 --> n320
-  n220 --> n337
-  n220 --> n340
+  n219 --> n363
+  n220 --> n302
+  n220 --> n319
+  n220 --> n336
+  n220 --> n339
   n221 --> n101
-  n221 --> n310
-  n222 --> n363
-  n226 --> n238
-  n228 --> n244
-  n229 --> n238
-  n237 --> n253
-  n244 --> n249
-  n247 --> n17
-  n247 --> n18
-  n247 --> n26
-  n247 --> n273
-  n248 --> n0
-  n260 --> n20
-  n263 --> n259
-  n264 --> n270
-  n265 --> n258
-  n265 --> n259
-  n266 --> n270
-  n270 --> n269
-  n271 --> n269
-  n273 --> n259
-  n274 --> n259
-  n274 --> n35
-  n275 --> n18
-  n275 --> n273
-  n278 --> n279
-  n303 --> n327
-  n304 --> n97
-  n306 --> n97
-  n311 --> n18
-  n311 --> n265
-  n311 --> n271
-  n316 --> n240
+  n221 --> n309
+  n222 --> n362
+  n227 --> n242
+  n228 --> n236
+  n235 --> n252
+  n242 --> n248
+  n243 --> n244
+  n243 --> n247
+  n243 --> n265
+  n246 --> n17
+  n246 --> n18
+  n246 --> n26
+  n246 --> n272
+  n247 --> n0
+  n259 --> n20
+  n262 --> n258
+  n263 --> n269
+  n264 --> n257
+  n264 --> n258
+  n265 --> n269
+  n269 --> n268
+  n270 --> n268
+  n272 --> n258
+  n273 --> n258
+  n273 --> n35
+  n274 --> n18
+  n274 --> n272
+  n277 --> n278
+  n302 --> n326
+  n303 --> n97
+  n305 --> n97
+  n310 --> n18
+  n310 --> n264
+  n310 --> n270
+  n315 --> n238
+  n315 --> n20
+  n315 --> n33
+  n316 --> n250
   n316 --> n20
   n316 --> n33
-  n317 --> n251
-  n317 --> n20
-  n317 --> n33
-  n318 --> n350
-  n319 --> n21
-  n320 --> n304
-  n321 --> n24
-  n322 --> n292
-  n322 --> n100
-  n322 --> n339
-  n322 --> n342
-  n322 --> n184
-  n324 --> n239
-  n325 --> n308
-  n328 --> n119
-  n328 --> n213
-  n329 --> n252
-  n330 --> n100
+  n317 --> n349
+  n318 --> n21
+  n319 --> n303
+  n320 --> n24
+  n321 --> n291
+  n321 --> n100
+  n321 --> n338
+  n321 --> n341
+  n321 --> n184
+  n323 --> n237
+  n324 --> n307
+  n327 --> n119
+  n327 --> n213
+  n328 --> n251
+  n329 --> n100
+  n333 --> n99
   n334 --> n99
-  n335 --> n99
-  n336 --> n20
-  n336 --> n33
-  n337 --> n304
-  n337 --> n320
-  n338 --> n326
-  n341 --> n247
-  n346 --> n308
-  n346 --> n331
-  n352 --> n212
-  n352 --> n214
-  n355 --> n351
-  n356 --> n44
-  n356 --> n292
-  n356 --> n100
-  n356 --> n103
-  n356 --> n106
-  n356 --> n192
-  n357 --> n248
-  n357 --> n47
-  n357 --> n297
-  n357 --> n298
-  n357 --> n102
-  n357 --> n356
-  n357 --> n212
-  n358 --> n208
-  n360 --> n320
-  n366 --> n310
+  n335 --> n20
+  n335 --> n33
+  n336 --> n303
+  n336 --> n319
+  n337 --> n325
+  n340 --> n246
+  n345 --> n307
+  n345 --> n330
+  n351 --> n212
+  n351 --> n214
+  n354 --> n350
+  n355 --> n44
+  n355 --> n291
+  n355 --> n100
+  n355 --> n103
+  n355 --> n106
+  n355 --> n192
+  n356 --> n247
+  n356 --> n47
+  n356 --> n296
+  n356 --> n297
+  n356 --> n102
+  n356 --> n355
+  n356 --> n212
+  n357 --> n208
+  n359 --> n319
+  n365 --> n309
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46
@@ -1025,7 +1024,7 @@ flowchart LR
 
 </details>
 
-<details><summary><b>Program checker</b>: 91 headline claims. The checker that admits agent-written programs and its soundness: acceptance implies the screen properties (accepted_*), plus completability.</summary>
+<details><summary><b>Program checker</b>: 89 headline claims. The checker that admits agent-written programs and its soundness: acceptance implies the screen properties (accepted_*), plus completability.</summary>
 
 ```mermaid
 flowchart LR
@@ -1056,378 +1055,367 @@ flowchart LR
   n24["Check.T8_v2_to_v3"]:::head
   n25["Check.accepted_D5"]:::head
   n26["Check.accepted_alertsFire"]:::head
-  n27["Check.accepted_budgets"]:::head
-  n28["Check.accepted_capturesAllOnce"]:::head
-  n29["Check.accepted_contextRetained"]:::head
-  n30["Check.accepted_contracts"]:::head
-  n31["Check.accepted_criticalIds"]:::head
-  n32["Check.accepted_critical_no_shadow"]:::head
-  n33["Check.accepted_humanOnlyKept"]:::head
-  n34["Check.accepted_navigation"]:::head
-  n35["Check.accepted_navigationLabels"]:::head
-  n36["Check.accepted_noFalseAlarms"]:::head
-  n37["Check.accepted_noRepeatInterruptions"]:::head
-  n38["Check.accepted_pinRules"]:::head
-  n39["Check.accepted_reviewsBeforeCommit"]:::head
-  n40["Check.accepted_servicePriorAuth"]:::head
-  n41["Check.accepted_severityTiers"]:::head
-  n42["Check.accepted_units"]:::head
-  n43["Check.accepted_wellFormed"]:::head
-  n44["Check.accepted_writesOnly"]:::head
-  n45["Check.alertKeys_of_captured"]:::head
-  n46["Check.alertsAcked_of_no_candidates"]:::head
-  n47["Check.automated_lines_satisfies"]:::head
-  n48["Check.cached_completion_eq"]:::head
-  n49["Check.completable_imp_completableWhereFeasible"]:::head
-  n50["Check.completion_dependency_rejected"]:::head
-  n51["Check.contextDestinations_sound"]:::head
-  n52["Check.contextProvider_sound"]:::head
-  n53["Check.contextRetained_sound"]:::head
-  n54["Check.contextShownAux_sound"]:::head
-  n55["Check.critical_handle_reserved"]:::head
-  n56["Check.enteredOnce_at"]:::head
-  n57["Check.fixed_lines_pending_nonempty"]:::head
-  n58["Check.fixed_lines_satisfies"]:::head
-  n59["Check.goTo_noNewHuman"]:::head
-  n60["Check.goTo_writesState"]:::head
-  n61["Check.human_finish_ready"]:::head
-  n62["Check.human_finish_ready_unique"]:::head
-  n63["Check.interruptsOnce_at"]:::head
-  n64["Check.landmarksPinned_at"]:::head
-  n65["Check.many_alerts_satisfies"]:::head
-  n66["Check.many_alerts_two_acknowledgments"]:::head
-  n67["Check.missing_payload_not_commitFeasible"]:::head
-  n68["Check.onlyHumanCommitsAndAcks_at"]:::head
-  n69["Check.passivePinned_at"]:::head
-  n70["Check.popupKeys_step"]:::head
-  n71["Check.popupUnacked_step"]:::head
-  n72["Check.prefill_macro_human_completion"]:::head
-  n73["Check.reachable_drugSlots"]:::head
-  n74["Check.receipt_lines_satisfies"]:::head
-  n75["Check.receipt_review_transition"]:::head
-  n76["Check.reviewsPinned_at"]:::head
-  n77["Check.satisfies_of_checked_automated_lines"]:::head
-  n78["Check.satisfies_of_checked_completable"]:::head
-  n79["Check.satisfies_of_checked_fixed_lines"]:::head
-  n80["Check.satisfies_of_checked_many_alerts"]:::head
-  n81["Check.satisfies_of_checked_receipt_lines"]:::head
-  n82["Check.satisfies_of_checked_scalar"]:::head
-  n83["Check.scalar_identity_satisfies"]:::head
-  n84["Check.step_humanCaptured"]:::head
-  n85["Check.step_noNewHuman"]:::head
-  n86["Check.step_writesState"]:::head
-  n87["Check.tiny_bad_automation"]:::head
-  n88["Check.tiny_bad_catalog"]:::head
-  n89["Check.tiny_bad_role"]:::head
-  n90["Check.v1_v2_v3_not_acceptedCompletableWhereFeasible"]:::head
-  n91["Check.CompletionModel.accepted_episode_complete"]:::lemma
-  n92["Check.CompletionModel.run_closed"]:::lemma
-  n93["Check.DoseCompletionObstruction.after_reachable"]:::lemma
-  n94["Check.DoseCompletionObstruction.cannot_add"]:::lemma
-  n95["Check.DoseCompletionObstruction.no_drug_fields"]:::lemma
-  n96["Check.FixedLine.fixed_slots"]:::lemma
-  n97["Check.FixedLine.on_screen"]:::lemma
-  n98["Check.FixedLine.shown_assessment"]:::lemma
-  n99["Check.FixedLine.shown_button"]:::lemma
-  n100["Check.NoNewHuman.preserves"]:::lemma
-  n101["Check.OkRun.append"]:::lemma
-  n102["Check.Scalar.on_screen"]:::lemma
-  n103["Check.Scalar.shown_button"]:::lemma
-  n104["Check.Scalar.shown_field"]:::lemma
-  n105["Check.accepted_depth"]:::lemma
-  n106["Check.accepted_pins"]:::lemma
-  n107["Check.accepted_structural"]:::lemma
-  n108["Check.acked_monotone"]:::lemma
-  n109["Check.alertBudget_sound"]:::lemma
-  n110["Check.alertKeys_captured"]:::lemma
-  n111["Check.alert_lookup_unique"]:::lemma
-  n112["Check.alertsOnlyWhenTrue"]:::lemma
-  n113["Check.check_ok_iff"]:::lemma
-  n114["Check.commitCapturesAll"]:::lemma
-  n115["Check.commitContracts"]:::lemma
-  n116["Check.commitReviewsMet"]:::lemma
-  n117["Check.commitUnitsRight"]:::lemma
-  n118["Check.completableWhereFeasible_imp_completableWhereAcceptedFeasible"]:::lemma
-  n119["Check.cosignIsSecondUser"]:::lemma
-  n120["Check.currentScreen"]:::lemma
-  n121["Check.declared_value_witness"]:::lemma
-  n122["Check.enterCore_human_quality"]:::lemma
-  n123["Check.enteredOnce"]:::lemma
-  n124["Check.extends_contracts"]:::lemma
-  n125["Check.extends_entries"]:::lemma
-  n126["Check.extends_reviews"]:::lemma
-  n127["Check.extends_static"]:::lemma
-  n128["Check.firstFinding_some"]:::lemma
-  n129["Check.fixedShown_sound"]:::lemma
-  n130["Check.followHops_sound"]:::lemma
-  n131["Check.goTo_noHuman"]:::lemma
-  n132["Check.goTo_writes"]:::lemma
-  n133["Check.humanStepsByHuman"]:::lemma
-  n134["Check.human_clear_popup"]:::lemma
-  n135["Check.human_enter"]:::lemma
-  n136["Check.infoShown_iff"]:::lemma
-  n137["Check.init_clock"]:::lemma
-  n138["Check.interruptiveHandled"]:::lemma
-  n139["Check.interruptsOnce"]:::lemma
-  n140["Check.isGotoPath_sound"]:::lemma
-  n141["Check.landmarksPinned_sound"]:::lemma
-  n142["Check.missing_payload_blocks_commit"]:::lemma
-  n143["Check.newCommit_witness"]:::lemma
-  n144["Check.onlyHumanCommitsAndAcks"]:::lemma
-  n145["Check.orderLines_slots"]:::lemma
-  n146["Check.passiveNeverPopsUp"]:::lemma
-  n147["Check.passivePinned_sound"]:::lemma
-  n148["Check.pinnedForReview_sound"]:::lemma
-  n149["Check.popup_acked"]:::lemma
-  n150["Check.popup_captured"]:::lemma
-  n151["Check.popup_continues"]:::lemma
-  n152["Check.prefillScreen_slots"]:::lemma
-  n153["Check.reach_request_control"]:::lemma
-  n154["Check.replayOk_sound"]:::lemma
-  n155["Check.reserved_append"]:::lemma
-  n156["Check.reviewMet_iff"]:::lemma
-  n157["Check.reviewsPinned_sound"]:::lemma
-  n158["Check.runMacro_writes"]:::lemma
-  n159["Check.stepCore_ack_witness"]:::lemma
-  n160["Check.stepCore_commit_witness"]:::lemma
-  n161["Check.stepCore_keeps"]:::lemma
-  n162["Check.stepCore_writes"]:::lemma
-  n163["Check.step_drugSlots"]:::lemma
-  n164["Check.step_eq_core"]:::lemma
-  n165["Check.step_noHuman"]:::lemma
-  n166["Check.tableReach_eq"]:::lemma
-  n167["Check.v1TrapProg_not_completableWhereAcceptedFeasible"]:::lemma
-  n168["Check.v1_accepted_not_completableWhereAcceptedFeasible"]:::lemma
-  n169["Check.writesAllowed"]:::lemma
-  n170["Proofs.A2_popup_holds"]:::other
-  n171["Proofs.MacroSafe.acked"]:::other
-  n172["Proofs.MacroSafe.commits"]:::other
-  n173["Proofs.T3_macro_step"]:::other
-  n174["Proofs.prefillScreen_frame"]:::other
-  n175["Proofs.runMacro_safe"]:::other
-  n176["Sim.Certificate.lookup_mem"]:::other
-  n177["Specs.V2.specV2_extends_specV1"]:::other
-  n178["Specs.V3.specV3_extends_specV2"]:::other
-  n179["linkedDependents_not_self"]:::other
-  n180["reconcileCore_captured"]:::other
-  n0 --> n91
-  n1 --> n92
-  n1 --> n176
-  n2 --> n94
-  n2 --> n95
-  n2 --> n73
-  n2 --> n174
-  n3 --> n93
+  n27["Check.accepted_capturesAllOnce"]:::head
+  n28["Check.accepted_contextRetained"]:::head
+  n29["Check.accepted_contracts"]:::head
+  n30["Check.accepted_criticalIds"]:::head
+  n31["Check.accepted_critical_no_shadow"]:::head
+  n32["Check.accepted_humanOnlyKept"]:::head
+  n33["Check.accepted_navigation"]:::head
+  n34["Check.accepted_navigationLabels"]:::head
+  n35["Check.accepted_noFalseAlarms"]:::head
+  n36["Check.accepted_pinRules"]:::head
+  n37["Check.accepted_reviewsBeforeCommit"]:::head
+  n38["Check.accepted_servicePriorAuth"]:::head
+  n39["Check.accepted_severityTiers"]:::head
+  n40["Check.accepted_units"]:::head
+  n41["Check.accepted_wellFormed"]:::head
+  n42["Check.accepted_writesOnly"]:::head
+  n43["Check.alertKeys_of_captured"]:::head
+  n44["Check.alertsAcked_of_no_candidates"]:::head
+  n45["Check.automated_lines_satisfies"]:::head
+  n46["Check.cached_completion_eq"]:::head
+  n47["Check.completable_imp_completableWhereFeasible"]:::head
+  n48["Check.completion_dependency_rejected"]:::head
+  n49["Check.contextDestinations_sound"]:::head
+  n50["Check.contextProvider_sound"]:::head
+  n51["Check.contextRetained_sound"]:::head
+  n52["Check.contextShownAux_sound"]:::head
+  n53["Check.critical_handle_reserved"]:::head
+  n54["Check.enteredOnce_at"]:::head
+  n55["Check.fixed_lines_pending_nonempty"]:::head
+  n56["Check.fixed_lines_satisfies"]:::head
+  n57["Check.goTo_noNewHuman"]:::head
+  n58["Check.goTo_writesState"]:::head
+  n59["Check.human_finish_ready"]:::head
+  n60["Check.human_finish_ready_unique"]:::head
+  n61["Check.interruptsOnce_at"]:::head
+  n62["Check.landmarksPinned_at"]:::head
+  n63["Check.many_alerts_satisfies"]:::head
+  n64["Check.many_alerts_two_acknowledgments"]:::head
+  n65["Check.missing_payload_not_commitFeasible"]:::head
+  n66["Check.onlyHumanCommitsAndAcks_at"]:::head
+  n67["Check.passivePinned_at"]:::head
+  n68["Check.popupKeys_step"]:::head
+  n69["Check.popupUnacked_step"]:::head
+  n70["Check.prefill_macro_human_completion"]:::head
+  n71["Check.reachable_drugSlots"]:::head
+  n72["Check.receipt_lines_satisfies"]:::head
+  n73["Check.receipt_review_transition"]:::head
+  n74["Check.reviewsPinned_at"]:::head
+  n75["Check.satisfies_of_checked_automated_lines"]:::head
+  n76["Check.satisfies_of_checked_completable"]:::head
+  n77["Check.satisfies_of_checked_fixed_lines"]:::head
+  n78["Check.satisfies_of_checked_many_alerts"]:::head
+  n79["Check.satisfies_of_checked_receipt_lines"]:::head
+  n80["Check.satisfies_of_checked_scalar"]:::head
+  n81["Check.scalar_identity_satisfies"]:::head
+  n82["Check.step_humanCaptured"]:::head
+  n83["Check.step_noNewHuman"]:::head
+  n84["Check.step_writesState"]:::head
+  n85["Check.tiny_bad_automation"]:::head
+  n86["Check.tiny_bad_catalog"]:::head
+  n87["Check.tiny_bad_role"]:::head
+  n88["Check.v1_v2_v3_not_acceptedCompletableWhereFeasible"]:::head
+  n89["Check.CompletionModel.accepted_episode_complete"]:::lemma
+  n90["Check.CompletionModel.run_closed"]:::lemma
+  n91["Check.DoseCompletionObstruction.after_reachable"]:::lemma
+  n92["Check.DoseCompletionObstruction.cannot_add"]:::lemma
+  n93["Check.DoseCompletionObstruction.no_drug_fields"]:::lemma
+  n94["Check.FixedLine.fixed_slots"]:::lemma
+  n95["Check.FixedLine.on_screen"]:::lemma
+  n96["Check.FixedLine.shown_assessment"]:::lemma
+  n97["Check.FixedLine.shown_button"]:::lemma
+  n98["Check.NoNewHuman.preserves"]:::lemma
+  n99["Check.OkRun.append"]:::lemma
+  n100["Check.Scalar.on_screen"]:::lemma
+  n101["Check.Scalar.shown_button"]:::lemma
+  n102["Check.Scalar.shown_field"]:::lemma
+  n103["Check.accepted_pins"]:::lemma
+  n104["Check.accepted_structural"]:::lemma
+  n105["Check.acked_monotone"]:::lemma
+  n106["Check.alertKeys_captured"]:::lemma
+  n107["Check.alert_lookup_unique"]:::lemma
+  n108["Check.alertsOnlyWhenTrue"]:::lemma
+  n109["Check.check_ok_iff"]:::lemma
+  n110["Check.commitCapturesAll"]:::lemma
+  n111["Check.commitContracts"]:::lemma
+  n112["Check.commitReviewsMet"]:::lemma
+  n113["Check.commitUnitsRight"]:::lemma
+  n114["Check.completableWhereFeasible_imp_completableWhereAcceptedFeasible"]:::lemma
+  n115["Check.cosignIsSecondUser"]:::lemma
+  n116["Check.currentScreen"]:::lemma
+  n117["Check.declared_value_witness"]:::lemma
+  n118["Check.enterCore_human_quality"]:::lemma
+  n119["Check.enteredOnce"]:::lemma
+  n120["Check.extends_contracts"]:::lemma
+  n121["Check.extends_entries"]:::lemma
+  n122["Check.extends_reviews"]:::lemma
+  n123["Check.extends_static"]:::lemma
+  n124["Check.firstFinding_some"]:::lemma
+  n125["Check.fixedShown_sound"]:::lemma
+  n126["Check.followHops_sound"]:::lemma
+  n127["Check.goTo_noHuman"]:::lemma
+  n128["Check.goTo_writes"]:::lemma
+  n129["Check.humanStepsByHuman"]:::lemma
+  n130["Check.human_clear_popup"]:::lemma
+  n131["Check.human_enter"]:::lemma
+  n132["Check.infoShown_iff"]:::lemma
+  n133["Check.init_clock"]:::lemma
+  n134["Check.interruptiveHandled"]:::lemma
+  n135["Check.interruptsOnce"]:::lemma
+  n136["Check.isGotoPath_sound"]:::lemma
+  n137["Check.landmarksPinned_sound"]:::lemma
+  n138["Check.missing_payload_blocks_commit"]:::lemma
+  n139["Check.newCommit_witness"]:::lemma
+  n140["Check.onlyHumanCommitsAndAcks"]:::lemma
+  n141["Check.orderLines_slots"]:::lemma
+  n142["Check.passiveNeverPopsUp"]:::lemma
+  n143["Check.passivePinned_sound"]:::lemma
+  n144["Check.pinnedForReview_sound"]:::lemma
+  n145["Check.popup_acked"]:::lemma
+  n146["Check.popup_captured"]:::lemma
+  n147["Check.popup_continues"]:::lemma
+  n148["Check.prefillScreen_slots"]:::lemma
+  n149["Check.reach_request_control"]:::lemma
+  n150["Check.replayOk_sound"]:::lemma
+  n151["Check.reserved_append"]:::lemma
+  n152["Check.reviewMet_iff"]:::lemma
+  n153["Check.reviewsPinned_sound"]:::lemma
+  n154["Check.runMacro_writes"]:::lemma
+  n155["Check.stepCore_ack_witness"]:::lemma
+  n156["Check.stepCore_commit_witness"]:::lemma
+  n157["Check.stepCore_keeps"]:::lemma
+  n158["Check.stepCore_writes"]:::lemma
+  n159["Check.step_drugSlots"]:::lemma
+  n160["Check.step_eq_core"]:::lemma
+  n161["Check.step_noHuman"]:::lemma
+  n162["Check.tableReach_eq"]:::lemma
+  n163["Check.v1TrapProg_not_completableWhereAcceptedFeasible"]:::lemma
+  n164["Check.v1_accepted_not_completableWhereAcceptedFeasible"]:::lemma
+  n165["Check.writesAllowed"]:::lemma
+  n166["Proofs.A2_popup_holds"]:::other
+  n167["Proofs.MacroSafe.acked"]:::other
+  n168["Proofs.MacroSafe.commits"]:::other
+  n169["Proofs.T3_macro_step"]:::other
+  n170["Proofs.prefillScreen_frame"]:::other
+  n171["Proofs.runMacro_safe"]:::other
+  n172["Sim.Certificate.lookup_mem"]:::other
+  n173["Specs.V2.specV2_extends_specV1"]:::other
+  n174["Specs.V3.specV3_extends_specV2"]:::other
+  n175["linkedDependents_not_self"]:::other
+  n176["reconcileCore_captured"]:::other
+  n0 --> n89
+  n1 --> n90
+  n1 --> n172
+  n2 --> n92
+  n2 --> n93
+  n2 --> n71
+  n2 --> n170
+  n3 --> n91
   n3 --> n2
   n5 --> n6
   n6 --> n9
-  n6 --> n113
+  n6 --> n109
   n7 --> n6
   n7 --> n10
   n8 --> n6
   n11 --> n12
+  n12 --> n94
+  n12 --> n95
   n12 --> n96
   n12 --> n97
-  n12 --> n98
-  n12 --> n99
-  n12 --> n121
-  n12 --> n134
-  n12 --> n135
-  n12 --> n62
-  n12 --> n145
-  n12 --> n148
-  n12 --> n73
-  n12 --> n156
-  n12 --> n163
-  n12 --> n179
-  n13 --> n113
+  n12 --> n117
+  n12 --> n130
+  n12 --> n131
+  n12 --> n60
+  n12 --> n141
+  n12 --> n144
+  n12 --> n71
+  n12 --> n152
+  n12 --> n159
+  n12 --> n175
+  n13 --> n109
+  n18 --> n100
+  n18 --> n101
   n18 --> n102
-  n18 --> n103
-  n18 --> n104
-  n18 --> n121
-  n18 --> n134
-  n18 --> n135
-  n18 --> n61
-  n19 --> n101
-  n19 --> n130
-  n19 --> n154
+  n18 --> n117
+  n18 --> n130
+  n18 --> n131
+  n18 --> n59
+  n19 --> n99
+  n19 --> n126
+  n19 --> n150
   n20 --> n19
-  n20 --> n128
+  n20 --> n124
   n21 --> n26
-  n21 --> n28
-  n21 --> n33
-  n21 --> n36
+  n21 --> n27
+  n21 --> n32
+  n21 --> n35
   n21 --> n37
   n21 --> n39
-  n21 --> n41
-  n21 --> n42
-  n21 --> n124
-  n21 --> n125
-  n21 --> n126
-  n21 --> n127
-  n22 --> n124
-  n22 --> n125
-  n22 --> n126
-  n22 --> n127
+  n21 --> n40
+  n21 --> n120
+  n21 --> n121
+  n21 --> n122
+  n21 --> n123
+  n21 --> n135
+  n22 --> n120
+  n22 --> n121
+  n22 --> n122
+  n22 --> n123
   n23 --> n21
-  n23 --> n177
+  n23 --> n173
   n24 --> n21
-  n24 --> n178
+  n24 --> n174
+  n25 --> n33
   n25 --> n34
-  n25 --> n35
-  n26 --> n106
-  n26 --> n107
-  n26 --> n138
-  n26 --> n147
-  n27 --> n109
-  n27 --> n113
-  n28 --> n107
-  n28 --> n114
-  n28 --> n123
-  n29 --> n113
-  n29 --> n53
-  n30 --> n115
-  n31 --> n113
-  n32 --> n31
-  n32 --> n55
-  n33 --> n107
-  n33 --> n119
-  n33 --> n133
-  n33 --> n144
-  n34 --> n113
-  n35 --> n113
-  n36 --> n107
-  n36 --> n112
-  n37 --> n107
-  n37 --> n139
-  n38 --> n106
-  n39 --> n106
-  n39 --> n107
-  n39 --> n116
-  n39 --> n157
-  n40 --> n107
+  n26 --> n103
+  n26 --> n104
+  n26 --> n134
+  n26 --> n143
+  n27 --> n104
+  n27 --> n110
+  n27 --> n119
+  n28 --> n109
+  n28 --> n51
+  n29 --> n111
+  n30 --> n109
+  n31 --> n30
+  n31 --> n53
+  n32 --> n104
+  n32 --> n115
+  n32 --> n129
+  n32 --> n140
+  n33 --> n109
+  n34 --> n109
+  n35 --> n104
+  n35 --> n108
+  n36 --> n103
+  n37 --> n103
+  n37 --> n104
+  n37 --> n112
+  n37 --> n153
+  n38 --> n104
+  n38 --> n109
+  n38 --> n149
+  n39 --> n104
+  n39 --> n142
+  n40 --> n104
   n40 --> n113
-  n40 --> n153
-  n41 --> n107
-  n41 --> n146
-  n42 --> n107
-  n42 --> n117
-  n43 --> n105
+  n41 --> n103
+  n41 --> n104
+  n41 --> n137
+  n42 --> n104
+  n42 --> n165
   n43 --> n106
-  n43 --> n107
-  n43 --> n141
   n44 --> n107
-  n44 --> n169
-  n45 --> n110
-  n46 --> n111
-  n47 --> n77
-  n48 --> n166
-  n50 --> n4
-  n51 --> n140
-  n52 --> n54
-  n52 --> n136
-  n53 --> n51
-  n53 --> n52
-  n55 --> n155
-  n56 --> n161
-  n56 --> n164
-  n58 --> n79
-  n59 --> n131
-  n60 --> n132
-  n62 --> n46
-  n62 --> n61
-  n63 --> n108
-  n63 --> n151
-  n64 --> n120
-  n64 --> n129
-  n64 --> n136
-  n65 --> n80
-  n67 --> n137
-  n67 --> n142
-  n67 --> n143
-  n67 --> n174
-  n68 --> n159
-  n68 --> n160
-  n68 --> n171
-  n68 --> n172
-  n68 --> n173
-  n68 --> n175
-  n69 --> n129
-  n70 --> n110
-  n70 --> n150
-  n70 --> n170
-  n71 --> n149
-  n71 --> n170
-  n73 --> n152
-  n73 --> n163
-  n74 --> n81
-  n76 --> n120
-  n76 --> n148
-  n77 --> n12
-  n77 --> n43
-  n77 --> n78
-  n78 --> n26
-  n78 --> n27
-  n78 --> n28
-  n78 --> n33
-  n78 --> n34
-  n78 --> n36
-  n78 --> n37
-  n78 --> n39
+  n45 --> n75
+  n46 --> n162
+  n48 --> n4
+  n49 --> n136
+  n50 --> n52
+  n50 --> n132
+  n51 --> n49
+  n51 --> n50
+  n53 --> n151
+  n54 --> n157
+  n54 --> n160
+  n56 --> n77
+  n57 --> n127
+  n58 --> n128
+  n60 --> n44
+  n60 --> n59
+  n61 --> n105
+  n61 --> n147
+  n62 --> n116
+  n62 --> n125
+  n62 --> n132
+  n63 --> n78
+  n65 --> n133
+  n65 --> n138
+  n65 --> n139
+  n65 --> n170
+  n66 --> n155
+  n66 --> n156
+  n66 --> n167
+  n66 --> n168
+  n66 --> n169
+  n66 --> n171
+  n67 --> n125
+  n68 --> n106
+  n68 --> n146
+  n68 --> n166
+  n69 --> n145
+  n69 --> n166
+  n71 --> n148
+  n71 --> n159
+  n72 --> n79
+  n74 --> n116
+  n74 --> n144
+  n75 --> n12
+  n75 --> n41
+  n75 --> n76
+  n76 --> n26
+  n76 --> n27
+  n76 --> n32
+  n76 --> n33
+  n76 --> n35
+  n76 --> n37
+  n76 --> n39
+  n76 --> n40
+  n76 --> n41
+  n76 --> n42
+  n76 --> n135
+  n77 --> n11
+  n77 --> n76
+  n78 --> n12
   n78 --> n41
-  n78 --> n42
-  n78 --> n43
-  n78 --> n44
+  n78 --> n76
   n79 --> n11
-  n79 --> n78
-  n80 --> n12
-  n80 --> n43
-  n80 --> n78
-  n81 --> n11
-  n81 --> n78
-  n82 --> n18
-  n82 --> n78
-  n83 --> n82
-  n84 --> n100
-  n84 --> n122
-  n84 --> n85
-  n84 --> n180
-  n85 --> n165
-  n86 --> n158
-  n86 --> n162
-  n90 --> n118
-  n90 --> n167
-  n90 --> n168
-  n105 --> n113
-  n106 --> n113
-  n107 --> n113
+  n79 --> n76
+  n80 --> n18
+  n80 --> n76
+  n81 --> n80
+  n82 --> n98
+  n82 --> n118
+  n82 --> n83
+  n82 --> n176
+  n83 --> n161
+  n84 --> n154
+  n84 --> n158
+  n88 --> n114
+  n88 --> n163
+  n88 --> n164
+  n103 --> n109
+  n104 --> n109
+  n105 --> n66
+  n108 --> n106
   n108 --> n68
-  n112 --> n110
-  n112 --> n70
-  n116 --> n156
-  n123 --> n56
-  n124 --> n115
-  n130 --> n101
-  n130 --> n154
-  n133 --> n165
-  n139 --> n63
-  n139 --> n71
-  n141 --> n64
-  n142 --> n115
-  n144 --> n68
-  n147 --> n69
-  n148 --> n136
-  n149 --> n68
-  n156 --> n136
-  n157 --> n76
-  n159 --> n171
-  n160 --> n172
-  n162 --> n180
-  n168 --> n118
-  n168 --> n167
-  n169 --> n86
-  n173 --> n171
-  n173 --> n172
+  n112 --> n152
+  n119 --> n54
+  n120 --> n111
+  n126 --> n99
+  n126 --> n150
+  n129 --> n161
+  n135 --> n61
+  n135 --> n69
+  n137 --> n62
+  n138 --> n111
+  n140 --> n66
+  n143 --> n67
+  n144 --> n132
+  n145 --> n66
+  n152 --> n132
+  n153 --> n74
+  n155 --> n167
+  n156 --> n168
+  n158 --> n176
+  n164 --> n114
+  n164 --> n163
+  n165 --> n84
+  n169 --> n167
+  n169 --> n168
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46
@@ -1544,7 +1532,7 @@ flowchart LR
 
 </details>
 
-<details><summary><b>UI library &amp; geometry</b>: 93 headline claims. Integer layout, layout rules G1–G10, structural certificates and the renderer-range theorem.</summary>
+<details><summary><b>UI library &amp; geometry</b>: 92 headline claims. Integer layout, layout rules G1–G10, structural certificates and the renderer-range theorem.</summary>
 
 ```mermaid
 flowchart LR
@@ -1625,139 +1613,136 @@ flowchart LR
   n74["Layout.modal_blocks"]:::head
   n75["Layout.paintText_supported"]:::head
   n76["Layout.portAccepted_rules"]:::head
-  n77["Layout.realized_currentCommit_visible"]:::head
-  n78["Layout.reviewFamily_accepted"]:::head
-  n79["Layout.scroll_apart"]:::head
-  n80["Layout.scroll_complete"]:::head
-  n81["Layout.scroll_line_width"]:::head
-  n82["Layout.scroll_line_width_inset"]:::head
-  n83["Layout.section_complete"]:::head
-  n84["Layout.stepper_complete"]:::head
-  n85["Layout.strip_dispatches"]:::head
-  n86["Layout.strip_modal_blocks"]:::head
-  n87["Layout.tabs_complete"]:::head
-  n88["Layout.textAtoms_preserve"]:::head
-  n89["Layout.widgetBox_rect"]:::head
-  n90["Layout.widgetBoxes_rects"]:::head
-  n91["Layout.wrap_complete"]:::head
-  n92["Layout.wrap_line_width"]:::head
-  n93["Layout.Density.class_density"]:::lemma
-  n94["Layout.Density.count_split"]:::lemma
-  n95["Layout.Density.filter_nil_of"]:::lemma
-  n96["Layout.Density.inactive_ordinary"]:::lemma
-  n97["Layout.Density.modal_present"]:::lemma
-  n98["Layout.Density.rows_window"]:::lemma
-  n99["Layout.Density.strip_targets"]:::lemma
-  n100["Layout.G10_mono"]:::lemma
-  n101["Layout.Keyboard.next_inside"]:::lemma
-  n102["Layout.Keyboard.prev_inside"]:::lemma
-  n103["Layout.Range.atom_plain"]:::lemma
-  n104["Layout.Range.checkProgram_accepts"]:::lemma
-  n105["Layout.Range.field_plain"]:::lemma
-  n106["Layout.Range.info_plain"]:::lemma
-  n107["Layout.Range.plain_append"]:::lemma
-  n108["Layout.Range.plain_map"]:::lemma
-  n109["Layout.Range.plain_nil"]:::lemma
-  n110["Layout.Range.plain_option"]:::lemma
-  n111["Layout.Range.plain_single"]:::lemma
-  n112["Layout.Range.plain_some"]:::lemma
-  n113["Layout.Range.render_small"]:::lemma
-  n114["Layout.Range.smallModal_fits"]:::lemma
-  n115["Layout.Range.unchecked_sound"]:::lemma
-  n116["Layout.Range.window_plain"]:::lemma
-  n117["Layout.RenderFamily.sound"]:::lemma
-  n118["Layout.Shell.banner_rule"]:::lemma
-  n119["Layout.Shell.base_footer"]:::lemma
-  n120["Layout.Shell.base_no_modal"]:::lemma
-  n121["Layout.Shell.base_not_urgent"]:::lemma
-  n122["Layout.Shell.base_rules"]:::lemma
-  n123["Layout.Shell.base_strip"]:::lemma
-  n124["Layout.Shell.base_target_inactive"]:::lemma
-  n125["Layout.Shell.bounds"]:::lemma
-  n126["Layout.Shell.certifiedClass_allScreens"]:::lemma
-  n127["Layout.Shell.commit_rule"]:::lemma
-  n128["Layout.Shell.complete"]:::lemma
-  n129["Layout.Shell.contrast"]:::lemma
-  n130["Layout.Shell.footer_inactive"]:::lemma
-  n131["Layout.Shell.footer_strip"]:::lemma
-  n132["Layout.Shell.horizontal"]:::lemma
-  n133["Layout.Shell.modal_cases"]:::lemma
-  n134["Layout.Shell.modal_rule"]:::lemma
-  n135["Layout.Shell.modal_strip"]:::lemma
-  n136["Layout.Shell.modals_separated"]:::lemma
-  n137["Layout.Shell.parts_inventory"]:::lemma
-  n138["Layout.Shell.pinnedSlot_true"]:::lemma
-  n139["Layout.Shell.reading_order"]:::lemma
-  n140["Layout.Shell.separated_symm"]:::lemma
-  n141["Layout.Shell.shell_cases"]:::lemma
-  n142["Layout.Shell.strip_cases"]:::lemma
-  n143["Layout.Shell.strip_index"]:::lemma
-  n144["Layout.Shell.strip_length"]:::lemma
-  n145["Layout.Shell.strip_visible"]:::lemma
-  n146["Layout.Shell.strips_separated"]:::lemma
-  n147["Layout.Shell.target_implies"]:::lemma
-  n148["Layout.Shell.text_rule"]:::lemma
-  n149["Layout.Shell.zip_order"]:::lemma
-  n150["Layout.Structural.body_order"]:::lemma
-  n151["Layout.Structural.bounds"]:::lemma
-  n152["Layout.Structural.placement_cases"]:::lemma
-  n153["Layout.Window.cyclic_mem"]:::lemma
-  n154["Layout.Window.pageRows_length"]:::lemma
-  n155["Layout.Window.pages_prefix"]:::lemma
-  n156["Layout.accepted_candidate"]:::lemma
-  n157["Layout.bannerRunRole_cases"]:::lemma
-  n158["Layout.bindSemantic_box"]:::lemma
-  n159["Layout.bindSemantic_original"]:::lemma
-  n160["Layout.candidate_length_le"]:::lemma
-  n161["Layout.chunks_complete"]:::lemma
-  n162["Layout.chunks_short"]:::lemma
-  n163["Layout.codepointInk_supported"]:::lemma
-  n164["Layout.column_floor"]:::lemma
-  n165["Layout.constrain_satisfies"]:::lemma
-  n166["Layout.filter_length_mono"]:::lemma
-  n167["Layout.fixed_pixels"]:::lemma
-  n168["Layout.layoutAccepted_geometry"]:::lemma
-  n169["Layout.lowest_bottom"]:::lemma
-  n170["Layout.mem_joinRuns"]:::lemma
-  n171["Layout.review_shape_payload_independent"]:::lemma
-  n172["Layout.screenShape_flat_length"]:::lemma
-  n173["Layout.screenShape_sources"]:::lemma
-  n174["Layout.select_covered"]:::lemma
-  n175["Layout.separated_pixels"]:::lemma
-  n176["Layout.shape_path_unique"]:::lemma
-  n177["Layout.shift_rect"]:::lemma
-  n178["Layout.textAdvance_bound"]:::lemma
-  n179["Layout.zipIdx_at"]:::lemma
+  n77["Layout.reviewFamily_accepted"]:::head
+  n78["Layout.scroll_apart"]:::head
+  n79["Layout.scroll_complete"]:::head
+  n80["Layout.scroll_line_width"]:::head
+  n81["Layout.scroll_line_width_inset"]:::head
+  n82["Layout.section_complete"]:::head
+  n83["Layout.stepper_complete"]:::head
+  n84["Layout.strip_dispatches"]:::head
+  n85["Layout.strip_modal_blocks"]:::head
+  n86["Layout.tabs_complete"]:::head
+  n87["Layout.textAtoms_preserve"]:::head
+  n88["Layout.widgetBox_rect"]:::head
+  n89["Layout.widgetBoxes_rects"]:::head
+  n90["Layout.wrap_complete"]:::head
+  n91["Layout.wrap_line_width"]:::head
+  n92["Layout.Density.class_density"]:::lemma
+  n93["Layout.Density.count_split"]:::lemma
+  n94["Layout.Density.filter_nil_of"]:::lemma
+  n95["Layout.Density.inactive_ordinary"]:::lemma
+  n96["Layout.Density.modal_present"]:::lemma
+  n97["Layout.Density.rows_window"]:::lemma
+  n98["Layout.Density.strip_targets"]:::lemma
+  n99["Layout.G10_mono"]:::lemma
+  n100["Layout.Keyboard.next_inside"]:::lemma
+  n101["Layout.Keyboard.prev_inside"]:::lemma
+  n102["Layout.Range.atom_plain"]:::lemma
+  n103["Layout.Range.checkProgram_accepts"]:::lemma
+  n104["Layout.Range.field_plain"]:::lemma
+  n105["Layout.Range.info_plain"]:::lemma
+  n106["Layout.Range.plain_append"]:::lemma
+  n107["Layout.Range.plain_map"]:::lemma
+  n108["Layout.Range.plain_nil"]:::lemma
+  n109["Layout.Range.plain_option"]:::lemma
+  n110["Layout.Range.plain_single"]:::lemma
+  n111["Layout.Range.plain_some"]:::lemma
+  n112["Layout.Range.render_small"]:::lemma
+  n113["Layout.Range.smallModal_fits"]:::lemma
+  n114["Layout.Range.unchecked_sound"]:::lemma
+  n115["Layout.Range.window_plain"]:::lemma
+  n116["Layout.RenderFamily.sound"]:::lemma
+  n117["Layout.Shell.banner_rule"]:::lemma
+  n118["Layout.Shell.base_footer"]:::lemma
+  n119["Layout.Shell.base_no_modal"]:::lemma
+  n120["Layout.Shell.base_not_urgent"]:::lemma
+  n121["Layout.Shell.base_rules"]:::lemma
+  n122["Layout.Shell.base_strip"]:::lemma
+  n123["Layout.Shell.base_target_inactive"]:::lemma
+  n124["Layout.Shell.bounds"]:::lemma
+  n125["Layout.Shell.certifiedClass_allScreens"]:::lemma
+  n126["Layout.Shell.complete"]:::lemma
+  n127["Layout.Shell.contrast"]:::lemma
+  n128["Layout.Shell.footer_inactive"]:::lemma
+  n129["Layout.Shell.footer_strip"]:::lemma
+  n130["Layout.Shell.horizontal"]:::lemma
+  n131["Layout.Shell.modal_cases"]:::lemma
+  n132["Layout.Shell.modal_rule"]:::lemma
+  n133["Layout.Shell.modal_strip"]:::lemma
+  n134["Layout.Shell.modals_separated"]:::lemma
+  n135["Layout.Shell.parts_inventory"]:::lemma
+  n136["Layout.Shell.pinnedSlot_true"]:::lemma
+  n137["Layout.Shell.separated_symm"]:::lemma
+  n138["Layout.Shell.shell_cases"]:::lemma
+  n139["Layout.Shell.strip_cases"]:::lemma
+  n140["Layout.Shell.strip_index"]:::lemma
+  n141["Layout.Shell.strip_length"]:::lemma
+  n142["Layout.Shell.strip_visible"]:::lemma
+  n143["Layout.Shell.strips_separated"]:::lemma
+  n144["Layout.Shell.target_implies"]:::lemma
+  n145["Layout.Shell.text_rule"]:::lemma
+  n146["Layout.Shell.zip_order"]:::lemma
+  n147["Layout.Structural.body_order"]:::lemma
+  n148["Layout.Structural.bounds"]:::lemma
+  n149["Layout.Structural.placement_cases"]:::lemma
+  n150["Layout.Window.cyclic_mem"]:::lemma
+  n151["Layout.Window.pageRows_length"]:::lemma
+  n152["Layout.Window.pages_prefix"]:::lemma
+  n153["Layout.accepted_candidate"]:::lemma
+  n154["Layout.bannerRunRole_cases"]:::lemma
+  n155["Layout.bindSemantic_box"]:::lemma
+  n156["Layout.bindSemantic_original"]:::lemma
+  n157["Layout.candidate_length_le"]:::lemma
+  n158["Layout.chunks_complete"]:::lemma
+  n159["Layout.chunks_short"]:::lemma
+  n160["Layout.codepointInk_supported"]:::lemma
+  n161["Layout.column_floor"]:::lemma
+  n162["Layout.constrain_satisfies"]:::lemma
+  n163["Layout.filter_length_mono"]:::lemma
+  n164["Layout.fixed_pixels"]:::lemma
+  n165["Layout.layoutAccepted_geometry"]:::lemma
+  n166["Layout.lowest_bottom"]:::lemma
+  n167["Layout.mem_joinRuns"]:::lemma
+  n168["Layout.review_shape_payload_independent"]:::lemma
+  n169["Layout.screenShape_flat_length"]:::lemma
+  n170["Layout.screenShape_sources"]:::lemma
+  n171["Layout.select_covered"]:::lemma
+  n172["Layout.separated_pixels"]:::lemma
+  n173["Layout.shift_rect"]:::lemma
+  n174["Layout.textAdvance_bound"]:::lemma
+  n175["Layout.zipIdx_at"]:::lemma
   n0 --> n2
-  n0 --> n100
-  n0 --> n104
+  n0 --> n99
+  n0 --> n103
   n0 --> n17
-  n1 --> n158
+  n1 --> n155
   n1 --> n59
-  n1 --> n174
-  n2 --> n93
+  n1 --> n171
+  n2 --> n92
   n2 --> n21
-  n2 --> n158
+  n2 --> n155
+  n3 --> n93
   n3 --> n94
   n3 --> n95
   n3 --> n96
   n3 --> n97
   n3 --> n98
-  n3 --> n99
+  n5 --> n163
   n5 --> n166
-  n5 --> n169
-  n6 --> n167
-  n7 --> n175
+  n6 --> n164
+  n7 --> n172
   n12 --> n13
+  n14 --> n100
   n14 --> n101
-  n14 --> n102
   n16 --> n13
   n17 --> n21
-  n17 --> n115
+  n17 --> n114
   n18 --> n21
   n19 --> n18
   n19 --> n57
-  n20 --> n103
+  n20 --> n102
+  n20 --> n104
   n20 --> n105
   n20 --> n106
   n20 --> n107
@@ -1765,172 +1750,162 @@ flowchart LR
   n20 --> n109
   n20 --> n110
   n20 --> n111
-  n20 --> n112
-  n20 --> n116
+  n20 --> n115
+  n21 --> n112
   n21 --> n113
-  n21 --> n114
-  n23 --> n126
+  n23 --> n125
   n23 --> n24
-  n23 --> n158
-  n24 --> n137
-  n24 --> n138
+  n23 --> n155
+  n24 --> n135
+  n24 --> n136
   n24 --> n26
-  n24 --> n144
-  n25 --> n118
+  n24 --> n141
+  n25 --> n117
+  n25 --> n126
   n25 --> n127
-  n25 --> n128
-  n25 --> n129
+  n25 --> n130
   n25 --> n132
-  n25 --> n134
-  n25 --> n139
   n25 --> n27
-  n25 --> n148
+  n25 --> n145
+  n26 --> n120
   n26 --> n121
   n26 --> n122
-  n26 --> n123
-  n26 --> n131
-  n26 --> n135
+  n26 --> n129
+  n26 --> n133
+  n26 --> n137
+  n26 --> n138
   n26 --> n140
-  n26 --> n141
+  n26 --> n142
   n26 --> n143
-  n26 --> n145
-  n26 --> n146
+  n27 --> n118
   n27 --> n119
-  n27 --> n120
+  n27 --> n121
   n27 --> n122
   n27 --> n123
   n27 --> n124
-  n27 --> n125
-  n27 --> n130
+  n27 --> n128
+  n27 --> n129
   n27 --> n131
   n27 --> n133
-  n27 --> n135
-  n27 --> n136
-  n27 --> n141
-  n27 --> n142
+  n27 --> n134
+  n27 --> n138
+  n27 --> n139
+  n27 --> n140
   n27 --> n143
+  n27 --> n144
   n27 --> n146
-  n27 --> n147
-  n27 --> n149
-  n28 --> n150
-  n28 --> n151
-  n28 --> n152
-  n30 --> n153
+  n28 --> n147
+  n28 --> n148
+  n28 --> n149
+  n30 --> n150
   n31 --> n30
-  n34 --> n155
-  n35 --> n154
+  n34 --> n152
+  n35 --> n151
   n35 --> n33
-  n37 --> n154
-  n43 --> n157
-  n43 --> n170
-  n46 --> n164
-  n46 --> n177
-  n50 --> n160
-  n50 --> n172
-  n54 --> n179
+  n37 --> n151
+  n43 --> n154
+  n43 --> n167
+  n46 --> n161
+  n46 --> n173
+  n50 --> n157
+  n50 --> n169
+  n54 --> n175
   n56 --> n62
-  n57 --> n117
+  n57 --> n116
   n58 --> n57
+  n59 --> n153
+  n59 --> n155
   n59 --> n156
-  n59 --> n158
-  n59 --> n159
   n59 --> n67
   n59 --> n68
-  n59 --> n173
-  n59 --> n174
-  n60 --> n168
+  n59 --> n170
+  n59 --> n171
+  n60 --> n165
   n61 --> n67
-  n61 --> n175
+  n61 --> n172
   n62 --> n67
-  n63 --> n158
+  n63 --> n155
   n63 --> n59
-  n63 --> n174
+  n63 --> n171
   n64 --> n67
   n65 --> n67
   n66 --> n59
-  n66 --> n78
-  n66 --> n171
+  n66 --> n77
+  n66 --> n168
   n68 --> n67
   n68 --> n75
+  n68 --> n79
   n68 --> n80
-  n68 --> n81
-  n68 --> n88
+  n68 --> n87
   n69 --> n67
-  n69 --> n91
+  n69 --> n90
   n70 --> n67
   n71 --> n67
-  n71 --> n175
-  n72 --> n165
-  n75 --> n163
+  n71 --> n172
+  n72 --> n162
+  n75 --> n160
   n76 --> n67
-  n77 --> n173
-  n77 --> n176
-  n80 --> n52
-  n81 --> n82
-  n82 --> n38
-  n82 --> n53
-  n84 --> n179
-  n87 --> n179
-  n90 --> n89
-  n91 --> n161
-  n92 --> n162
-  n92 --> n178
-  n93 --> n3
+  n79 --> n52
+  n80 --> n81
+  n81 --> n38
+  n81 --> n53
+  n83 --> n175
+  n86 --> n175
+  n89 --> n88
+  n90 --> n158
+  n91 --> n159
+  n91 --> n174
+  n92 --> n3
+  n104 --> n106
+  n104 --> n108
+  n104 --> n109
+  n104 --> n110
+  n104 --> n111
+  n105 --> n106
   n105 --> n107
   n105 --> n109
   n105 --> n110
-  n105 --> n111
-  n105 --> n112
-  n106 --> n107
-  n106 --> n108
-  n106 --> n110
-  n106 --> n111
-  n110 --> n109
-  n112 --> n109
-  n112 --> n111
-  n115 --> n126
-  n116 --> n109
-  n118 --> n119
-  n118 --> n122
-  n118 --> n123
-  n118 --> n141
-  n118 --> n143
-  n124 --> n121
-  n126 --> n158
-  n126 --> n159
-  n126 --> n68
-  n126 --> n173
-  n127 --> n141
-  n129 --> n122
-  n129 --> n141
-  n132 --> n122
-  n132 --> n125
-  n132 --> n141
-  n134 --> n141
-  n139 --> n122
-  n139 --> n133
-  n139 --> n142
-  n139 --> n149
-  n141 --> n133
-  n141 --> n142
-  n144 --> n138
-  n145 --> n125
-  n148 --> n119
-  n148 --> n120
-  n148 --> n122
-  n148 --> n123
-  n148 --> n130
-  n148 --> n131
-  n148 --> n135
-  n148 --> n136
-  n148 --> n140
-  n148 --> n141
-  n148 --> n143
-  n148 --> n145
-  n148 --> n146
-  n164 --> n177
-  n168 --> n67
-  n178 --> n38
+  n109 --> n108
+  n111 --> n108
+  n111 --> n110
+  n114 --> n125
+  n115 --> n108
+  n117 --> n118
+  n117 --> n121
+  n117 --> n122
+  n117 --> n138
+  n117 --> n140
+  n123 --> n120
+  n125 --> n155
+  n125 --> n156
+  n125 --> n68
+  n125 --> n170
+  n127 --> n121
+  n127 --> n138
+  n130 --> n121
+  n130 --> n124
+  n130 --> n138
+  n132 --> n138
+  n138 --> n131
+  n138 --> n139
+  n141 --> n136
+  n142 --> n124
+  n145 --> n118
+  n145 --> n119
+  n145 --> n121
+  n145 --> n122
+  n145 --> n128
+  n145 --> n129
+  n145 --> n133
+  n145 --> n134
+  n145 --> n137
+  n145 --> n138
+  n145 --> n140
+  n145 --> n142
+  n145 --> n143
+  n161 --> n173
+  n165 --> n67
+  n174 --> n38
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46

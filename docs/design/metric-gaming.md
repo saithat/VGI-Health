@@ -11,34 +11,11 @@ Rules marked *new specification* are new definitions and stay flagged in Lean.
 
 ## What the agent is rewarded for
 
-A nightly change ships when all of these hold:
+The hill-climbing night ships only when both clinicians complete every task, neither clinician’s modeled time increases across observed days, and the expert’s modeled-time saving per day is strictly positive. `net` is that saving in deciseconds per day; clicks, keys, scrolls and pixels remain diagnostics. Both search modes use this objective (`modeled-time-v1`). [Night method](../methods/hillclimb-night.md).
 
-1. **Release score**: the change saves at least 5 clicks plus scrolls per train day
-   in a replay of the *expert* simulated clinician (incomplete tasks cost their
-   matched canonical effort plus a configurable 50% penalty). Net equals gross
-   daily saving (`agent/src/hillclimb.ts`).
-2. **Validation gate** on the pooled holdouts from all past odd calibration days: every task still completes, clicks
-   and scrolls do not regress, scroll pixels and mouse travel stay within 2%
-   plus 1px rounding slack, and at least one of the four improves
-   (`interactionAcceptable`, `improved`). **R1 policy change:** keystrokes and
-   modeled time (`klmDeciSec`) each stay within 2%, without the pixel slack.
-   **R2 policy change:** a separate bounded replay from carried train-only memory
-   must also complete fully; clicks/scrolls cannot increase and typing/time have
-   the same 2% bounds. Popups, overrides, searches and backtracks are not separately gated.
-3. **Formal checks**: properties 1–9 (`lean/Ehr/Props/Properties.lean`), D1–D6
-   (`core-model.md`), the geometry rules G1–G11 (`docs/methods/ui-library.md`),
-   the R3 copy budget and `AlertBudget`.
-4. **Rendered screen gate**: the deployed React painter passes semantic fidelity,
-   physical/urgency checks and R5's per-screen vendor-reference target limits at 1440×900.
-   `CliScreenChecker` supplies this check before the sole nightly deployment path.
+The checker preserves clinical duties, context, copy limits and geometry rules G1–G7, G10 and G11. Screen and family admission still apply. Runtime acknowledgments prevent the same interruptive key from firing again; popup requests have no separate count budget. Required fields have no start-screen click bound; completion witnesses and replay measure their reachability and cost.
 
-The release score still uses **clicks and scrolls made by a clinician who already
-knows the layout perfectly**. R1 constrains typing and modeled time on validation; R2 independently constrains
-bounded discovery/relearning costs. Other unmodeled costs remain outside the gate.
-Reporting also shows completion, modeled time and action/time floor-gap capture.
-Nightly evidence ranks train-only workflow gaps and their structural costs;
-[reporting methods](../methods/agent-benefit-reporting.md) defines the cohorts and
-reproduces the retained audit. These are reporting changes, not a new score.
+The original proposal mode retains its holdout interaction gate and R1/R2 tolerances described below. Reporting shows completion, modeled time and floor-gap capture for either mode.
 
 ## Existing guards
 
@@ -47,11 +24,10 @@ reproduces the retained audit. These are reporting changes, not a new score.
 | P2/P4/D2, `CommitScreenShowsReviews` | Hiding required review items, or moving them off the commit screen |
 | P5, `NoAutomationAttempts` | Prefilling or macro-entering human-only steps; macro commits or acks |
 | P6 completable (option D) | Removing the controls a feasible workflow needs |
-| P9, D4, `AlertBudget` | Suppressing alerts or turning interruptive alerts passive |
+| P9, D4 | Suppressing alerts or turning interruptive alerts passive |
 | D3, D5, D6 | Empty labels, fake primary buttons, orphan screens, nav groups with more than 12 entries; R6 also checks navigation label honesty and word count |
 | R4 `ContextRetained` | Removing declared workflow context or moving it beyond `maxDepth` from a commit screen |
 | G3, G4, G6 | Targets under 24 px, clipped or overlapping text, low contrast |
-| G9 | Commit button scrolled off screen |
 | Train/validation split | Using validation days to tune a change |
 
 ## Ways to game the metric that are still open
@@ -59,15 +35,15 @@ reproduces the retained audit. These are reporting changes, not a new score.
 | # | Gaming move | Why it scores | Status |
 |---|---|---|---|
 | V1 | **Spray copies.** Add shortcut copies of frequent controls and links to many screens. | The expert clinician pays nothing for clutter. | Closed by R3 in the checker. |
-| V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling is gated, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: separate R5 gates cover Lean geometry and the deployed React painter. Each existing React screen is bounded by that persona's no-agent reference on identical data; absent screen ids use the vendor-calibrated fallback of 57. New/merged screens and unmodeled scanning costs remain partly open; R1 and R2 constrain other costs. |
+| V2 | **Mega-screens.** Merge workflow screens and flatten tabs into one dense screen. | Saves navigation clicks. Scanning time is not counted. Scrolling costs modeled time, but G3/G4 allow dense packing at the 24 px floor. | Partly closed: separate R5 gates cover Lean geometry and the deployed React painter. Each existing React screen is bounded by that persona's no-agent reference on identical data; absent screen ids use the vendor-calibrated fallback of 57. New/merged screens and unmodeled scanning costs remain partly open; R1 and R2 constrain other costs. |
 | V3 | **Drop context nobody is required to review.** Remove problem lists, history panels and non-required info from a workflow. | The expert clinician reads only what its goals require, so removal costs nothing and may cut scrolls. | R4 closes removal beyond the context bound and refuses missing policies after v3; deliberately empty policies remain possible, and the information-needs simulator is not connected to the score. |
-| V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | R1 implemented: each is capped at +2% on validation. |
+| V4 | **Move cost into keystrokes or time.** Swap pick lists for typing, or swap clicks for hover menus or hotkeys. | Previously, keystrokes and time were not gated. | Modeled time prices these operators in the night objective; the original proposal mode retains R1 validation. |
 | V5 | **Rely on perfect memory.** Put controls in unlabeled or unpredictable places. | The expert has no search cost. The expert has no discovery cost. | Closed by R2 on sampled past holdouts; the user model remains uncalibrated. |
 | V6 | **Stuff labels with keywords.** Use long nav labels packed with rulebook terms. | Draws the bounded clinician's lexical scent. D3 only requires a non-empty label. | R6 bounds navigation labels and restricts them to titles or declared aliases. |
-| V8 | **Default to the usual answer.** Set field defaults to the most common train value. | Saves keystrokes only, so the score does not move. It does create default-acceptance risk. | Low impact; `defaultConfirm` already requires a human confirm. |
+| V8 | **Default to the usual answer.** Set field defaults to the most common train value. | Saves keystrokes and their modeled time. It does create default-acceptance risk. | Low impact; `defaultConfirm` already requires a human confirm. |
 | V9 | **Page records away.** Shorten a long list by paging it, so controls below it need no scrolling and records the clinician needs are out of sight. | A short page removes the reveal scrolling past the list; records on other pages cost nothing if the clinician never pages. | Closed for Lean-painted screens, see [bounded lists](#bounded-lists-paging-is-not-free). |
 
-## Proposed rules
+## Proposal-mode gates and design rules
 
 Each rule targets one or more of the vectors above. Rules R1–R4 close the
 high-impact ones; R5–R6 address density and labels.
@@ -110,7 +86,7 @@ the retained programs.
 workflow declares a context set of info items (for example allergies, active
 problems, recent vitals, and the reason for visit), sourced like the other spec
 entries. On every screen with a commit button for that workflow, each context info
-is shown or reachable within `RequiredWithinDepth`'s depth bound. Like
+is shown or reachable within `spec.design.maxDepth` goto bound. Like
 `CommitScreenShowsReviews`, but reachability is enough. Closes V3. Connecting the
 existing information-needs simulator (lookup detours, memory carry) to R2's replay
 measures the remaining cost.
@@ -349,8 +325,7 @@ local design policy**, not a clinical sufficiency finding or a legal mandate.
 buttons and screens unreachable from home. Each context ID must resolve in the
 spec. It must be shown on that commit screen or on a destination reached from
 that screen within `spec.design.maxDepth` goto hops (8 in the releases), the
-same navigation-depth measure used by `RequiredWithinDepth`. Unlike the latter,
-the search starts at each commit screen, not the program start.
+search starts at each commit screen.
 
 The executable `Check.contextRetained` searches fixed-visible goto links and
 rechecks their paths. A destination provider and all its ancestors must be

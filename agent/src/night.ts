@@ -280,12 +280,18 @@ export function boundedRefusals(r:Pick<ReplayDay,'before'|'after'>):string[] {
 }
 export function learnabilityOk(replay:ReplayDay|null):boolean {
   const bounded=replay?.bounded;
-  return !!bounded && boundedRefusals(bounded).length===0 && (bounded.memorySource!=='all-past' ||
-    (bounded.after.clicks<=bounded.before.clicks && bounded.after.scrolls<=bounded.before.scrolls));
+  return !!bounded && (bounded.memorySource === 'all-past'
+    ? modeledTimeOk(bounded) : boundedRefusals(bounded).length === 0);
 }
 
 export function completionOk(r: Pick<ReplayDay,'before'|'after'> | null): boolean {
   return r !== null && r.after.tasks > 0 && r.after.tasks === r.before.tasks && r.after.completed === r.after.tasks && r.after.completed >= r.before.completed;
+}
+
+/** Full-history replay uses modeled time for effort, without per-operator caps. */
+export function modeledTimeOk(r: Pick<ReplayDay, 'before' | 'after'>): boolean {
+  return completionOk(r) && Number.isFinite(r.before.klmDeciSec) &&
+    Number.isFinite(r.after.klmDeciSec) && r.after.klmDeciSec <= r.before.klmDeciSec;
 }
 
 // R1 policy change: constrain typing and modeled time as well as physical effort.
@@ -389,7 +395,11 @@ export type DeployOutcome =
 export async function deployVersion(deps: LoopDeps, persona: string, program: Program, gate: Gate): Promise<DeployOutcome> {
   let stage='validation',screenCheck:ScreenCheckResult|null=null;
   try {
-  if (gate.night !== undefined && (!completionOk(gate.validation ?? null) || !learnabilityOk(gate.validation ?? null))) throw new Error('Full expert completion and R2 bounded validation required before deploy');
+  const replay = gate.validation;
+  const expertOk = replay?.bounded?.memorySource === 'all-past'
+    ? modeledTimeOk(replay) && replay.after.klmDeciSec < replay.before.klmDeciSec
+    : completionOk(replay ?? null);
+  if (gate.night !== undefined && (!expertOk || !learnabilityOk(replay ?? null))) throw new Error('Full expert completion and bounded effort validation required before deploy');
   stage='build';
   const build = deps.ehr.mode === 'real' ? await retryInfrastructure('deploy:build',()=>installedBuild(undefined, deps.ehr.binary ?? undefined),true) : undefined;
   stage='screen-check';

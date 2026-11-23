@@ -15,7 +15,7 @@ instance (sp workflow) : Decidable (ContextWorkflowDeclared sp workflow) := by
 
 /-- New specification R4: on every screen containing a commit button, each
 context info declared for its workflow exists in the spec and is shown there
-or on a screen within `RequiredWithinDepth`'s `maxDepth` goto bound, measured
+or on a screen within `spec.design.maxDepth` goto bound, measured
 from that commit screen. The destination shows the info after opening groups and selecting tabs.
 This preserves access, not clinical completeness, reading or comprehension. -/
 def ContextRetained (sp : Spec) (p : Program) : Prop :=

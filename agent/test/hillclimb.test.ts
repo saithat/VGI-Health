@@ -112,7 +112,14 @@ it("exports only own observed days on their actual versions", async () => {
   );
 });
 
-it.each([4, 5])("scores %i actions without charging or limiting rearrangements", async saved => {
+it.each([
+  { expert: 0, bounded: 0, complete: true, ships: false },
+  { expert: 1, bounded: 0, complete: true, ships: true },
+  { expert: 4, bounded: 1, complete: true, ships: true },
+  { expert: -1, bounded: 1, complete: true, ships: false },
+  { expert: 5, bounded: -1, complete: true, ships: false },
+  { expert: 5, bounded: 0, complete: false, ships: false },
+])("gates only completion and modeled time: %j", async ({expert, bounded, complete, ships}) => {
   const inner = createFakeEhr(), release = await loadRelease("v1", inner);
   const params = FAKE_PERSONAS[0];
   if (!params) throw Error("Missing P1");
@@ -120,20 +127,30 @@ it.each([4, 5])("scores %i actions without charging or limiting rearrangements",
   release.spec.design.stabilityBudget = 0;
   const simulate = async (input:Parameters<typeof inner.simulate>[0]) => {
     const day = await inner.simulate(input);
-    return {...day,tasks:day.tasks.map((t,i)=>({...t,completed:true,
-      clicks:20-(input.program.version===1 && i===0?saved:0)}))};
+    const candidate = input.program.version === 1;
+    return {...day,tasks:day.tasks.map((t,i)=>({...t,
+      completed: !candidate || complete || i !== 0,
+      // All diagnostic effort counts can rise if modeled time still holds.
+      clicks: candidate ? 30 : 20, scrolls: candidate ? 10 : 0,
+      keystrokes: candidate ? 100 : 0,
+      klmDeciSec:200-(candidate && input.schedule.day === 1 && i === 0
+        ? input.policy === "bounded" ? bounded : expert : 0)}))};
   };
-  const schedule = fakeSchedule(1,params.id,7);
-  const days = [{schedule,result:await simulate({program:current,specVersion:"v1",worldDir:"",persona:params,schedule,seed:1})}];
+  const days: TrainDay[] = [];
+  for (const day of [1, 2, 3]) {
+    const schedule = fakeSchedule(day,params.id,7);
+    days.push({schedule,result:await simulate({program:current,specVersion:"v1",worldDir:"",persona:params,schedule,seed:day})});
+  }
   const ops = current.screens.flatMap((screen,i)=>screen.components.flatMap((c,j)=>c.parent?[]:[{
     op:"replace" as const,path:`/screens/${i}/components/${j}/tab`,value:c.tab+1,
   }]));
-  const result = await climbingGate({ehr:{...inner,simulate},store:new RunStore(await tmp("gross-saving")),
+  const result = await climbingGate({ehr:{...inner,simulate},store:new RunStore(await tmp("modeled-time")),
     worldDir:"",worldSeed:7,screens:{mode:"lean",check:async()=>({mode:"lean",status:"pass",pages:1,
       bundles:[],failingFiles:[],failingScreens:[],message:""})}},
-    {night:1,current,release,persona:{id:params.id,userId:params.id,params}},days,
+    {night:3,current,release,persona:{id:params.id,userId:params.id,params}},days,
     {actor:params.id,entries:[]},Infinity).measure(ops);
-  expect(result, JSON.stringify(result)).toMatchObject({ships:saved===5,net:saved});
+  expect(result, JSON.stringify(result)).toMatchObject({ships});
+  if (complete) expect(result).toMatchObject({net:expert/3});
   expect(result).not.toHaveProperty("movement");
 });
 
@@ -323,6 +340,9 @@ it("measures all nine past days, refuses and accepts done, carries memory, and e
         tasks: day.tasks.map((t, i) => ({
           ...t,
           completed: true,
+          keystrokes: improvement ? 10000 : 0,
+          scrolls: improvement ? 30 : 0,
+          klmDeciSec: 200 + (i !== 0 ? 0 : improvement ? -6 : boundedRegression ? input.policy === "bounded" ? 1 : -6 : 0),
           clicks:
             20 +
             (i !== 0
@@ -359,7 +379,7 @@ it("measures all nine past days, refuses and accepts done, carries memory, and e
         output: {
           ships: false,
           net: 6,
-          reason: expect.stringContaining("bounded clicks"),
+          reason: expect.stringContaining("bounded klmDeciSec"),
         },
       });
       const measured = await host.execute(request("measure", patch));
@@ -640,10 +660,10 @@ it("seals done while letting Codex emit its final turn usage", async () => {
 }, 20000);
 
 
-it("documents gross savings for both searches and preserves the launch prompt", () => {
+it("documents modeled-time savings for both searches and preserves the launch prompt", () => {
   const first = climbReadme("P1", "physician");
   expect(climbReadme("P1", "physician", "first")).toBe(first);
-  expect(first).toContain("Savings must reach five actions per day.");
+  expect(first).toContain("Reduce expert modeled time over all observed days, with full completion and no modeled-time increase for either clinician.");
   expect(first).not.toContain("movement");
   expect(climbReadme("P1", "physician", "climb")).not.toContain("movement");
   expect(Buffer.byteLength(CLIMB_PROMPT)).toBe(60);
@@ -656,7 +676,7 @@ function stackingEhr() {
     const day = await inner.simulate(input);
     const steps = Number(input.program.screens[0]?.title === "Fixture improvement") +
       Number(input.program.screens[1]?.title === "Second improvement");
-    return {...day, tasks:day.tasks.map((t,i)=>({...t,completed:true,clicks:20-(i===0?steps*6:0)}))};
+    return {...day, tasks:day.tasks.map((t,i)=>({...t,completed:true,clicks:20-(i===0?steps*6:0),klmDeciSec:200-(i===0?steps*6:0)}))};
   }};
 }
 const combined = [...patch, {op:"replace",path:"/screens/1/title",value:"Second improvement"}];

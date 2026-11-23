@@ -9,7 +9,6 @@ import Ehr.Check.Seed04Proof
 import Ehr.Check.Seed05Proof
 import Ehr.Check.Seed06Proof
 import Ehr.Check.Seed10Proof
-import Ehr.Check.Seed11Proof
 import Ehr.Check.Seed12Proof
 import Ehr.Check.Seed14Proof
 import Ehr.Check.Seed17Proof

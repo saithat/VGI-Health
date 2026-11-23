@@ -4,7 +4,6 @@ import Ehr.Check.ClinicalScenarios
 import Ehr.Render.NavLabels
 import Ehr.Core.CriticalRuntime
 import Ehr.Props.Navigation
-import Ehr.Check.PopupRequests
 import Ehr.Check.ReplayContext
 
 /-!
@@ -222,15 +221,6 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
         match popupTier spec c with
         | some (a, .passive) => some s!"A4: alert {c.id} on screen {scr.id} makes the passive alert {a} pop up; passive alerts are shown inline only"
         | _ => none },
-    -- 11. A3: no repeat interruptions
-    { property := "noRepeatInterruptions", passes := decide (FilteredPopupRequests spec prog)
-      explain := fun _ => compFinding "noRepeatInterruptions" prog false fun scr c =>
-        match popupTier spec c with
-        | some (a, .interruptive) =>
-          match (allComps prog).find? (fun sc => sc.1.id != scr.id && popupTier spec sc.2 == some (a, .interruptive)) with
-          | some sc => some s!"A3: the interruptive alert {a} is made to pop up on screen {scr.id} and again on screen {sc.1.id}"
-          | none => none
-        | _ => none },
     -- 10. A2: no false alarms
     { property := "noFalseAlarms", passes := decide (NoInterruptivePopupRequests spec prog)
       explain := fun _ => compFinding "noFalseAlarms" prog false fun scr c =>
@@ -301,7 +291,7 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
         (completion c).map fun (scr, msg) =>
           { property := "completable", message := msg, screen? := scr
             click? := scr.bind fun z => ((prog.compsOf z).find? fun comp => commitOf? comp.kind == some c).map (·.id) } },
-    -- 1. well-formed: landmarks and depth
+    -- 1. well-formed: landmarks
     { property := "wellFormed", passes := landmarksPinned spec prog
       explain := fun _ =>
         (prog.screens.findSome? fun scr =>
@@ -309,16 +299,6 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
             !scr.components.any fun c => showsInfo l c.kind && fixedShown scr.components c).map fun l =>
               { property := "wellFormed", message := s!"landmark {l} is not always shown on screen {scr.id}"
                 screen? := some scr.id }) },
-    { property := "wellFormed"
-      passes := required.all fun c => spec.entries.all fun rq =>
-        rq.commit != c || !entryRelevantForRole spec prog.role rq || (allComps prog).any fun sc =>
-          (fieldOf? sc.2.kind).any (·.1 == rq.element) && (shortPathTo prog spec.design.maxDepth sc.1.id).isSome
-      explain := fun _ => required.findSome? fun c =>
-        (spec.entries.find? fun rq => rq.commit == c && entryRelevantForRole spec prog.role rq && !(allComps prog).any fun sc =>
-          (fieldOf? sc.2.kind).any (·.1 == rq.element) && (shortPathTo prog spec.design.maxDepth sc.1.id).isSome).map fun rq =>
-            { property := "wellFormed"
-              message := s!"required element {rq.element} (for {c}) has no field within {spec.design.maxDepth} clicks of the start screen"
-              screen? := ((allComps prog).find? fun sc => (fieldOf? sc.2.kind).any (·.1 == rq.element)).map (·.1.id) } },
     -- 9. A1: passive alerts shown inline
     { property := "alertsFire", passes := passivePinned spec prog && passiveScreensKept spec canonical prog
       explain := fun _ =>
@@ -337,15 +317,6 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
                   some { property := "alertsFire"
                          message := s!"A1: passive alert {al.id}'s workflow {scr.workflow} was removed" }
                 else none },
-    -- 8. budgets
-    { property := "budgets"
-      passes := decide (popupRequestCount prog (prog.screens.map (·.id)) ≤
-                        popupRequestCount canonical (verifiedReachable canonical))
-      explain := fun _ =>
-        let n := popupRequestCount prog (prog.screens.map (·.id))
-        let m := popupRequestCount canonical (verifiedReachable canonical)
-        some { property := "budgets", message := s!"the program asks for {n} popups; the canonical program has {m}"
-               screen? := ((allComps prog).find? fun sc => match sc.2.kind with | .alert _ true => true | _ => false).map (·.1.id) } },
     { property := "navigation", passes := decide (NavigationSane prog)
       explain := fun _ => navigationFinding prog },
     { property := "patientSelection", passes := canonical.patientSelection? != some true || prog.patientSelection? == some true

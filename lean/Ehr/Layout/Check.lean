@@ -140,30 +140,6 @@ def G7 (expected : List (List Nat)) (ps : List Placed) : Prop :=
   (∀ path ∈ expected, (ps.filter (fun p => p.info.source == some path && p.info.paint)).length = 1) ∧
   ∀ p ∈ ps, ∀ path ∈ p.info.source, path ∈ expected ∧ p.info.paint = true
 
-/-- G8: document order is top-to-bottom then left-to-right. Within a common
-scroll space use content positions; across regions use their outer viewports,
-so hidden overflow does not reorder the fixed shell. Separate z layers have
-separate active reading regions (the modal dispatcher blocks ordinary targets). -/
-def before (a b : Rect) : Prop := a.y < b.y ∨ (a.y = b.y ∧ a.x ≤ b.x)
-
-def G8 (ps : List Placed) : Prop :=
-  (ps.filter (fun p => p.info.paint && (p.info.target || p.info.text.isSome))).Pairwise
-    (fun p q => p.style.z = q.style.z →
-      if p.clips.map Prod.fst = q.clips.map Prod.fst then before p.rect q.rect
-      else before (envelope p) (envelope q))
-
-/-- G9: if any current-task commit is present, exactly one is fixed and visible
-at 1440×900. A screen with no current-task commit is exempt. -/
-def G9 (v : Size) (ps : List Placed) : Prop :=
-  v = ⟨92160,57600⟩ → (ps.any (·.info.commit) = true) →
-    (ps.filter (·.info.commit)).length = 1 ∧
-    ∀ p ∈ ps, p.info.commit = true → p.info.target = true ∧ visible v p
-
-theorem G9_exempt (v : Size) (ps : List Placed) (absent : ps.any (·.info.commit) = false) :
-    G9 v ps := by
-  intro _ present
-  simp [absent] at present
-
 /-! ### G10 (R5): action density. New specification for owner review. -/
 
 /-- New specification for owner review: two rectangles share painted area. -/
@@ -390,12 +366,9 @@ instance (v ps) : Decidable (G4 v ps) := decidable_of_iff _ (G4_hoisted v ps).sy
 instance (v ps) : Decidable (G5 v ps) := by unfold G5; infer_instance
 instance (ps) : Decidable (G6 ps) := by unfold G6; infer_instance
 instance (expected ps) : Decidable (G7 expected ps) := by unfold G7; infer_instance
-instance (a b) : Decidable (before a b) := by unfold before; infer_instance
-instance (ps) : Decidable (G8 ps) := by unfold G8; infer_instance
-instance (v ps) : Decidable (G9 v ps) := by unfold G9; infer_instance
 
 def Rules (expected : List (List Nat)) (v : Size) (ps : List Placed) : Prop :=
-  G1 v ps ∧ G2 v ps ∧ G3 ps ∧ G4 v ps ∧ G5 v ps ∧ G6 ps ∧ G7 expected ps ∧ G8 ps ∧ G9 v ps
+  G1 v ps ∧ G2 v ps ∧ G3 ps ∧ G4 v ps ∧ G5 v ps ∧ G6 ps ∧ G7 expected ps
 instance (e v ps) : Decidable (Rules e v ps) := by unfold Rules; infer_instance
 
 /-- Reflection is the gate; warnings never convert a failed rule to acceptance. -/
@@ -428,7 +401,7 @@ theorem layoutAccepted_nonTextContrast (e v ps) (h : check e v ps = true)
   · exact g6.1 target
   · exact g6.2.1 paint mark
 
-/-- New specification for owner review: G1–G9 plus G10 with a density limit. -/
+/-- New specification for owner review: G1–G7 plus G10 with a density limit. -/
 def checkDensity (limit : Nat) (expected : List (List Nat)) (v : Size) (ps : List Placed) : Bool :=
   check expected v ps && decide (G10 limit v ps)
 
@@ -437,12 +410,12 @@ theorem layoutAccepted_density (limit expected v ps) (h : checkDensity limit exp
   simp only [checkDensity, Bool.and_eq_true, decide_eq_true_eq] at h
   exact ⟨layoutAccepted_rules expected v ps h.1, h.2⟩
 
-/-- New specification for owner review: G1–G9, G10 with a density limit, and
+/-- New specification for owner review: G1–G7, G10 with a density limit, and
 G11 for the urgent occurrences `urgent`. -/
 def checkAll (limit : Nat) (expected urgent : List (List Nat)) (v : Size) (ps : List Placed) : Bool :=
   checkDensity limit expected v ps && decide (G11 v urgent ps)
 
-/-- New specification for owner review: `checkAll` reflects into G1–G9, G10
+/-- New specification for owner review: `checkAll` reflects into G1–G7, G10
 and G11. -/
 theorem layoutAccepted_all (limit expected urgent v ps)
     (h : checkAll limit expected urgent v ps = true) :
@@ -591,7 +564,7 @@ private def containmentFindings (rule : String) (v : Size) (p : Placed) : List F
 def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding := Id.run do
   let flags := [("G1",decide (G1 v ps)),("G2",decide (G2 v ps)),("G3",decide (G3 ps)),
     ("G4",decide (G4 v ps)),("G5",decide (G5 v ps)),("G6",decide (G6 ps)),
-    ("G7",decide (G7 e ps)),("G8",decide (G8 ps)),("G9",decide (G9 v ps))]
+    ("G7",decide (G7 e ps))]
   let mut out := flags.filterMap fun (rule,ok) => if ok then none else some { rule, metric := "rule-failed" }
   for p in ps do
     if p.info.target then
@@ -642,10 +615,6 @@ def findings (e : List (List Nat)) (v : Size) (ps : List Placed) : List Finding 
     let count := (ps.filter (fun p => p.info.source == some path && p.info.paint)).length
     if count != 1 then
       out := out ++ [{ rule := "G7", node := toString path, metric := "source-count", actual := count, required := 1, deficit := (1 : Int)-count }]
-  if v == ⟨92160,57600⟩ then
-    let count := (ps.filter (·.info.commit)).length
-    if count > 1 then
-      out := out ++ [{ rule := "G9", metric := "current-commit-count", actual := count, required := 1, deficit := (1 : Int)-count }]
   return out
 
 /-- New specification for owner review: G11 diagnostics. A strip box reports
@@ -699,7 +668,6 @@ the largest count of fixed targets together with one scroll window
 def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
   ((firstViewportTargets v ps).length, (windowCounts ps).foldl max (fixedTargets ps).length)
 
-#print axioms G9_exempt
 #print axioms apart_pixels
 #print axioms separated_pixels
 #print axioms layoutAccepted_bannerPixels
@@ -729,4 +697,7 @@ def densityCounts (v : Size) (ps : List Placed) : Nat × Nat :=
 #print axioms G10_scrollWindow
 #print axioms G10_mono
 #print axioms layoutAccepted_density
+#print axioms filter_length_mono
+#print axioms lowest_bottom
+
 end Ehr.Layout

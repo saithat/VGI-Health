@@ -1,10 +1,11 @@
 # Formal coverage of the 202 conformance scenarios
 
-| Whole-scenario guarantee | Before | Screen-local navigation | With structural rules | With entry and encounter witnesses |
-|---|---:|---:|---:|---:|
-| Checker plus native semantics | 4 | 12 | 14 | 200 |
-| Runtime alone | 2 | 2 | 2 | 2 |
-| Not formalized | 196 | 188 | 186 | 0 |
+| Whole-scenario guarantee | Scenarios |
+|---|---:|
+| Checker plus native semantics | 200 |
+| Runtime alone | 2 |
+| Not formalized | 0 |
+| Total | 202 |
 
 The unit is **every assertion of an applicable scenario** on the suite's release, role-specific canonical, facts and interpreter. A row stays open if the proofs cover only part of its trace. A passing example does not prove a row for every accepted program. [Scenario catalog](../../conformance/scenarios.mjs) · [Selection](../../conformance/selection.mjs)
 
@@ -14,7 +15,7 @@ Four selection rows use the existing requirements for a clinical destination, pi
 
 The earlier audit attributed 196 failures to layouts with a tiny shortcut on `chartSummary` and a usable detour on `directory`. Both screens called their link `toList`. Lean scopes IDs by screen. The driver now excludes only the failed screen/control pair and traverses `toDirectory` followed by `toList` for all five v2 personas. Those historical failures can no longer serve as counterexamples. [Driver and regression test](../../conformance/driver.test.mjs)
 
-Eight rows move to checker coverage with this fix. For an NP in a pre-op encounter the required signing site is reachable and the encounter-role refusal precedes entry validation. Seven injected-default probes have a required, revealable field for every applicable release persona. The checker supplies the route, and the native interpreter suppresses the default and accepts the valid human sample. Those fields are wristband scan, medication scan, high-alert cosign, consent verification, pain reassessment, naloxone offer and naloxone education. The macro probes additionally have to reveal the specific injected control beside the first matching field. A hidden duplicate could prevent that before the entry trace check. [Reachable required fields](../../lean/Ehr/Check/Rules.lean) · [Guard order](../../lean/Ehr/Core/Guard.lean) · [Human-only prefills](../../lean/Ehr/Proofs/T3.lean)
+Eight rows move to checker coverage with this fix. For an NP in a pre-op encounter the required signing site is reachable and the encounter-role refusal precedes entry validation. Seven injected-default probes have a required, revealable field for every applicable release persona. The checker supplies the route, and the native interpreter suppresses the default and accepts the valid human sample. Those fields are wristband scan, medication scan, high-alert cosign, consent verification, pain reassessment, naloxone offer and naloxone education. There is no start-screen field-depth rule; the entry and encounter witnesses below establish the required routes. The macro probes additionally have to reveal the specific injected control beside the first matching field. A hidden duplicate could prevent that before the entry trace check. [Reachable required fields](../../lean/Ehr/Check/Rules.lean) · [Guard order](../../lean/Ehr/Core/Guard.lean) · [Human-only prefills](../../lean/Ehr/Proofs/T3.lean)
 
 Two more rows move with the new checks. A surfaced prior authorization field now has a human-entry route even without an existing service composer. The patient-switch scenario uses the medication workflow's identity field and pinned allergy list together with native clearing, binding and FHIR filtering. It also attempts the previous patient's identity and a premature medication commit on the new chart. [Workflow soundness](../../lean/Ehr/Check/WorkflowSound.lean) · [Selection scenario](../../conformance/selection.mjs)
 
@@ -42,7 +43,7 @@ The release-persona checker now validates 76 entry rows across 11 commits. It fo
 | A required or disallowed value cannot be signed | Successful commits satisfy the guard. Entries must be confirmed and allowed, including each applicable order line. [Runtime T0](../../lean/Ehr/Proofs/Runtime.lean) · [Per-line T0](../../lean/Ehr/Proofs/T0.lean) | Can the clinician reach the intended omission with all preceding requirements met, see its specific error and correct it? |
 | A review must be shown or covered by an eligible receipt | Accepted layouts pin required reviews. The runtime checks timing, data version and permitted role. Shown-at-commit requirements forbid receipt substitution. [Review soundness](../../lean/Ehr/Check/PartialSound.lean) · [Runtime T2](../../lean/Ehr/Proofs/Runtime.lean) | The encounter witnesses reach the shown review, inspect the controlled prescription row where required and complete signing. The eight receipt probes each suppress their named panel. |
 | Automation cannot impersonate a human | T3 covers macro effects on commits, acknowledgements, receipts and human-only captures, and prefill of human-only values. [T3](../../lean/Ehr/Proofs/T3.lean) | Can the injected probe reach its selected field and can a human successfully enter the value? |
-| Alerts respect triggers, modality and handled keys | Native alert keys and popup candidates implement triggers. A2 links shown alerts to firing, A4 excludes passive popups, and acceptance implies the no-repeat rule. [Runtime alert theorems](../../lean/Ehr/Proofs/Runtime.lean) · [Alert acceptance](../../lean/Ehr/Check/AlertSound.lean) | The alert encounters witness the configured trigger and modal behavior through signing. The allergy-version change reruns the click on the signed chart. |
+| Alerts respect triggers, modality and handled keys | Native alert keys and popup candidates implement triggers. A2 links shown alerts to firing, A4 excludes passive popups, and runtime acknowledgments exclude repeated keys. [Runtime alert theorems](../../lean/Ehr/Proofs/Runtime.lean) · [Alert acceptance](../../lean/Ehr/Check/AlertSound.lean) | The alert encounters witness the configured trigger and modal behavior through signing. The allergy-version change reruns the click on the signed chart. |
 | Patient data is scoped to the selected chart | Opening B clears current clinical state and foreign facts cannot bind. The adapter filters patient-linked resources. [Workspace proof](../../lean/Ehr/Render/WorkspaceProofs.lean) · [FHIR projection](../../lean/Ehr/Render/Fhir.lean) | The fresh-episode probe signs A, opens B, inspects its state and view for leakage, and refuses A’s identifier. |
 
 ## Remaining work
@@ -74,6 +75,8 @@ All 60 retained verdicts were identical before and after the four workflow rules
 **Archived vendor baselines.** In each recording, days 4–6 use v2 and days 7–10 use v3. All seven P2 day files and all seven P4 day files in that range newly fail `serviceBundle`. P2 exposes authorization at w3Orders without a complete ED service route. P4 does the same at w5Orders in pediatrics. That accounts for 14 files per recording, 28 overall. P1–P5 on lean days 1–3 and P1/P3/P5 on lean days 4–10 pass (36/50). Core has 26/50 passes and retains its ten existing P5 navigation refusals. Applying the missing service controls to copies of all 28 files produced 28 acceptances against their original frozen specifications and canonicals. The older core specification omits imaging priority. The recordings retain their original inputs.
 
 The older complexity benchmark exports (v1, v1.1 and v2) retain their previous results. P1, P2, P4 and P5 already fail the pinned anticoagulant review, P3 exceeds the Schedule navigation group limit, and the three mixed-role templates already fail wristband write permissions. The extra local `programs/canonical/v1.json` reference has the same mixed-role refusal.
+
+Removing the static popup-count, repeated-request and start-screen field-depth constraints leaves all 75 retained revision verdicts and all 115 vendor-layout verdicts unchanged across lean-10day, core-10day and hillclimb-3day. These read-only checks use each frozen specification, canonical and previous program; they do not recertify the recordings.
 
 The encounter witnesses preserve the preceding checker’s verdicts and first-refusal messages across all 75 retained revisions and 115 daily vendor layouts. Hillclimb adds 15 accepted revisions and 15 accepted vendor layouts. In the lean recording, the removed routes to `w1Verify` on P1 v1–v2 and P5 v6 leave that screen outside the tour, including the revision where it retains a self-link. The tour closes only over destinations reachable from chart opening or initial history.
 

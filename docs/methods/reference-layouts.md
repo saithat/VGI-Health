@@ -77,8 +77,8 @@ single JavaScript/TypeScript mirror of Lean's inventory (paths, roles,
 targets, components); the painter's tests, the agent's geometry and this
 generator use it, and tests compare it with Lean's `inventory` operation. Every semantic occurrence, including section, column and
 tab-body wrappers, gets exactly one linked source. Leaf order is sorted by the
-resulting row and column positions for G8. Lean independently derives the
-authoritative semantic shape and checks flags, completeness and G1–G11.
+resulting row and column positions. Lean independently derives the
+authoritative semantic shape and checks flags, completeness and G1–G7, G10 and G11.
 Navigation has a wrapper, one heading per group and separate target buttons in
 wrapping bars. Each tab label has its own target before the selected body.
 `placementRules` centralizes the widget/role-to-placement mapping. Urgent
@@ -113,7 +113,7 @@ In-memory admission and painting caches are bounded to 256 entries; persistent
 receipts retain shapes evicted from memory. Reports also checksum and persist
 content-free dense/fixed geometry by receipt key, so later days do not repaint
 evicted shapes merely to recompute the same coordinates.
-On a dense refusal, `family-paint` supplies G1–G11 findings;
+On a dense refusal, `family-paint` supplies G1–G7, G10 and G11 findings;
 semantic linkage failures are recorded separately. Transport failures never
 become admission or fallback success.
 

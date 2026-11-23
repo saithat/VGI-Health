@@ -272,7 +272,7 @@ of each reachable-state and per-step clause of the accepted properties. -/
 theorem accepted_ordinary (sp prev can p) (h : Check.check sp prev can p = .ok)
     (hord : Workspace.enabled p = false) (facts : Facts) (user : User)
     (hrole : user.role = p.role) : FixedAccepted ⟨sp, p, facts, user⟩ := by
-  obtain ⟨_, _, _, _, _, landmarks⟩ := Check.accepted_wellFormed sp prev can p h
+  obtain ⟨_, _, _, _, landmarks⟩ := Check.accepted_wellFormed sp prev can p h
   obtain ⟨_, captures⟩ := Check.accepted_capturesAllOnce sp prev can p h
   obtain ⟨_, writes⟩ := Check.accepted_writesOnly sp prev can p h
   obtain ⟨reviewsMet, reviewsShown⟩ := Check.accepted_reviewsBeforeCommit sp prev can p h facts user hrole
@@ -280,7 +280,6 @@ theorem accepted_ordinary (sp prev can p) (h : Check.check sp prev can p = .ok)
   obtain ⟨_, units⟩ := Check.accepted_units sp prev can p h
   obtain ⟨_, alerts⟩ := Check.accepted_alertsFire sp prev can p h
   obtain ⟨_, alarms⟩ := Check.accepted_noFalseAlarms sp prev can p h
-  obtain ⟨_, repeats⟩ := Check.accepted_noRepeatInterruptions sp prev can p h
   obtain ⟨capturesAll, enteredOnce⟩ := captures facts user hrole
   obtain ⟨humanSteps, humanCommits, cosign⟩ := human facts user hrole
   obtain ⟨interruptive, passive⟩ := alerts facts user hrole
@@ -298,7 +297,7 @@ theorem accepted_ordinary (sp prev can p) (h : Check.check sp prev can p = .ok)
     interruptiveHandled := ordinary_interruptiveHandled _ hord interruptive
     passiveShownInline := ordinary_passiveShownInline _ hord passive
     alertsOnlyWhenTrue := ordinary_alertsOnlyWhenTrue _ hord (alarms facts user hrole)
-    interruptsOnce := ordinary_interruptsOnce _ hord (repeats facts user hrole) }
+    interruptsOnce := ordinary_interruptsOnce _ hord (Check.interruptsOnce ⟨sp, p, facts, user⟩) }
 
 #print axioms screen_critical
 #print axioms infoShownIn_critical

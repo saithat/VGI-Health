@@ -14,7 +14,7 @@ The headline `Ehr.Proofs.*` and original `accepted_*` theorems below cover
 `Ehr.runStep`/`runInit`, which add a critical-result handler and patient
 selection. [Runtime coverage](methods/runtime-coverage.md) proves the commit
 safeguards (T0, T2, T3), popup origin, popup severity and popup blocking for
-`runStep`. Of the twelve accepted properties, three carry over to `runStep` for
+`runStep`. Of the eleven accepted properties, two carry over to `runStep` for
 every program; the other nine are proved for programs without patient selection
 run with fixed facts (`accepted_ordinary`). With patient selection, all nine
 are proved per bound patient episode (`accepted_episode`): from the hydration
@@ -37,7 +37,7 @@ while an alert popup is open.
 | No sign without its guard: required entries confirmed and human-entered where required, in the declared unit (lb never satisfies kg); reviews shown or covered by a valid receipt; interruptive alerts acknowledged; role allowed (`T0`, `T2`). | Every program, record and event sequence. |
 | Macros and prefills never sign, acknowledge, create receipts or enter human-only values; a cosign names a second human (`T3`, `T6`). | Every program. |
 | Alerts appear only when their condition holds; passive alerts never pop up (`A2`, `A4`). | Every program. |
-| Checker acceptance implies 12 of 13 screen properties for every patient and reachable state (`accepted_*`). | Every accepted program. |
+| Checker acceptance implies 11 of 12 screen properties for every patient and reachable state (`accepted_*`). | Every accepted program. |
 | Every required task stays completable (property 6). | Proved for restricted families; a kernel-proved finite-model certificate checker is available, but general program abstraction coverage remains open. For the V1–V3 rule sets `Completable` is false as defined: `v1_payload_domain_not_satisfies` (and its V2/V3 forms, in the opt-in `EhrHeavy` target) refutes `Satisfies` for every program with a required commit, because completion ranges over records with no trusted payload. A [feasibility form (`CompletableWhereFeasible`)](design/property6-record-domain.md) (new specification for owner review) excludes missing-payload records (`missing_payload_not_commitFeasible`, `v1_payload_domain_not_commitFeasible`) and inherits all restricted-family and finite-certificate proofs (`completable_imp_completableWhereFeasible`), while `v1_v2_v3_not_acceptedCompletableWhereFeasible` proves that static `check` acceptance alone still allows a reachable cross-field `validationsOk` trap under V1–V3. |
 | The screen tree keeps the patient banner, required review content, honest buttons and modal interruptive alerts (`D1`–`D6`). | Every program and record. |
 | Bed assignments are exclusive; scheduled doses are given at most once; critical results are resolved or escalated by a deadline. | Lean reducers and multi-actor models. |

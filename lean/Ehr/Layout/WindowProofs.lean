@@ -333,7 +333,7 @@ theorem window_smallModal (cfg : Config) (sp : Ehr.Spec) (program : Ehr.Program)
 /-- New specification for owner review: `Parts.render_parts_shown` for the
 windowed screen. For any spec, program, patient, display, user and state, and
 every supported viewport, the fixed shell paints the screen as the window shows
-it, realizes it (G1–G9 and the complete source values), and every part of its
+it, realizes it (G1–G7 and the complete source values), and every part of its
 inventory, the pager's parts included, has a painted box showing its complete
 text. No coverage, length or acceptance premise. -/
 theorem render_window_parts_shown (cfg : Config) (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts)
@@ -761,4 +761,11 @@ theorem list_inventory_independent (rows more : List (List (String × String))) 
 #print axioms askPage_eligible
 #print axioms askPage_asked
 #print axioms window_record_shown
+#print axioms partEntries_length
+#print axioms length_le_sum
+#print axioms length_le_flatMap
+#print axioms sum_mul
+#print axioms sum_le_mul
+#print axioms sum_congr
+
 end Ehr.Layout.WindowProofs

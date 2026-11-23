@@ -1,5 +1,4 @@
 import Ehr.Check.PartialSound
-import Ehr.Check.BudgetSound
 import Ehr.Check.SeveritySound
 import Ehr.Check.WritesSound
 import Ehr.Check.EnterOnceSound
@@ -11,7 +10,7 @@ import Ehr.Check.FixedLineCompletion
 import Ehr.Check.DoseCompletionObstruction
 
 /-!
-Assemble the thirteen properties from checker acceptance and completion.
+Assemble the twelve properties from checker acceptance and completion.
 Completion is proved here for named restricted programs; the general case
 remains an explicit assumption.
 -/
@@ -19,7 +18,7 @@ remains an explicit assumption.
 namespace Ehr.Check
 open Ehr Ehr.Props
 
-/-- Assemble all thirteen properties from acceptance and the outstanding
+/-- Assemble all twelve properties from acceptance and the outstanding
 completability obligation. General T1 remains open until that obligation is
 proved from `completeFor`; no clinical domain assumption is added here. -/
 theorem satisfies_of_checked_completable (sp : Spec) (prev : Option Program) (can p : Program)
@@ -31,14 +30,13 @@ theorem satisfies_of_checked_completable (sp : Spec) (prev : Option Program) (ca
    accepted_humanOnlyKept _ _ _ _ h,
    hc,
    accepted_units _ _ _ _ h,
-   accepted_budgets _ _ _ _ h,
    accepted_alertsFire _ _ _ _ h,
    accepted_noFalseAlarms _ _ _ _ h,
-   accepted_noRepeatInterruptions _ _ _ _ h,
+   (fun facts user _ => interruptsOnce ⟨sp, p, facts, user⟩),
    accepted_severityTiers _ _ _ _ h,
    accepted_navigation _ _ _ _ h⟩
 
-/-- Acceptance proves all thirteen properties for the scalar clinical fragment,
+/-- Acceptance proves all twelve properties for the scalar clinical fragment,
 without assuming completion. See `Scalar.completable` for its exact scope. -/
 theorem satisfies_of_checked_scalar (k : ValueKind) (r : Role) (m : ReviewMode)
     (a : AlertCond) (t : Tier) (nonDose : k ≠ .medicationDose)
@@ -72,7 +70,7 @@ theorem satisfies_of_checked_fixed_lines (k : ValueKind) (r : Role) (m : ReviewM
     Satisfies (FixedLine.spec k r m a t) prev (FixedLine.program r) (FixedLine.program r) :=
   satisfies_of_checked_completable _ _ _ _ h (FixedLine.completable k r m a t nonDose)
 
-/-- A checked nonempty order composer satisfies all thirteen properties;
+/-- A checked nonempty order composer satisfies all twelve properties;
 its per-order-line requirement is a human assessment on each drug line. -/
 theorem fixed_lines_satisfies :
     Satisfies (FixedLine.spec .flag .physician .shownOnCommit .drugAllergy .interruptive)
@@ -102,7 +100,7 @@ theorem satisfies_of_checked_receipt_lines (k : ValueKind) (r : Role) (m : Revie
       (FixedLine.program r (some m)) (FixedLine.program r (some m)) :=
   satisfies_of_checked_completable _ _ _ _ h (FixedLine.completable k r m a t nonDose true)
 
-/-- A real accepted receipt-aware program satisfies all thirteen properties. -/
+/-- A real accepted receipt-aware program satisfies all twelve properties. -/
 theorem receipt_lines_satisfies :
     Satisfies (FixedLine.spec .flag .physician (.shownOrReceipt 720 [.physician, .rn]) .careGap .passive)
       none (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn])))
@@ -268,4 +266,11 @@ theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyPro
 #print axioms many_alerts_satisfies
 #print axioms satisfies_of_checked_automated_lines
 #print axioms automated_lines_satisfies
+#print axioms scalar_identity_required
+#print axioms fixed_lines_pending_nonempty
+#print axioms receipt_review_transition
+#print axioms many_alerts_two_acknowledgments
+#print axioms prefill_macro_human_completion
+#print axioms completion_dependency_rejected
+
 end Ehr.Check

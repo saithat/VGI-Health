@@ -20,7 +20,7 @@ test('one repeat-body class paints arbitrary list counts, targets and record len
     assert.ok(out.boxes.filter(d=>d.box.info.source!==null).every(d=>d.box.info.text.safety&&d.box.info.text.overflow==='scroll'));
   }
 });
-test('fixed commits satisfy G9 with and without a two-occurrence modal',()=>{
+test('shell renders complete commit and modal content',()=>{
   const commit=screen(30);commit.workspace.push({button:{comp:'sign',label:'Sign',role:'primary',enabled:false,blockedReason:'Required review '.repeat(1000),hotkey:null}});
   for(const viewport of [{w:92160,h:57600},{w:81920,h:51200},{w:122880,h:69120}]) {
     for(const modal of [null,{section:{id:'alert',title:'Interruptive alert '.repeat(500),children:[{button:{comp:'ack',label:'Acknowledge',role:'ack',enabled:true,blockedReason:null,hotkey:null}}]}}]) {

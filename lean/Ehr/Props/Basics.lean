@@ -326,13 +326,4 @@ def screenCopies (p : Program) (scr : Screen) (t : String) : Nat :=
 def programCopies (p : Program) (t : String) : Nat :=
   ((allComps p).filter fun sc => copyTag p sc.2 == some t).length
 
-/-- The number of popup requests (alert components with `popup := true`) on
-screens reachable from the start screen. -/
-def popupRequestCount (p : Program) (reachable : List ScreenId) : Nat :=
-  ((p.screens.filter fun scr => reachable.contains scr.id).flatMap fun scr =>
-    scr.components.filter fun comp =>
-      match comp.kind with
-      | .alert _ true => true
-      | _ => false).length
-
 end Ehr.Props

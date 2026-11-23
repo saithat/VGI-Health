@@ -466,7 +466,6 @@ export function layoutFor(shape,viewport,maxTargetsPerViewport=15) {
     }
     const missing=list.filter(s=>!placed.has(key(s.path)));
     if(missing.length) throw Error(`Reference generator left ${missing.length} occurrences unplaced (${key(missing[0].path)})`);
-    // G8 checks reading order after flattening, including multi-column rows.
     return output.sort((a,b)=>a.position.y-b.position.y || a.position.x-b.position.x);
   }
   const content=arrange(body,mainW).map(node=>({...node,position:{x:node.position.x+px(mainX-8),y:node.position.y+px(bodyOffset)}}));

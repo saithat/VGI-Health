@@ -43,7 +43,7 @@ export async function reportAgentBenefit(directory, options = {}) {
       if (record.outcome === 'validation-rejected' && replay && ['clicks','scrolls','keystrokes','klmDeciSec'].every(k => replay.saving[k] === 0)) nullValidationRejections++;
     }
   }
-  const nightAgent = {provider:manifest.hillclimb?.provider ?? manifest.backend, model:manifest.hillclimb?.model ?? manifest.model};
+  const nightAgent = {objective:manifest.hillclimb?.objective,provider:manifest.hillclimb?.provider ?? manifest.backend, model:manifest.hillclimb?.model ?? manifest.model};
   return { runId:manifest.runId, nightAgent, days, cohort:'Costs: identical tasks completed in both arms. Completion: all tasks. Floor: vendor floor on the paired cohort. No missing floor is treated as zero.', rows,
     nights:{climbs,outcomes,rawOutcomes,certifiedAttempts,checkerFailures,nullValidationRejections,zeroActionSavingRejections,migrationFallbacks} };
 }
@@ -53,7 +53,7 @@ export function markdownReport(report) {
     '| Persona | Vendor / agent completed | Both completed | Actions saved | Alert share | Modeled min vendor → agent | Time saved | Action gap captured | Time gap captured | Vendor / agent vs floor |',
     '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|'];
   for (const r of report.rows) lines.push(`| ${r.persona} | ${r.completion.before.completed}/${r.completion.before.tasks} / ${r.completion.after.completed}/${r.completion.after.tasks} | ${r.paired} | ${fmt(r.savedPct.actions)}% | ${fmt(r.alertSharePct,0)}% | ${fmt(r.before.klmDeciSec/600)} → ${fmt(r.after.klmDeciSec/600)} | ${fmt(r.savedPct.klmDeciSec)}% | ${fmt(r.gapCapturedPct.actions,0)}% | ${fmt(r.gapCapturedPct.klmDeciSec,0)}% | ${fmt(r.effortVsFloor.before)}× / ${fmt(r.effortVsFloor.after)}× |`);
-  if (report.nights.climbs.length) lines.push('', '| Persona | Night | Passing measures | Best net actions/day | Completion |',
+  if (report.nights.climbs.length) lines.push('', `| Persona | Night | Passing measures | Best net ${report.nightAgent.objective === 'modeled-time-v1' ? 'deciseconds' : 'actions'}/day | Completion |`,
     '|---|---:|---:|---:|---|', ...report.nights.climbs.map(r => `| ${r.persona} | ${r.night} | ${r.passingMeasures ?? 'Unavailable'} | ${fmt(r.bestNet)} | ${r.completion ?? 'Unavailable'} |`));
   lines.push('', '| Night outcome | Count |', '|---|---:|', ...Object.entries(report.nights.outcomes).map(([k,v]) => `| ${k} | ${v} |`), '',
     `Certification attempts: ${report.nights.certifiedAttempts}; nonpassing: ${report.nights.checkerFailures}; migration fallbacks: ${report.nights.migrationFallbacks}; zero-action-saving validation rejections: ${report.nights.zeroActionSavingRejections} (${report.nights.nullValidationRejections} with all recorded count/time savings zero).`, '', 'Failures (all tasks):');

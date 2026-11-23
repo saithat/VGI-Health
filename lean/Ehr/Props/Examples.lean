@@ -148,9 +148,6 @@ theorem good_no_alert_suppression : NoAlertSuppression goodProgram := by decide
 /-- A2: the good program never asks an interruptive alert to pop up. -/
 theorem good_no_interruptive_requests : NoInterruptivePopupRequests spec goodProgram := by decide
 
-/-- A3: no alert is asked to pop up on two screens. -/
-theorem good_popup_requested_once : PopupRequestedOnce spec goodProgram := by decide
-
 /-- A4: the good program never asks a passive alert to pop up. -/
 theorem good_no_passive_requests : NoPassivePopupRequests spec goodProgram := by decide
 
@@ -159,5 +156,25 @@ theorem passive_popup_request_rejected : ¬ NoPassivePopupRequests spec
     { goodProgram with screens := [{ goodOrderScreen with components := [
         { id := "careGapAlert", kind := .alert "careGap" true }] }] } := by
   decide
+
+#print axioms good_catalog_only
+#print axioms restricted_catalog_rejects
+#print axioms sign_within_two_clicks
+#print axioms good_ids_and_references
+#print axioms good_linked_not_retyped
+#print axioms good_declared_writes
+#print axioms nurse_cannot_declare_signing
+#print axioms hidden_review_commit_button_shown
+#print axioms closed_allergy_tab_hides_review
+#print axioms good_sign_shows_allergies
+#print axioms good_no_automation
+#print axioms bad_macro_attempts_automation
+#print axioms good_sign_has_one_continuation
+#print axioms good_quantity_prefills_keep_units
+#print axioms yesterday_weight_prefill_rejected
+#print axioms good_no_alert_suppression
+#print axioms good_no_interruptive_requests
+#print axioms good_no_passive_requests
+#print axioms passive_popup_request_rejected
 
 end Ehr.Props.Examples

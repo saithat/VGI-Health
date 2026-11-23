@@ -60,15 +60,15 @@ theorem accepted_structural (sp : Spec) (prev : Option Program) (can p : Program
     (h : check sp prev can p = .ok) :
     CatalogOnly sp p ∧ SpecIdsUnique sp ∧ IdsUnique p ∧ ReferencesResolve sp p ∧
     DeclaredWritesInSpec sp p ∧ NoPassivePopupRequests sp p ∧
-    PopupRequestedOnce sp p ∧ NoInterruptivePopupRequests sp p ∧ NoAlertSuppression p ∧
+    NoInterruptivePopupRequests sp p ∧ NoAlertSuppression p ∧
     NoAutomationAttempts sp p ∧ QuantityPrefillsKeepUnits sp p ∧
     LinkedNotRetyped sp p := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨hcat, hids, hpi, href, hw, hpassive, hrepeat, hint, hhuman, hal, hu, _, hlink, _, _, _, _, _, _, _⟩
+  rcases hall with ⟨hcat, hids, hpi, href, hw, hpassive, hint, hhuman, hal, hu, _, hlink, _, _, _, _, _⟩
   exact ⟨(inCatalog_iff sp p).mp hcat, of_decide_eq_true hids,
     of_decide_eq_true hpi, of_decide_eq_true href, of_decide_eq_true hw,
-    of_decide_eq_true hpassive, (filteredPopupRequests_iff sp p).mp (of_decide_eq_true hrepeat), of_decide_eq_true hint, of_decide_eq_true hal,
+    of_decide_eq_true hpassive, of_decide_eq_true hint, of_decide_eq_true hal,
     of_decide_eq_true hhuman, of_decide_eq_true hu, of_decide_eq_true hlink⟩
 
 #print axioms firstFinding_none_iff
@@ -80,8 +80,11 @@ theorem accepted_highAlertNotices (sp prev can p) (h : check sp prev can p = .ok
     highAlertNoticesRetained sp p = true := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hretained, _⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hretained, _⟩
   exact hretained
 
 #print axioms accepted_highAlertNotices
+#print axioms firstFinding_some
+#print axioms check_ok_iff
+
 end Ehr.Check

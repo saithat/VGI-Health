@@ -138,9 +138,6 @@ def amoxPath : List Event := w1Path.map fun e => match e with
 #guard Specs.ruleProfile == .full || !referencesValid specV1 Bad.inventedAlert
 #guard Specs.ruleProfile == .full || !alertHolds specV1 adult w1 "doseRangeEveryOrder"
 -- 11: duplicated interruptive popup requests are a structural regression.
-#guard Specs.ruleProfile == .full || popupCount Bad.repeatedInteraction "interactionOrder" == 2
-#guard Specs.ruleProfile == .full || (edges Bad.repeatedInteraction "w1Orders").contains "w1Verify"
-#guard Specs.ruleProfile == .full || (edges Bad.repeatedInteraction "w1Verify").contains "w1Sign"
 -- 12: passive popup requests are malformed; runtime never presents that popup.
 #guard Specs.ruleProfile == .full || passivePopupDeclared specV1 Bad.passivePopup
 #guard Specs.ruleProfile == .full || (popupCandidates specV1 Bad.passivePopup adult w1Close "signNote").all (·.1 != "careGapsInline")

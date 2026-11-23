@@ -8,7 +8,6 @@
   ["08-forged-consent", "humanOnlyKept"],
   ["09-hidden-allergy-alert", "humanOnlyKept"],
   ["10-invented-alert", "wellFormed"],
-  ["11-repeated-interaction", "noRepeatInterruptions"],
   ["12-passive-popup", "severityTiers"],
   ["13-no-cures", "completable"],
   ["14-macro-naloxone", "humanOnlyKept"],

@@ -66,7 +66,7 @@ Clinical entry points and recorded screens use the plain DOM Lean WASM painter. 
   explicit dense family and the fixed shell are each admitted by Lean for
   every rich fixture at all three viewports with complete text; a family for
   another shape is refused, with no host fallback (same test). Bound rich
-  marks are checked at runtime (G1–G11); they do not acquire the fixed-shell
+  marks are checked at runtime (G1–G7, G10 and G11); they do not acquire the fixed-shell
   universal theorem by sharing its painter.
 - [x] **Sign-in, sign-out and return URLs** on `/lean.html` against the local
   synthetic OIDC issuer used by the tests: PKCE with the exact registered
@@ -86,7 +86,7 @@ Clinical entry points and recorded screens use the plain DOM Lean WASM painter. 
   sizes refuse interaction until a supported size is restored.
 - [ ] **Encounter/login shell and standalone `/adt` (open).** Both stay on
 - The accessibility/screen audit pair currently audits the React screens
-  through the browser gate; the Lean page relies on G1–G11 and its Playwright
+  through the browser gate; the Lean page relies on G1–G7, G10 and G11 and its Playwright
   tests.
 - [ ] **Validate the deployed release and workload through the Lean page.**
   A one-day replay for P1–P5 ran with `run-days --screens lean` and no model

@@ -1012,7 +1012,7 @@ export class LeanScreenChecker implements ScreenChecker {
           status: measured.failures.length ? "fail" : "pass",
           failingScreens: [...new Set(measured.failures.map((f) => f.screen))],
           message: JSON.stringify({
-            gate: "Lean G1–G11; no browser certification",
+            gate: "Lean G1–G7, G10 and G11; no browser certification",
             findings: measured.failures,
             limits: measured.limits,
           }),

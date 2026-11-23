@@ -1,5 +1,5 @@
 import Ehr.Check.FullDisplayObstruction
-import Ehr.Check.MissingWitness
+import Ehr.Check.PatchWitness
 
 /-!
 A shared full-profile rejection witness for seeds whose whole-interpreter

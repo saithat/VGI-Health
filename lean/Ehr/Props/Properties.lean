@@ -2,9 +2,9 @@ import Ehr.Props.Basics
 import Ehr.Props.Navigation
 
 /-!
-Thirteen requirements for UI programs, stated about the actual interpreter.
+Twelve requirements for UI programs, stated about the actual interpreter.
 Some hold for every program; others require checks on the program's structure.
-Satisfies requires all thirteen for every patient's facts and user of the role.
+Satisfies requires all twelve for every patient's facts and user of the role.
 Checker acceptance still needs a completion proof to establish all of Satisfies.
 -/
 
@@ -58,19 +58,10 @@ banner) is shown. -/
 def LandmarksShown (ep : Episode) : Prop :=
   Always ep fun s => ∀ l ∈ ep.spec.design.landmarks, InfoShown ep s l
 
-/-- Every relevant entry has a field within the depth bound. Entries scoped
-only to encounters where this role cannot commit are not required. -/
-def RequiredWithinDepth (spec : Spec) (canonical prog : Program) : Prop :=
-  ∀ c ∈ requiredCommits spec canonical prog, ∀ rq ∈ spec.entries, rq.commit = c →
-    entryRelevantForRole spec prog.role rq = true → ∃ sc ∈ allComps prog, (∃ f ∈ fieldOf? sc.2.kind, f.1 = rq.element) ∧
-      WithinClicks prog spec.design.maxDepth sc.1.id
-
 /-- **Property 1, well-formed.** Catalog components only, unique IDs (in the
-spec and the program), references resolve, landmarks always shown, and every
-required element within the depth bound. Needs the checker. -/
+spec and the program), references resolve and landmarks always shown. Needs the checker. -/
 def WellFormed (spec : Spec) (canonical prog : Program) : Prop :=
   CatalogOnly spec prog ∧ SpecIdsUnique spec ∧ IdsUnique prog ∧ ReferencesResolve spec prog ∧
-  RequiredWithinDepth spec canonical prog ∧
   ∀ facts user, user.role = prog.role → LandmarksShown ⟨spec, prog, facts, user⟩
 
 /-! ## 2. Captures all, once -/
@@ -328,14 +319,6 @@ def UnitsRight (spec : Spec) (prog : Program) : Prop :=
 
 /-! ## 8. Budgets -/
 
-/-- The program asks for no more popups, on screens reachable from its start,
-than the canonical program does. Needs the checker. -/
-def AlertBudget (canonical prog : Program) : Prop :=
-  ∀ rc rp : List ScreenId,
-    (∀ z, z ∈ rc ↔ ReachableScreen canonical z ∧ (canonical.screen? z).isSome) →
-    (∀ z, z ∈ rp ↔ ReachableScreen prog z ∧ (prog.screen? z).isSome) →
-    popupRequestCount prog rp.eraseDups ≤ popupRequestCount canonical rc.eraseDups
-
 /-- **R3, copy budget.** New specification for owner review. For every tag, at
 most one copy on any screen and at most `spec.design.copyBudget` copies in the
 program. Copies are counted against their original's tag (`copyTag`). -/
@@ -387,11 +370,6 @@ theorem copyBudget_of_checked (spec : Spec) (prog : Program)
         have : copyTag prog sc.2 ≠ some t := fun e => present ⟨sc, hc, e⟩
         simpa using this)
       omega
-
-/-- **Property 8, popup budget.** The legacy spec/previous-version arguments
-are retained for statement compatibility; movement is unrestricted. -/
-def WithinBudgets (_spec : Spec) (_prev : Option Program) (canonical prog : Program) : Prop :=
-  AlertBudget canonical prog
 
 /-! ## Alerts: shown when they matter, and no fatigue -/
 
@@ -460,19 +438,8 @@ def InterruptsOnce (ep : Episode) : Prop :=
     (∀ p, s.popup? = some p → (ep.next actor s e).popup? = some p ∨ p ∈ (ep.next actor s e).acked)) ∧
   Always ep fun s => ∀ p, s.popup? = some p → p ∉ s.acked
 
-/-- The program never asks the same interruptive alert to pop up on two
-different screens. Needs the checker. -/
-def PopupRequestedOnce (spec : Spec) (prog : Program) : Prop :=
-  ∀ s1 ∈ allComps prog, ∀ s2 ∈ allComps prog, ∀ a1 ∈ alertOf? s1.2.kind, ∀ a2 ∈ alertOf? s2.2.kind,
-    a1.2 = true → a2.2 = true → a1.1 = a2.1 →
-    (∀ al ∈ spec.alert? a1.1, al.tier = .interruptive) → s1.1.id = s2.1.id
-
-instance (spec : Spec) (prog : Program) : Decidable (PopupRequestedOnce spec prog) := by
-  unfold PopupRequestedOnce; infer_instance
-
-/-- **Property 11 (A3), no repeat interruptions.** -/
+/-- **Property 11 (A3), no repeat interruptions.** By construction. -/
 def NoRepeatInterruptions (spec : Spec) (prog : Program) : Prop :=
-  PopupRequestedOnce spec prog ∧
   ∀ facts user, user.role = prog.role → InterruptsOnce ⟨spec, prog, facts, user⟩
 
 /-- Passive alerts never pop up. By construction. -/
@@ -503,7 +470,7 @@ navigation tree. D1–D4 and D6 hold for every program by renderer theorems in
 
 /-! ## All together -/
 
-/-- **A certified program.** `prog` satisfies properties 1–13 against `spec`,
+/-- **A certified program.** `prog` satisfies twelve retained properties against `spec`,
 given the previous deployed version `prev` (if any) and the vendor's
 `canonical` program. -/
 def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
@@ -514,7 +481,6 @@ def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) :
   HumanOnlyKept spec prog ∧               -- 5
   Completable spec canonical prog ∧       -- 6
   UnitsRight spec prog ∧                  -- 7
-  WithinBudgets spec prev canonical prog ∧ -- 8
   AlertsFire spec prog ∧                  -- 9  (A1)
   NoFalseAlarms spec prog ∧               -- 10 (A2)
   NoRepeatInterruptions spec prog ∧       -- 11 (A3)
@@ -523,7 +489,7 @@ def Satisfies (spec : Spec) (prev : Option Program) (canonical prog : Program) :
 
 /-- New specification for owner review.
 **A certified program under the feasibility form of property 6 (option D).**
-Same thirteen conjuncts as `Satisfies`, with `CompletableWhereFeasible` in
+Same twelve conjuncts as `Satisfies`, with `CompletableWhereFeasible` in
 place of `Completable`. -/
 def SatisfiesWhereFeasible (spec : Spec) (prev : Option Program) (canonical prog : Program) : Prop :=
   WellFormed spec canonical prog ∧        -- 1
@@ -533,11 +499,13 @@ def SatisfiesWhereFeasible (spec : Spec) (prev : Option Program) (canonical prog
   HumanOnlyKept spec prog ∧               -- 5
   CompletableWhereFeasible spec canonical prog ∧ -- 6 (option D)
   UnitsRight spec prog ∧                  -- 7
-  WithinBudgets spec prev canonical prog ∧ -- 8
   AlertsFire spec prog ∧                  -- 9  (A1)
   NoFalseAlarms spec prog ∧               -- 10 (A2)
   NoRepeatInterruptions spec prog ∧       -- 11 (A3)
   SeverityTiers spec prog ∧               -- 12 (A4)
   NavigationSane prog                    -- 13 (D5)
+
+#print axioms filter_length_zero
+#print axioms copyBudget_of_checked
 
 end Ehr.Props

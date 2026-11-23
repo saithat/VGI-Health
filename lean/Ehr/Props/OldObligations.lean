@@ -13,7 +13,7 @@ open Ehr
 def OldStaticObligations (old : Spec) (p : Program) : Prop :=
   NoAutomationAttempts old p ∧ QuantityPrefillsKeepUnits old p ∧
   NoAlertSuppression p ∧ NoInterruptivePopupRequests old p ∧
-  PopupRequestedOnce old p ∧ NoPassivePopupRequests old p
+  NoPassivePopupRequests old p
 
 /-- The five additional contract families of the older hospital, evaluated on
 installed-release executions. Old element declarations, commit declarations and

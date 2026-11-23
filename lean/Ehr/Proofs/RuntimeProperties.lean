@@ -4,32 +4,30 @@ import Ehr.Check.Sound
 /-! Accepted-program coverage for runtime execution. Every theorem below is
 a new specification for owner review, outside Comparator. Static conjuncts
 retain their original definitions; commit conjuncts use the effective input.
-These are not an assertion of all twelve original properties for runStep.
+These are not an assertion of all eleven accepted properties for runStep.
 `Ehr.Proofs.RuntimeOrdinary` proves the remaining clauses for ordinary programs. -/
 
 namespace Ehr.Runtime
 open Ehr Props Proofs
 
-/-- New specification for owner review: all static conjuncts of the twelve
+/-- New specification for owner review: all static conjuncts of the eleven
 accepted properties are independent of the execution entry point. In
-particular budgets and navigation are entirely static. No runtime reachability
+particular navigation is entirely static. No runtime reachability
 premise or clinical state refinement is required for these conjuncts. -/
 theorem accepted_static (sp prev can p) (h : Check.check sp prev can p = .ok) :
     CatalogOnly sp p ∧ SpecIdsUnique sp ∧ IdsUnique p ∧ ReferencesResolve sp p ∧
-    RequiredWithinDepth sp can p ∧ LinkedNotRetyped sp p ∧ DeclaredWritesInSpec sp p ∧
+    LinkedNotRetyped sp p ∧ DeclaredWritesInSpec sp p ∧
     NoAutomationAttempts sp p ∧ QuantityPrefillsKeepUnits sp p ∧
-    WithinBudgets sp prev can p ∧ NoAlertSuppression p ∧ NoInterruptivePopupRequests sp p ∧
-    PopupRequestedOnce sp p ∧ NoPassivePopupRequests sp p ∧ NavigationSane p := by
-  obtain ⟨hc, hs, hi, hr, hd, _⟩ := Check.accepted_wellFormed sp prev can p h
-  exact ⟨hc, hs, hi, hr, hd,
+    NoAlertSuppression p ∧ NoInterruptivePopupRequests sp p ∧
+    NoPassivePopupRequests sp p ∧ NavigationSane p := by
+  obtain ⟨hc, hs, hi, hr, _⟩ := Check.accepted_wellFormed sp prev can p h
+  exact ⟨hc, hs, hi, hr,
     (Check.accepted_capturesAllOnce sp prev can p h).1,
     (Check.accepted_writesOnly sp prev can p h).1,
     (Check.accepted_humanOnlyKept sp prev can p h).1,
     (Check.accepted_units sp prev can p h).1,
-    Check.accepted_budgets sp prev can p h,
     (Check.accepted_alertsFire sp prev can p h).1,
     (Check.accepted_noFalseAlarms sp prev can p h).1,
-    (Check.accepted_noRepeatInterruptions sp prev can p h).1,
     (Check.accepted_severityTiers sp prev can p h).1,
     Check.accepted_navigation sp prev can p h⟩
 

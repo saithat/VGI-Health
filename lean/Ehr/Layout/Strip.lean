@@ -26,7 +26,7 @@ namespace Ehr.Layout.Strip
 open Ehr Ehr.Render Ehr.Sem
 
 /-- New specification for owner review: a painted layout accepted for a screen:
-the `Realizes` contract (G1–G9, linked flags, complete text) and G11 for the
+the `Realizes` contract (G1–G7, linked flags, complete text) and G11 for the
 screen's urgent occurrences. -/
 def StripAccepted (v : Size) (screen : UiScreen) (painted : List Drawn) : Prop :=
   Realizes screen v painted ∧ G11 v (urgentPaths (screenShape screen)) (painted.map Drawn.box)
@@ -150,7 +150,7 @@ theorem accepted_box (v : Size) (screen : UiScreen) (painted : List Drawn)
       Unoccluded painted offset d := by
   obtain ⟨⟨rules, _, bound⟩, pinned⟩ := accepted
   have entry := urgent_entry screen k node hk
-  have g7 := rules.2.2.2.2.2.2.1
+  have g7 := rules.2.2.2.2.2.2
   have counted := g7.2.2.1 [Range.urgentRoot screen + k] (List.mem_map.mpr ⟨_, entry, rfl⟩)
   obtain ⟨p, hp⟩ := List.exists_mem_of_length_pos (show 0 < _ from by rw [counted]; decide)
   obtain ⟨member, flags⟩ := List.mem_filter.mp hp
@@ -295,7 +295,7 @@ private def probeOk (screen : UiScreen) : Bool := viewports.all fun v =>
 -- Each alert carries its severity mark in its own occurrence.
 #guard probeOk (probe 2 1 false) && probeOk (probe 2 1 true) && probeOk (probe 5 1 true) && probeOk (probe 4 2 false)
 #guard probeOk (probe 3 0 true) && probeOk (probe 2 2 false)
--- Beyond that the shell still satisfies G1–G9 and G10 but not G11.
+-- Beyond that the shell still satisfies G1–G7 and G10 but not G11.
 #guard !Shell.stripFits (screenShape (probe 6 1 false)) && !Shell.stripFits (screenShape (probe 1 3 false))
 #guard !decide (G11 desk (urgentPaths (screenShape (probe 6 1 false))) (probeBoxes (probe 6 1 false)))
 #guard check (shapeSources (screenShape (probe 6 1 false))) desk (probeBoxes (probe 6 1 false)) &&

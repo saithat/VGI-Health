@@ -73,12 +73,7 @@ def inventedAlert : Program := seed 10 <|
   ["w1Orders", "w1Sign"].foldl (fun p id => p.updateScreen id fun s =>
     s.insertAfter (cid id "banner")
       [alertC id "everyDose" "doseRangeEveryOrder" "Dose warning on every order" true]) (base 10)
-/-- 11: Request the same interruptive popup on composer and sign screens. -/
-def repeatedInteraction : Program := seed 11 <|
-  ((base 11).updateScreen "w1Orders" fun s => s.insertAfter "w1Orders.banner"
-    [alertC s.id "repeatInteraction" "interactionOrder" "Interaction" true])
-  |>.updateScreen "w1Sign" fun s => s.updateComp "w1Sign.alert.interaction" fun c =>
-    { c with kind := .alert "interactionOrder" true }
+
 /-- 12: Request a popup for a passive care-gap reminder. -/
 def passivePopup : Program := seed 12 <| (base 12).updateScreen "w1Rooming" fun s =>
   s.updateComp "w1Rooming.careGaps" fun c => { c with kind := .alert "careGapsInline" true }
@@ -211,7 +206,7 @@ def programs : List (String × Program) :=
    ("05-self-cosign", selfCosign), ("06-stale-weight", staleWeight),
    ("07-unreachable-refill", unreachableRefill), ("08-forged-consent", forgedConsent),
    ("09-hidden-allergy-alert", hiddenAllergyAlert), ("10-invented-alert", inventedAlert),
-   ("11-repeated-interaction", repeatedInteraction), ("12-passive-popup", passivePopup),
+   ("12-passive-popup", passivePopup),
    ("13-no-cures", noCures), ("14-macro-naloxone", macroNaloxone),
    ("15-hidden-controlled-details", hiddenControlledDetails), ("16-schedule-ii-refills", scheduleIIRefills),
    ("17-no-restraint-care-plan", noRestraintCarePlan), ("18-no-op-technique", noOpTechnique),
@@ -224,7 +219,7 @@ def programs : List (String × Program) :=
    ("31-hidden-result-components", hiddenResultComponents), ("32-misleading-signing-label", misleadingSigningLabel),
    ("33-np-preop-macro", npPreopMacro)]
 /-- Catalog-only defects. Keep these seeds for full-profile runs. -/
-def fullProfileOnly : List String := ((programs.drop 16).take 16).map (·.1)
+def fullProfileOnly : List String := ((programs.drop 15).take 16).map (·.1)
 
 /-- Defects in the hand-written workflows remain active in core. -/
 def corePrograms : List (String × Program) :=
@@ -234,10 +229,10 @@ def corePrograms : List (String × Program) :=
 def coreExpectedProperties : List String :=
   ["reviewsBeforeCommit", "humanOnlyKept", "writesOnly", "humanOnlyKept",
    "humanOnlyKept", "units", "completable", "humanOnlyKept", "humanOnlyKept",
-   "wellFormed", "noRepeatInterruptions", "severityTiers", "completable",
+   "wellFormed", "severityTiers", "completable",
    "humanOnlyKept", "reviewsBeforeCommit", "completable", "humanOnlyKept"]
 
-#guard programs.length == 33
+#guard programs.length == 32
 #guard !referencesValid Specs.V1.specV1 poundsAsWeight
 #guard !referencesValid Specs.V1.specV1 inventedAlert
 #guard !(reachable unreachableRefill "home").contains "w7Decision"

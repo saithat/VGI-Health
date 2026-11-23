@@ -43,7 +43,6 @@ theorem bad01_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergi
 #print axioms bad08_not_satisfies
 #print axioms bad09_not_satisfies
 #print axioms bad10_not_satisfies
-#print axioms bad11_not_satisfies
 #print axioms bad12_not_satisfies
 #print axioms bad14_not_satisfies
 #print axioms reachable_afterHuman

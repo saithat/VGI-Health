@@ -10,7 +10,7 @@ theorem accepted_copyBudget (sp prev can p) (h : check sp prev can p = .ok) :
     CopyBudget sp p := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcopies, _⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcopies, _⟩
   exact copyBudget_of_checked sp p (of_decide_eq_true hcopies)
 
 /-- New specification for owner review: per-tag form, for any tag string. -/

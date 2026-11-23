@@ -2,7 +2,6 @@ import Ehr.Check.CriticalIdsSound
 import Ehr.Check.TinyRejections
 import Ehr.Check.PatchWitness
 import Ehr.Check.ViolationWitness
-import Ehr.Check.MissingWitness
 import Ehr.Check.PinSound
 import Ehr.Check.ReleaseChecks
 import Ehr.Check.MonotonicityObstruction
@@ -16,7 +15,6 @@ import Ehr.Check.RejectionObstruction
 import Ehr.Check.RequestSound
 import Ehr.Check.PartialSound
 import Ehr.Check.SeveritySound
-import Ehr.Check.BudgetSound
 import Ehr.Check.DomainObstruction
 import Ehr.Check.DisplayObstruction
 import Ehr.Check.FeasibleCompletion

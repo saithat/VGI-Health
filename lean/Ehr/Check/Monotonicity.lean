@@ -40,9 +40,9 @@ would refuse anyway. No old catalog membership is required. -/
 theorem extends_static {new old : Spec} {p : Program} (he : new.Extends old)
     (human : NoAutomationAttempts new p) (units : QuantityPrefillsKeepUnits new p)
     (suppress : NoAlertSuppression p) (interrupt : NoInterruptivePopupRequests new p)
-    (once : PopupRequestedOnce new p) (passive : NoPassivePopupRequests new p) :
+    (passive : NoPassivePopupRequests new p) :
     OldStaticObligations old p := by
-  refine ⟨?_, ?_, suppress, ?_, ?_, ?_⟩
+  refine ⟨?_, ?_, suppress, ?_, ?_⟩
   · refine ⟨?_, ?_⟩
     · intro sc hc f hf el hel hh
       exact human.1 sc hc f hf el (extends_element_mem he hel) hh
@@ -58,7 +58,6 @@ theorem extends_static {new old : Spec} {p : Program} (he : new.Extends old)
         exact request isRequest el (extends_element_mem he hel)
   · exact fun sc hc f hf el hel => units sc hc f hf el (extends_element_mem he hel)
   · simpa only [NoInterruptivePopupRequests, Spec.alert?, he.2.2.2.2.2.1] using interrupt
-  · simpa only [PopupRequestedOnce, Spec.alert?, he.2.2.2.2.2.1] using once
   · simpa only [NoPassivePopupRequests, Spec.alert?, he.2.2.2.2.2.1] using passive
 
 /-- Prefix preservation retains every old validator/default; exact commit and
@@ -98,14 +97,14 @@ theorem T8_old_obligations {new old : Spec} {prev : Option Program}
   obtain ⟨review, screen⟩ := hs.2.2.2.1 facts user role
   obtain ⟨human, clicks, cosign⟩ := hs.2.2.2.2.1.2 facts user role
   have units := hs.2.2.2.2.2.2.1.2 facts user role
-  obtain ⟨interrupt, passive⟩ := hs.2.2.2.2.2.2.2.2.1.2 facts user role
+  obtain ⟨interrupt, passive⟩ := hs.2.2.2.2.2.2.2.1.2 facts user role
   refine ⟨he, extends_static he hs.2.2.2.2.1.1 hs.2.2.2.2.2.2.1.1
-    hs.2.2.2.2.2.2.2.2.1.1 hs.2.2.2.2.2.2.2.2.2.1.1
-    hs.2.2.2.2.2.2.2.2.2.2.1.1 hs.2.2.2.2.2.2.2.2.2.2.2.1.1,
+    hs.2.2.2.2.2.2.2.1.1 hs.2.2.2.2.2.2.2.2.1.1
+    hs.2.2.2.2.2.2.2.2.2.2.1.1,
     ?_, ?_, ?_, human, clicks, cosign, ?_, ?_, ?_,
-    hs.2.2.2.2.2.2.2.2.2.1.2 facts user role,
-    hs.2.2.2.2.2.2.2.2.2.2.1.2 facts user role,
-    hs.2.2.2.2.2.2.2.2.2.2.2.1.2 facts user role, extends_contracts _ he⟩
+    hs.2.2.2.2.2.2.2.2.1.2 facts user role,
+    hs.2.2.2.2.2.2.2.2.2.1 facts user role,
+    hs.2.2.2.2.2.2.2.2.2.2.1.2 facts user role, extends_contracts _ he⟩
   · exact fun s reach actor event c happened rq mem => entry s reach actor event c happened rq (extends_entries he mem)
   · exact fun s reach actor event c happened rq mem => review s reach actor event c happened rq (extends_reviews he mem)
   · exact fun s reach c shown rq mem => screen s reach c shown rq (extends_reviews he mem)
@@ -128,11 +127,10 @@ theorem T8_checked_old_obligations {new old : Spec} {prev : Option Program}
   refine ⟨he, extends_static he (accepted_humanOnlyKept new prev canonical p h).1
     (accepted_units new prev canonical p h).1 (accepted_alertsFire new prev canonical p h).1
     (accepted_noFalseAlarms new prev canonical p h).1
-    (accepted_noRepeatInterruptions new prev canonical p h).1
     (accepted_severityTiers new prev canonical p h).1,
     ?_, ?_, ?_, human, clicks, cosign, ?_, ?_, ?_,
     (accepted_noFalseAlarms new prev canonical p h).2 facts user role,
-    (accepted_noRepeatInterruptions new prev canonical p h).2 facts user role,
+    interruptsOnce ⟨new, p, facts, user⟩,
     (accepted_severityTiers new prev canonical p h).2 facts user role, extends_contracts _ he⟩
   · exact fun s reach actor event c happened rq mem => entry s reach actor event c happened rq (extends_entries he mem)
   · exact fun s reach actor event c happened rq mem => review s reach actor event c happened rq (extends_reviews he mem)
@@ -179,4 +177,7 @@ example : ∀ facts user, user.role = expandedProgram.role →
 #print axioms T8_old_obligations
 #print axioms T8_v1_to_v2
 #print axioms T8_v2_to_v3
+#print axioms extends_reviews
+#print axioms extends_element_mem
+
 end Ehr.Check

@@ -107,10 +107,8 @@ content environments for one fixed semantic template.
 | G5 | Every outer footprint has nonnegative x and right edge within viewport width; scroll content fits the nearest viewport horizontally. |
 | G6 | *New specification for owner review.* Foreground/background contrast is at least 4.5:1 for all text at every size and weight (`PhysicalBounds.textContrastTenths`), and 3:1 for every target and every painted vector mark: circle, wedge, polyline (`PhysicalBounds.nontextContrastTenths`). `layoutAccepted_textContrast` and `layoutAccepted_nonTextContrast` state the consequences; `contrast_thresholds_exact` ties the thresholds to the policy constants. A plain rectangle has no ink of its own; only its text and target state are checked. Colors are opaque 8-bit sRGB. Outward-rounded rational luminance bounds have exact integer fifth-power certificates (`channel_certificates`); no floating point enters the check. |
 | G7 | Expected semantic occurrence paths and painted IDs are unique; each expected path is painted exactly once and no invented source path is painted. The W1 adapter derives the inventory from the actual `UiScreen`; the lower-level proposal API takes the expected inventory as an input. |
-| G8 | Document order is top-to-bottom, then left-to-right at equal y. Within a shared scroller use content positions; between regions use outer viewports. Distinct z layers are separate reading regions. This does not establish an assistive technology's traversal order. |
-| G9 | At 1440×900, **if any current-task commit target is present**, exactly one is fixed and fully contained without page scrolling. A screen with no current-task commit is exempt. Other sizes impose no extra commit constraint. Family admission links commit flags to the actual semantic source, preventing omission to claim an exemption. |
-| G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero; at most that many fixed targets (outside every scroll viewport); and, at every scroll offset of each scroll viewport, at most that many fixed targets and targets in the window together. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G9 conjunction; see "Action density" below. |
-| G11 | *New specification for owner review.* Every box flagged `urgent` (the pinned urgent strip) is painted, outside every scroll viewport, contained in the page viewport and separated from every other painted box, a modal included, whatever the stacking order; and every painted source box of an urgent occurrence of the semantic inventory carries the flag. It holds at every supported size. It is checked next to G1–G9 and G10 (`checkAll`, `layoutAccepted_all`); see "Pinned urgent strip" below. |
+| G10 | *New specification (R5).* At 1440×900, at most `maxTargetsPerViewport` active targets (default 15, `DesignRules.maxTargetsPerViewport`) in the first viewport, meaning every enclosing scroll offset at zero; at most that many fixed targets (outside every scroll viewport); and, at every scroll offset of each scroll viewport, at most that many fixed targets and targets in the window together. Other sizes impose no density constraint. It is checked by `checkDensity` next to the G1–G7 conjunction; see "Action density" below. |
+| G11 | *New specification for owner review.* Every box flagged `urgent` (the pinned urgent strip) is painted, outside every scroll viewport, contained in the page viewport and separated from every other painted box, a modal included, whatever the stacking order; and every painted source box of an urgent occurrence of the semantic inventory carries the flag. It holds at every supported size. It is checked next to G1–G7 and G10 (`checkAll`, `layoutAccepted_all`); see "Pinned urgent strip" below. |
 
 The decision procedures for G3 and G4 compute whether a modal is open once
 per layout (`G3Hoisted`, `G4Hoisted`, equal to G3 and G4 by `G3_hoisted` and
@@ -435,7 +433,7 @@ layoutAccepted_allPatients_finite
       Realizes (runRenderUi ⟨sp, program, facts, display, user, state⟩) v painted
 ```
 
-`Realizes` includes G1–G9 on the actual semantic inventory, linked source roles,
+`Realizes` includes G1–G7 on the actual semantic inventory, linked source roles,
 exact full original values and the unbounded safety-text preservation/width
 contract. `Covered` is finite structural family membership, with no string
 bound. For a finite descriptor, `RenderCovered` requires every actual
@@ -448,9 +446,7 @@ partial correctness for every EHR input state, including unreachable states,
 and identifies missing structural cases exactly. It does **not** promise an
 output for an uncovered shape. The all-screens theorem needs only local shape
 membership and applies to every payload of that shape: every string of
-whatever length. A table with another number of cells is another shape. `realized_currentCommit_visible` proves
-that a linked, complete current-task source cannot be hidden to obtain G9's
-no-commit exemption. `finiteFamily_missingShape` proves that a finite shape
+whatever length. A table with another number of cells is another shape. `finiteFamily_missingShape` proves that a finite shape
 family cannot cover all possible UiScreens; it does not rule out coverage for a
 particular EHR Program. Therefore finite probes are not treated as a global
 coverage proof. Patient-directory controls and table rows both introduce
@@ -487,7 +483,7 @@ regressions for the executable and are not the basis of the universal proof.
 commit, zero, one or two fixed interruptive occurrences and up to six pinned
 urgent occurrences. `shell_rules` quantifies over arbitrary body lists, source
 paths and target masks, assuming only unique source paths, at most two modal
-occurrences and at most six pinned rows. Its conjunction is G1–G9. `Shell.certifiedClass_allScreens` has the same complete
+occurrences and at most six pinned rows. Its conjunction is G1–G7. `Shell.certifiedClass_allScreens` has the same complete
 `Realizes` conclusion as the ordinary class, now including these fixed regions.
 `Shell.certified_currentCommit_visible` additionally identifies the actual
 current-task source and proves its target, commit and fixed visibility flags at
@@ -527,7 +523,7 @@ renderer's strip (alerts and enabled acknowledgments) has no such parts.
 `shell_urgent`, `class_urgent` and `certifiedClass_urgent`
 prove G11 for every such shape; `Density.render_urgent` extends it to every
 output of the renderer. A strip that does not fit is painted as ordinary body
-rows, so G1–G9 and `renderer_range` still hold for it, and G11 fails:
+rows, so G1–G7 and `renderer_range` still hold for it, and G11 fails:
 `structural-paint` and `program-paint` then answer `accepted: false` with a
 `G11` finding (`urgent-strip-capacity` or `urgent-strip-targets`, the count and
 the capacity). The decision is per state; `program-check` stays static. The
@@ -680,7 +676,7 @@ accepted noncanonical programs** (54 matching spec contexts). Across all 186
 paths, 113 distinct programs, 118 contexts and 3,472 declared screen occurrences,
 there are **no uncovered programs or screens**. The separate empirical checks
 accept 7,944/7,944 structural probes and 3,468/3,468 shell geometry checks,
-including G9. The original W1 port also remains 3,468/3,468; the two named bad
+The original W1 port also remains 3,468/3,468; the two named bad
 clinical inputs remain refused. The [current range inventory](../audits/ui-certs-range-20261107.json)
 records every program alias and declared screen, program/spec/source hashes,
 exact theorem statements and verification commands. Those counts are backed by

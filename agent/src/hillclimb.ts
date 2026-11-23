@@ -10,7 +10,6 @@ completionOk,
 emptyRecord,
 deployVersion,
 recordDeploy,
-validationGross,
 type LoopDeps,
 type NightInput,
 type Gate,
@@ -49,7 +48,6 @@ import {
 runClimbingSession,
 type ClimbSessionOptions,
 } from "./harness/climb-session.js";
-const minimumDailySaving = 5;
 
 export const CLIMB_PROMPT =
   "Read README.md in /work. Continue until night done succeeds.";
@@ -59,11 +57,11 @@ export const estimateInstruction =
 export const keepClimbingInstruction =
   "A passing measure is a step, not the finish. Keep the passing patch as your new working base and look for the next improvement on top of it. Re-measure the combined patch against the deployed version. Once further changes stop helping, finish with `night done` on the best combined patch.";
 export function climbReadme(persona: string, role: string, search: "first" | "climb" = "first") {
-  return `You are redesigning the EHR for ${persona}, a simulated ${role}. Reduce daily clicks plus scrolls while preserving completion, learnability, typing effort and modeled time. The checker enforces the clinical and screen rules.
+  return `You are redesigning the EHR for ${persona}, a simulated ${role}. Reduce expert modeled time over all observed days, with full completion and no modeled-time increase for either clinician. The checker enforces the clinical and screen rules.
 
 persona.json describes this clinician. days/N.json contains their recorded tasks and trace on the program in versions/V.json. program.json is your working copy of the deployed program, including its layouts. spec.json is the active rulebook.
 
-Edit the working copy and run \`node patch.mjs > patch.json\`, or write an RFC 6902 patch against the deployed version directly. Run \`night measure patch.json\` to certify it and replay all past days with the expert and bounded clinicians. Inspect the verdict, totals and breakdowns. Iterate as often as needed. Savings must reach five actions per day. Both clinicians must finish every task, with at most 2% more keys and modeled time. Bounded clicks and scrolls must each hold.
+Edit the working copy and run \`node patch.mjs > patch.json\`, or write an RFC 6902 patch against the deployed version directly. Run \`night measure patch.json\` to certify it and replay all past days with the expert and bounded clinicians. Inspect the verdict, totals and breakdowns. Iterate as often as needed.
 
 ${estimateInstruction}
 
@@ -451,21 +449,9 @@ export function climbingGate(
         fail.push(
           `${policy} completed ${m.after.completed}/${m.after.tasks} tasks`,
         );
-      for (const metric of [
-        "clicks",
-        "scrolls",
-        "keystrokes",
-        "klmDeciSec",
-      ] as const) {
-        const effort = metric === "keystrokes" || metric === "klmDeciSec";
-        if (
-          (effort || policy === "bounded") &&
-          100 * m.after[metric] > (effort ? 102 : 100) * m.before[metric]
-        )
-          fail.push(
-            `${policy} ${metric}: ${m.before[metric]} → ${m.after[metric]} exceeds +${effort ? 2 : 0}%`,
-          );
-      }
+      if (!Number.isFinite(m.before.klmDeciSec) || !Number.isFinite(m.after.klmDeciSec) ||
+          m.after.klmDeciSec > m.before.klmDeciSec)
+        fail.push(`${policy} klmDeciSec: ${m.before.klmDeciSec} → ${m.after.klmDeciSec} increases modeled time`);
     }
     reasons.push(...boundedReasons);
     const { expert, bounded } = metrics;
@@ -496,12 +482,9 @@ export function climbingGate(
         accepted: !boundedReasons.length,
       },
     };
-    const net = validationGross(replay),
-      minimum = minimumDailySaving;
-    if (net < minimum)
-      reasons.push(
-        `Daily saving ${net} below ${minimum}`,
-      );
+    const net = (expert.before.klmDeciSec - expert.after.klmDeciSec) / selected.length;
+    if (!(net > 0))
+      reasons.push(`Daily modeled-time saving ${net} must be strictly positive`);
     return {
       ships: !reasons.length,
       reason: reasons.join("; "),

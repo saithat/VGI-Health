@@ -47,11 +47,6 @@ private theorem ordinary_separated (v : Size) (p q : List Nat × Bool) (i j : Na
   simp only [separated,ordinary,List.map_cons,List.map_nil,↓reduceIte,Apart,Rect.right,Rect.bottom]
   omega
 
-private theorem ordinary_before (v : Size) (p q : List Nat × Bool) (i j : Nat)
-    (ordered : i < j) : before (ordinary v p.1 p.2 i).rect (ordinary v q.1 q.2 j).rect := by
-  simp only [ordinary,before]
-  omega
-
 private theorem banner_separated (v : Size) (path : List Nat) (p : List Nat × Bool) (i : Nat) :
     separated (banner v path) (ordinary v p.1 p.2 i) := by
   simp [separated,banner,ordinary,envelope,clipRect,Apart,Rect.bottom]
@@ -79,11 +74,11 @@ private theorem zip_order (xs : List α) : xs.zipIdx.Pairwise (fun a b => a.2 < 
 
 private theorem body_order (v : Size) (xs : List (List Nat × Bool)) :
     (xs.zipIdx.map (fun (p,i) => ordinary v p.1 p.2 i)).Pairwise
-      (fun p q => separated p q ∧ before p.rect q.rect) := by
+      (fun p q => separated p q) := by
   rw [List.pairwise_map]
   apply (zip_order xs).imp
   intro a b hab
-  exact ⟨ordinary_separated v a.1 b.1 a.2 b.2 (by omega),ordinary_before v a.1 b.1 a.2 b.2 hab⟩
+  exact ordinary_separated v a.1 b.1 a.2 b.2 (by omega)
 
 private theorem targets (v : Size) (hv : v ∈ viewports) (first : List Nat)
     (xs : List (List Nat × Bool)) : G3 (placements v first xs) := by
@@ -100,7 +95,7 @@ private theorem targets (v : Size) (hv : v ∈ viewports) (first : List Nat)
     · intro q _ h; simp [activeTarget,banner] at h
     · apply (body_order v xs).imp
       intro p q h _ _
-      exact h.1
+      exact h
 
 private theorem no_modal (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
     G2 v (placements v first xs) := by
@@ -109,37 +104,6 @@ private theorem no_modal (v : Size) (first : List Nat) (xs : List (List Nat × B
   · simp [scroller] at ht
   · simp [banner] at ht
   · simp [ordinary] at ht
-
-private theorem no_commit (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
-    G9 v (placements v first xs) := by
-  apply G9_exempt
-  simp [placements,scroller,banner,ordinary,List.any_map,Function.comp_def]
-
-private theorem reading_order (v : Size) (first : List Nat) (xs : List (List Nat × Bool)) :
-    G8 (placements v first xs) := by
-  have filtered : (xs.zipIdx.map (fun (p,i) => ordinary v p.1 p.2 i)).filter
-      (fun p => p.info.paint && (p.info.target || p.info.text.isSome)) =
-      xs.zipIdx.map (fun (p,i) => ordinary v p.1 p.2 i) := by
-    apply List.filter_eq_self.mpr
-    intro p hp
-    obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-    simp [ordinary]
-  unfold G8 placements
-  simp only [List.filter_cons,show (scroller v).info.paint = false from rfl,
-    Bool.false_and, Bool.false_eq_true, ↓reduceIte]
-  rw [show ((banner v first).info.paint && ((banner v first).info.target ||
-    (banner v first).info.text.isSome)) = true from rfl]
-  simp only [↓reduceIte,filtered,List.pairwise_cons]
-  constructor
-  · intro p hp hz
-    obtain ⟨⟨a,i⟩,_,rfl⟩ := List.mem_map.mp hp
-    simp [banner,ordinary] at hz
-  · rw [List.pairwise_map]
-    apply (zip_order xs).imp
-    intro a b h _
-    simpa only [ordinary,List.map_cons,List.map_nil,↓reduceIte] using
-      ordinary_before v a.1 b.1 a.2 b.2 h
-
 
 private theorem banner_text (v : Size) (hv : v ∈ viewports) (path : List Nat) :
     textFits (banner v path) { slotText with maxLines := 4 } := by
@@ -231,7 +195,6 @@ private theorem text_rule (v : Size) (hv : v ∈ viewports) (first : List Nat)
       · apply ordinary_separated v a b i j
         intro same; apply different; simp [ordinary,same]
 
-
 private theorem sources_count (v : Size) (first path : List Nat) (xs : List (List Nat × Bool)) :
     ((placements v first xs).filter (fun p => p.info.source == some path && p.info.paint)).length =
     ((first :: xs.map Prod.fst).filter (· == path)).length := by
@@ -296,8 +259,7 @@ theorem repeatBody_rules (v : Size) (hv : v ∈ viewports) (first : List Nat)
     Rules (first :: xs.map Prod.fst) v (placements v first xs) := by
   exact ⟨banner_rule v hv first xs,no_modal v first xs,targets v hv first xs,
     text_rule v hv first xs,horizontal v hv first xs,contrast v first xs,
-    complete v first xs unique,reading_order v first xs,no_commit v first xs⟩
-
+    complete v first xs unique⟩
 
 /-- A regular structural class: one noninteractive fixed banner followed by an
 arbitrary list of ordinary slots. Paths, targets, rows and text are parameters.
@@ -381,19 +343,15 @@ theorem certifiedClass_allScreens (screen : UiScreen)
     exact ⟨t,ht,hsafe,painted.1,painted.2,
       layoutAccepted_safety _ _ _ checked p hpMem t ht hsafe _⟩
 
-
 #print axioms bounds
 #print axioms placement_cases
 #print axioms ordinary_separated
-#print axioms ordinary_before
 #print axioms banner_separated
 #print axioms ordinary_text
 #print axioms zip_order
 #print axioms body_order
 #print axioms targets
 #print axioms no_modal
-#print axioms no_commit
-#print axioms reading_order
 #print axioms banner_text
 #print axioms contained
 #print axioms banner_rule

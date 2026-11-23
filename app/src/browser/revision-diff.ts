@@ -300,12 +300,9 @@ const reasons: Record<string, string> = {
   reviewsBeforeCommit:
     "Required clinical information is not visible or reviewed before signing.",
   completable: "A required clinical task cannot be completed.",
-  budgets: "The change exceeds the permitted interaction budget.",
   alertsFire: "A required clinical alert would not appear.",
   noFalseAlarms:
     "The change introduces an alert without the required clinical condition.",
-  noRepeatInterruptions:
-    "The same alert would interrupt the clinician repeatedly.",
   severityTiers:
     "An alert's display does not match its required level of interruption.",
 };
