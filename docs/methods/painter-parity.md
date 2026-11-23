@@ -33,7 +33,7 @@ need their exact `/lean.html` callback provisioned.
 
 `Layout.Widgets` specifies rich parts. `Layout.WidgetGeometry` scales Lean's
 normalized paths into their reserved rectangles. The family API binds these
-marks and checks the resulting boxes with unchanged G1–G11, including G6's 3:1
+marks and checks the resulting boxes with G1–G7, G10 and G11, including G6's 3:1
 minimum for vector ink. The new rich `widgetShape` accounts for nested pane
 modal/urgent regions. The original `screenShape` and fixed-shell theorem domain
 are unchanged. Existing theorem statements are unchanged; the display

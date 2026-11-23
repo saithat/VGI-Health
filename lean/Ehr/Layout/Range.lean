@@ -129,7 +129,6 @@ theorem screenShape_unique (screen : UiScreen) : (shapeSources (screenShape scre
   rw [screenShape_sources]
   exact screenNodes_unique screen
 
-
 /-- Body rows (workspace first, then navigation and side), the commit, the
 modal layer and the pinned strip partition every shape without a second
 banner. `fit` says whether the strip is pinned; an unpinned urgent occurrence
@@ -503,7 +502,6 @@ private theorem footer_small (screen : UiScreen) :
       simp only [List.map_cons,List.nodup_cons] at unique
       exact False.elim (unique.1 (by simp [same]))
 
-
 private theorem prefix_append (n : Nat) (xs ys : List (List Entry)) :
     prefixAt n (xs++ys) = prefixAt n xs ++ prefixAt (n+xs.length) ys := by
   simp [prefixAt,List.zipIdx_append,List.flatMap_append]
@@ -719,7 +717,6 @@ theorem renderer_range (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Fact
     Shell.accepts (screenShape (runRenderUi ⟨sp,program,facts,display,user,state⟩)) = true :=
   smallModal_fits _ (render_small sp program facts display user state)
 
-
 private theorem lookup_unique {β γ : Type} (f : β → γ) :
     ∀ (l : List (List Nat × β)), (l.map Prod.fst).Nodup → ∀ (path : List Nat) (b : β), (path,b) ∈ l →
       (l.map fun (p,x) => (p, f x)).lookup path = some (f b)
@@ -770,7 +767,7 @@ theorem realized_part (screen : UiScreen) (v : Size) (painted : List Drawn)
         d.lines = textLines t d.box.rect.w (paintText t part.text) ∧
         SafetyRealized t d.box.rect.w part.text := by
   obtain ⟨rules, _, bound⟩ := realized
-  have g7 := rules.2.2.2.2.2.2.1
+  have g7 := rules.2.2.2.2.2.2
   have counted := g7.2.2.1 path (List.mem_map.mpr ⟨_, member, rfl⟩)
   obtain ⟨p, hp⟩ := List.exists_mem_of_length_pos (show 0 < _ from by rw [counted]; decide)
   obtain ⟨inBoxes, flags⟩ := List.mem_filter.mp hp

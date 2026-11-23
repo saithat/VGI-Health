@@ -59,7 +59,7 @@ checks, the [fresh local stack](methods/live-validation.md#local-setup-and-live-
 
 ```sh
 export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
-make wasm
+ELAN_TOOLCHAIN=leanprover/lean4:v4.35.0 make wasm
 COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow --workers=2
 ```
 

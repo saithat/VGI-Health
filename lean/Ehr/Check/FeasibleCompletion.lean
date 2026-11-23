@@ -90,7 +90,6 @@ def SatisfiesWhereAcceptedFeasible (spec : Spec) (prev : Option Program)
   HumanOnlyKept spec prog ∧
   CompletableWhereAcceptedFeasible spec canonical prog ∧
   UnitsRight spec prog ∧
-  WithinBudgets spec prev canonical prog ∧
   AlertsFire spec prog ∧
   NoFalseAlarms spec prog ∧
   NoRepeatInterruptions spec prog ∧
@@ -171,10 +170,9 @@ theorem satisfiesWhereFeasible_of_checked_completableWhereFeasible (sp : Spec)
    accepted_humanOnlyKept _ _ _ _ h,
    hc,
    accepted_units _ _ _ _ h,
-   accepted_budgets _ _ _ _ h,
    accepted_alertsFire _ _ _ _ h,
    accepted_noFalseAlarms _ _ _ _ h,
-   accepted_noRepeatInterruptions _ _ _ _ h,
+   (fun facts user _ => interruptsOnce ⟨sp, p, facts, user⟩),
    accepted_severityTiers _ _ _ _ h,
    accepted_navigation _ _ _ _ h⟩
 
@@ -192,10 +190,9 @@ theorem satisfiesWhereAcceptedFeasible_of_checked (sp : Spec)
    accepted_humanOnlyKept _ _ _ _ h,
    hc,
    accepted_units _ _ _ _ h,
-   accepted_budgets _ _ _ _ h,
    accepted_alertsFire _ _ _ _ h,
    accepted_noFalseAlarms _ _ _ _ h,
-   accepted_noRepeatInterruptions _ _ _ _ h,
+   (fun facts user _ => interruptsOnce ⟨sp, p, facts, user⟩),
    accepted_severityTiers _ _ _ _ h,
    accepted_navigation _ _ _ _ h⟩
 

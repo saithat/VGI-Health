@@ -1,50 +1,50 @@
-import Ehr.Check.PatchWitness
-import Ehr.Check.MissingWitness
+import Ehr.Check.SeedDomainWitness
 
+set_option maxRecDepth 16384
 set_option Elab.async false
 namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
-set_option maxRecDepth 16384
 
--- Indices are in the current unmodified canonical program. Membership in the
--- bad program follows structurally, avoiding reduction of its persona macros.
-@[irreducible] private def seed20Screen : Screen := canonicalV1.screens[22]?.getD default
-private theorem seed20ScreenPresent : canonicalV1.screens[22]?.isSome = true := by decide +kernel
-private theorem seed20CompPresent : seed20Screen.components[28]?.isSome = true := by decide +kernel
-@[irreducible] private def seed20Component : Component := seed20Screen.components[28]?.getD default
-private theorem seed20Kind : seed20Component.kind = .button (.commit "administerMed") := by decide +kernel
-private theorem seed20Source : HasComponent canonicalV1 seed20Component :=
-  ⟨seed20Screen,
-    by unfold seed20Screen; exact getD_mem canonicalV1.screens 22 seed20ScreenPresent,
-    by unfold seed20Component; exact getD_mem seed20Screen.components 28 seed20CompPresent⟩
-private theorem seed20Member : HasComponent noAdministrationTime seed20Component := by
-  apply hasComponent_withoutElement _ "actualAdministrationTime" seed20Component
-  · apply hasComponent_forPersona specV1 canonicalV1 "seed20" .rn seed20Component seed20Source
-    · simp [roleComponentAllowed, seed20Kind]
-      decide
-    · simp [seed20Kind, macroOf?]
-  · simp [seed20Kind, fieldOf?]
-private def seed20Commit := (specV1.commit? "administerMed").getD default
-private theorem seed20Lookup : specV1.commit? "administerMed" = some seed20Commit := by decide +kernel
-private theorem seed20Role : noAdministrationTime.role ∈ seed20Commit.roles := by decide +kernel
-private def seed20Req : EntryReq := { commit := "administerMed", element := "actualAdministrationTime", when := .always, perOrderLine := false }
-private theorem seed20Req_mem : seed20Req ∈ specV1.entries := by decide +kernel
+@[irreducible] private def medScreen : Screen := canonicalV1.screens[22]?.getD default
+@[irreducible] private def medComponent : Component := medScreen.components[29]?.getD default
+private theorem screenPresent : canonicalV1.screens[22]?.isSome = true := by decide +kernel
+private theorem componentPresent : medScreen.components[29]?.isSome = true := by decide +kernel
+private theorem componentKind : medComponent.kind = .button (.commit "administerMed") := by
+  unfold medComponent medScreen
+  decide +kernel
 
-/-- Seed 20: required `actualAdministrationTime` has no field anywhere in the program. -/
-theorem bad20_not_satisfies : ¬ Satisfies specV1 none canonicalV1 noAdministrationTime := by
-  obtain ⟨pair, member, component⟩ := hasComponent_pair seed20Member
-  exact missing_required_not_satisfies specV1 canonicalV1 noAdministrationTime "administerMed"
-    (required_of_component specV1 canonicalV1 noAdministrationTime pair member "administerMed"
-      (by rw [component]; exact seed20Kind) seed20Commit seed20Lookup seed20Role) seed20Req seed20Req_mem rfl rfl
-    (fun pair mem slot pf => withoutElement_no_field (forPersona specV1 canonicalV1 "seed20" .rn) "actualAdministrationTime" pair mem slot pf)
+/-- The nursing seed retains a required administration task in the canonical.
+This uses the canonical task family, independently of the missing-field patch. -/
+private theorem administration_required :
+    "administerMed" ∈ requiredCommits specV1 canonicalV1 noAdministrationTime := by
+  apply List.mem_filter.mpr
+  constructor
+  · apply List.mem_eraseDups.mpr
+    apply List.mem_append_left
+    apply List.mem_flatMap.mpr
+    refine ⟨medScreen, List.mem_filter.mpr ⟨?_, ?_⟩, ?_⟩
+    · unfold medScreen
+      exact getD_mem canonicalV1.screens 22 screenPresent
+    · have scope : ["P1", "P2", "P3", "P4", "P5"].contains noAdministrationTime.presetOwner = false := by decide +kernel
+      simp only [presetScreen, scope, Bool.not_false, Bool.true_or]
+    · apply List.mem_filterMap.mpr
+      refine ⟨medComponent, ?_, by simp only [componentKind]⟩
+      unfold medComponent
+      exact getD_mem medScreen.components 29 componentPresent
+  · have present : (specV1.commit? "administerMed").isSome = true := by decide +kernel
+    have role : noAdministrationTime.role ∈ ((specV1.commit? "administerMed").getD default).roles := by decide +kernel
+    cases lookup : specV1.commit? "administerMed" with
+    | none => simp only [lookup, Option.isSome_none, Bool.false_eq_true] at present
+    | some cs => simpa only [lookup, Option.getD_some, List.contains_iff_mem] using role
+
+/-- The full-catalog payload-domain obstruction preserves this seeded rejection.
+The missing-entry mutation is independently exercised by FullSeedTests. -/
+theorem bad20_not_satisfies : ¬ Satisfies specV1 none canonicalV1 noAdministrationTime :=
+  v1_payload_domain_not_satisfies canonicalV1 noAdministrationTime ⟨"administerMed", administration_required⟩
+
+#print axioms screenPresent
+#print axioms componentPresent
+#print axioms componentKind
+#print axioms administration_required
 #print axioms bad20_not_satisfies
-#print axioms seed20ScreenPresent
-#print axioms seed20CompPresent
-#print axioms seed20Member
-#print axioms seed20Kind
-#print axioms seed20Source
-#print axioms seed20Lookup
-#print axioms seed20Role
-#print axioms seed20Req_mem
-
 end Ehr.Check

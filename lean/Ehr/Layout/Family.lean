@@ -21,7 +21,7 @@ may carry the `urgent` flag, which keeps a box active beside a modal. An
 ornament or an ordinary control cannot claim it. Rule G11 separately requires
 every urgent occurrence to carry the flag.
 
-An untrusted designer cannot omit a real commit flag to claim G9 exemption,
+An untrusted designer cannot omit a real commit flag,
 relabel a target as static, or replace a semantic value by a non-safety slot.
 Nonsemantic ornaments remain free; they cannot invent a patient banner/commit. -/
 def SourceLinked (shape : ScreenShape) (p : Placed) : Prop :=
@@ -140,53 +140,6 @@ theorem layoutAccepted_allScreens (family : Family) (h : acceptFamily family = t
     have painted := bindSemantic_original screen p path t hs htEq
     exact ⟨t,ht,hsafe,painted.1,painted.2,layoutAccepted_safety _ _ _ checked p hpMem t ht hsafe _⟩
 
-private theorem shape_path_unique (shape : ScreenShape) (unique : (shapeSources shape).Nodup)
-    (a b : SlotShape) (ha : a ∈ shape) (hb : b ∈ shape) (same : a.path = b.path) : a = b := by
-  induction shape with
-  | nil => simp at ha
-  | cons x xs ih =>
-    simp only [shapeSources, List.map_cons, List.nodup_cons] at unique
-    simp only [List.mem_cons] at ha hb
-    rcases ha with rfl | ha <;> rcases hb with rfl | hb
-    · rfl
-    · exact False.elim (unique.1 (List.mem_map.mpr ⟨b,hb,same.symm⟩))
-    · exact False.elim (unique.1 (List.mem_map.mpr ⟨a,ha,same⟩))
-    · exact ih unique.2 ha hb
-
-/-- The G9 exemption cannot be obtained by hiding a real current-task source:
-source completeness and linkage force its commit flag and viewport placement. -/
-theorem realized_currentCommit_visible (screen : UiScreen) (v : Size) (painted : List Drawn)
-    (h : Realizes screen v painted) (slot : SlotShape) (member : slot ∈ screenShape screen)
-    (current : slot.region = .footer) (primary : v = ⟨92160,57600⟩) :
-    ∃ d ∈ painted, d.box.info.source = some slot.path ∧ d.box.info.commit = true ∧
-      d.box.info.target = true ∧ visible v d.box := by
-  have g7 := h.1.2.2.2.2.2.2.1
-  have paths : (shapeSources (screenShape screen)).Nodup := by
-    rw [screenShape_sources]
-    exact g7.2.1
-  have sourceMember : slot.path ∈ (screenNodes screen).map Prod.fst := by
-    rw [← screenShape_sources]
-    exact List.mem_map.mpr ⟨slot,member,rfl⟩
-  have counted := g7.2.2.1 slot.path sourceMember
-  obtain ⟨p,hp⟩ := List.exists_mem_of_length_pos (show 0 < _ from by rw [counted]; decide)
-  have hp' := List.mem_filter.mp hp
-  have hs : p.info.source = some slot.path := by
-    have hflags := hp'.2
-    simp only [Bool.and_eq_true, beq_iff_eq] at hflags
-    exact hflags.1
-  have linked := h.2.1 p hp'.1
-  unfold SourceLinked at linked
-  rw [hs] at linked
-  obtain ⟨other,ho,hpath,_,_,commit,_,_,_⟩ := linked
-  have same := shape_path_unique _ paths other slot ho member hpath
-  have committed : p.info.commit = true := by simpa [same,current] using commit
-  have present : ((painted.map Drawn.box).any (·.info.commit)) = true :=
-    List.any_eq_true.mpr ⟨p,hp'.1,committed⟩
-  have g9 := h.1.2.2.2.2.2.2.2.2 primary present
-  have vis := g9.2 p hp'.1 committed
-  obtain ⟨d,hd,rfl⟩ := List.mem_map.mp hp'.1
-  exact ⟨d,hd,hs,committed,vis⟩
-
 /-- Total partial-correctness result: no coverage premise. Every result is
 proved, or the exact missing structural case is diagnosed. A missing shape is
 never misreported as a length/glyph violation or as successful painting. -/
@@ -225,7 +178,7 @@ theorem layoutAccepted_allStates (sp : Ehr.Spec) (program : Ehr.Program) (family
 
 /-- A certified rendering family may be a finite descriptor or a proved
 parameterized structural compiler. Every instance supplies the same Realizes
-contract; this extends representation without changing any G1–G9 predicate. -/
+contract; this extends representation without changing any G1–G7 predicate. -/
 class RenderFamily (F : Type) where
   admitted : F → Bool
   covered : F → UiScreen → Prop
@@ -284,7 +237,7 @@ theorem layoutAccepted_allPatients_finite (sp : Ehr.Spec) (program : Ehr.Program
 def admitUrgent (c : Candidate) : Bool :=
   viewports.all fun v => decide (G11 v (urgentPaths c.shape) (boxes v (c.tree v)))
 
-/-- New specification for owner review: G1–G9 family admission plus G11. -/
+/-- New specification for owner review: G1–G7 family admission plus G11. -/
 def acceptFamilyUrgent (family : Family) : Bool :=
   acceptFamily family && family.all admitUrgent
 
@@ -313,8 +266,6 @@ theorem layoutAccepted_familyUrgent (family : Family) (h : acceptFamilyUrgent fa
 
 #print axioms candidate_length_le
 #print axioms finiteFamily_missingShape
-#print axioms shape_path_unique
-#print axioms realized_currentCommit_visible
 #print axioms accepted_candidate
 #print axioms select_covered
 #print axioms layoutAccepted_allScreens

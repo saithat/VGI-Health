@@ -126,13 +126,23 @@ The 76 core entry scenarios share 11 ordered prefixes. At each ordinary omission
 
 For each declared, surfaced human-only field, the checker reproduces the suite's change to the first matching field. One copy receives a default, the other a macro and button sharing the field's parent and tab. From fresh initialization on each copy the witness observes the absence of any capture, then enters and confirms the human sample. The macro case also clicks the shown probe and checks the human-only refusal. The acceptance theorem establishes that the injection exists for every applicable field. [Probe transformations](../../lean/Ehr/Check/EntryHumanOnly.lean) · [Soundness theorems](../../lean/Ehr/Check/EntryFamilySound.lean)
 
-These statements formalize existing scenario requirements. They certify the existence of a conforming native execution for each fixture. The JavaScript driver's route choice, arbitrary records and progress from every reachable state remain separate questions. The matrix includes a metformin prefill that masks the empty-order refusal and a pre-op-only control that hides the human exemption input in the probe encounter. Both previously passed. With the encounter witnesses below, the matrix has 15 accepted personas and 38 rejected bad programs. [Certification matrix](../../lean/Ehr/Check/certification-report.json)
+These statements formalize existing scenario requirements. They certify the existence of a conforming native execution for each fixture. The JavaScript driver's route choice, arbitrary records and progress from every reachable state remain separate questions. The matrix includes a metformin prefill that masks the empty-order refusal and a pre-op-only control that hides the human exemption input in the probe encounter. Both previously passed. With the encounter witnesses below, the matrix has 15 accepted personas and 37 rejected bad programs. [Certification matrix](../../lean/Ehr/Check/certification-report.json)
 
 ## Clinical encounter witnesses
 
 **New specification for owner review.** On a v1–v3 clinical release, checker acceptance supplies a native execution for each applicable case in the release persona’s clinical workload. The case binds the facts, user, program, required entries, and observations. The checker starts with `runInit`, opens the patient through a supplied row when selection is enabled, binds the chart, and exercises the displayed controls with `runStep`. The existing release specifications supply the clinical rules. The [scenario audit](../audits/conformance-formal-coverage.md) maps all 88 added guarantees to their contracts.
 
 `Scenario` requires a successful opening and a sequence of concrete paths, controls and intermediate states. Each path must replay through real group expansion, tab selection and goto clicks. The next checkpoint starts in the state left by the previous one. Branch probes retain their original state while testing the alternative continuation. `accepted_clinicalScenarios` extracts this existential guarantee for every member of the bound catalog from a successful check. [Trace semantics and search](../../lean/Ehr/Check/ReviewTrace.lean) · [Catalog](../../lean/Ehr/Check/ClinicalScenarios.lean) · [Soundness](../../lean/Ehr/Check/ClinicalScenarioSound.lean)
+
+The removed popup budget, repeated-request and start-screen field-depth constraints have no standalone scenarios in the clinical catalog; its 202 scenarios still cover clinical behavior and runtime alert handling.
+
+| Current check set | Count |
+|---|---:|
+| Native checker rules | 32 |
+| Lean geometry rules (G1–G7, G10, G11) | 9 |
+| Certification personas accepted | 15 |
+| Bad programs rejected | 37 |
+| Clinical conformance scenarios | 202 |
 
 The search considers one shortest revealable goto route per destination and its finite list of controls. It can try another matching control if a proposed route or action fails. It does not backtrack across completed checkpoints. Ancestor traversal is bounded by the number of screen components. Signing allows at most 40 iterations and rejects a repeated alert key. The result establishes an executable route for the stated encounter. A search failure identifies the encounter and the unmet action or observation. [Checker registration](../../lean/Ehr/Check/Check.lean)
 
@@ -147,7 +157,7 @@ The search considers one shortest revealable goto route per destination and its 
 
 The suite binds a role-specific release canonical. A mixed-role certification template is projected by persona for these cases. A custom comparison program with neither a prescribing nor an administration workflow has a different workload. Version-specific probes follow the bound specification, including archived alert triggers and optional service controls. Clinical scenario witnesses apply to the synthetic facts in the audit. The general reachable-state completion problem remains open.
 
-The certification matrix has **15 accepted personas and 38 rejected bad programs**, including the two entry-witness fixtures above. Two fixtures pass the preceding checker. Removing the human allergy-review button prevents the macro probe from reaching it. Adding a second visible banner fails the count on the home screen. [Matrix and replay results](../../lean/Ehr/Check/certification-report.json)
+The certification matrix has **15 accepted personas and 37 rejected bad programs** after removing the static repeated-popup fixture, including the two entry-witness fixtures above. Two fixtures pass the preceding checker. Removing the human allergy-review button prevents the macro probe from reaching it. Adding a second visible banner fails the count on the home screen. [Matrix and replay results](../../lean/Ehr/Check/certification-report.json)
 
 ### Specification inventory
 
@@ -173,7 +183,7 @@ All catalog and adapter names below are in `Ehr.Check.ReviewTrace`; common primi
 
 ### Statement preservation
 
-The two checker rules remain `entryTraces` and `clinicalScenarios`, with the same workloads and case applicability. The coverage table remains **200 checker / 2 runtime / 0 open**, and the matrix remains **15 accepted / 38 rejected**. No specification, property, guard, fixture value or catalog row was removed. The shared opening also checks the selected patient's identity; shared route replay checks that every navigation event is a shown native goto, group toggle or tab selection.
+The two checker rules remain `entryTraces` and `clinicalScenarios`, with the same workloads and case applicability. The coverage table remains **200 checker / 2 runtime / 0 open**, and the matrix remains **15 accepted / 37 rejected**. The clinical scenario catalog and guard assertions are unchanged. The shared opening also checks the selected patient's identity; shared route replay checks that every navigation event is a shown native goto, group toggle or tab selection.
 
 | Earlier statement | Current statement and implication |
 |---|---|

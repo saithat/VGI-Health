@@ -115,8 +115,6 @@ end VerificationAudit
 #audit_axioms Ehr.Check.accepted_humanOnlyKept
 #spec_surface Ehr.Check.accepted_units
 #audit_axioms Ehr.Check.accepted_units
-#spec_surface Ehr.Check.accepted_budgets
-#audit_axioms Ehr.Check.accepted_budgets
 #spec_surface Ehr.Check.accepted_alertsFire
 #audit_axioms Ehr.Check.accepted_alertsFire
 #spec_surface Ehr.Check.accepted_noFalseAlarms

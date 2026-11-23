@@ -171,7 +171,7 @@ rectangles, rows and columns of their own, laid out in shared column tracks,
 and `Keyboard.grid` moves focus among them; grid ARIA ownership (rows inside a
 grid element) is not built, since the boxes are flat. Geometry/text agreement
 does not prove control fidelity or accessibility. Rich board modalities and widget marks use checked family geometry, with no
-weakening of G1–G11.
+weakening of G1–G7, G10 and G11.
 
 ## Widget inventory
 

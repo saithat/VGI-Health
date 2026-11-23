@@ -119,7 +119,7 @@ def main() -> None:
             source = lean.joinpath(*module.split('.')).with_suffix('.lean').read_text()
             expected.update(re.findall(r'^theorem\s+(bad\d{2}_\w+)', source, re.MULTILINE))
         if args.target == 'EhrHeavy':
-            seeds = {f'bad{n:02}_not_satisfies' for n in [*range(1, 13), *range(14, 25)]}
+            seeds = {f'bad{n:02}_not_satisfies' for n in [*range(1, 11), 12, *range(14, 25)]}
             seeds.add('bad13_preop_not_satisfies')
             if not seeds <= expected:
                 raise RuntimeError(f'Missing seed theorems: {sorted(seeds - expected)}')

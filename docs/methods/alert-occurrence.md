@@ -21,7 +21,7 @@ the Lean DOM painter also reconciles retained scroll translations with the
 browser's actual offsets, including resets that delivered no scroll event.
 Text and the icon share the box's opaque background and ink. Existing G4
 checks the reduced text capacity, while G6 checks the plot's contrast. Bound
-family, structural and program outputs run G1–G11 on the bound boxes before
+family, structural and program outputs run G1–G7, G10 and G11 on the bound boxes before
 reporting acceptance. Custom geometry with insufficient text width is refused.
 
 Since `dense-reference-v11`, the generator reserves the inset in both dense

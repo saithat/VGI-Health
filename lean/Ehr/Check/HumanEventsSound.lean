@@ -179,7 +179,7 @@ attempts structurally, and require a distinct cosigner (property 5). -/
 theorem accepted_humanOnlyKept (sp prev can p) (h : check sp prev can p = .ok) :
     HumanOnlyKept sp p := by
   have ht := accepted_structural sp prev can p h
-  exact ⟨ht.2.2.2.2.2.2.2.2.2.1, fun facts user _ =>
+  exact ⟨ht.2.2.2.2.2.2.2.2.1, fun facts user _ =>
     ⟨humanStepsByHuman ⟨sp, p, facts, user⟩, onlyHumanCommitsAndAcks ⟨sp, p, facts, user⟩,
       cosignIsSecondUser ⟨sp, p, facts, user⟩⟩⟩
 
@@ -187,5 +187,11 @@ theorem accepted_humanOnlyKept (sp prev can p) (h : check sp prev can p = .ok) :
 #print axioms onlyHumanCommitsAndAcks
 #print axioms accepted_humanOnlyKept
 #print axioms stepCore_commit_witness
+
+#print axioms clickCommit_added
+#print axioms clickCore_commit_kind
+#print axioms clickCore_acked
+#print axioms stepCore_acked_nonAck
+#print axioms stepCore_ack_witness
 
 end Ehr.Check

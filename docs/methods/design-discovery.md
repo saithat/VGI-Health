@@ -1,6 +1,6 @@
 # Nightly design discovery with Lean screens
 
-[Overview](../../README.md) · [UI language and G1–G11](ui-library.md) ·
+[Overview](../../README.md) · [UI language and G1–G7, G10 and G11](ui-library.md) ·
 [Agent loop](agent-loop.md) · [Simulated clinicians](simulation.md) ·
 [First local result and verification](../audits/lean-nightly-first-result.md) ·
 [Layout-rule and prompt measurements](../audits/layout-rules-discovery.md)
@@ -74,7 +74,7 @@ Only the opt-in wrapper changes prompt construction. It orders material as:
    and one compact dense outline per visited screen: regions, column starts,
    first-viewport items and scroll containers. Other shapes still get their own
    independent transformation and admission.
-3. The rule language and G1–G11 in plain words.
+3. The rule language and G1–G7, G10 and G11 in plain words.
 4. A screen/spec index, relevant hospital requirements, semantic/patch vocabulary,
    representative native shapes, and decision/repair context.
 
@@ -84,7 +84,7 @@ original fragments. This reduces repetition without hiding patch targets.
 Unvisited screens remain in a compact index. The full Program, full native
 inventory, manual prose and recorded examples are not repeated by default.
 Representative native paths support optional literal cases; they are examples,
-not a design catalogue or a bound on which rules may be proposed. G1–G11 are the
+not a design catalogue or a bound on which rules may be proposed. G1–G7, G10 and G11 are the
 only geometry admission rules; existing clinical and release rules govern
 Program behavior. Both kinds of edits are explicitly in scope, aiming at fewer
 clicks and scrolls for this persona.

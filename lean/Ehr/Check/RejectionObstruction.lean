@@ -12,7 +12,6 @@ def unusedWorkflowSpec : Spec :=
       tier := .passive, commit := "unused", screens := ["optionalWorkflow"] }]
     design := { emptySpec.design with catalog := ["banner", "alert"] } }
 
-
 /-- The reference has an extra, unreachable workflow screen with no commits. -/
 def unusedWorkflowCanonical : Program :=
   { emptyProgram with screens := emptyProgram.screens ++
@@ -20,7 +19,7 @@ def unusedWorkflowCanonical : Program :=
          components := [{ id := "optional.banner", kind := .banner },
            { id := "optional.reminder", kind := .alert "optionalReminder" false }] }] }
 
-/-- With no tasks, the candidate genuinely satisfies all thirteen properties.
+/-- With no tasks, the candidate genuinely satisfies all twelve properties.
 The checker accepts it when compared with a reference having the same workflows. -/
 theorem unusedWorkflow_self_satisfies :
     Satisfies unusedWorkflowSpec none emptyProgram emptyProgram :=
@@ -32,19 +31,11 @@ theorem unusedWorkflow_self_satisfies :
 there are no required commits and no requested popups. -/
 theorem unusedWorkflow_satisfies :
     Satisfies unusedWorkflowSpec none unusedWorkflowCanonical emptyProgram := by
-  obtain ⟨wf, cap, writes, reviews, human, _, units, _, alerts, falseAlarms, once, tiers, nav⟩ :=
+  obtain ⟨wf, cap, writes, reviews, human, _, units, alerts, falseAlarms, once, tiers, nav⟩ :=
     unusedWorkflow_self_satisfies
-  refine ⟨⟨wf.1, wf.2.1, wf.2.2.1, wf.2.2.2.1, ?_, wf.2.2.2.2.2⟩,
-    cap, writes, reviews, human, ?_, units, ?_, alerts, falseAlarms, once, tiers, nav⟩
-  · intro c hc
-    simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
-  · intro facts user _ _ s _ c hc
-    simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
-  · intro rc rp _ _
-    have zero (rs : List ScreenId) : popupRequestCount emptyProgram rs = 0 := by
-      by_cases h : "home" ∈ rs <;> simp [popupRequestCount, emptyProgram, h]
-    rw [zero]
-    exact Nat.zero_le _
+  refine ⟨wf, cap, writes, reviews, human, ?_, units, alerts, falseAlarms, once, tiers, nav⟩
+  intro facts user _ _ s _ c hc
+  simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
 
 /-- The workflow-retention rule rejects this semantically safe program.
 Thus a failed conservative rule plus a replayable navigation path is insufficient
@@ -61,4 +52,7 @@ theorem T7_semantic_rejection_false :
 
 #print axioms unusedWorkflow_satisfies
 #print axioms T7_semantic_rejection_false
+#print axioms unusedWorkflow_self_satisfies
+#print axioms unusedWorkflow_rejected
+
 end Ehr.Check

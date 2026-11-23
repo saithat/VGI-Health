@@ -59,38 +59,6 @@ const checks=results.flatMap(r=>r.checks);
 const classChecks=results.flatMap(r=>r.classChecks);
 const failed=checks.filter(c=>!c.accepted);
 const rules={};for(const c of failed) for(const f of c.findings.filter(f=>!f.warning)) rules[f.rule]=(rules[f.rule]??0)+1;
-const baselineArg=process.argv.indexOf('--baseline');
-const baselinePath=baselineArg>=0?process.argv[baselineArg+1]:join(process.env.TMPDIR??'/home/saithat/Projects/run-tmp','ui-library-port-before-scope.jsonl');
-const baseline=baselinePath&&existsSync(baselinePath)?readFileSync(baselinePath,'utf8').trim().split('\n').map(line=>{
-  const row=JSON.parse(line);
-  // Baseline evidence records absolute paths from its source checkout. Rebase
-  // only known repository corpus roots; all lookups below use this checkout.
-  const suffix=row.path.match(/\/(releases|programs|runs)\/.+$/)?.[0];
-  if(!suffix) throw new Error(`Unknown baseline corpus path ${row.path}`);
-  return {...row,path:join(root,suffix.slice(1))};
-}):[];
-const prior=[];
-for(const row of baseline) {
-  const now=results.find(r=>r.path===row.path);
-  for(const old of row.checks.filter(c=>c.findings.some(f=>f.rule==='G9'&&!f.warning))) {
-    const next=now?.checks.find(c=>(!allScreens||c.screen==='w1Sign')&&c.variant===old.variant&&c.viewport.w===old.viewport.w&&c.viewport.h===old.viewport.h);
-    prior.push({path:row.path,variant:old.variant,category:row.path.includes('/programs/bad/')?'bad-program':'benchmark',exempt:next?.g9Exempt??false,stillRejected:next?!next.g9Passed:true});
-  }
-}
-// The layout scope exemption does not waive the existing clinical checker.
-// Recheck only the two previously G9-failing intentionally bad inputs.
-const clinicalBad=[];
-for(const path of [...new Set(prior.filter(c=>c.category==='bad-program').map(c=>c.path))]) {
-  const pair=paths.find(p=>p[0]===path);
-  if(!pair) throw new Error(`Missing audited input ${path}`);
-  const canonical=join(dirname(pair[1]),'canonical.json');
-  if(!existsSync(canonical)) throw new Error(`Missing canonical ${canonical}`);
-  const checked=spawnSync(join(root,'lean/.lake/build/bin/ehr'),['check','--spec',pair[1],'--program',path,'--canonical',canonical],{encoding:'utf8',maxBuffer:16*1024*1024});
-  if(![0,1].includes(checked.status)) throw new Error(checked.stderr||checked.stdout);
-  clinicalBad.push({path,rejected:checked.status===1,verdict:JSON.parse(checked.stdout)});
-}
-const scopeComparison={previousG9Checks:prior.length,nowExempt:prior.filter(c=>c.exempt).length,remainingG9Rejections:prior.filter(c=>c.stillRejected).length,badProgramChecks:prior.filter(c=>c.category==='bad-program').length,benchmarkChecks:prior.filter(c=>c.category==='benchmark').length,clinicalBad};
-writeFileSync(join(out,'scope-comparison.json'),JSON.stringify({baselinePath,scopeComparison,checks:prior},null,2)+'\n');
 const corpusScreen=structuredClone(sample);
 if(!corpusScreen) throw new Error('Missing W1 sample for multi-script port corpus');
 corpusScreen.banner.push(['Multi-script corpus',multiscript.map(([,s])=>s).join(' | ')]);
@@ -148,6 +116,6 @@ const programCoverage=allScreens?{
   acceptedPersona:coverageCounts(p=>p.acceptedPersona),
   note:'Universal coverage comes from programCertificate and its checked range theorem; finite probes are separate.'}:null;
 writeFileSync(join(out,'uncovered.json'),JSON.stringify({programCoverage,programs:coverage},null,2)+'\n');
-const report={schemaVersion:2,allScreens,scanned,matchingPaths:[...programs.values()].flat().length,uniquePrograms:programDigests.size,programSpecContexts:programs.size,variantsAndViewports:checks.length,accepted:checks.length-failed.length,rejected:failed.length,failureRules:rules,shellGeometry:{accepted:checks.filter(c=>c.shellAccepted).length,total:checks.length,g9Passed:checks.filter(c=>c.shellG9).length},fhir,admittedFamilies:results.filter(r=>r.familyCases>0&&r.familyAccepted).length,familyCases:results.reduce((sum,r)=>sum+r.familyCases,0),scopeComparison,classProbes,programCoverage,multiscript:{scripts:multiscript.map(([name])=>name),accepted:corpus.accepted},programAliases:[...programs.values()]};
+const report={schemaVersion:2,allScreens,scanned,matchingPaths:[...programs.values()].flat().length,uniquePrograms:programDigests.size,programSpecContexts:programs.size,variantsAndViewports:checks.length,accepted:checks.length-failed.length,rejected:failed.length,failureRules:rules,shellGeometry:{accepted:checks.filter(c=>c.shellAccepted).length,total:checks.length},fhir,admittedFamilies:results.filter(r=>r.familyCases>0&&r.familyAccepted).length,familyCases:results.reduce((sum,r)=>sum+r.familyCases,0),classProbes,programCoverage,multiscript:{scripts:multiscript.map(([name])=>name),accepted:corpus.accepted},programAliases:[...programs.values()]};
 writeFileSync(join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({...report,programAliases:undefined},null,2));

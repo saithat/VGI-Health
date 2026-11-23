@@ -58,6 +58,7 @@ tabs, buttons and macros. The agent changes only `Program`. Native `check`,
 Lean screen checks and replay validation gate deployment; `step` guards each
 interaction at runtime. The original proposal loop allows three repairs. The
 [hill-climbing night](docs/methods/hillclimb-night.md) measures changes against every past workflow. Agents can estimate a patch on selected days before requesting the full verdict. The agent closes the decision by submitting a shipping patch or keeping the current version. The default stops at the first improvement; `--night-search climb` can stack improvements and ship the best fully measured patch at the two-hour backstop. The [measurement guide](docs/methods/hillclimb-night.md#measuring-faster) covers worker limits and benchmarks for individual and concurrent measures.
+Both search modes require full completion, no modeled-time increase for either clinician, and a strictly positive expert modeled-time saving per observed day.
 The night agent can use hosted Codex or a [local model server](docs/methods/hillclimb-night.md#local-model-server).
 
 Seeded safety probes are diagnostic and cannot deploy. The allergy probe hides
@@ -155,10 +156,10 @@ Discarded-order notices expire after the 30-day discharge deadline, retaining pr
 
 `scripts/build-ehrheavy.py [--target MODULE]` builds the full-profile `EhrHeavy`
 modules serially (about 8.3 GiB peak); the weekly `ehrheavy.yml` workflow audits
-all 24 seeded-defect axioms.
+all 23 seeded-defect axioms.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
-runs unit tests, 202 canonical conformance scenarios, the 15-accepted/38-rejected
+runs unit tests, 202 canonical conformance scenarios, the 15-accepted/37-rejected
 certification matrix, and Postgres integration/protocol tests. Archive-backed
 tests skip without local data. CI checks packaged WASM evidence but does not
 rebuild WASM. Full Comparator verification is `make verify`; browser audits,
@@ -180,7 +181,7 @@ The headline `Ehr.Proofs.*` and original `accepted_*` theorems below cover
 `Ehr.runStep`/`runInit`, which add a critical-result handler and patient
 selection. [Runtime coverage](docs/methods/runtime-coverage.md) proves the commit
 safeguards (T0, T2, T3), popup origin, popup severity and popup blocking for
-`runStep`. Of the twelve accepted properties, three carry over to `runStep` for
+`runStep`. Of the eleven accepted properties, two carry over to `runStep` for
 every program; the other nine are proved for programs without patient selection
 run with fixed facts (`accepted_ordinary`). With patient selection, all nine
 are proved per bound patient episode (`accepted_episode`): from the hydration
@@ -217,10 +218,10 @@ responsible/covering user ID, which is stricter than a role check.
 | `T0`, `T2` | Every program/record/event sequence: no sign without required confirmed entries, human provenance and declared units, valid reviews/receipts, interruptive-alert acknowledgments and an allowed role. |
 | `T3`, `T6` | Macros/prefills cannot sign, acknowledge, create receipts or supply human-only values; cosigning names a second human. |
 | `A2`, `A4`; `D1`–`D6` | Alert conditions/passivity and the rendered banner, required reviews, honest buttons and modal alerts are preserved. |
-| `accepted_*` | Checker acceptance implies 12 of 13 screen properties for all patients and reachable states. Property 6 (completion) is proved only for restricted families. For the V1–V3 rule sets `Completable` is false as defined: it ranges over records with no trusted payload, where no program can commit (`v1_payload_domain_not_satisfies`, `EhrHeavy`). A [feasibility premise (`CompletableWhereFeasible`)](docs/design/property6-record-domain.md) excludes missing-payload records (`missing_payload_not_commitFeasible`) and carries over all restricted-family proofs (`completable_imp_completableWhereFeasible`), while static acceptance under V1–V3 still permits a reachable cross-field validation trap (`v1_v2_v3_not_acceptedCompletableWhereFeasible`). |
+| `accepted_*` | Checker acceptance implies 11 of 12 screen properties for all patients and reachable states. Property 6 (completion) is proved only for restricted families. For the V1–V3 rule sets `Completable` is false as defined: it ranges over records with no trusted payload, where no program can commit (`v1_payload_domain_not_satisfies`, `EhrHeavy`). A [feasibility premise (`CompletableWhereFeasible`)](docs/design/property6-record-domain.md) excludes missing-payload records (`missing_payload_not_commitFeasible`) and carries over all restricted-family proofs (`completable_imp_completableWhereFeasible`), while static acceptance under V1–V3 still permits a reachable cross-field validation trap (`v1_v2_v3_not_acceptedCompletableWhereFeasible`). |
 | Multi-actor safety | Bed exclusivity, at-most-once doses and critical-result resolution or escalation by deadline in the Lean reducers/models. |
 | Protocol invariants | Unbounded request-effect uniqueness, durable retries, guarded expected-version replacement, refusal isolation and event-fold projections, under the storage/sole-writer contract. ADT uses the actual native reducer; host trace refinement is tested. |
-| Research layout range | `renderer_range`, `checkProgram_sound`, `layoutAccepted_program`: the fixed semantic text-card compiler covers every renderer output and preserves G1–G9; `checkProgramDensity_sound` adds the G10 target-density limit and `render_strip_continuous` keeps urgent alerts pinned in view (G11) whenever the strip fits. This does not certify deployed widget fidelity or integrate DOM/APG dispatch. |
+| Research layout range | `renderer_range`, `checkProgram_sound`, `layoutAccepted_program`: the fixed semantic text-card compiler covers every renderer output and preserves G1–G7; `checkProgramDensity_sound` adds the G10 target-density limit and `render_strip_continuous` keeps urgent alerts pinned in view (G11) whenever the strip fits. This does not certify deployed widget fidelity or integrate DOM/APG dispatch. |
 
 Not proved: clinical completeness or appropriateness of the rules; general
 completion; TypeScript/SQL/FHIR refinement, imports and projections; actual
@@ -274,7 +275,7 @@ appropriateness and the uncalibrated rates are not validated.
 | Commit and ADT protocol assumptions | [Models and storage contract](docs/methods/commit-protocol.md): sole writer, consistent imports, locked current snapshots and atomic durable publication; host refinement remains tested. |
 | Completion interaction rules | [Scenario checker](docs/methods/completion-checker.md): acknowledgment before commit and Back retention; general property 6 and patient-switch durability remain open. |
 | Anti-gaming design rules | [Metric gaming](docs/design/metric-gaming.md): at most 2 copies of a control per program and 1 per screen; at most 15 active targets per 1440×900 viewport in Lean G10, plus per-screen vendor-reference limits on rendered screens (57 for absent ids); high-alert medication notices cannot be removed per clinician; declared workflow context stays within 8 goto hops of commit screens, with explicit context policies required after v3; navigation labels match titles/equivalent aliases within 4 words. These are new specifications. |
-| Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G11, safety-text preservation, the display parts and wording Lean decides for every node, long lists shown one page at a time with their position, flagged count and pager ([bounded lists](docs/methods/ui-library.md#bounded-lists)), and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
+| Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G7, G10 and G11, safety-text preservation, the display parts and wording Lean decides for every node, long lists shown one page at a time with their position, flagged count and pager ([bounded lists](docs/methods/ui-library.md#bounded-lists)), and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
 
 
 ## Open problems

@@ -324,7 +324,7 @@ theorem render_urgent (sp : Ehr.Spec) (program : Ehr.Program) (facts : Ehr.Facts
 def admitDensity (limit : Nat) (c : Candidate) : Bool :=
   viewports.all fun v => decide (G10 limit v (boxes v (c.tree v)))
 
-/-- New specification for owner review: G1–G9 family admission plus G10. -/
+/-- New specification for owner review: G1–G7 family admission plus G10. -/
 def acceptFamilyDensity (limit : Nat) (family : Family) : Bool :=
   acceptFamily family && family.all (admitDensity limit)
 
@@ -380,4 +380,11 @@ theorem checkProgramDensity_sound (sp : Ehr.Spec) (program : Ehr.Program)
 #print axioms render_urgent
 #print axioms layoutAccepted_familyDensity
 #print axioms checkProgramDensity_sound
+#print axioms zip_order
+#print axioms filter_nil_of
+#print axioms modal_present
+#print axioms inactive_ordinary
+#print axioms strip_targets
+#print axioms count_split
+
 end Ehr.Layout.Density

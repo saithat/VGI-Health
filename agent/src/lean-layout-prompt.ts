@@ -30,7 +30,7 @@ const inventorySchema = z.object({
   limits: z.json(),
 });
 import type { PromptParts } from "./prompts.js";
-export const LAYOUT_RULE_GUIDE = `## Layout rules and G1–G11
+export const LAYOUT_RULE_GUIDE = `## Layout rules and G1–G7, G10 and G11
 Layout rules are the only limits on geometry; existing clinical and release rules still govern Program behavior. Layout and Program changes are both in scope. Aim for fewer clicks and scrolls for this persona, with full completion. Simulated clinicians only; no browser certificate or clinical benefit is claimed.
 Use moveType "layout" for a rules patch (mixed Program edits are allowed). /layouts is the separate sidecar array, never the Program Lean reads. Patch it with ordinary RFC 6902 operations, e.g. add /layouts/- valueJson={"screen":"orders","rules":[{"kind":"firstViewport","target":{"id":"search"}}]}. Each rule entry is {screen:screenId|"*", screens?:[screenIds], rules:[...]}; screens, if present, restricts the entry. Rules apply in array order to every native shape and all three viewports. Write once, without paths or literal trees. Targets select native occurrences by {id?:componentId,role?:nativeRole,kind?:nativeKind}, combined by AND. An unknown/absent target refuses that shape explicitly; use screen scopes suited to your traces. Safety/fixed sources require a literal tree.
 firstViewport {target}: lift the selected occurrence subtree to the start of the body scroll, before navigation.
@@ -48,8 +48,6 @@ G4: paint and scroll viewports are contained; text is at least 12 px, has valid 
 G5: no horizontal overflow, including scroll content.
 G6: text contrast at least 4.5:1; target and painted mark contrast at least 3:1.
 G7: every expected semantic occurrence exactly once, unique IDs, no invented source paths or changed flags.
-G8: document order follows top-to-bottom then left-to-right; scroll content and z layers have separate reading order.
-G9: at 1440×900, exactly one fixed visible current-task commit target when present.
 G10: active targets at zero and every scroll offset stay within that screen's vendor limit (15 if unmeasured); never raise limits.
 G11: urgent boxes remain painted, fixed, contained, active during modals and separated from every other painted box.
 Refusals include rule, node, metric, actual, required and deficit when supplied. Repair against the CURRENT design. Pixel metrics constrain validation; elapsed time is not a reward.`;

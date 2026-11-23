@@ -143,7 +143,7 @@ replaces inside an episode. -/
 theorem accepted_episode (sp prev can p) (h : Check.check sp prev can p = .ok)
     (facts : Facts) (user : User) (hrole : user.role = p.role) (opened : State) :
     EpisodeAccepted { spec := sp, prog := p, facts, user, opened } := by
-  obtain ⟨_, _, _, href, _, _⟩ := Check.accepted_wellFormed sp prev can p h
+  obtain ⟨_, _, _, href, _⟩ := Check.accepted_wellFormed sp prev can p h
   obtain ⟨hd, _⟩ := Check.accepted_writesOnly sp prev can p h
   obtain ⟨hreviews, hlandmarks, hpassive⟩ := Check.accepted_pinRules sp prev can p h
   have hstart := href.1

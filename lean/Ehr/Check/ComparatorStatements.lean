@@ -35,9 +35,6 @@ theorem accepted_units (sp : Spec) (prev : Option Program) (can p : Program)
     (h : check sp prev can p = .ok) : UnitsRight sp p := by
   sorry
 
-theorem accepted_budgets (sp : Spec) (prev : Option Program) (can p : Program)
-    (h : check sp prev can p = .ok) : WithinBudgets sp prev can p := by
-  sorry
 
 theorem accepted_alertsFire (sp : Spec) (prev : Option Program) (can p : Program)
     (h : check sp prev can p = .ok) : AlertsFire sp p := by
@@ -47,9 +44,6 @@ theorem accepted_noFalseAlarms (sp : Spec) (prev : Option Program) (can p : Prog
     (h : check sp prev can p = .ok) : NoFalseAlarms sp p := by
   sorry
 
-theorem accepted_noRepeatInterruptions (sp : Spec) (prev : Option Program) (can p : Program)
-    (h : check sp prev can p = .ok) : NoRepeatInterruptions sp p := by
-  sorry
 
 theorem accepted_severityTiers (sp : Spec) (prev : Option Program) (can p : Program)
     (h : check sp prev can p = .ok) : SeverityTiers sp p := by

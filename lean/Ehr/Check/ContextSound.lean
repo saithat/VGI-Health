@@ -78,7 +78,7 @@ theorem accepted_contextRetained (sp prev can p) (h : check sp prev can p = .ok)
     ContextRetained sp p := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcontext, _⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcontext, _⟩
   simp only [Bool.and_eq_true] at hcontext
   exact contextRetained_sound sp p hcontext.2
 
@@ -88,7 +88,7 @@ theorem accepted_contextsDeclared (sp prev can p) (h : check sp prev can p = .ok
     Specs.DesignPolicies.contextsDeclared sp = true := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcontext, _⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hcontext, _⟩
   simp only [Bool.and_eq_true] at hcontext
   exact hcontext.1
 
@@ -97,7 +97,7 @@ theorem accepted_navigationLabels (sp prev can p) (h : check sp prev can p = .ok
     Render.NavigationLabelsHonest sp p := by
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
-  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hlabels, _⟩
+  rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hlabels, _⟩
   exact of_decide_eq_true hlabels
 
 /-- D5's existing navigation guarantees and its R6 extension hold together. -/

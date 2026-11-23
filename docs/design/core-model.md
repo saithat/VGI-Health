@@ -21,15 +21,14 @@ The interpreter (Lean, compiled to WASM for the app and native for the pipeline)
 - **Captured weight in `lb`** never satisfies a `kg` requirement.
 
 The **checker** (offline) then certifies that a program is usable and well designed. These are mostly structural checks, each proven to imply its semantic property (T1):
-- well-formed (catalog, landmarks, depth);
+- well-formed (catalog, IDs, references and landmarks);
 - completable (the guard never leaves the user stuck: required info is pinned on the commit screen or receipt-conditional, fields are reachable, and human steps are reachable);
 - enter once;
 - writes only;
 - prefill policy;
 - units;
 - A1 (each interruptive alert has a popup path before its commit, and each passive alert is shown inline on its relevant screen);
-- the alert budget;
-- the stability budget.
+- workflow context and copy limits.
 
 It also rejects malformed constructs even where the interpreter would neutralize them (for example, a macro containing a human-only step, or a prefill on a `never` element), returning a counterexample. Defense in depth: the checker rejects, and the interpreter would block anyway.
 

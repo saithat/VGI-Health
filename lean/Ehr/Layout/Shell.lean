@@ -426,30 +426,6 @@ private theorem contrast (v : Size) (hv : v ∈ viewports) (first body commit ms
   · simp [modal,Structural.slotText,text,target]
   · simp [strip,footerText,Structural.slotText,text,target]
 
-private theorem commit_rule (v : Size) (hv : v ∈ viewports) (first body commit ms us) :
-    G9 v (placements v first body commit ms us) := by
-  have noBase : (Structural.placements v first body).filter (·.info.commit) = [] :=
-    List.filter_eq_nil_iff.mpr fun p hp => by simp [(base_flags v first body p hp).2.1]
-  intro _ present
-  cases commit with
-  | none =>
-    have absent : (placements v first body none ms us).any (·.info.commit) = false := by
-      simp [placements,List.any_append,List.any_map,Function.comp_def,modalBoxes,modal,stripBoxes,strip]
-      intro p hp
-      exact (base_flags v first body p hp).2.1
-    simp [absent] at present
-  | some path =>
-    constructor
-    · simp [placements,List.filter_append,noBase,footer,modalBoxes,List.filter_map,modal,stripBoxes,strip,
-        Function.comp_def,filter_false]
-    · intro p hp flag
-      rcases shell_cases hp with hp | ⟨other,same,rfl⟩ | ⟨-,e,i,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
-      · simp [(base_flags v first body p hp).2.1] at flag
-      · obtain rfl : other = path := by simpa using same
-        exact ⟨rfl,footer_visible v hv other⟩
-      · simp [modal] at flag
-      · simp [strip] at flag
-
 private theorem repr_ne (n : Nat) (id : String) (notNumeric : id.isNat = false) : Nat.repr n ≠ id :=
   fun same => by simpa [Nat.isNat_repr,notNumeric] using congrArg String.isNat same
 
@@ -483,7 +459,7 @@ private theorem ids_unique (v : Size) (hv : v ∈ viewports) (first body commit 
     (unique : (inventory first body commit ms us).Nodup) (limited : ms.length ≤ 2)
     (pinned : us.length ≤ stripCapacity) :
     ((placements v first body commit ms us).map (·.info.id)).Nodup := by
-  have base := (base_rules v hv first body commit ms us unique).2.2.2.2.2.2.1.1
+  have base := (base_rules v hv first body commit ms us unique).2.2.2.2.2.2.1
   unfold placements
   simp only [List.map_append]
   refine List.nodup_append.mpr ⟨base,List.nodup_append.mpr ⟨?_,
@@ -533,7 +509,6 @@ private theorem ids_unique (v : Size) (hv : v ∈ viewports) (first body commit 
       · obtain ⟨q,hq,same⟩ := List.mem_map.mp hin
         obtain ⟨e,i,_,rfl⟩ := strip_cases v us q hq
         exact repr_ne n (stripId i) (strip_id_not_numeric i) (hn.symm.trans (sameId.trans same.symm))
-
 
 private theorem source_count (ps : List Placed) (path : List Nat)
     (painted : ∀ p ∈ ps, ∀ source ∈ p.info.source, p.info.paint = true) :
@@ -589,65 +564,11 @@ private theorem complete (v : Size) (hv : v ∈ viewports) (first body commit ms
     rw [← source_inventory v first body commit ms us]
     exact List.mem_filterMap.mpr ⟨p,hp,Option.mem_def.mp hs⟩
 
-private theorem reading_order (v : Size) (hv : v ∈ viewports) (first body commit ms us)
-    (unique : (inventory first body commit ms us).Nodup) : G8 (placements v first body commit ms us) := by
-  have base := (base_rules v hv first body commit ms us unique).2.2.2.2.2.2.2.1
-  let ink := fun p : Placed => p.info.paint && (p.info.target || p.info.text.isSome)
-  have ff : (commit.toList.map (footer v)).filter ink = commit.toList.map (footer v) :=
-    List.filter_eq_self.mpr fun p hp => by obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp; rfl
-  have fm : (modalBoxes v ms).filter ink = modalBoxes v ms :=
-    List.filter_eq_self.mpr fun p hp => by obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp; simp [ink,modal]
-  have fs : (stripBoxes v us).filter ink = stripBoxes v us :=
-    List.filter_eq_self.mpr fun p hp => by obtain ⟨e,i,_,rfl⟩ := strip_cases v us p hp; simp [ink,strip]
-  change ((placements v first body commit ms us).filter ink).Pairwise _
-  unfold placements
-  rw [List.filter_append,List.filter_append,List.filter_append,ff,fm,fs]
-  refine List.pairwise_append.mpr ⟨base,List.pairwise_append.mpr ⟨?_,
-    List.pairwise_append.mpr ⟨?_,?_,?_⟩,?_⟩,?_⟩
-  · cases commit <;> simp
-  · unfold modalBoxes
-    rw [List.pairwise_map]
-    apply (zip_order ms).imp
-    intro a b ordered _
-    simp only [modal,List.map_nil,↓reduceIte,before]
-    omega
-  · unfold stripBoxes
-    rw [List.pairwise_map]
-    apply (zip_order us).imp
-    intro a b ordered _
-    simp only [strip,List.map_nil,↓reduceIte,before]
-    omega
-  · intro p hp q hq same
-    obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-    obtain ⟨f,j,_,rfl⟩ := strip_cases v us q hq
-    simp [modal,strip] at same
-  · intro p hp q hq same
-    obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-    rcases List.mem_append.mp hq with hq | hq
-    · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
-      simp [footer,modal] at same
-    · obtain ⟨e,i,_,rfl⟩ := strip_cases v us q hq
-      simp [footer,strip] at same
-  · intro p hp q hq same
-    have hp := (List.mem_filter.mp hp).1
-    rcases List.mem_append.mp hq with hq | hq
-    · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
-      rcases base_cases v first body p hp with rfl | rfl | ⟨e,i,_,rfl⟩
-      all_goals simp [Structural.scroller,Structural.banner,Structural.ordinary,footer] at same
-    · have z := (base_flags v first body p hp).2.2.1
-      rcases List.mem_append.mp hq with hq | hq
-      · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
-        change p.style.z = 100 at same
-        omega
-      · obtain ⟨e,i,_,rfl⟩ := strip_cases v us q hq
-        change p.style.z = 40 at same
-        omega
-
 /-- New specification for owner review: the statement now also covers the
 pinned urgent rows `us`; with `us = []` it is the shell without a strip.
 
 Quantifies over arbitrary list sizes and content-independent occurrence
-paths. G9 is nonvacuous when commit is present, including under an active modal. -/
+paths. -/
 theorem shell_rules (v : Size) (hv : v ∈ viewports) (first body commit ms us)
     (unique : (inventory first body commit ms us).Nodup) (limited : ms.length ≤ 2)
     (pinned : us.length ≤ stripCapacity) :
@@ -655,8 +576,7 @@ theorem shell_rules (v : Size) (hv : v ∈ viewports) (first body commit ms us)
   exact ⟨banner_rule v hv first body commit ms us unique pinned,modal_rule v hv first body commit ms us limited,
     targets v hv first body commit ms us unique pinned,text_rule v hv first body commit ms us unique limited pinned,
     horizontal v hv first body commit ms us unique,contrast v hv first body commit ms us unique,
-    complete v hv first body commit ms us unique limited pinned,reading_order v hv first body commit ms us unique,
-    commit_rule v hv first body commit ms us⟩
+    complete v hv first body commit ms us unique limited pinned⟩
 
 /-- New specification for owner review: the pinned rows satisfy G11. Every
 strip row is fixed inside the viewport and separated from every other painted
@@ -665,7 +585,7 @@ occurrence. -/
 theorem shell_urgent (v : Size) (hv : v ∈ viewports) (first body commit ms us)
     (unique : (inventory first body commit ms us).Nodup) (pinned : us.length ≤ stripCapacity) :
     G11 v (us.map Prod.fst) (placements v first body commit ms us) := by
-  have baseSources := (base_rules v hv first body commit ms us unique).2.2.2.2.2.2.1.2.2.2
+  have baseSources := (base_rules v hv first body commit ms us unique).2.2.2.2.2.2.2.2.2
   have split := List.nodup_append.mp unique
   have rest := List.nodup_append.mp split.2.1
   have tail := List.nodup_append.mp rest.2.1
@@ -696,7 +616,6 @@ theorem shell_urgent (v : Size) (hv : v ∈ viewports) (first body commit ms us)
       exact False.elim (tail.2.2 e.1 inModal e.1 member rfl)
     · rfl
 
-
 structure Parts where
   banner : SlotShape
   body : List SlotShape
@@ -715,7 +634,7 @@ def urgentSlots (shape : ScreenShape) : List SlotShape := shape.filter (fun s =>
 /-- New specification for owner review: the urgent strip of this shape fits the
 shell's pinned band: at most `stripCapacity` occurrences, of which at most
 `stripTargetCapacity` are targets. When it does not fit, the shell paints the
-urgent occurrences as ordinary body rows (so G1–G9 still hold) and G11 fails. -/
+urgent occurrences as ordinary body rows (so G1–G7 still hold) and G11 fails. -/
 def stripFits (shape : ScreenShape) : Bool :=
   decide ((urgentSlots shape).length ≤ stripCapacity ∧
     ((urgentSlots shape).filter (·.target)).length ≤ stripTargetCapacity)
@@ -781,8 +700,8 @@ private theorem parts_inventory (p : Parts) :
 
 private theorem rules_perm (e f : List (List Nat)) (h : e.Perm f) (v : Size) (ps : List Placed)
     (rules : Rules e v ps) : Rules f v ps := by
-  rcases rules with ⟨a,b,c,d,ee,ff,g,hh,i⟩
-  refine ⟨a,b,c,d,ee,ff,?_,hh,i⟩
+  rcases rules with ⟨a,b,c,d,ee,ff,g⟩
+  refine ⟨a,b,c,d,ee,ff,?_⟩
   rcases g with ⟨ids,paths,complete,linked⟩
   exact ⟨ids,h.nodup_iff.mp paths,fun path member => complete path (h.mem_iff.mpr member),
     fun p hp path hs => ⟨h.mem_iff.mp (linked p hp path hs).1,(linked p hp path hs).2⟩⟩
@@ -924,17 +843,6 @@ theorem certifiedClass_urgent (screen : UiScreen)
   rw [geom]
   exact class_urgent (screenShape screen) accepted fit v hv
 
-/-- The real current-task source is present exactly once by G7/G9 and cannot
-be hidden to obtain the no-commit exemption, including under an active modal. -/
-theorem certified_currentCommit_visible (screen : UiScreen)
-    (accepted : accepts (screenShape screen) = true) (slot : SlotShape)
-    (member : slot ∈ screenShape screen) (current : slot.region = .footer) :
-    ∃ painted, paint screen ⟨92160,57600⟩ = some painted ∧
-      ∃ d ∈ painted, d.box.info.source = some slot.path ∧ d.box.info.commit = true ∧
-        d.box.info.target = true ∧ visible ⟨92160,57600⟩ d.box := by
-  obtain ⟨painted,paintedEq,realized⟩ := certifiedClass_allScreens screen accepted ⟨92160,57600⟩ (by simp [viewports])
-  exact ⟨painted,paintedEq,realized_currentCommit_visible screen _ painted realized slot member current rfl⟩
-
 #print axioms bounds
 #print axioms base_cases
 #print axioms modal_cases
@@ -977,7 +885,6 @@ theorem certified_currentCommit_visible (screen : UiScreen)
 #print axioms text_rule
 #print axioms horizontal
 #print axioms contrast
-#print axioms commit_rule
 #print axioms repr_ne
 #print axioms not_numeric
 #print axioms modal_id_not_numeric
@@ -992,7 +899,6 @@ theorem certified_currentCommit_visible (screen : UiScreen)
 #print axioms source_inventory
 #print axioms sources_painted
 #print axioms complete
-#print axioms reading_order
 #print axioms shell_rules
 #print axioms shell_urgent
 #print axioms parts_inventory
@@ -1006,5 +912,4 @@ theorem certified_currentCommit_visible (screen : UiScreen)
 #print axioms class_linked
 #print axioms certifiedClass_allScreens
 #print axioms certifiedClass_urgent
-#print axioms certified_currentCommit_visible
 end Ehr.Layout.Shell

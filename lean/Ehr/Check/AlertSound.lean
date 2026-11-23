@@ -197,14 +197,7 @@ theorem interruptsOnce (ep : Episode) : InterruptsOnce ep := by
 popup/inline alert is firing for its real key (property 10 / A2). -/
 theorem accepted_noFalseAlarms (sp prev can p) (h : check sp prev can p = .ok) : NoFalseAlarms sp p := by
   have ht := accepted_structural sp prev can p h
-  exact ⟨ht.2.2.2.2.2.2.2.1, fun facts user _ => alertsOnlyWhenTrue ⟨sp, p, facts, user⟩⟩
-
-/-- Accepted programs request no repeated interruptive popups and preserve
-acknowledgments throughout every episode (property 11 / A3). -/
-theorem accepted_noRepeatInterruptions (sp prev can p) (h : check sp prev can p = .ok) :
-    NoRepeatInterruptions sp p := by
-  have ht := accepted_structural sp prev can p h
-  exact ⟨ht.2.2.2.2.2.2.1, fun facts user _ => interruptsOnce ⟨sp, p, facts, user⟩⟩
+  exact ⟨ht.2.2.2.2.2.2.1, fun facts user _ => alertsOnlyWhenTrue ⟨sp, p, facts, user⟩⟩
 
 #print axioms clinicalEval_captured
 #print axioms popup_captured
@@ -215,7 +208,15 @@ theorem accepted_noRepeatInterruptions (sp prev can p) (h : check sp prev can p 
 #print axioms alertsOnlyWhenTrue
 #print axioms interruptsOnce
 #print axioms accepted_noFalseAlarms
-#print axioms accepted_noRepeatInterruptions
 #print axioms stepCore_popup_captured
+
+#print axioms clickAlert_captured
+#print axioms clickCommit_captured
+#print axioms clickCore_popup_captured
+#print axioms alertKeys_captured
+#print axioms ackCore_popup_acked
+#print axioms popup_acked
+#print axioms acked_monotone
+#print axioms popup_continues
 
 end Ehr.Check

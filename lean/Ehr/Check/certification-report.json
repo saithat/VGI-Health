@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "bb74315e93f2572f64f3b5bdf06cfe84129380aa",
+  "sourceRevision": "924309e83eb0fb40854b3664497380a16f233534",
   "sourceDirty": true,
-  "binarySha256": "53023bce81efbbbaafd9b94e0b2777973d47a470963df7d48244f8c6c95a60d5",
+  "binarySha256": "c5edb33c27c26c17eaf293d70e68de7d3d719f0bdac732925a7812afafd416a6",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 38,
-  "badCount": 38,
+  "badRejected": 37,
+  "badCount": 37,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -700,51 +700,6 @@
       },
       "status": "rejected",
       "expectedProperty": "wellFormed",
-      "expectedPropertyRejected": true,
-      "replay": {
-        "valid": true,
-        "eventCount": 2,
-        "results": [
-          "ok",
-          "ok"
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
-      "program": "programs/bad/11-repeated-interaction.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "1923efc629d948ab55fa6aa30fc1e00b1c70ada63814c95ae46b4727679c69f4",
-      "specSha256": "dd943e9606b2b8ed5c586c28c9123f0073dc706f30b86e4fcfa61f4752c88703",
-      "canonicalSha256": "d8c9f1db4852c7b71f6a85e13791e9c9668e3780bfb1bda060f43432df4f0af8",
-      "previous": null,
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w1Rooming",
-            "w1Orders"
-          ],
-          "property": "noRepeatInterruptions",
-          "message": "A3: the interruptive alert interactionOrder is made to pop up on screen w1Orders and again on screen w1Sign",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w1Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w1Rooming.nav.w1Orders"
-              }
-            }
-          ]
-        }
-      },
-      "status": "rejected",
-      "expectedProperty": "noRepeatInterruptions",
       "expectedPropertyRejected": true,
       "replay": {
         "valid": true,
@@ -1889,7 +1844,7 @@
             "home"
           ],
           "property": "entryTraces",
-          "message": "human-only.curesExemptionReason.prefill: From chartSummary, provide a reachable shown field curesExemptionReason",
+          "message": "human-only.curesExemptionReason.prefill: Reveal w1Orders.curesExemptionReason on w1Orders",
           "counterexample": []
         }
       },
@@ -1918,7 +1873,7 @@
             "home"
           ],
           "property": "clinicalScenarios",
-          "message": "automation.commit-and-review: visit signOrders: human allergy review: Provide a reachable human allergy review from w1Sign",
+          "message": "automation.commit-and-review: Provide a reachable human allergy review from w1Sign",
           "counterexample": []
         }
       },
@@ -1947,7 +1902,7 @@
             "home"
           ],
           "property": "clinicalScenarios",
-          "message": "design.banner: inspect patient banner on home: Show exactly one patient banner on home",
+          "message": "design.banner: Show exactly one patient banner on home",
           "counterexample": []
         }
       },

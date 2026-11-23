@@ -41,7 +41,7 @@ theorem reviewFamily_accepted : acceptFamily reviewFamily = true := by decide_cb
 /-- New specification for owner review (changed statement). No source bound,
 font-coverage assumption, structural-coverage premise or per-screen acceptance
 premise. All supported viewports, all banner fields and every blocked reason
-of this concrete semantic family; G1-G9, original text and lossless vertical
+of this concrete semantic family; G1-G7, original text and lossless vertical
 wrapping.
 
 It was stated for every table and for an enabled Sign as well. A finite

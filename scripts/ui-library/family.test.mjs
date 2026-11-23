@@ -47,7 +47,7 @@ test('a data-erased admitted family rebinds unlimited safety payloads by source 
   const longer=run({op:'family-paint',references,screen:reviewScreen([...table('x','y','z'),[['Allergy','second']]])});
   assert.equal(longer.accepted,false);assert.ok(longer.uncoveredShape);
 });
-test('semantic linkage prevents hiding the real commit to claim G9 exemption',()=>{
+test('semantic linkage preserves the real commit flag',()=>{
   const changed=layouts();for(const r of changed)r.tree.children.at(-1).commit=false;
   assert.equal(run({op:'family-check',references:[{screen:reviewScreen(),layouts:changed}]}).accepted,false);
 });

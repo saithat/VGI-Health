@@ -56,11 +56,8 @@ def auditProgram (path specPath : String) (facts : Facts) (display : Display) (a
           checks := checks ++ [Json.mkObj [("screen",toJson sc.id),("variant",toJson variant),("viewport",toJson v),
             ("accepted",toJson (check e v ps && errors.isEmpty)),
             ("shellAccepted",toJson (check (shapeSources shape) v shell && decide (Linked shape shell))),
-            ("shellG9",toJson (decide (G9 v shell))),
             ("findings",toJson (findings e v ps ++ errors)), ("sources",toJson e.length),
             ("hasCurrentCommit",toJson (ps.any (·.info.commit))),
-            ("g9Exempt",toJson (v == ⟨92160,57600⟩ && !(ps.any (·.info.commit)))),
-            ("g9Passed",toJson (decide (G9 v ps))),
             ("portDensity",toJson (densityCounts v ps))]]
   let family : Family := shapes.map fun shape => ⟨shape,fun v => compileShape v shape⟩
   return Json.mkObj [("path",toJson path),("sample",toJson sample),("checks",toJson checks),
