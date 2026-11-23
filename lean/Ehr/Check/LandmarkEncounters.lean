@@ -1,7 +1,7 @@
 import Ehr.Check.AlertEncounters
 
 namespace Ehr.Check.ReviewTrace
-open Ehr Ehr.Props
+open Ehr Ehr.Props EntryWitness
 
 /-- New specification for owner review. Possible forward moves from this
 screen, including intermediate destinations a goto-only macro pushes onto
@@ -50,8 +50,8 @@ def landmarkCases (sp : Spec) (p : Program) (nursing : Bool) : List ClinicalCase
           else unless (items.filter fun it => it.shown && it.comp.kind == .banner).length == 1 do
             throw s!"Show exactly one patient banner on {sc.id}"
           return s, fun _ _ => true⟩ : Checkpoint)
-    let f := if nursing then {clinicalFacts with medToGive? := some (if clean then "metformin" else "morphine")}
-             else clinicalFacts
+    let f := if nursing then {(facts "") with medToGive? := some (if clean then "metformin" else "morphine")}
+             else (facts "")
     let i := encounterInput sp p f
     ⟨if clean then "alerts.no-false-alarms" else "design.banner", i, (tourScreens i).map visit, false⟩
 

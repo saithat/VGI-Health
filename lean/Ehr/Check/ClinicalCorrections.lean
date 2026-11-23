@@ -1,13 +1,13 @@
 import Ehr.Check.AlertEncounters
 
 namespace Ehr.Check.ReviewTrace
-open Ehr Ehr.Props
+open Ehr Ehr.Props EntryWitness
 
 /-- New specification for owner review. A wrong human entry is refused and
 cannot establish a confirmed capture on its line. -/
 def refuseEntry (e : ElementId) (v : Value) (noCapture := true) : Checkpoint :=
   {(enterValue e v) with label := "refuse incorrect " ++ e, act := fun i s c => do
-    let r := fire i s (.enter c.id v)
+    let r := dispatch i s (.enter c.id v)
     unless (i.spec.element? e).any (fun el => r.result == .blocked (rejectReason el v)) &&
       (if noCapture then !(r.state.captured.any (·.element == e))
        else !(r.state.captured.find? (·.element == e)).any (·.confirmed)) do
@@ -24,7 +24,7 @@ validate the successful alternative, then exercise the negative branch on
 the original state. Neither branch supplies evidence to the other. -/
 def withAlternative (g : Checkpoint) (steps : List Checkpoint) : Checkpoint :=
   {g with act := fun i s c => do
-    let _ ← search i (routes i.program false) s steps
+    let _ ← continueAt i s steps
     g.act i s c}
 
 /-- New specification for owner review. Split a prepared sequence at the
@@ -36,7 +36,7 @@ def forkBefore (steps : List Checkpoint) (e : ElementId) (g : Checkpoint) : List
 /-- New specification for owner review. The suite's identity, barcode, cosign,
 dose-unit, preoperative and opioid-risk refusal and recovery encounters. -/
 def correctionCases (sp : Spec) (p : Program) (cm : CommitId) : List ClinicalCase := Id.run do
-  let f := factsFor cm
+  let f := facts cm
   let basic := completeCase sp p cm ("positive." ++ cm)
   let wrong := fun e v => { basic with name := "refuse incorrect " ++ e, steps := refuseEntry e v :: basic.steps }
   if cm == "administerMed" then

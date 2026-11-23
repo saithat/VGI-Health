@@ -50,6 +50,6 @@ def casesFor (sp : Spec) (can p : Program) : List Case :=
 witness and name the workflow, field or action that needs attention. -/
 def entryFailure (sp : Spec) (can p : Program) : Option String :=
   (casesFor sp can p).findSome? fun c =>
-    (diagnose c.input c.task).map fun why => s!"{c.name}: {why}"
+    (diagnose c.input.toInitInput c.task).map fun why => s!"{c.name}: {why}"
 
 end Ehr.Check.EntryWitness

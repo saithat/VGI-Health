@@ -5,7 +5,8 @@ open Ehr Ehr.Props
 
 /-- New specification for owner review. Checker acceptance supplies a native
 trace from encounter initialization through every checkpoint, separately on
-each applicable layout or counterfactual probe in the clinical catalog. -/
+each applicable layout or counterfactual probe in the clinical catalog.
+`scenario_iff` and `steps_cons_iff` expose the former checkpoint contract. -/
 theorem accepted_clinicalScenarios (sp prev canonical p) (accepted : check sp prev canonical p = .ok) :
     ∀ c ∈ clinicalCases sp canonical p, Scenario c.input c.steps := by
   let result := certifyCases (clinicalCases sp canonical p)

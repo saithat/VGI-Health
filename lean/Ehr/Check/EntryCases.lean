@@ -177,24 +177,45 @@ def refusal (i : Scene) (cm e : String) (empty := false) : Trial Unit := do
     expected.any (fun reason => reason.contains e && r == .blocked reason) && !(← current).commits.contains cm)
     s!"{cm} at {s.screen} must refuse {e} before signing; observed {repr r}"
 
-/-- New specification for owner review. Bound signature attempts and insist
-on successful real acknowledgments, distinct popup keys and a new signature. -/
-def finishAt (i : Scene) (id cm : String) (seen : List (AlertId × String)) : Nat → Trial Unit
-  | 0 => require false s!"Complete {cm} within the suite's 40 interactions"
+/-- New specification for owner review. Shared bounded signing script. Entry
+fixtures require the exact alert refusal; interrupt fixtures additionally test
+modal isolation, wrong acknowledgments and handled-key suppression. -/
+def finishAt (i : InitInput) (id cm : String) (seen : List (AlertId × String))
+    (interrupt : Option AlertId := none) (strict := true) : Nat → Trial Unit
+  | 0 => require false s!"Complete {cm} within the fixture's interaction bound"
   | n+1 => do
-    let r ← act i.toInitInput (.click id)
+    if !strict && (← current).commits.contains cm then
+      require (interrupt.all fun a => seen.any (fun key => key.1 == a))
+        s!"Elicit {interrupt.getD ""} before {cm}"
+      return
+    let r ← act i (.click id)
     let s ← current
     if let some key := s.popup? then
-      require (r == .blocked "alert" && !seen.contains key) s!"Resolve distinct {cm} alert {key.1}"
-      applyOk i.toInitInput (.ack key.1)
-      finishAt i id cm (key :: seen) n
-    else require (r == .ok && s.commits.contains cm) s!"Complete {cm} at {s.screen}; observed {repr r}"
+      require ((!strict || r == .blocked "alert") && !seen.contains key)
+        s!"Resolve distinct {cm} alert {key.1}"
+      if interrupt.isSome then
+        let blocked ← act i (.scroll s.screen)
+        require (blocked == .blocked "popup: acknowledge the alert first" && (← current) == s)
+          "Modal navigation bypass changed the chart"
+        let _ ← act i (.ack "wrong-alert")
+        require ((← current).popup? == some key) "Wrong alert acknowledgment closed the modal"
+      applyOk i (.ack key.1)
+      if interrupt.isSome then
+        let t ← current
+        if let some alert := (i.program.compsOf t.screen).find? (fun a => (alertOf? a.kind).any (·.1 == key.1)) then
+          let _ ← act i (.click alert.id)
+          require ((← current).popup?.isNone) s!"Handled alert {key.1} reopened"
+      finishAt i id cm (key :: seen) interrupt strict n
+    else
+      require (r == .ok && (!strict || s.commits.contains cm))
+        s!"Complete {cm} at {s.screen}; observed {repr r}"
+      if !strict then finishAt i id cm seen interrupt strict n
 
 /-- New specification for owner review. Start the signature with a still-unsigned chart. -/
 def finish (i : Scene) (cm : CommitId) : Trial Unit := do
   let c ← button i cm
   require (!(← current).commits.contains cm) s!"{cm} was already signed"
-  finishAt i c.id cm [] 20
+  finishAt i.toInitInput c.id cm [] none true 20
 
 /-- New specification for owner review. A declared link must yield the exact
 source value, confirmed with linked provenance. Manual fields are human-entered. -/
@@ -256,14 +277,11 @@ def entryScenario (i : Scene) (cm : CommitId) : Trial Unit := do
 
 /-- New specification for owner review. Build the native scene from the candidate,
 the clinical fixture and the first commit workflow. -/
-def scene (sp : Spec) (p : Program) (cm : String) (f : Facts) : Scene where
-  spec := sp
-  program := p
-  facts := selectionFacts p f
-  user := ⟨p.owner,p.role⟩
-  workflow := ((p.screens.find? fun sc => sc.components.any fun c =>
+def scene (sp : Spec) (p : Program) (cm : String) (f : Facts) : Scene :=
+  let workflow := ((p.screens.find? fun sc => sc.components.any fun c =>
     c.kind == .button (.commit cm)).map (·.workflow)).getD ""
-  edges := p.screens.map fun sc => (sc.id, openGotoEdges p sc.id)
+  { spec := sp, program := p, facts := selectionFacts p f, user := ⟨p.owner,p.role⟩
+    paths := routes p false workflow }
 
 /-- New specification for owner review. When the mixed reference has no named
 persona, the suite falls back to *all* workflows applicable to the role. -/
@@ -285,21 +303,4 @@ def workload (sp : Spec) (can p : Program) : List CommitId :=
     if cms.isEmpty then roleCommits p.role else cms
   else []
 
-/-- New specification for owner review. A whole native scenario starts at native init. -/
-def Realized (i : Scene) (task : Trial Unit) : Prop :=
-  ∃ t, task.holds (runInit i.toInitInput) () t
-
-/-- New specification for owner review. Return the first missing witness for a scene. -/
-def diagnose (i : Scene) (task : Trial Unit) : Option String :=
-  match task.search (runInit i.toInitInput) with
-  | .ok _ => none
-  | .error why => some why
-
-theorem diagnose_sound {i task} (pass : diagnose i task = none) : Realized i task := by
-  unfold diagnose at pass
-  split at pass
-  next out _ => exact ⟨out.val.2, out.property⟩
-  next => contradiction
-
-#print axioms diagnose_sound
 end Ehr.Check.EntryWitness

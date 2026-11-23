@@ -3,7 +3,7 @@ import Ehr.Check.ReviewProbes
 import Ehr.Check.ServiceEncounters
 
 namespace Ehr.Check.ReviewTrace
-open Ehr Ehr.Props
+open Ehr Ehr.Props EntryWitness
 
 /-- New specification for owner review. Applicable completion, review and
 receipt contracts of the clinical release schema and canonical workload. -/
@@ -30,12 +30,16 @@ def certifyCases : (cs : List ClinicalCase) →
     Except String (PLift (∀ c ∈ cs, Scenario c.input c.steps))
   | [] => .ok ⟨by simp⟩
   | c :: cs => do
-    let ok ← (witness c.input c.steps c.service).mapError (fun msg => c.name ++ ": " ++ msg)
+    let task := encounter c.input c.steps c.service
+    let ok ← match h : diagnose c.input task with
+      | some msg => .error (c.name ++ ": " ++ msg)
+      | none => .ok (PLift.up (diagnose_sound h))
     let tail ← certifyCases cs
     return ⟨by
       intro x hx
       rcases List.mem_cons.mp hx with rfl | hx
-      · exact ok.down
+      · obtain ⟨t, mid, s, opened, rest⟩ := ok.down
+        exact ⟨t, mid, s, opened, (steps_policy x.input x.service x.steps s t).mp rest⟩
       · exact tail.down x hx⟩
 
 end Ehr.Check.ReviewTrace

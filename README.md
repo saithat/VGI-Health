@@ -157,7 +157,7 @@ modules serially (about 8.3 GiB peak); the weekly `ehrheavy.yml` workflow audits
 all 24 seeded-defect axioms.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
-runs unit tests, 202 canonical conformance scenarios, the 15-accepted/36-rejected
+runs unit tests, 202 canonical conformance scenarios, the 15-accepted/38-rejected
 certification matrix, and Postgres integration/protocol tests. Archive-backed
 tests skip without local data. CI checks packaged WASM evidence but does not
 rebuild WASM. Full Comparator verification is `make verify`; browser audits,
@@ -165,7 +165,7 @@ WASM rebuilds and live e2e remain manual. [Reproduction and CI](docs/reproductio
 contains the exact commands, local prerequisites and browser-lock discipline.
 
 Service authorization requires a reachable, drug-free service-order route. Medication workflows retain identity and allergy review and dose correction on later lines. Critical-result displays retain a route to follow-up.
-The [conformance coverage map](docs/audits/conformance-formal-coverage.md) lists 200 scenarios covered by checker acceptance and two by the runtime. Acceptance supplies native traces for each scenario's fixture encounter: actionable refusals, human entry, reviews, receipts, alerts and signing. Completion from arbitrary states and for other patients remains open.
+The [conformance coverage map](docs/audits/conformance-formal-coverage.md) lists 200 scenarios covered by checker acceptance and two by the runtime. Both scenario catalogs share one proof-carrying trace engine. Acceptance supplies native traces for each scenario's fixture encounter: actionable refusals, human entry, reviews, receipts, alerts and signing. Completion from arbitrary states and for other patients remains open.
 
 ## What is proved
 

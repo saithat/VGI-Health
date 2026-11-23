@@ -7,7 +7,7 @@ open Ehr Ehr.Props
 The task relation specifies the observations and state transitions; it has no
 search-success premise. In a human-only case the input is the injected copy. -/
 theorem accepted_entryTraces {sp prev can p} (h : check sp prev can p = .ok)
-    {c} (hc : c ∈ casesFor sp can p) : Realized c.input c.task := by
+    {c} (hc : c ∈ casesFor sp can p) : Realized c.input.toInitInput c.task := by
   let r : Rule := {
     property := "entryTraces", passes := (entryFailure sp can p).isNone
     explain := fun _ => (entryFailure sp can p).bind (plain "entryTraces") }
@@ -23,7 +23,7 @@ human entries, linked captures, acknowledgments and successful signature. -/
 theorem accepted_actionableEntries {sp prev can p cm} (h : check sp prev can p = .ok)
     (required : cm ∈ workload sp can p) :
     let i := scene sp p cm (facts cm)
-    Realized i (entryScenario i cm) := by
+    Realized i.toInitInput (entryScenario i cm) := by
   apply accepted_entryTraces h (c := coreCase sp p cm)
   apply List.mem_append_left
   apply List.mem_append_left
@@ -60,7 +60,7 @@ theorem accepted_humanProbe {sp prev can p e} (h : check sp prev can p = .ok)
     let (f,v,raw) := probeInput sp e
     ∃ modified id, inject p e raw attack = some (modified,id) ∧
       let i := scene sp modified "" f
-      Realized i (humanCase i e id v attack) := by
+      Realized i.toInitInput (humanCase i e id v attack) := by
   generalize hi : probeInput sp e = inp
   obtain ⟨f,v,raw⟩ := inp
   obtain ⟨modified,id,hinj⟩ := inject_present raw attack site
@@ -80,7 +80,7 @@ theorem accepted_humanProbe {sp prev can p e} (h : check sp prev can p = .ok)
 each applicable medication fixture with its own refusal and repair trace. -/
 theorem accepted_medicationCases {sp prev can p} (h : check sp prev can p = .ok)
     (orders : "signOrders" ∈ workload sp can p) {c} (hc : c ∈ medicationCases sp p) :
-    Realized c.input c.task := by
+    Realized c.input.toInitInput c.task := by
   apply accepted_entryTraces h
   apply List.mem_append_left
   apply List.mem_append_right

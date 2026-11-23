@@ -129,22 +129,6 @@ For each declared, surfaced human-only field, the checker reproduces the suite's
 
 These statements formalize existing scenario requirements. They certify the existence of a conforming native execution for each fixture. The JavaScript driver's route choice, arbitrary records and progress from every reachable state remain separate questions. The matrix includes a metformin prefill that masks the empty-order refusal and a pre-op-only control that hides the human exemption input in the probe encounter. Both previously passed. With the encounter witnesses below, the matrix has 15 accepted personas and 38 rejected bad programs. [Certification matrix](../../lean/Ehr/Check/certification-report.json)
 
-### Checker wall time
-
-Each cell gives the previous and updated native `ehr check` wall times in milliseconds on the same machine. The comparison alternated binary order for seven pairs per input and took each binary's median. Arguments matched the certification matrix, including the previous release persona for v2 and v3. The mixed-role canonicals kept their existing role refusal.
-
-| Release | Mixed canonical | P1 | P2 | P3 | P4 | P5 |
-|---|---:|---:|---:|---:|---:|---:|
-| v1 | 900 → 948 | 742 → 770 | 758 → 779 | 779 → 777 | 764 → 789 | 783 → 822 |
-| v2 | 935 → 984 | 744 → 776 | 739 → 772 | 726 → 752 | 730 → 783 | 812 → 855 |
-| v3 | 929 → 985 | 746 → 776 | 739 → 778 | 746 → 771 | 747 → 784 | 826 → 868 |
-
-Across the 15 deployable personas, the sum of medians increased from 11.381 s to 11.851 s (4.1%). The largest individual increase was 7.1%, for v2/P4. The 25% budget held for all 18 inputs.
-
-As a separate check on the night path, the five initial `ehr.check` calls in hillclimb-3day's `lean-timings.jsonl` took 837, 852, 760, 771 and 915 ms in P1–P5 order. Replaying their recorded program, previous program, frozen specification and persona canonical with the updated CLI took 796, 777, 765, 780 and 837 ms (five-run medians). The recorded times include the host wrapper. [Preflight measurement](../../agent/src/run.ts)
-
-With both witness families combined, the sum of the 18 median `ehr check` times rose from 12.74 s to 13.33 s (4.6%) against the checker before either family. The largest individual increase was about 11.5% (v2/P5), within the 25% budget.
-
 ## Clinical encounter witnesses
 
 **New specification for owner review.** On a v1–v3 clinical release, checker acceptance supplies a native execution for each applicable case in the release persona’s clinical workload. The case binds the facts, user, program, required entries, and observations. The checker starts with `runInit`, opens the patient through a supplied row when selection is enabled, binds the chart, and exercises the displayed controls with `runStep`. The existing release specifications supply the clinical rules. The [scenario audit](../audits/conformance-formal-coverage.md) maps all 88 added guarantees to their contracts.
@@ -168,12 +152,17 @@ The certification matrix has **15 accepted personas and 38 rejected bad programs
 
 ### Specification inventory
 
-All names below are in `Ehr.Check.ReviewTrace`. The existing `Ehr.Check.revealEvents` helper moved intact so that both diagnostic and clinical traces use it.
+The common engine is `Ehr.Check.EntryWitness`. `Trial.holds` relates the actual starting state, observation and ending state; `Realized` starts it at `runInit`. A trial carries a bounded search returning a subtype proof of that relation. `diagnose_sound` is the single initialized-search soundness lemma. Sequencing shares the exact intermediate state; `fork` checks an alternative from that state without changing the main continuation.
+
+Both catalogs use the same event dispatch, successful-action check, ancestor reveal, native route replay, bounded route/control choice, patient opening, confirmed human entry and signature loop. Shortest routes and workflow ordering are cached lazily per starting screen within each encounter; native replay still validates every proposed route. Within a choice, the certified navigation prefix is replayed once per destination and shared by its candidate controls. Each candidate starts from that same state, and a replay equation proves that reuse realizes the original checkpoint contract. The clinical `Checkpoint` record only describes which control and observations to compile into a `Trial`. It has no separate trace relation or search engine. Preparation shares `fields` and `sample`; medication-specific supply still tests linked provenance and omission branches. `Ehr.Check.revealEvents` aliases the same reveal used by both catalogs and checker diagnostics.
+
+All catalog and adapter names below are in `Ehr.Check.ReviewTrace`; common primitives are in `Ehr.Check.EntryWitness`.
 
 | Module | New declarations |
 |---|---|
-| [ReviewTrace](../../lean/Ehr/Check/ReviewTrace.lean) | `fire`, `applyOk`, `beginEncounter`, `Checkpoint`, `reveal`, `perform`, `Realizes`, `routes`, `seek`, `search`, `Scenario`, `witness` |
-| [ReviewEncounters](../../lean/Ehr/Check/ReviewEncounters.lean) | `clinicalFacts`, `encounterInput`, `enterValue`, `entriesFor`, `prepare`, `showsControlledLine`, `finish`, `refuseCommit`, `withoutPanel`, `ClinicalCase`, `controlled`, `factsFor`, `completeCase`, `reviewCases`, `receiptCases` |
+| [EntryWitness](../../lean/Ehr/Check/EntryWitness.lean) | `Trial`, its monad, `current`, `require`, `fork`, `Scene`, `dispatch`, `act`, `applyOk`, `navigation`, `Path`, `reveal`, `walk`, `checked`, `execute`, `advance`, `travel`, `revealAt`, `routes`, `choose`, `visit`, `openChart`, `Realized`, `diagnose`, `diagnose_sound` |
+| [ReviewTrace](../../lean/Ehr/Check/ReviewTrace.lean) | `Checkpoint`, `performAt`, `perform`, `checkpoint`, `steps`, `scene`, `steps_policy`, `continueAt`, `beginEncounter`, `encounter`, `Scenario`, `steps_cons_iff`, `scenario_iff` |
+| [ReviewEncounters](../../lean/Ehr/Check/ReviewEncounters.lean) | `encounterInput`, `enterValue`, `prepare`, `showsControlledLine`, `finish`, `refuseCommit`, `withoutPanel`, `ClinicalCase`, `controlled`, `completeCase`, `reviewCases`, `receiptCases` |
 | [AlertEncounters](../../lean/Ehr/Check/AlertEncounters.lean) | `atCommit`, `observeAlert`, `alertCases`, `changedAllergy`, `clinicalUi`, `criticalAlerts`, `criticalCases` |
 | [ServiceEncounters](../../lean/Ehr/Check/ServiceEncounters.lean) | `serviceCases` |
 | [LandmarkEncounters](../../lean/Ehr/Check/LandmarkEncounters.lean) | `tourTargets`, `closedTour`, `tourScreens`, `landmarkCases` |
@@ -183,17 +172,51 @@ All names below are in `Ehr.Check.ReviewTrace`. The existing `Ehr.Check.revealEv
 | [ClinicalScenarios](../../lean/Ehr/Check/ClinicalScenarios.lean) | `clinicalCases`, `certifyCases` |
 | [ClinicalScenarioSound](../../lean/Ehr/Check/ClinicalScenarioSound.lean) | `accepted_clinicalScenarios`, `tour_includes_destination` |
 
-### Check time
+### Statement preservation
 
-Each timing pair runs the pre-change and current native `ehr check` on identical JSON files. The measurements include process startup and JSON decoding. The harness discards one warm-up per binary and reports medians over seven alternating pairs. Each persona uses its release canonical and previous release layout (itself for v1). The three mixed-role references retain their original role refusal. For comparison, the retained hillclimb run’s five initial persona checks took 837, 852, 760, 771 and 915 ms for P1–P5 respectively, in the first persona-specific preflight entries of `lean-timings.jsonl`. [Paired timing command](../../scripts/time-clinical-checks.py) · [Night preflight](../../agent/src/run.ts)
+The two checker rules remain `entryTraces` and `clinicalScenarios`, with the same workloads and case applicability. The coverage table remains **200 checker / 2 runtime / 0 open**, and the matrix remains **15 accepted / 38 rejected**. No specification, property, guard, fixture value or catalog row was removed. The shared opening also checks the selected patient's identity; shared route replay checks that every navigation event is a shown native goto, group toggle or tab selection.
+
+| Earlier statement | Current statement and implication |
+|---|---|
+| [`accepted_entryTraces`](https://github.com/saithat/VGI-Health/blob/50708e4ed92b0067db774c8e1edf429065df5adc/lean/Ehr/Check/EntryFamilySound.lean#L9): every `c ∈ casesFor` has `Realized c.input c.task` | [Current](../../lean/Ehr/Check/EntryFamilySound.lean#L9). Same theorem and catalog; the input is now written `c.input.toInitInput`. The initialized relation moved intact to the engine. All refusal reasons, values, human flags, confirmations, linked provenance, acknowledgments and final signatures remain in its tasks. |
+| [`accepted_actionableEntries`](https://github.com/saithat/VGI-Health/blob/50708e4ed92b0067db774c8e1edf429065df5adc/lean/Ehr/Check/EntryFamilySound.lean#L23): every required commit realizes `entryScenario` | [Current](../../lean/Ehr/Check/EntryFamilySound.lean#L23). Same statement with the base input explicit. Its ordered omissions, branches and positive continuation are unchanged. |
+| [`accepted_humanProbe`](https://github.com/saithat/VGI-Health/blob/50708e4ed92b0067db774c8e1edf429065df5adc/lean/Ehr/Check/EntryFamilySound.lean#L55): every surfaced declared field has either injected program and its full human trace | [Current](../../lean/Ehr/Check/EntryFamilySound.lean#L55). Same existential injection and full trace. `humanCase`, `inject` and their applicability are unchanged. |
+| [`accepted_medicationCases`](https://github.com/saithat/VGI-Health/blob/50708e4ed92b0067db774c8e1edf429065df5adc/lean/Ehr/Check/EntryFamilySound.lean#L81): every applicable prescribing fixture is realized | [Current](../../lean/Ehr/Check/EntryFamilySound.lean#L81). Same catalog membership and full task relation; `supplyFields` is the former medication-specific `prepare`. |
+| [`inject_present`](https://github.com/saithat/VGI-Health/blob/50708e4ed92b0067db774c8e1edf429065df5adc/lean/Ehr/Check/EntryFamilySound.lean#L35): a surfaced field has an injection for either attack | [Current](../../lean/Ehr/Check/EntryFamilySound.lean#L35). Identical theorem statement and proof. |
+| [`accepted_clinicalScenarios`](https://github.com/saithat/VGI-Health/blob/50708e4ed92b0067db774c8e1edf429065df5adc/lean/Ehr/Check/ClinicalScenarioSound.lean#L9): every `c ∈ clinicalCases` has `Scenario c.input c.steps` | [Current](../../lean/Ehr/Check/ClinicalScenarioSound.lean#L10). Same catalog and theorem. `scenario_iff` exposes successful native opening and the checkpoint suffix. Repeated `steps_cons_iff` exposes exactly the former recursive existential: a path, control, successful `perform` and the suffix on that resulting state. All action and preservation predicates remain; native navigation is additionally validated by `Path`. |
+| [`tour_includes_destination`](https://github.com/saithat/VGI-Health/blob/50708e4ed92b0067db774c8e1edf429065df5adc/lean/Ehr/Check/ClinicalScenarioSound.lean#L23): the closed tour includes every declared seed or successor | [Current](../../lean/Ehr/Check/ClinicalScenarioSound.lean#L24). Identical theorem statement and proof; opening uses the common patient-binding script. |
+
+[Entry statements](../../lean/Ehr/Check/EntryFamilySound.lean) · [Clinical statements](../../lean/Ehr/Check/ClinicalScenarioSound.lean) · [Checkpoint compatibility proofs](../../lean/Ehr/Check/ReviewTrace.lean)
+
+The shared signing loop preserves the entry bound of 20 attempts and exact `blocked "alert"` checks. The clinical adapter retains 40 iterations, required-panel and controlled-summary checks, configured interruptions, wrong-ID/modal probes and handled-key suppression. Review and receipt refusal predicates, human-service evidence preservation, rendered critical-result checks, absent-alert inspections, macro refusals and patient-reset observations still execute their original predicates. Search remains conservative and does not backtrack across successful steps.
+
+### Check time and retained inputs
+
+The baseline is commit `50708e4e`, with both earlier engines enabled. Both binaries used `LEAN_NUM_THREADS=4` on the same machine. `scripts/time-clinical-checks.py` discarded one warm-up per executable and reported medians of seven alternating pairs, including process startup and JSON decoding. Release personas use their own canonical and previous release persona (themselves for v1). Mixed-role templates retain their existing role refusal.
 
 | Program | v1 before → after (ms) | v2 before → after (ms) | v3 before → after (ms) |
 |---|---:|---:|---:|
-| Mixed-role canonical | 905.9 → 972.6 | 891.8 → 962.1 | 883.8 → 970.2 |
-| P1 | 747.5 → 788.4 | 728.1 → 779.3 | 738.2 → 751.3 |
-| P2 | 733.4 → 765.5 | 722.5 → 714.2 | 684.9 → 716.3 |
-| P3 | 710.5 → 736.0 | 678.9 → 691.3 | 690.2 → 707.0 |
-| P4 | 730.1 → 765.1 | 738.7 → 730.7 | 700.0 → 727.4 |
-| P5 | 794.0 → 866.8 | 758.0 → 878.1 | 763.5 → 832.2 |
+| Mixed-role canonical | 889.9 → 876.4 | 982.0 → 874.4 | 957.6 → 891.2 |
+| P1 | 698.4 → 701.1 | 703.4 → 692.3 | 713.2 → 722.1 |
+| P2 | 712.7 → 686.1 | 690.7 → 674.5 | 689.5 → 674.0 |
+| P3 | 718.0 → 656.3 | 649.9 → 647.1 | 650.7 → 650.2 |
+| P4 | 685.3 → 677.8 | 684.6 → 682.5 | 701.8 → 697.6 |
+| P5 | 792.0 → 777.7 | 808.5 → 766.1 | 803.0 → 823.3 |
 
-The sum of the 18 medians increased from 13.600 s to 14.354 s (5.5%). The largest increase was 15.8% for v2/P5. Both are within the 25% check-time budget.
+The sum of the 18 medians fell from 13.5312 s to 13.1707 s (-2.66%). For the 15 deployable personas it fell from 10.7017 s to 10.5287 s (-1.62%). Failure text is constructed only on failure, shortest routes are cached, and each destination's native prefix is shared across candidate controls.
+
+Individual medians varied on this shared host. The largest increase in the full pass was 2.5% for v3/P5; a repeat gave −5.4%. Follow-up seven-pair measurements for the three initially positive controls were:
+
+| Control | Follow-up wall median before → after (ms) | Mean child CPU before → after (ms) |
+|---|---:|---:|
+| v1/P1 | 700.1 → 692.4 | 709.4 → 711.7 |
+| v3/P1 | 721.7 → 730.2 | 731.9 → 718.6 |
+| v3/P5 | 793.9 → 771.9 | 819.0 → 781.0 |
+
+The measured aggregate check time decreased; these shared-host measurements do not establish a strict per-input latency bound. [Timing harness](../../scripts/time-clinical-checks.py)
+
+Across the 16 original scenario modules, source lines changed from 1,722 to 1,680 (15 edited modules: 1,664 to 1,622). The dashboard parser reports 109 → 116 declarations awaiting review in those edited files, or 113 → 120 across all 16. The `def` count changes from 95 to 97. The seven added review items are two shared prefix helpers, three checkpoint compatibility/search-policy lemmas and required markers on the existing `diagnose_sound` and `revealEvents`; the duplicate execution engines are gone. Each surviving or new declaration retains its review marker. The whole-repository catalog changed from 1,473 to 1,480. Counts use `buildSpecReview()` filtered by the 15 edited Lean paths, with `parseLean` applied to the baseline sources for the earlier count.
+
+The frozen-input audit gives byte-identical verdicts and first-refusal messages for all 75 retained revisions and 115 vendor layouts before and after consolidation. Revisions remain 64 accepted, six `servicePriorAuth` refusals and five `navigation` refusals; vendor layouts remain 77 accepted, 28 `serviceBundle` refusals and ten `navigation` refusals. Missing local audit metadata was restored from temporary data copies only after all 75 program files matched byte for byte; the audit itself verifies the recorded program/specification hashes. No recording, retained conformance run or recertification was performed.
+
+All eleven commit preparations were also compared in Lean with the former fixed catalog: `rfl` proves equality for arbitrary specifications, facts, overrides and omissions. Fixture text remains fixed even when a schema declares a different element kind.
