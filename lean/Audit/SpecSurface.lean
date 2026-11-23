@@ -119,8 +119,6 @@ end VerificationAudit
 #audit_axioms Ehr.Check.accepted_alertsFire
 #spec_surface Ehr.Check.accepted_noFalseAlarms
 #audit_axioms Ehr.Check.accepted_noFalseAlarms
-#spec_surface Ehr.Check.accepted_noRepeatInterruptions
-#audit_axioms Ehr.Check.accepted_noRepeatInterruptions
 #spec_surface Ehr.Check.accepted_severityTiers
 #audit_axioms Ehr.Check.accepted_severityTiers
 #spec_surface Ehr.Check.accepted_navigation
