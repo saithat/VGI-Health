@@ -53,7 +53,7 @@ import { REPO_ROOT,readJson,writeJson } from './util.js';
 
 import { CLIMB_WALL_MS,runHillclimb } from './hillclimb.js';
 import { hillclimbProtocol } from './protocol.js';
-import { contextWindowSchema, DEFAULT_CONTEXT_WINDOW, DEFAULT_LOCAL_MODEL, DEFAULT_MODEL_URL, modelEndpoint, nightProvider, recordedClimb } from './harness/night-provider.js';
+import { contextWindowSchema, DEFAULT_CONTEXT_WINDOW, DEFAULT_LOCAL_MODEL, DEFAULT_MODEL_URL, modelEndpoint, nightProvider, nightSearch, recordedClimb } from './harness/night-provider.js';
 import type { ClimbSessionOptions } from './harness/climb-session.js';
 
 export interface RunOptions {
@@ -85,7 +85,7 @@ export interface RunOptions {
 export interface PersonaTimeline {
   persona: string;
   days: { day: number; programVersion: number; specVersion: string; load: string; clicks: number; keystrokes: number; scrolls: number; klmDeciSec:number; tasks:number; completed:number; vsCanonical:BenefitComparison; vsNoAgent:BenefitComparison|null; scrollPx:number|null;mouseTravelPx:number|null }[];
-  nights: { night: number; mode: string; outcome: string; versionBefore: number; versionAfter: number; rejected: number; seeded: number }[];
+  nights: { night: number; mode: string; outcome: string; versionBefore: number; versionAfter: number; rejected: number; seeded: number; hillclimb?: DecisionRecord['hillclimb'] }[];
 }
 
 export interface RunSummary {
@@ -96,7 +96,7 @@ export interface RunSummary {
   rejections: { night: number; persona: string; candidate: string; seeded: boolean; property: string | null; message: string | null }[];
   seededRejectedKinds: string[];
   invalidPatches: {persona:string;night:number;candidate:string}[];
-  hillclimb?:{nights:number;backstops:number};
+  hillclimb?:{nights:number;backstops:number;passingMeasures:number;results:{persona:string;night:number;passingMeasures:number;bestNet:number|null}[]};
   infrastructureErrors: {persona:string;night:number;message:string}[];
   llmErrors: { persona: string; night: number; message: string }[];
 }
@@ -175,6 +175,7 @@ function resolveClimbSettings(requested: RunOptions['hillclimb'], backendModel: 
   const contextWindow = contextWindowSchema.parse(requested?.contextWindow ?? priorWindow ?? DEFAULT_CONTEXT_WINDOW);
   const climb = {
     ...requested, provider: providerChoice, model, baseUrl, contextWindow,
+    search: nightSearch.parse(requested?.search ?? prior?.hillclimb.search ?? 'first'),
     wallMs: requested?.wallMs ?? prior?.hillclimb.wallMs ?? CLIMB_WALL_MS,
     serviceTier: requested?.serviceTier ?? prior?.hillclimb.serviceTier ?? process.env['CODEX_SERVICE_TIER'] ?? 'default',
     reasoningEffort: requested?.reasoningEffort ?? prior?.hillclimb.reasoningEffort ?? process.env['CODEX_REASONING_EFFORT'] ?? 'high',
@@ -185,7 +186,7 @@ function resolveClimbSettings(requested: RunOptions['hillclimb'], backendModel: 
   if (local && !source && previous?.hillclimb.basePathSha256 && requested?.baseUrl === undefined)
     throw Error('Resuming this run requires its original --night-base-url (custom path)');
   const climbBinding = {
-    wallMs: climb.wallMs, reasoningEffort: climb.reasoningEffort, provider: providerChoice, model,
+    search: climb.search, wallMs: climb.wallMs, reasoningEffort: climb.reasoningEffort, provider: providerChoice, model,
     ...(endpoint ? {hostPort: endpoint.hostPort, contextWindow,
       ...(pathDigest ? {basePathSha256:pathDigest} : {})}
       : {serviceTier: climb.serviceTier}),
@@ -195,7 +196,7 @@ function resolveClimbSettings(requested: RunOptions['hillclimb'], backendModel: 
     // Manifests predating provider selection used the top-level model with hosted Codex.
     const binding = {provider:'codex', model:recorded.model, ...recorded.hillclimb};
     if (stableStringify(binding) !== stableStringify(climbBinding))
-      throw Error(`${operation} hillclimb configuration must match (provider, model, endpoint, context and launch settings)`);
+      throw Error(`${operation} hillclimb configuration must match (provider, model, endpoint, context, search and launch settings)`);
   }
   return {climb, climbBinding};
 }
@@ -513,6 +514,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (res.deployed) programs.get(id)?.set(res.deployed.version, res.deployed);
       timelines.get(id)?.nights.push({
         night: day, mode: r.mode, outcome: r.outcome, versionBefore: r.versionBefore, versionAfter: r.versionAfter,
+        ...(r.hillclimb ? {hillclimb:r.hillclimb} : {}),
         rejected: r.candidates.filter((e) => e.check.status === 'fail').length, seeded: r.candidates.filter((e) => e.candidate.seeded).length,
       });
       log(`night ${day} ${id}: ${r.mode} -> ${r.outcome} (v${r.versionBefore} -> v${r.versionAfter}); ${r.candidates.length} candidates, ${r.candidates.filter((e) => e.check.status === 'fail').length} rejected`);
@@ -544,7 +546,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const summary: RunSummary = {
     runId,
     dir,
-    hillclimb:{nights:records.filter(r=>r.mode==='hillclimb').length,backstops:records.filter(r=>r.outcome==='backstop').length},
+    hillclimb:{nights:records.filter(r=>r.mode==='hillclimb').length,backstops:records.filter(r=>r.outcome==='backstop'||r.hillclimb?.completion==='backstop-best').length,
+      passingMeasures:records.reduce((sum,r)=>sum+(r.hillclimb?.passingMeasures??0),0),
+      results:records.filter(r=>r.mode==='hillclimb').map(r=>({persona:r.persona,night:r.night,passingMeasures:r.hillclimb?.passingMeasures??0,bestNet:r.hillclimb?.bestNet??null}))},
     timelines: personaIds.flatMap(id=>{const timeline=timelines.get(id);return timeline?[timeline]:[];}),
     rejections: records.flatMap((r) => [
       ...r.candidates.filter((e) => e.check.status === 'fail').map((e) => ({

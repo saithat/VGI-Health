@@ -15,6 +15,7 @@ export async function reportAgentBenefit(directory, options = {}) {
   if (options.days?.some(day=>!days.includes(day))) throw Error('Requested day is not a completed recorded day');
   const nights = (await readdir(path.join(directory, 'decisions')).catch(error=>{if(error.code==='ENOENT')return [];throw error;})).filter(n => /^night-\d+$/.test(n)).sort();
   const rows = [];
+  const climbs = [];
   const outcomes = {}, rawOutcomes = {};
   let certifiedAttempts = 0, checkerFailures = 0, nullValidationRejections = 0, zeroActionSavingRejections = 0, migrationFallbacks = 0;
   for (const persona of manifest.personas) {
@@ -27,6 +28,9 @@ export async function reportAgentBenefit(directory, options = {}) {
     rows.push({ persona, ...comparison, perDay: pairs.map(pair => ({ day:pair.after.day, ...compareDays([pair]) })) });
     for (const night of nights) {
       const record = await read(path.join(directory, 'decisions', night, `${persona}.json`));
+      if (record.mode === 'hillclimb') climbs.push({persona,night:record.night,
+        passingMeasures:record.hillclimb?.passingMeasures ?? null,bestNet:record.hillclimb?.bestNet ?? null,
+        completion:record.hillclimb?.completion ?? null});
       rawOutcomes[record.outcome] = (rawOutcomes[record.outcome] ?? 0) + 1;
       const label = record.mode === 'surface-feature' && record.outcome === 'not-surfaced' ? 'release-not-surfaced'
         : record.mode === 'surface-feature' && record.release?.surfaced && record.deployed ? 'release-surfaced'
@@ -41,7 +45,7 @@ export async function reportAgentBenefit(directory, options = {}) {
   }
   const nightAgent = {provider:manifest.hillclimb?.provider ?? manifest.backend, model:manifest.hillclimb?.model ?? manifest.model};
   return { runId:manifest.runId, nightAgent, days, cohort:'Costs: identical tasks completed in both arms. Completion: all tasks. Floor: vendor floor on the paired cohort. No missing floor is treated as zero.', rows,
-    nights:{outcomes,rawOutcomes,certifiedAttempts,checkerFailures,nullValidationRejections,zeroActionSavingRejections,migrationFallbacks} };
+    nights:{climbs,outcomes,rawOutcomes,certifiedAttempts,checkerFailures,nullValidationRejections,zeroActionSavingRejections,migrationFallbacks} };
 }
 const fmt = (n, digits=1) => n == null ? 'Unavailable' : n.toFixed(digits);
 export function markdownReport(report) {
@@ -49,6 +53,8 @@ export function markdownReport(report) {
     '| Persona | Vendor / agent completed | Both completed | Actions saved | Alert share | Modeled min vendor → agent | Time saved | Action gap captured | Time gap captured | Vendor / agent vs floor |',
     '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|'];
   for (const r of report.rows) lines.push(`| ${r.persona} | ${r.completion.before.completed}/${r.completion.before.tasks} / ${r.completion.after.completed}/${r.completion.after.tasks} | ${r.paired} | ${fmt(r.savedPct.actions)}% | ${fmt(r.alertSharePct,0)}% | ${fmt(r.before.klmDeciSec/600)} → ${fmt(r.after.klmDeciSec/600)} | ${fmt(r.savedPct.klmDeciSec)}% | ${fmt(r.gapCapturedPct.actions,0)}% | ${fmt(r.gapCapturedPct.klmDeciSec,0)}% | ${fmt(r.effortVsFloor.before)}× / ${fmt(r.effortVsFloor.after)}× |`);
+  if (report.nights.climbs.length) lines.push('', '| Persona | Night | Passing measures | Best net actions/day | Completion |',
+    '|---|---:|---:|---:|---|', ...report.nights.climbs.map(r => `| ${r.persona} | ${r.night} | ${r.passingMeasures ?? 'Unavailable'} | ${fmt(r.bestNet)} | ${r.completion ?? 'Unavailable'} |`));
   lines.push('', '| Night outcome | Count |', '|---|---:|', ...Object.entries(report.nights.outcomes).map(([k,v]) => `| ${k} | ${v} |`), '',
     `Certification attempts: ${report.nights.certifiedAttempts}; nonpassing: ${report.nights.checkerFailures}; migration fallbacks: ${report.nights.migrationFallbacks}; zero-action-saving validation rejections: ${report.nights.zeroActionSavingRejections} (${report.nights.nullValidationRejections} with all recorded count/time savings zero).`, '', 'Failures (all tasks):');
   for (const r of report.rows) for (const f of r.failures) lines.push(`- ${r.persona} ${f.side === 'after' ? 'agent' : 'vendor'} day ${f.day}: ${f.task}`);

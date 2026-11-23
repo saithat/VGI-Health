@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+export const nightSearch = z.enum(['first', 'climb']);
 export const nightProvider = z.enum(['codex', 'local']);
 export const DEFAULT_MODEL_URL = 'http://127.0.0.1:8080/v1';
 export const DEFAULT_LOCAL_MODEL = 'inkling-2-mini';
@@ -20,6 +21,7 @@ export function modelEndpoint(value: string) {
 }
 
 export const recordedClimb = z.object({
+  search: nightSearch.default('first'),
   wallMs: z.number(), reasoningEffort: z.string(),
   provider: nightProvider.optional(), model: z.string().optional(), serviceTier: z.string().optional(),
   hostPort: z.string().optional(), contextWindow: contextWindowSchema.optional(),
