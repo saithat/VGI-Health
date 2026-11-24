@@ -8,7 +8,24 @@ open Ehr
 inductive InterruptionProfile
   | wardNurse | surgicalPhysician | clinicPrescriber | emergencyPhysician | inpatientPharmacy
   deriving DecidableEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
+
+/-- New specification for owner review: admitted pixel geometry supplies the
+number of target-reveal gestures before this exact task-local, non-scroll event.
+The host repeats simulation until the event-bound plan is unchanged. No price
+is supplied by the host: `klmFold` retains the existing scroll operator. -/
+structure ScrollPlanEntry where
+  task : String
+  index : Nat
+  event : Event
+  scrolls : Nat
+  deriving Inhabited, Lean.ToJson, Lean.FromJson
+
 structure InterruptionConfig where
+  /-- `none` retains the historical ordinal model for standalone CLI use.
+  `some []` is the discovery pass of geometry-backed simulation. -/
+  scrollPlan? : Option (List ScrollPlanEntry) := none
+  /-- The bounded clinician's diagnostic expert uses its own converged plan. -/
+  expertScrollPlan? : Option (List ScrollPlanEntry) := none
   mode : ResumptionMode := .realWork
   profile? : Option InterruptionProfile := none
   /-- Explicit opt-out for all wave-3 simulation assumptions. -/

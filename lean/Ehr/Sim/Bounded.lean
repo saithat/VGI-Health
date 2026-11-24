@@ -236,7 +236,7 @@ def act (ctx : Context) (params : PersonaParams) (task : Task) (r : Runner)
     }
   }
   out := { out with
-    episode := emit ctx task (choiceLatency out.episode ops) e (List.replicate due.length [.wait, .think] |>.flatten |>.append ops)
+    episode := emitPlanned ctx task (choiceLatency out.episode ops) e (List.replicate due.length [.wait, .think] |>.flatten |>.append ops)
   }
   return out
 /-- Search remembers explored local views, not the Cartesian product of
@@ -486,7 +486,7 @@ def loop (scent : Scent) (ctx : Context) (params : PersonaParams) (task : Task) 
           pointer := m.place,
           recalled := m.key :: out.recalled
         }
-        out := { out with episode := emit ctx task out.episode (.click ghost) [.point, .click] }
+        out := { out with episode := emitPlanned ctx task out.episode (.click ghost) [.point, .click] }
         return loop scent ctx params task fuel out
     if let some e := available then
       if let some c := (eventComp e).bind (shownComp? ctx.sp ctx.prog ctx.facts s) then
@@ -550,7 +550,9 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     (scent : Scent := lexicalScent) (guide : Discovery.Guide := Discovery.helpDesk)
     (displayFor? : Option (Task → Render.Display) := none)
     (interruptionConfig : Resumption.InterruptionConfig := {}) : Result := Id.run do
-  let expert := (simulateWithInformation sp prog params schedule factsFor seed displayFor? interruptionConfig).1
+  let expertConfig := { interruptionConfig with scrollPlan? :=
+    if interruptionConfig.scrollPlan?.isSome then interruptionConfig.expertScrollPlan? else none }
+  let expert := (simulateWithInformation sp prog params schedule factsFor seed displayFor? expertConfig).1
   let prog := if schedule.tasks.any (fun t => (factsFor t).patientDirectory?.isSome)
     then { prog with patientSelection? := some true } else prog
   let mut user : User := { id := prog.owner, role := params.role }

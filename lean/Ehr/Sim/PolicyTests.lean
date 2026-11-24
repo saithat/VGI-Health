@@ -47,4 +47,34 @@ def unitsDay := simulate spec program p1 { schedule with tasks := [unitsTask] } 
 #guard unitsDay.complaints.contains "visit: unrepresentable clinical choice; incomplete"
 #guard unitsDay.trace.isEmpty
 
+-- Geometry pricing is paid before the interpreter, at the existing KLM price.
+-- Task, non-scroll ordinal and exact event all bind a charge; reading scrolls
+-- remain ordinary paid events and do not advance that ordinal.
+def geometryCtx : Context := { sp := spec, prog := program, facts, user, goals := default }
+def geometryEpisode : EpisodeResult := {
+  state := init spec program facts user, trace := [], complaints := [], rng := 0,
+  interruptions := [], actionIndex := 0, elapsedMs := 0, lastDevice := none,
+  resumption := { config := { scrollPlan? := some [{
+    task := task.id, index := 0, event := .search "drug", scrolls := 2 }] } } }
+def priced := emitPlanned geometryCtx task geometryEpisode (.search "drug") [.point, .click]
+#guard priced.elapsedMs == klmMs [.scroll, .scroll, .point, .click]
+#guard priced.state.clock == priced.elapsedMs / 100
+#guard (metrics task.id priced.trace false).scrolls == 2
+#guard (emitPlanned geometryCtx {task with id := "different"} geometryEpisode
+  (.search "drug") [.point, .click]).elapsedMs == klmMs [.point, .click]
+#guard (emitPlanned geometryCtx task geometryEpisode (.search "other")
+  [.point, .click]).elapsedMs == klmMs [.point, .click]
+#guard (emitPlanned geometryCtx task priced (.search "drug")
+  [.point, .click]).elapsedMs == priced.elapsedMs + klmMs [.point, .click]
+def afterRead := emit geometryCtx task geometryEpisode (.scroll "rooming") [.scroll]
+#guard (emitPlanned geometryCtx task afterRead (.search "drug")
+  [.point, .click]).elapsedMs == scrollMs + priced.elapsedMs
+def discoveryDay := simulate spec program p1 schedule (fun _ => facts) 123 {
+  mode := .fixedCost, scrollPlan? := some [] }
+#guard discoveryDay.tasks.all (·.completed)
+#guard discoveryDay.trace.all fun row => match row.event with | .scroll _ => false | _ => true
+-- A reveal is movement, not the shortcut key that activates an entry.
+#guard typedKeys (.enter "field" (.text "abc")) [.scroll, .key, .key, .key, .key] == 3
+#guard activation (.enter "field" (.text "abc")) [.scroll, .key, .point, .click, .key] == 2
+
 end Ehr.Sim.PolicyTests

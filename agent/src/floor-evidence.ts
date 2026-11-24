@@ -25,7 +25,7 @@ function traceParts(trace:readonly TraceEvent[], program:Program|undefined) {
       : 'enter' in e || 'confirm' in e || comp ? 'entrySteps' : 'unattributed';
     const cost = parts[category];
     if (!cost) throw Error('Missing trace category');
-    const firstDevice = row.ops.map(device).find(x => x !== null);
+    const firstDevice = row.ops.filter(op => op !== 'scroll').map(device).find(x => x !== null);
     cost.clicks += 'scroll' in e ? 0 : 'enter' in e ? row.ops.includes('scan') ? 0 : Math.max(1, row.ops.filter(op=>op==='click').length + Number(firstDevice === 'key')) : 1;
     cost.scrolls += Number('scroll' in e);
     cost.popups += Number('ack' in e);

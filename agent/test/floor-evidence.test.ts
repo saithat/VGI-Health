@@ -42,3 +42,12 @@ it('excludes even days, foreign personas, unscheduled traces and incomplete or m
   const evidence=summarizeTrain('P1',program,[train],new Map());
   expect(trainSummarySchema.parse(evidence).workflowFloorGaps).toEqual(base);
 });
+it('keeps shortcut and selection activations when an entry has a paid reveal',()=>{
+  const enter:TraceEvent={task:task.task,t:950,screen:'s',event:{enter:{comp:'field',value:{flag:{b:true}}}},ops:['key','point','click'],result:'ok'};
+  const breakdown=(row:TraceEvent)=>workflowFloorGaps('P1',program,[{...train,result:{...train.result,trace:[row]}}],new Map())[0]?.breakdown;
+  const base=breakdown(enter)?.find(part=>part.category==='entrySteps');
+  const revealed=breakdown({...enter,ops:['scroll',...enter.ops]})?.find(part=>part.category==='entrySteps');
+  expect(base?.actual.clicks).toBe(2);
+  expect(revealed?.actual.clicks).toBe(base?.actual.clicks);
+  expect(revealed?.actual.klmDeciSec).toBe((base?.actual.klmDeciSec??0)+15);
+});

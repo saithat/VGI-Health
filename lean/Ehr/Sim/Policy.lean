@@ -251,8 +251,19 @@ theorem emit_blocks_unanswered (ctx task r e ops)
 
 #print axioms emit_blocks_unanswered
 
-/-- Fixed patient-selection policy: identical directory, workflow and patient imply
-identical activations, typing, scrolls and pointer operations for every UI version. -/
+/-- New specification for owner review: price admitted target scrolling before
+an action. `emit` and its information-safety theorem remain unchanged. -/
+def emitPlanned (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : List Op) : EpisodeResult :=
+  -- New specification for owner review: pay geometry-backed target scrolling
+  -- before the guarded event, so receipts, interruptions and workload see it.
+  let index := (r.trace.filter fun t => match t.event with | .scroll _ => false | _ => true).length
+  let reveal := (r.resumption.config.scrollPlan?.getD []).find? fun p =>
+    p.task == task.id && p.index == index && p.event == e
+  let ops := List.replicate (reveal.map (·.scrolls) |>.getD 0) .scroll ++ ops
+  emit ctx task r e ops
+
+/-- Fixed patient-selection route. Geometry-backed reveal effort still depends
+on where the selected controls are actually painted. -/
 def selectionActivity (task : Task) : String :=
   match task.workflow with
   | .W1 | .W5 => "scheduleTasks" | .W2 => "inboxResults"
@@ -266,7 +277,7 @@ def selectTaskPatient (ctx : Context) (task : Task) (r : EpisodeResult) : Episod
   let desired := selectionActivity task
   if desired != (out.state.patientContext?.map (·.activity)).getD "" &&
       (Workspace.activities ctx.prog ctx.facts).any (·.info == desired) then
-    out := emit ctx task out (.click ("workspace.activity|" ++ desired)) [.point, .click]
+    out := emitPlanned ctx task out (.click ("workspace.activity|" ++ desired)) [.point, .click]
   let patient := ctx.facts.sourcePatientId?.getD task.patientId
   let control := (Workspace.openControls ctx.prog ctx.facts out.state).find? fun c =>
     match c.action with | .openPatient id _ => id == patient | _ => false
@@ -275,15 +286,15 @@ def selectTaskPatient (ctx : Context) (task : Task) (r : EpisodeResult) : Episod
     | none => none
   if control.isNone then
     let query := ((Workspace.patient? ctx.facts patient).map (·.mrn)).getD ctx.facts.patientId
-    out := emit ctx task out (.enter "workspace.search" (.text query)) ([.point, .click] ++ List.replicate query.length .key)
+    out := emitPlanned ctx task out (.enter "workspace.search" (.text query)) ([.point, .click] ++ List.replicate query.length .key)
   let control := (Workspace.openControls ctx.prog ctx.facts out.state).find? fun c =>
     match c.action with | .openPatient id _ => id == patient | _ => false
   match control with
   | none => return { out with complaints := out.complaints ++ [task.id ++ ": patient could not be found in the directory"] }
   | some control =>
-    for _ in List.range ((control.row?.getD 0) / 10) do
-      out := emit ctx task out (.scroll out.state.screen) [.scroll]
-    out := emit ctx task out (.click control.id) [.point, .click]
+    for _ in List.range (if out.resumption.config.scrollPlan?.isSome then 0 else (control.row?.getD 0) / 10) do
+      out := emitPlanned ctx task out (.scroll out.state.screen) [.scroll]
+    out := emitPlanned ctx task out (.click control.id) [.point, .click]
     -- Data arrival is not a second clinician activation.
     return { out with state := Workspace.bind ctx.sp ctx.prog ctx.facts ctx.user out.state }
 
@@ -321,9 +332,9 @@ def readSection (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : 
       if !out.readSections.contains key then
         if let some (comp, k, _) := notesPaging then
           if index / k != out.state.tabOf comp then
-            out := emit ctx task out (.selectTab comp (index / k)) [.point, .click]
+            out := emitPlanned ctx task out (.selectTab comp (index / k)) [.point, .click]
         for _ in List.range (textPages note.text.length) do
-          out := emit ctx task out (.scroll out.state.screen) [.scroll]
+          out := emitPlanned ctx task out (.scroll out.state.screen) [.scroll]
         let ms := textReadMs note.text.length
         out := { out with
           elapsedMs := out.elapsedMs + ms, readingMs := out.readingMs + ms,
@@ -334,7 +345,7 @@ def readSection (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : 
   let some text := (task.choices.noteTexts?.getD []).find? (·.id == sec) | return out
   if out.readSections.contains sec then return out
   for _ in List.range (textPages text.text.length) do
-    out := emit ctx task out (.scroll out.state.screen) [.scroll]
+    out := emitPlanned ctx task out (.scroll out.state.screen) [.scroll]
   let ms := textReadMs text.text.length
   return { out with
     elapsedMs := out.elapsedMs + ms, readingMs := out.readingMs + ms,
@@ -344,12 +355,13 @@ def readSection (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : 
 /-- Scroll to fields below a twelve-component fold, ten rows per page. -/
 def scrollTo (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : EpisodeResult :=
   let r := readSection ctx task r e
+  if r.resumption.config.scrollPlan?.isSome then r else
   match eventComp e with
   | none => r
   | some id =>
     let idx := (shown ctx r.state).findIdx (·.id == id)
     let pages := if idx < 12 then 0 else (idx - 12) / 10 + 1
-    (List.range pages).foldl (fun r _ => emit ctx task r (.scroll r.state.screen) [.scroll]) r
+    (List.range pages).foldl (fun r _ => emitPlanned ctx task r (.scroll r.state.screen) [.scroll]) r
 
 /-- Scroll costs use the existing twelve-component fold plus ten source rows
 per page. This ordinal viewport is a simulation assumption, not browser geometry. -/
@@ -374,13 +386,13 @@ def readNeed (ctx : Context) (task : Task) (r : EpisodeResult) (n : Information.
   | some (k, current) =>
     let page := (depth - 1) / k
     if page != current then
-      out := emit ctx task out (.selectTab comp page)
+      out := emitPlanned ctx task out (.selectTab comp page)
         (if page + 1 == current || current + 1 == page then [.point, .click] else [.point, .click, .point, .click])
     for _ in List.range (((depth - 1) % k) / 10) do
-      out := emit ctx task out (.scroll out.state.screen) [.scroll]
+      out := emitPlanned ctx task out (.scroll out.state.screen) [.scroll]
   | none =>
     for _ in List.range ((depth - 1) / 10) do
-      out := emit ctx task out (.scroll out.state.screen) [.scroll]
+      out := emitPlanned ctx task out (.scroll out.state.screen) [.scroll]
   -- Reading is paid mental time without a fabricated UI activation/receipt.
   out := { out with elapsedMs := out.elapsedMs + mentalMs * items, readingMs := out.readingMs + mentalMs * items }
   let seen := { out.state with clock := out.elapsedMs / 100 }
@@ -404,7 +416,7 @@ def lookupExpert (ctx : Context) (params : PersonaParams) (task : Task)
   let mut out := r
   for e in path do
     let (ops, rng) := actionOps ctx params out.state e out.rng (task.choices.noteTexts?.getD [])
-    out := emit ctx task (choiceLatency { out with rng } ops) e ops
+    out := emitPlanned ctx task (choiceLatency { out with rng } ops) e ops
   return readNeed ctx task out n
 
 /-- Early review creates a receipt once per information version, only while
@@ -442,7 +454,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
           let (idx, next) := draw out.rng turns.length
           out := { out with rng := next }
           if let some c := turns[idx]? then
-            out := emit ctx task out (.click c.id) [.point, .click]
+            out := emitPlanned ctx task out (.click c.id) [.point, .click]
     for n in ctx.goals.informationNeeds do
       out := lookupExpert ctx params task out n
     let e? := match out.state.popup? with
@@ -465,9 +477,11 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
     | some e =>
       if params.searchWhenBuried && pathLen ≥ 3 then
         if searchShown ctx.sp ctx.prog ctx.facts out.state then
-          out := emit ctx task out (.search "task") [.point, .click, .key, .key, .key, .key]
-        else out := emit ctx task out (.scroll out.state.screen) [.scroll]
-        out := emit ctx task out (.scroll out.state.screen) [.scroll]
+          out := emitPlanned ctx task out (.search "task") [.point, .click, .key, .key, .key, .key]
+        else if out.resumption.config.scrollPlan?.isNone then
+          out := emitPlanned ctx task out (.scroll out.state.screen) [.scroll]
+        if out.resumption.config.scrollPlan?.isNone then
+          out := emitPlanned ctx task out (.scroll out.state.screen) [.scroll]
       out := scrollTo ctx task out e
       let (ops, next) := actionOps ctx params out.state e out.rng (task.choices.noteTexts?.getD [])
       out := { out with rng := next }
@@ -480,7 +494,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
         interruptions := out.interruptions.filter (fun n => !due.contains n),
         actionIndex := out.actionIndex + if goalAction then 1 else 0 }
       let prev := out.state.screen
-      out := emit ctx task (choiceLatency out ops) e ops
+      out := emitPlanned ctx task (choiceLatency out ops) e ops
       let failed := match out.trace.getLast?.map (·.result) with
         | some (.blocked reason) => if goalAction && reason != "alert" then failures + 1 else failures
         | _ => failures

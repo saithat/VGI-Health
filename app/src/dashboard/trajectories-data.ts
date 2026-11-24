@@ -158,6 +158,8 @@ export const replayGeometrySchema = z.object({
           reveal: point,
           chain: z.array(z.string()),
           offsets: z.record(z.string(), point),
+          bounds: point.extend({ w: z.number(), h: z.number() }).exactOptional(),
+          clips: z.record(z.string(), point.extend({ w: z.number(), h: z.number() })).exactOptional(),
         }),
       ),
       scrollers: z.record(

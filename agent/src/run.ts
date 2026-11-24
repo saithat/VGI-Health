@@ -272,7 +272,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
-    interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one Lean viewport; off-screen targets use Lean clip-chain offsets',time:'R1/R2 validation constraint; release score uses penalized clicks plus scrolls'},
+    interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Reading scrolls page down one Lean viewport; target reveals retain Lean clip offsets and use the nearest edge',time:'Native KLM prices geometry-backed target reveals before each action; replay requires a stable event-bound scroll plan'},
     completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:concurrentPersonas,fingerprints, measurementProtocol:hillclimbProtocol, hillclimb:climbBinding,fhirBundles:opts.fhirBundles,
     mode: llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,

@@ -321,9 +321,10 @@ describe("Lean screen gate and atlas (real ui-layout, synthetic fixtures)", () =
       states: [state],
     });
     expect(measured.tasks[0]?.scrolls).toBe(1);
-    expect(measured.tasks[0]?.scrollPx).toBe(
-      state.components["target20"]?.offsets["0"]?.y,
-    );
+    const target = required(state.components["target20"]), rect = required(target.bounds),
+      clip = required(required(target.clips)["0"]);
+    // Nearest-edge reveal, rather than centering after an ordinal page-down.
+    expect(measured.tasks[0]?.scrollPx).toBe(rect.y + rect.h - clip.y - clip.h);
     expect(measured.tasks[0]?.mouseTravelPx).toBeGreaterThan(0);
     expect(measured.trace).toEqual(day.trace);
     const [check] = await layoutRunner([

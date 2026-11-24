@@ -13,6 +13,9 @@ resources up to the task, by (resourceType,id), before render's FHIR parser.
 Precomputed patient Facts JSON is a fallback only, never preferred over FHIR.
 Simulation additionally accepts --policy expert|bounded and --memory-in/out.
 Persona policy is optional and defaults to the unchanged historical policy.
+`--scroll-plan FILE` is the host's event-bound target-reveal plan; the geometry
+adapter repeats native simulation until this plan is stable. Bounded runs also
+receive their independently converged `--expert-scroll-plan FILE`.
 -/
 namespace Ehr.Cli.Sim
 open Ehr Ehr.Sim Lean
@@ -279,7 +282,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out", "--interruptions", "--interruption-profile", "--sim-model", "--text-cost", "--choice-latency-ms", "--arrival-seed", "--lists", "--page-size"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out", "--interruptions", "--interruption-profile", "--sim-model", "--text-cost", "--choice-latency-ms", "--arrival-seed", "--lists", "--page-size", "--scroll-plan", "--expert-scroll-plan"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -345,7 +348,14 @@ def command (mode : String) (args : List String) : IO UInt32 := do
         | some s => do
           let n ← ioExcept (optionExcept s.toNat? "--arrival-seed must be a natural number")
           pure (some n)
+      let scrollPlan ← match fs.lookup "--scroll-plan" with
+        | none => pure none
+        | some path => some <$> readAs (List Resumption.ScrollPlanEntry) path
+      let expertScrollPlan ← match fs.lookup "--expert-scroll-plan" with
+        | none => pure none
+        | some path => some <$> readAs (List Resumption.ScrollPlanEntry) path
       let interruptionConfig : Resumption.InterruptionConfig := {
+        scrollPlan? := scrollPlan, expertScrollPlan? := expertScrollPlan,
         mode := interruptionMode, profile? := interruptionProfile, legacyModel := model == "legacy",
         choiceLatencyMs, arrivalSeed? := arrivalSeed,
         lengthCosts := textCost == "length", pagedLists := lists == "paged", pageSize? := pageSize,

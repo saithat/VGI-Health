@@ -241,3 +241,14 @@ describe("geometry slices", () => {
     }
   });
 });
+
+it('retains clip rectangles through replay decoding so displayed travel agrees',()=>{
+ const clip={x:0,y:100,w:1440,h:700};
+ const atlas={schemaVersion:1 as const,programHash:'fixture',appSha256:'fixture',source:'recorded-fixture' as const,
+  viewport:{width:1440 as const,height:900 as const},states:[{screen:'s',state:'s',viewport:{width:1440,height:900},
+  scrollers:{body:{width:1440,height:700,maxX:0,maxY:2000}},components:{dose:{center:{x:720,y:850},reveal:{x:720,y:450},
+  chain:['body'],offsets:{body:{x:0,y:400}},bounds:{x:700,y:840,w:40,h:20},clips:{body:clip}}}}]};
+ const trace=[{task:'t',screen:'s',event:{click:{comp:'dose'}},ops:['point','click']}];
+ expect(pointerTravel(trace,replayGeometrySchema.parse(atlas))).toEqual(pointerTravel(trace,atlas));
+ expect(pointerTravel(trace,replayGeometrySchema.parse(atlas)).t?.scrollPx).toBe(60);
+});
