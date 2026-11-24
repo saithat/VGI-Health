@@ -128,4 +128,16 @@ def check (b : Bool) (msg : String) : IO Unit := unless b do throw (IO.userError
   check (!(ratePrograms { changeSensitivity := 100 } prog moved [{ usedTags := ["sign"], costMs := 0 }]).chooseAfter) "familiar moves penalized"
   let guarded := Bounded.simulate minorSpec (fixtureProgram []) params schedule (fun _ => clinicalFacts 17) 7
   check (guarded.tasks.all (! ·.completed)) "missing required field cannot bypass guard"
+-- A bounded path must not lend its event ordinals to its expert comparison.
+def expertRevealPlan : List Resumption.ScrollPlanEntry := [{
+  task := "learn0", index := 0, event := .click "commit", scrolls := 2 }]
+def separatelyPriced := Bounded.simulate fixtureSpec prog params schedule (fun _ => facts) 7
+  {} lexicalScent Discovery.helpDesk none {
+    scrollPlan? := some [], expertScrollPlan? := some expertRevealPlan }
+def pricedExpert := Ehr.Sim.simulate fixtureSpec prog params schedule (fun _ => facts) 7 {
+  scrollPlan? := some expertRevealPlan }
+#guard encodeJson separatelyPriced.expert == encodeJson pricedExpert
+#guard separatelyPriced.expert.tasks.head!.scrolls == 2
+#guard separatelyPriced.tasks.all (·.completed)
+
 end Ehr.Sim.BoundedTests

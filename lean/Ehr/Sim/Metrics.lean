@@ -55,14 +55,14 @@ def activation (e : Event) (ops : List Op := []) : Nat :=
   | .scroll _ => 0
   | .enter _ _ => if ops.contains .scan then 0 else
       max 1 ((ops.filter (· == .click)).length +
-        if (ops.find? (fun op => (device op).isSome)) == some .key then 1 else 0)
+        if (ops.find? (fun op => op != .scroll && (device op).isSome)) == some .key then 1 else 0)
   | _ => 1
 
 def typedKeys (e : Event) (ops : List Op := []) : Nat :=
   match e with
   | .enter _ v => if ops.contains .scan then 0 else if ops.isEmpty then typedLen v else
       (ops.filter (· == .key)).length -
-        (if (ops.find? (fun op => (device op).isSome)) == some .key then 1 else 0)
+        (if (ops.find? (fun op => op != .scroll && (device op).isSome)) == some .key then 1 else 0)
   | .search q => q.length
   | _ => 0
 
@@ -96,7 +96,9 @@ def metrics (task : String) (trace : List TraceEvent) (completed : Bool) : TaskM
     m := { m with
       clicks := m.clicks + activation t.event t.ops,
       keystrokes := m.keystrokes + typedKeys t.event t.ops,
-      scrolls := m.scrolls + (match t.event with | .scroll _ => 1 | _ => 0),
+      -- New specification for owner review: include geometry-backed reveals
+      -- carried on target events, as well as standalone reading scrolls.
+      scrolls := m.scrolls + (t.ops.filter (· == .scroll)).length,
       popups := m.popups + (match t.event with | .ack _ => 1 | _ => 0),
       overrides := m.overrides + (match t.event with
         | .ack _ => if t.ops.contains .think then 0 else 1 | _ => 0),

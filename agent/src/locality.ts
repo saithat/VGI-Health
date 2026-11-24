@@ -1,8 +1,8 @@
-import { pointingTrace } from '../../app/src/dashboard/bounded-pointing.js';
+import { measuredPointingTrace } from '../../app/src/dashboard/trajectory-travel.js';
 /** Target attribution mirrors pointerTravel's state machine; conservation is checked against it.
  * No timing model. Scroll-past means component reveal offsets traversed in a container.
  */
-import { pointerTravel, type GeometryAtlas, type Point, type PointerEvent } from '../../app/src/metrics/geometry.js';
+import { pointerTravel, pointerSteps, type GeometryAtlas, type PointerEvent } from '../../app/src/metrics/geometry.js';
 import type { DayResult } from './schema.js';
 export interface Attribution {
   task: string; screen: string; component: string; clicks: number; keystrokes: number; visits: number;
@@ -29,144 +29,29 @@ export function attributePixels(
   atlas: GeometryAtlas,
   day?: number,
 ): Attribution[] {
-  const rows: Attribution[] = [];
-  let pointer: Point | null = { x: 720, y: 450 },
-    active = "";
-  let offsets: Record<string, Point> = {};
-  const isScroll = (event: unknown) =>
-    Boolean(event && typeof event === "object" && "scroll" in event);
-  for (const [index, ev] of trace.entries()) {
-    const cost: Attribution = { task: ev.task, screen: ev.screen, component: eventTarget(ev.event) ?? '(untargeted)',
-      clicks: 0, keystrokes: 0, visits: 0, mouseTravelPx: 0, scrollPx: 0, scrolls: 0, missingTargets: [], scrollPast: [] };
-    rows.push(cost);
-    if (ev.screen !== active) {
-      active = ev.screen;
-      offsets = {};
-    }
-    const id =
-        eventTarget(ev.event) ??
-        (isScroll(ev.event)
-          ? eventTarget(
-              trace
-                .slice(index + 1)
-                .find((next) => next.task === ev.task && !isScroll(next.event))
-                ?.event,
-            )
-          : null),
-      candidates = id ? [id, ...(atlas.aliases?.[id] ?? [])] : [],
-      states = atlas.states.filter(
-        (s) =>
-          s.screen === ev.screen &&
-          (id?.startsWith("workspace.")
-            ? s.sample ===
-              `workspace-d${String(day ?? Number(/^d(\d+)-/.exec(ev.task)?.[1])).padStart(2, "0")}`
-            : !s.sample?.startsWith("workspace-d")),
-      );
-    const ordered = [...states].sort(
-      (a, b) =>
-        Number(a.state.includes("-popup-")) * 2 +
-        Number(a.state.includes("-expanded")) -
-        Number(b.state.includes("-popup-")) * 2 -
-        Number(b.state.includes("-expanded")),
-    );
-    const state =
-      ordered.find((s) => id && s.components[id]) ??
-      ordered.find((s) => candidates.some((c) => s.components[c])) ??
-      ordered[0];
-    if (!state) {
-      cost.missingTargets.push(`${ev.screen}/${id ?? "scroll"}`);
-      cost.mouseTravelPx = null;
-      cost.scrollPx = null;
-      pointer = null;
-      continue;
-    }
-    cost.component = candidates.find(c => state.components[c]) ?? id ?? '(untargeted)';
-    const scroll = (next: Record<string, Point>) => {
-      for (const [key, to] of Object.entries(next)) {
-        const from = offsets[key] ?? { x: 0, y: 0 };
-        const distance = Math.hypot(to.x - from.x, to.y - from.y);
-        if (distance > 0) {
-          // Both quantities use container-local offsets. Viewport centers are in
-          // a different coordinate frame, especially for nested scrollers.
-          for (const [component, box] of Object.entries(state.components)) {
-            if (component === cost.component || !box.chain.includes(key)) continue;
-            const reveal=box.offsets[key];
-            const crossed=reveal&&(['x','y'] as const).some(axis=>reveal[axis]>=Math.min(from[axis],to[axis])&&reveal[axis]<Math.max(from[axis],to[axis]));
-            if (crossed && !cost.scrollPast.includes(component)) cost.scrollPast.push(component);
-          }
-          cost.scrollPx =
-            cost.scrollPx === null ? null : cost.scrollPx + distance;
-          cost.scrolls++;
-        }
-        offsets[key] = to;
-      }
-    };
-    if (ev.event && typeof ev.event === "object" && "scroll" in ev.event) {
-      const entry = Object.entries(state.scrollers).find(([, s]) => s.maxY > 0);
-      if (entry) {
-        const [key, s] = entry,
-          old = offsets[key] ?? { x: 0, y: 0 };
-        scroll({ [key]: { x: old.x, y: Math.min(s.maxY, old.y + s.height) } });
-      }
-      continue;
-    }
-    if (
-      !id ||
-      (!ev.ops.some((op) => ["point", "click"].includes(op)) &&
-        !(
-          ev.event &&
-          typeof ev.event === "object" &&
-          ("enter" in ev.event || "confirm" in ev.event)
-        ))
-    )
-      continue;
-    const box = candidates.map((c) => state.components[c]).find(Boolean);
-    if (!box) {
-      cost.missingTargets.push(`${ev.screen}/${id}`);
-      cost.mouseTravelPx = null;
-      cost.scrollPx = null;
-      pointer = null;
-      continue;
-    }
-    const delta = box.chain.reduce(
-      (p, key) => ({
-        x: p.x + (offsets[key]?.x ?? 0),
-        y: p.y + (offsets[key]?.y ?? 0),
-      }),
-      { x: 0, y: 0 },
-    );
-    let destination = { x: box.center.x - delta.x, y: box.center.y - delta.y };
-    if (
-      destination.x < 0 ||
-      destination.x > 1440 ||
-      destination.y < 0 ||
-      destination.y > 900
-    ) {
-      scroll(box.offsets);
-      destination = box.reveal;
-    }
-    if (!pointer) cost.mouseTravelPx = null;
-    else if (cost.mouseTravelPx !== null)
-      cost.mouseTravelPx += Math.hypot(
-        destination.x - pointer.x,
-        destination.y - pointer.y,
-      );
-    pointer = destination;
-  }
-  return rows;
+  return pointerSteps(trace, atlas, day).map((cost, i) => {
+    const event = trace[i];
+    if (!event) throw Error('Attribution lost an event');
+    return { ...cost, task: event.task, screen: event.screen,
+      clicks: 0, keystrokes: 0, visits: 0 };
+  });
 }
 
 const round = (x: number) => Math.round(x * 100) / 100;
 const plus = (a: number | null, b: number | null) => a === null || b === null ? null : a + b;
 
 /** Includes an explicit untargeted bucket; never drops an interaction. */
-export function attributeDay(day: DayResult, atlas: GeometryAtlas): Attribution[] {
-  const trace = pointingTrace(day.trace, atlas, day);
+export function attributeDay(day: DayResult, atlas: GeometryAtlas & {traceTargets?:Record<string,string>}): Attribution[] {
+  const {trace} = measuredPointingTrace(day.trace, atlas, day);
   const rows = attributePixels(trace, atlas, day.day);
   let previous = '';
   for (const [i, ev] of day.trace.entries()) {
     const row = rows[i];
     if (!row) throw new Error('Attribution lost an event');
+    // Exact trace aliases choose the right geometry, but clinical component
+    // IDs keep repeated fields grouped in the night workspace's breakdown.
+    row.component = eventTarget(ev.event) ?? row.component;
+    row.scrollPast = row.scrollPast.filter(id => !id.startsWith('lean-event-') && id !== row.component);
     row.visits = previous !== `${ev.task}/${ev.screen}` ? 1 : 0;
     previous = `${ev.task}/${ev.screen}`;
     row.clicks = 'scroll' in ev.event || ('enter' in ev.event && ev.ops.includes('scan')) ? 0 : 1;

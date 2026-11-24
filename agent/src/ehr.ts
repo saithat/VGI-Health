@@ -56,6 +56,9 @@ import { createFakeEhr } from './fake/ehr-fake.js';
 
 export interface CheckInput { specVersion: string; program: Program; prev: Program; canonical: Program; workload?: DaySchedule['tasks'] }
 export interface SimulateInput {
+  /** New specification for owner review: event-bound reveal effort, priced natively. */
+  scrollPlan?: {task:string;index:number;event:DayResult['trace'][number]['event'];scrolls:number}[];
+  expertScrollPlan?: NonNullable<SimulateInput['scrollPlan']>;
   specVersion: string;
   program: Program;
   persona: PersonaParams;
@@ -161,11 +164,13 @@ class CliEhr implements EhrClient {
   }
 
   simulate(i: SimulateInput): Promise<DayResult> {
-    return this.withFiles({ program: i.program, persona: i.persona, schedule: i.schedule, ...(i.memory ? {memory:i.memory} : {}) }, async (p) => {
+    return this.withFiles({ program: i.program, persona: i.persona, schedule: i.schedule, ...(i.memory ? {memory:i.memory} : {}), ...(i.scrollPlan ? {scrollPlan:i.scrollPlan} : {}), ...(i.expertScrollPlan ? {expertScrollPlan:i.expertScrollPlan} : {}) }, async (p) => {
       const res = await this.run([
         'simulate', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
         '--schedule', p['schedule'] ?? '', '--world', i.worldDir, '--seed', String(i.seed),
         ...(i.policy ? ['--policy',i.policy] : []),
+        ...(i.scrollPlan ? ['--scroll-plan',p['scrollPlan'] ?? ''] : []),
+        ...(i.expertScrollPlan ? ['--expert-scroll-plan',p['expertScrollPlan'] ?? ''] : []),
         ...(i.clockMode ? ['--clock-mode', i.clockMode] : []),
         ...(i.interruptions ? ['--interruptions', i.interruptions] : []),
         ...(i.simModel ? ['--sim-model', i.simModel] : []),

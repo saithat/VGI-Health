@@ -152,6 +152,8 @@ configuration. The [run-data contract](docs/methods/run-data.md) explains
 completed prefixes, lazy review evidence and safe local renames.
 **Replay tasks** shows cumulative mouse travel at each event. If a target lacks geometry, replay shows a dash and labels the recorded total at the final event when available.
 Incomplete tasks cost canonical effort plus 50%. Layout changes have no movement charge or displacement budget; bounded-clinician replay measures relearning ([release policy](docs/methods/hillclimb-night.md#measurement-and-completion)).
+Scroll effort follows admitted Lean clip geometry; native replay prices target
+reveals before actions ([diagnosis and timing specification](docs/audits/order-scroll.md)).
 Discarded-order notices expire after the 30-day discharge deadline, retaining provenance ([timing policy](docs/design/chart-timing.md)).
 
 `scripts/build-ehrheavy.py [--target MODULE]` builds the full-profile `EhrHeavy`

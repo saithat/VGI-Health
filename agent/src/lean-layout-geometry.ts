@@ -110,6 +110,8 @@ export function placedGeometry(
         reveal: { x: center.x, y },
         chain: b.clips.map(([key]) => key),
         offsets,
+        bounds: r,
+        clips: Object.fromEntries(b.clips.map(([key, raw]) => [key, px(raw)])),
       };
   }
   return {
