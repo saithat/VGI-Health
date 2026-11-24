@@ -53,7 +53,7 @@ export const CLIMB_PROMPT =
   "Read README.md in /work. Continue until night done succeeds.";
 export const CLIMB_WALL_MS = 2 * 60 * 60 * 1000;
 export const estimateInstruction =
-  "Use `night measure --days 1,3 patch.json` for an estimate. Shipping requires every past day.";
+  "Use `night measure --days 1,3 patch.json` for an estimate. Shipping requires every past day. A full measure can take several minutes; `night status` lists measures still running. Use only the night command, never the files under /spool.";
 export const keepClimbingInstruction =
   "A passing measure is a step, not the finish. Keep the passing patch as your new working base and look for the next improvement on top of it. Re-measure the combined patch against the deployed version. Once further changes stop helping, finish with `night done` on the best combined patch.";
 export function climbReadme(persona: string, role: string, search: "first" | "climb" = "first") {
