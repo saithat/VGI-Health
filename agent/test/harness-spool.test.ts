@@ -50,3 +50,22 @@ test('a FIFO planted as a request neither blocks the host nor stops later reques
   expect(JSON.parse(await readFile(path.join(spool, 'b.res.json'), 'utf8')).output.echoed).toBe('request');
   expect((await readdir(spool)).sort()).toEqual(['a.res.json', 'b.res.json']);
 });
+
+test('night status lists in-flight commands without touching the spool and forgets killed ones', async () => {
+  const { spawn } = await import('node:child_process');
+  const dir = await mkdtemp(path.join(tmpdir(), 'night-status-'));
+  const spool = path.join(dir, 'spool'), state = path.join(dir, 'state'), patch = path.join(dir, 'patch.json');
+  await (await import('node:fs/promises')).mkdir(spool);
+  await writeFile(patch, '[]');
+  const cli = path.join(import.meta.dirname, '../src/harness/night-cli.mjs');
+  const env = { ...process.env, NIGHT_SPOOL: spool, NIGHT_STATE: state };
+  const status = () => JSON.parse(execFileSync('node', [cli, 'status'], { env, encoding: 'utf8' }));
+  const measuring = spawn('node', [cli, 'measure', patch], { env, stdio: 'ignore' });
+  await settle(); await settle();
+  expect(status().running.map((r: { command: string }) => r.command)).toEqual([`measure ${patch}`]);
+  const before = await readdir(spool);
+  measuring.kill('SIGKILL');
+  await new Promise(r => measuring.once('exit', r));
+  expect(status().running).toEqual([]);
+  expect(await readdir(spool)).toEqual(before);
+});

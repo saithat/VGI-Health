@@ -49,7 +49,7 @@ persona.json describes this clinician. days/N.json contains their recorded tasks
 
 Edit the working copy and run `node patch.mjs > patch.json`, or write an RFC 6902 patch against the deployed version directly. Run `night measure patch.json` to certify it and replay all past days with the expert and bounded clinicians. Inspect the verdict, totals and breakdowns. Iterate as often as needed.
 
-Use `night measure --days 1,3 patch.json` for an estimate. Shipping requires every past day.
+Use `night measure --days 1,3 patch.json` for an estimate. Shipping requires every past day. A full measure can take several minutes; `night status` lists measures still running. Use only the night command, never the files under /spool.
 
 Finish with `night done patch.json "summary"`. Say what you changed and why in a few sentences. A refusal gives the reason so you can keep working. To retain the current version, use `night done --no-change "reason"`.
 ```
@@ -61,6 +61,8 @@ A passing measure is a step, not the finish. Keep the passing patch as your new 
 ```
 
 Keep edits in `program.json`; `patch.mjs` continues to generate the combined patch against the original deployed version, so each replay covers the whole change. Passing a measure does not deploy it. Full `night measure` replies identify the best passing patch so far with `best.isBest`, its `best.net` saving in deciseconds per day, and `best.patch` (`best.json`). The host saves that RFC 6902 patch in the workspace and in the persona-night record directory. A tie keeps the earlier patch; a weaker or refused measure leaves it intact. `night done` still gates and ships exactly the supplied patch, even if a different measured patch saved more.
+
+`night status` is answered inside the sandbox, not by the host: the night command records each command it sends in the launch's private `/tmp` and removes the record when the reply arrives. Agents can therefore see that a long measure is still running without reading the spool, which the isolation audit forbids.
 
 ## Measurement and completion
 
