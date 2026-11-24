@@ -115,7 +115,7 @@ personas and the simplified or absent departments, interfaces and production
 capabilities. The system uses synthetic patients and is not a deployable product.
 Run reports and the dashboard show completion, modeled time and the share of the
 floor gap captured alongside actions. Hill climbing measures changes against
-the clinician’s completed days. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md). The dashboard’s **Spec review** tab lists every Lean statement still awaiting owner review, read from the source on each load.
+the clinician’s completed days. [Reporting and audit reproduction](docs/methods/agent-benefit-reporting.md). The dashboard’s **Spec review** tab defaults to the [generated trusted base](docs/methods/spec-review.md), with separate counts and filters for proven lemmas and uncovered code. Source flags are read on each load; CI checks the Lean-generated closure for freshness.
 [Dashboard views and validation](docs/methods/dashboard.md) describes release review, rejected proposals, version history and recorded-screen drawers.
 
 ### Simulated hospital
@@ -242,7 +242,7 @@ capacity; Lean checks their square geometry, text inset and contrast
 ([alert geometry](docs/methods/alert-occurrence.md)).
 The generated [proof map](docs/proof-map.md) includes all headline dependency
 charts; CI enforces freshness with `scripts/proof-map/build.sh --check-readme`.
-Regenerate it with `scripts/proof-map/build.sh --readme` after building the
+Regenerate it and the trusted-base catalog with `scripts/proof-map/build.sh --readme` after building the
 [additional proof modules](scripts/proof-map/extra-modules.txt). The same CI job
 uploads self-contained declaration and module-import views, including private
 declarations and named equation lemmas, with source links at the built commit, bidirectional expansion, guarantee breadcrumbs, full-type previews,

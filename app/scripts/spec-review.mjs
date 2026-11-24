@@ -1,7 +1,8 @@
 // Spec-review catalog, derived from the Lean sources on every request.
 // A declaration needs owner review while its doc comment, a preceding line
 // comment, or an enclosing module doc says "for owner review". Removing that
-// phrase (after review) removes the item; nothing here is hand-maintained.
+// phrase (after review) removes the item. Lean generates the trusted closure;
+// CI checks its freshness, and source flags remain the catalog input.
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import { join, relative, resolve, sep } from "node:path";
@@ -77,6 +78,7 @@ function declarationText(lines, start, kind) {
         ? [...all.slice(0, MAX_LINES), "  …"].join("\n")
         : text,
     truncated: all.length > MAX_LINES,
+    lineCount: all.length,
   };
 }
 
@@ -114,6 +116,7 @@ function inlineItem(file, lines, i, namespaces, presetNote) {
     code: lines.slice(codeStart, stop).join("\n"),
     scope: "inline",
     truncated: false,
+    lineCount: Math.max(1, stop - codeStart),
     stop,
   };
 }
@@ -162,7 +165,12 @@ export function parseLean(file, source) {
       const own = pendingNote?.flagged ? pendingNote.text : null;
       seenDecl = true;
       const note = own ?? sectionNote ?? fileNote;
-      const { end: stop, code, truncated } = declarationText(lines, i, kind);
+      const {
+        end: stop,
+        code,
+        truncated,
+        lineCount,
+      } = declarationText(lines, i, kind);
       if (note) {
         const local = decl[2] || "(anonymous)";
         items.push({
@@ -177,6 +185,7 @@ export function parseLean(file, source) {
           scope: own ? "declaration" : "section",
           ...(own ? {} : { docstring: pendingNote?.text ?? null }),
           truncated,
+          lineCount,
         });
       } else {
         // Flags inside an unflagged declaration annotate part of its body.
@@ -190,6 +199,7 @@ export function parseLean(file, source) {
             (t.startsWith("--") && FLAG.test(t))
           ) {
             const it = inlineItem(file, lines, k, [...namespaces, decl[2]]);
+            it.declarationKind = kind;
             items.push(it);
             k = it.stop - 1;
           } else if (block) k = commentEnd(lines, k) - 1;
@@ -211,10 +221,41 @@ export function parseLean(file, source) {
   return items;
 }
 
+/** Match kernel source ranges, including private declarations and anonymous instances.
+ * Inline flags inherit the class of their enclosing declaration. */
+export function classifyItems(items, surface) {
+  const names = new Set(surface.declarations);
+  return items.map((item) => {
+    const trusted = surface.locations.some(
+      (d) =>
+        d.file === item.file &&
+        ((d.line !== null &&
+          d.endLine !== null &&
+          item.line >= d.line &&
+          item.line <= d.endLine) ||
+          (d.line === null && d.name === item.name && names.has(item.name))),
+    );
+    const kind = item.declarationKind ?? item.kind;
+    return {
+      ...item,
+      classification: trusted
+        ? "trusted"
+        : ["theorem", "lemma"].includes(kind)
+          ? "proven"
+          : "unverified",
+    };
+  });
+}
+
 export async function buildSpecReview(root = repoRoot) {
   const leanRoot = join(root, "lean");
+  const surfaceText = await readFile(
+    join(leanRoot, "spec-surface.json"),
+    "utf8",
+  );
+  const surface = JSON.parse(surfaceText);
   const files = (await leanFiles(join(leanRoot, "Ehr"))).sort();
-  const digest = createHash("sha256");
+  const digest = createHash("sha256").update(surfaceText);
   const items = [];
   for (const path of files) {
     const source = await readFile(path, "utf8");
@@ -225,14 +266,22 @@ export async function buildSpecReview(root = repoRoot) {
       items.push(item);
     }
   }
+  const classified = classifyItems(items, surface);
+  const classes = { trusted: 0, proven: 0, unverified: 0 };
+  for (const item of classified) classes[item.classification]++;
   const kinds = {};
   for (const item of items) kinds[item.kind] = (kinds[item.kind] ?? 0) + 1;
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     sourceDigest: digest.digest("hex"),
     filesScanned: files.length,
     total: items.length,
     kinds,
-    items,
+    classes,
+    trustedDeclarations: surface.declarations.length,
+    trustedReviewLines: classified
+      .filter((i) => i.classification === "trusted")
+      .reduce((sum, i) => sum + i.lineCount, 0),
+    items: classified,
   };
 }

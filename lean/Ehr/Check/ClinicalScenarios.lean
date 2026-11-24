@@ -7,7 +7,7 @@ open Ehr Ehr.Props EntryWitness
 
 /-- New specification for owner review. Applicable completion, review and
 receipt contracts of the clinical release schema and canonical workload. -/
-def clinicalCases (sp : Spec) (canonical p : Program) : List ClinicalCase := Id.run do
+def clinicalCases (sp : Spec) (canonical p : Program) : List Case := Id.run do
   unless ["v1", "v2", "v3"].contains sp.version && (sp.element? "claimDiagnosis").isSome do return []
   -- A general completion counterexample may supply its own single-commit
   -- comparison program. The suite binds a clinical release persona canonical.
@@ -26,20 +26,18 @@ def clinicalCases (sp : Spec) (canonical p : Program) : List ClinicalCase := Id.
 
 /-- New specification for owner review. Failure identifies the first encounter
 and unmet checkpoint. Success carries the proofs for the entire catalog. -/
-def certifyCases : (cs : List ClinicalCase) →
-    Except String (PLift (∀ c ∈ cs, Scenario c.input c.steps))
+def certifyCases : (cs : List Case) →
+    Except String (PLift (∀ c ∈ cs, Realized c.input.toInitInput c.task))
   | [] => .ok ⟨by simp⟩
   | c :: cs => do
-    let task := encounter c.input c.steps c.service
-    let ok ← match h : diagnose c.input task with
+    let ok ← match h : diagnose c.input.toInitInput c.task with
       | some msg => .error (c.name ++ ": " ++ msg)
       | none => .ok (PLift.up (diagnose_sound h))
     let tail ← certifyCases cs
     return ⟨by
       intro x hx
       rcases List.mem_cons.mp hx with rfl | hx
-      · obtain ⟨t, mid, s, opened, rest⟩ := ok.down
-        exact ⟨t, mid, s, opened, (steps_policy x.input x.service x.steps s t).mp rest⟩
+      · exact ok.down
       · exact tail.down x hx⟩
 
 end Ehr.Check.ReviewTrace

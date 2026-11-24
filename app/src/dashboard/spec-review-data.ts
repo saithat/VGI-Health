@@ -11,9 +11,19 @@ const itemSchema = z.object({
   scope: z.enum(["declaration", "section", "inline"]),
   docstring: z.string().nullable().optional(),
   truncated: z.boolean(),
+  lineCount: z.number().int().positive(),
+  declarationKind: z.string().optional(),
+  classification: z.enum(["trusted", "proven", "unverified"]),
 });
 export const specReviewSchema = z.object({
-  schemaVersion: z.literal(1),
+  schemaVersion: z.literal(2),
+  classes: z.object({
+    trusted: z.number(),
+    proven: z.number(),
+    unverified: z.number(),
+  }),
+  trustedDeclarations: z.number().int().nonnegative(),
+  trustedReviewLines: z.number().int().nonnegative(),
   sourceDigest: z.string(),
   filesScanned: z.number().int().nonnegative(),
   total: z.number().int().nonnegative(),

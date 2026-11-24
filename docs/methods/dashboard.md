@@ -17,3 +17,10 @@ the same markup, classes, links, query parameters, replay keys and interactions.
 | `formatting.ts` | Recorded event labels and predicted-savings formatting. |
 | `rejections.ts` | Shared rejected-proposal extraction and selection types. |
 | `Badge.tsx` | Shared status badge markup. |
+
+**Spec review** reads flagged Lean declarations on each request and defaults to
+**Trusted base, review**. The other filters show **Proven lemma, no review
+needed** and **Unverified code**; no headline theorem covers the latter code or
+types. Inline flags inherit their enclosing declaration’s classification,
+including private definitions and anonymous instances. Source markers stay in
+place. See [trusted-base generation](spec-review.md) for roots and freshness.

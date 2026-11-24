@@ -1,6 +1,8 @@
 import Lean
 import Solution
 import Ehr.Check.Sound
+import Ehr.Check.EntryFamilySound
+import Ehr.Check.ClinicalScenarioSound
 import Ehr.Check.ContextSound
 import Ehr.Proofs.CheckDeploy
 import Ehr.Render.UiProofs
@@ -16,7 +18,8 @@ Do not import the Comparator challenge modules: their sorry bodies are deliberat
 namespace VerificationAudit
 open Lean Elab Command
 
-/-- All constants reached from a statement, following definitions transitively. -/
+/-- Include the root, follow statement types, definition bodies and constructor
+field types transitively, and never follow theorem proof bodies. -/
 partial def specSurface (env : Environment) (decl : Name) : NameSet :=
   let rec go (todo : List Name) (seen : NameSet) : NameSet :=
     match todo with
@@ -25,12 +28,11 @@ partial def specSurface (env : Environment) (decl : Name) : NameSet :=
       if seen.contains c then go rest seen else
       let next := match env.find? c with
         | some (.defnInfo d) => d.type.getUsedConstants.toList ++ d.value.getUsedConstants.toList
+        | some (.inductInfo d) => d.type.getUsedConstants.toList ++ d.ctors
         | some ci => ci.type.getUsedConstants.toList
         | none => []
       go (next ++ rest) (seen.insert c)
-  match env.find? decl with
-  | some ci => go ci.type.getUsedConstants.toList {}
-  | none => {}
+  go [decl] {}
 
 /-- Keep project definitions, types and opaque declarations, excluding generated
 instances, projections and recursors. Traversal happens BEFORE this filter. -/
@@ -258,3 +260,9 @@ end VerificationAudit
 #audit_axioms Ehr.Check.accepted_navigationLabels
 #spec_surface Ehr.Check.accepted_D5
 #audit_axioms Ehr.Check.accepted_D5
+
+-- Both clinical catalogs use the shared native Trial relation.
+#spec_surface Ehr.Check.EntryWitness.accepted_actionableEntries
+#audit_axioms Ehr.Check.EntryWitness.accepted_actionableEntries
+#spec_surface Ehr.Check.ReviewTrace.accepted_clinicalScenarios
+#audit_axioms Ehr.Check.ReviewTrace.accepted_clinicalScenarios

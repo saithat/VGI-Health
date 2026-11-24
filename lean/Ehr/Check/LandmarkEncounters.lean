@@ -28,19 +28,22 @@ def closedTour (p : Program) (initial proposed : List ScreenId) : List Screen :=
 and Back history. A disconnected cycle has no path from either seed. -/
 def tourScreens (i : InitInput) : List Screen :=
   let p := i.program
-  let initial := (beginEncounter i).toOption.toList.flatMap fun s => s.screen :: s.history
+  let initial := ((execute (openChart i) (runInit i)).map (·.2)).toOption.toList.flatMap fun s => s.screen :: s.history
   let edges := p.screens.map fun sc => (sc.id, (tourTargets p sc).map fun dest => ("", dest))
   let proposed := initial.flatMap fun seed => (bfs p (fun z => (edges.lookup z).getD []) seed).map (·.1)
   closedTour p initial proposed
 
 /-- New specification for owner review. Inspect the first banner on every
 candidate screen in program order. Each included screen needs a real route. -/
-def landmarkCases (sp : Spec) (p : Program) (nursing : Bool) : List ClinicalCase :=
+def landmarkCases (sp : Spec) (p : Program) (nursing : Bool) : List Case :=
   [false, true].map fun clean =>
+    let f := if nursing then {(facts "") with medToGive? := some (if clean then "metformin" else "morphine")}
+             else (facts "")
+    let i := scene sp p "" f
     let visit := fun (sc : Screen) =>
       let first := sc.components.find? (·.kind == .banner)
-      (⟨"inspect patient banner on " ++ sc.id, fun c => c.kind == .banner && first.any (·.id == c.id),
-        fun i s _ => do
+      control i ("inspect patient banner on " ++ sc.id) (fun c => c.kind == .banner && first.any (·.id == c.id))
+        fun s _ => do
           unless s.screen == sc.id do throw s!"Reach {sc.id} before inspecting its banner"
           let items := (runView ⟨sp, p, i.facts, i.user, s⟩).items
           if clean then
@@ -49,10 +52,9 @@ def landmarkCases (sp : Spec) (p : Program) (nursing : Bool) : List ClinicalCase
               throw s!"Unexpected popup or nonfiring alert on {sc.id}"
           else unless (items.filter fun it => it.shown && it.comp.kind == .banner).length == 1 do
             throw s!"Show exactly one patient banner on {sc.id}"
-          return s, fun _ _ => true⟩ : Checkpoint)
-    let f := if nursing then {(facts "") with medToGive? := some (if clean then "metformin" else "morphine")}
-             else (facts "")
-    let i := encounterInput sp p f
-    ⟨if clean then "alerts.no-false-alarms" else "design.banner", i, (tourScreens i).map visit, false⟩
+          return s
+    ⟨if clean then "alerts.no-false-alarms" else "design.banner", i, do
+      checked (fun s => (execute (openChart i.toInitInput) s).map (·.2))
+      for sc in tourScreens i.toInitInput do visit sc⟩
 
 end Ehr.Check.ReviewTrace

@@ -187,6 +187,25 @@ def visit (i : Scene) (label : String) (fits : State → Component → Bool) : T
       return ⟨(c,t),nav,h.1,shown,h.2⟩
     else throw s!"Provide a reachable shown {label} on the bound chart at {t.screen}"
 
+/-- New specification for owner review. Find a control and validate its native
+observations before accepting that candidate. Failure retries from the same
+original state; the relation is the concrete replay equation, not search success. -/
+def control (i : Scene) (label : String) (accepts : Component → Bool)
+    (action : State → Component → Except String State)
+    (preserves : State → State → Bool := fun _ _ => true) : Trial Unit :=
+  let run := fun (s : State) (pos : {t // Path i.toInitInput s t}) (cid : CompId) => do
+    let ⟨(c,t),_⟩ ← revealAt i.toInitInput pos cid
+    unless accepts c do throw s!"Provide {label} on {t.screen}"
+    let after ← action t c
+    unless preserves s after do throw s!"{label} changed saved evidence"
+    return after
+  choose i label (fun _ c => accepts c)
+    (fun s _ t => ∃ path cid, (do run s (← travel i.toInitInput s path) cid) = .ok t)
+    fun s path pos reached cid =>
+      match h : run s pos cid with
+      | .error msg => .error msg
+      | .ok t => .ok ⟨((),t),path,cid,by rw [reached]; exact h⟩
+
 /-- New specification for owner review. Start exactly at native init. The
 selection fixture opens a supplied directory row and hydrates the selected chart. -/
 def openChart (i : InitInput) : Trial Unit := do
