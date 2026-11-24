@@ -1,14 +1,14 @@
 import Ehr.Check.RuleSound
 
 namespace Ehr.Check.ReviewTrace
-open Ehr Ehr.Props
+open Ehr Ehr.Props EntryWitness
 
 /-- New specification for owner review. Checker acceptance supplies a native
 trace from encounter initialization through every checkpoint, separately on
 each applicable layout or counterfactual probe in the clinical catalog.
-`scenario_iff` and `steps_cons_iff` expose the former checkpoint contract. -/
+The clinical and entry catalogs use the same proof-carrying Trial relation. -/
 theorem accepted_clinicalScenarios (sp prev canonical p) (accepted : check sp prev canonical p = .ok) :
-    ∀ c ∈ clinicalCases sp canonical p, Scenario c.input c.steps := by
+    ∀ c ∈ clinicalCases sp canonical p, Realized c.input.toInitInput c.task := by
   let result := certifyCases (clinicalCases sp canonical p)
   have ok : result.isOk = true := (check_ok_iff ..).mp accepted
     { property := "clinicalScenarios", passes := result.isOk, explain := fun _ =>

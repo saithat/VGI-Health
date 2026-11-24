@@ -4,6 +4,12 @@ import type { SpecReviewData } from "./spec-review-data";
 import "./spec-review.css";
 
 type Item = SpecReviewData["items"][number];
+const classKeys = ["trusted", "proven", "unverified"] as const;
+export const classLabels = {
+  trusted: "Trusted base, review",
+  proven: "Proven lemma, no review needed",
+  unverified: "Unverified code",
+};
 
 const kindLabel: Record<string, string> = {
   theorem: "Theorem",
@@ -31,10 +37,12 @@ export function filterItems(
   query: string,
   kind: string,
   where: string,
+  classification = "all",
 ): Item[] {
   const q = query.trim().toLowerCase();
   return items.filter(
     (i) =>
+      (classification === "all" || i.classification === classification) &&
       (kind === "all" || (kindLabel[i.kind] ?? i.kind) === kind) &&
       (where === "all" || area(i.file) === where) &&
       (!q ||
@@ -57,6 +65,7 @@ function ItemView({ item }: { item: Item }) {
           {item.file.replace(/^lean\//, "")}:{item.line}
         </span>
       </header>
+      <p className="spec-scope">{classLabels[item.classification]}</p>
       <p className="spec-note" title={scopeLabel[item.scope]}>
         {prose(
           item.scope === "section" && item.docstring
@@ -116,6 +125,7 @@ export function SpecReview() {
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState("all");
   const [where, setWhere] = useState("all");
+  const [classification, setClassification] = useState("trusted");
   useEffect(() => {
     let live = true;
     loadSpecReview()
@@ -126,8 +136,9 @@ export function SpecReview() {
     };
   }, []);
   const shown = useMemo(
-    () => (data ? filterItems(data.items, query, kind, where) : []),
-    [data, query, kind, where],
+    () =>
+      data ? filterItems(data.items, query, kind, where, classification) : [],
+    [data, query, kind, where, classification],
   );
   const groups = useMemo(() => {
     const map = new Map<string, Item[]>();
@@ -145,34 +156,35 @@ export function SpecReview() {
     ...new Set(data.items.map((i) => kindLabel[i.kind] ?? i.kind)),
   ].sort();
   const areas = [...new Set(data.items.map((i) => area(i.file)))].sort();
-  const theorems = data.items.filter(
-    (i) => i.kind === "theorem" || i.kind === "lemma",
-  ).length;
   return (
     <section
       className="spec-review"
       aria-label="Specifications awaiting owner review"
     >
       <p className="spec-intro">
-        Every Lean statement marked for owner review, read from the source each
-        time this page loads. An item leaves the list when its “for owner
-        review” marker is removed after review. For a theorem, only the
-        statement is shown: the proof is checked by Lean and needs no review.
-        For a definition, the whole body is the specification.
+        Source flags grouped by Lean’s generated statement and definition
+        closure from the canonical headline guarantees (
+        {data.trustedDeclarations} declarations).
+      </p>
+      <p className="spec-intro">
+        <strong>Trusted base:</strong> Review the statements, definitions and
+        types reachable from those guarantees.
+      </p>
+      <p className="spec-intro">
+        <strong>Proven lemmas:</strong> Lean checks these proofs, and their
+        statements are outside that closure, so no review is needed.
+      </p>
+      <p className="spec-intro">
+        <strong>Unverified code:</strong> No headline theorem covers these
+        definitions, types or inline rules outside the closure.
       </p>
       <dl className="spec-stats">
-        <div>
-          <dt>Awaiting review</dt>
-          <dd>{data.total}</dd>
-        </div>
-        <div>
-          <dt>Theorem statements</dt>
-          <dd>{theorems}</dd>
-        </div>
-        <div>
-          <dt>Definitions and types</dt>
-          <dd>{data.total - theorems}</dd>
-        </div>
+        {classKeys.map((key) => (
+          <div key={key}>
+            <dt>{classLabels[key]}</dt>
+            <dd>{data.classes[key]}</dd>
+          </div>
+        ))}
         <div>
           <dt>Files</dt>
           <dd>{new Set(data.items.map((i) => i.file)).size}</dd>
@@ -185,6 +197,20 @@ export function SpecReview() {
         </div>
       </dl>
       <div className="spec-filters">
+        <label>
+          Class
+          <select
+            value={classification}
+            onChange={(e) => setClassification(e.currentTarget.value)}
+          >
+            <option value="all">All classes</option>
+            {classKeys.map((key) => (
+              <option key={key} value={key}>
+                {classLabels[key]}
+              </option>
+            ))}
+          </select>
+        </label>
         <label>
           Search
           <input
@@ -221,7 +247,7 @@ export function SpecReview() {
       </div>
       {groups.map(([file, items]) => (
         <FileGroup
-          key={`${file}|${query}|${kind}|${where}`}
+          key={`${file}|${query}|${kind}|${where}|${classification}`}
           file={file}
           items={items}
           initiallyOpen={shown.length <= 30}

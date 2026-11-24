@@ -209,7 +209,7 @@ export function Dashboard({
       active = false;
     };
   }, [run, selection, selectedPersona, suppliedFactory]);
-  if (indexLoaded && !index.length) return <main><h1>No recordings yet</h1><p>Choose “Download sample recording” on the <a href="/">start page</a>.</p></main>;
+  if (indexLoaded && !index.length && view !== "Spec review") return <main><h1>No recordings yet</h1><p>Choose “Download sample recording” on the <a href="/">start page</a>.</p></main>;
   return (
     <div className="dashboard">
       {run?.manifest.status === "blocked" && (

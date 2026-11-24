@@ -24,6 +24,12 @@ cd "$root/lean"
 # reachable from these roots; shape.py fails if any `sorry` slips in.
 mapfile -t mods < <(printf '%s\n' Ehr CommitProtocol Main; grep -v '^\s*$' "$root/scripts/proof-map/extra-modules.txt")
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
+lake build VerificationAudit > "$tmp/surface-build.log" 2>&1 || { cat "$tmp/surface-build.log"; exit 1; }
+lake env lean Audit/SpecSurfaceTests.lean
+case "$readme" in
+  check) python3 "$root/scripts/proof-map/spec-surface.py" --check ;;
+  *) python3 "$root/scripts/proof-map/spec-surface.py" ;;
+esac
 lake env lean --run "$root/scripts/proof-map/Extract.lean" "$tmp/full.json" "${mods[@]}"
 "$root/scripts/proof-map/imports.sh" "$out"
 python3 "$root/scripts/proof-map/shape.py" "$tmp/full.json" "$root" "$out"
