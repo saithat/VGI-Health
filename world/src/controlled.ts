@@ -25,7 +25,9 @@ export interface NaloxoneCheck {
   applies: boolean;
 }
 
-/** The world's own check of the naloxone rule for a set of new outpatient prescriptions. */
+/** Historical outpatient draw, retained for frozen pure-library snapshots.
+ * Emitted worlds replace these observations using native task goals (naloxone.ts).
+ * This is not the eligibility decision for generated world output. */
 export function naloxoneCheck(newRx: OrderChoice[], home: HomeMed[]): NaloxoneCheck {
   const newDrugs = new Set(newRx.map((o) => o.drug));
   const homeOrders = home.filter((m) => !newDrugs.has(m.drug)).map((m) => order(m.drug, m.dose, m.unit, m.route, m.freq, { prn: m.prn }));

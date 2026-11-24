@@ -27,6 +27,8 @@ import { generateWorld } from "./world";
 import { CASE_MIX_MODES, SYNTHETIC_HOSPITAL_MIX } from "./case-mix";
 import { NOTE_TEXT_MODES, NOTE_AUTHORING_MODES, NOTE_AUTHORING_PROFILE, NoteTexts, loadSectionDonors, withNoteTexts } from "./notes";
 import { nativeAdt, simulateAdt } from "./adt";
+import { naloxoneEvidenceBatch, withNaloxoneResponses } from "./naloxone";
+import releaseDays from "../releases.json";
 
 export const GENERATOR = "world@0.1.0";
 
@@ -103,6 +105,11 @@ async function main(): Promise<void> {
     mkdirSync(dirname(join(outDir, name)), { recursive: true });
     writeFileSync(join(outDir, name), `${JSON.stringify(data, null, 2)}\n`);
   };
+  const pending: {name: string; schedule: ReturnType<typeof DayScheduleSchema.parse>; day: number}[] = [];
+  const stage = (name: string, schedule: ReturnType<typeof DayScheduleSchema.parse>, day: number) => {
+    write(name, schedule);
+    pending.push({name, schedule, day});
+  };
 
   const files: string[] = [];
   write("world.json", { seed, days, personas: PERSONAS });
@@ -132,9 +139,11 @@ async function main(): Promise<void> {
         : withTiming(base, d.state);
       const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...schedule, tasks: schedule.tasks.map(t => withCalendar(worldClock, () => withInformationData(t)))} : schedule);
       if (!parsed.success) throw new Error(`day ${d.state.day} ${p}: schedule fails the schema: ${parsed.error.message}`);
-      (timedDays[p] ??= []).push(parsed.data);
       const name = `day-${d.state.day}-${p}.json`;
-      write(name, parsed.data);
+      // Stage the complete schedule so native goal derivation reads exactly
+      // the same FHIR/episode inputs as simulate. Never guess risk in TS.
+      stage(name, parsed.data, d.state.day);
+      (timedDays[p] ??= []).push(parsed.data);
       files.push(name);
       const agentName = `schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`;
       write(agentName, parsed.data);
@@ -144,12 +153,28 @@ async function main(): Promise<void> {
   if (worldClock === "continuous" && clockMode === "continuous" && run.days.length) {
     for (const p of PERSONAS) {
       const name = `horizon-${p}.json`;
-      write(name, DayScheduleSchema.parse(mergeTimedDays(timedDays[p] ?? [], run.days.map(d => d.state.date))));
+      // Horizon replay accumulates earlier days' medication resources too;
+      // query its actual facts instead of assuming day-local eligibility.
+      stage(name, DayScheduleSchema.parse(mergeTimedDays(timedDays[p] ?? [], run.days.map(d => d.state.date))), days);
       files.push(name);
     }
   }
+  // One read-only Lean process for all artifacts; no Lake subprocesses or
+  // repeated startup per schedule. Publication follows complete evidence.
+  const evidence = naloxoneEvidenceBatch(pending.map(({name, day}) => ({
+    spec: join(sourceRoot, "releases", day < releaseDays.v2 ? "v1" : day < releaseDays.v3 ? "v2" : "v3", "spec.json"),
+    schedule: join(outDir, name), world: fixtures,
+  })));
+  pending.forEach(({name, schedule, day}, i) => {
+    const rows = evidence[i];
+    if (rows === undefined) throw new Error(`missing native evidence: ${name}`);
+    const finalized = withNaloxoneResponses(schedule, rows, seed);
+    write(name, finalized);
+    if (name.startsWith("day-")) write(`schedules/day-${String(day).padStart(2, "0")}/${schedule.persona}.json`, finalized);
+  });
   write("manifest.json", {
     generator: GENERATOR,
+    naloxoneProtocol: "native-task-goals-v1",
     worldClock,
     workloadProtocol: clockMode === "legacy" ? "task-local-legacy" : "continuous-workload-v1",
     ...(adt === "realistic" ? {adtProtocol: "adt-realism-v1"} : {}),
