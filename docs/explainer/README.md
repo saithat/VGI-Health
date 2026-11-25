@@ -1,6 +1,6 @@
 # Explainer video
 
-A 6-minute narrated overview of how the system works, made with
+A 6-minute captioned overview of how the system works, made with
 [Manim Community](https://www.manim.community/) 0.22. Scenes: the problem, the
 day and night loop, programs as data, one night's change, the Lean gate,
 inside one click, what is proved, and where people come in.
@@ -13,12 +13,6 @@ python -m venv .venv && .venv/bin/pip install manim==0.22.1   # needs pango-deve
 
 Each beat's narration is a `self.say(...)` line in `explainer.py`. The render
 writes it as captions: a soft subtitle track in the MP4, plus `.srt` and `.vtt`
-files. For a voice track, generate audio first and render again; each beat then
-lasts at least as long as its audio:
+files. The video has no voice track.
 
-```sh
-.venv/bin/python docs/explainer/voice.py --engine piper --model en_US-lessac-medium.onnx
-.venv/bin/python docs/explainer/voice.py --engine espeak-ng   # no download, robotic
-```
-
-The rendered video and audio are not committed.
+The rendered video is not committed.

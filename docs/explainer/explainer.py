@@ -1,14 +1,11 @@
-"""How VGI Health works: a narrated explainer (Manim Community).
+"""How VGI Health works: a captioned explainer (Manim Community).
 
 Render all scenes and join them:
     python docs/explainer/render.py            # 1080p30 by default
     python docs/explainer/render.py --quality l  # quick 480p preview
 """
 
-import hashlib
 import re
-import wave
-from pathlib import Path
 
 from manim import (
     DOWN, LEFT, RIGHT, UP, UL, UR, ORIGIN,
@@ -83,20 +80,8 @@ def screen_mock(color=EDGE, w=2.4, h=1.6, rows=None):
     return VGroup(frame, banner, bars)
 
 
-VOICE = Path(__file__).resolve().parent / "media" / "voice"
 CAPTION_CHARS = 84
 READ_RATE = 15
-
-
-def voice_file(text):
-    """Narration audio for one line, if voice.py has generated it."""
-    path = VOICE / (hashlib.sha1(text.encode()).hexdigest()[:16] + ".wav")
-    return path if path.exists() else None
-
-
-def audio_seconds(path):
-    with wave.open(str(path)) as w:
-        return w.getnframes() / w.getframerate()
 
 
 def caption_chunks(text):
@@ -114,11 +99,11 @@ def caption_chunks(text):
 
 
 class Narrated(Scene):
-    """A scene whose beats each carry one spoken line.
+    """A scene whose beats each carry one caption line.
 
-    say() starts a line: its caption, and its audio when generated. hold(w) waits
-    at least w seconds and at least until the line's audio ends. The caption runs
-    until the next line starts, split into short cards by length.
+    say() starts a line. hold(w) waits at least w seconds and at least long enough
+    to read the line. The caption runs until the next line starts, split into
+    short cards by length.
     """
 
     def construct(self):
@@ -132,9 +117,9 @@ class Narrated(Scene):
     def _close(self):
         if self._line is None:
             return
-        text, start, audio_end = self._line
-        if self._now() < audio_end:
-            self.wait(audio_end - self._now())
+        text, start, read_end = self._line
+        if self._now() < read_end:
+            self.wait(read_end - self._now())
         total = self._now() - start
         chunks = caption_chunks(text)
         weight = sum(len(c) for c in chunks)
@@ -147,13 +132,8 @@ class Narrated(Scene):
 
     def say(self, text):
         self._close()
-        audio = voice_file(text)
-        # Without audio, a line stays up long enough to read (about 15 characters a second).
-        end = self._now() + len(text) / READ_RATE
-        if audio:
-            self.add_sound(str(audio))
-            end = self._now() + audio_seconds(audio)
-        self._line = (text, self._now(), end)
+        # A line stays up long enough to read (about 15 characters a second).
+        self._line = (text, self._now(), self._now() + len(text) / READ_RATE)
 
     def hold(self, seconds):
         remaining = self._line[2] - self._now() if self._line else 0
