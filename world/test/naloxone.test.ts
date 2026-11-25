@@ -64,7 +64,10 @@ it("refuses missing, duplicate or surplus native evidence", () => {
   expect(() => withNaloxoneResponses(schedule, [{...row, task: "other"}], 1)).toThrow();
 });
 
-it("finalizes CLI schedules, aliases and continuous horizons with the same answers", () => {
+it("finalizes CLI schedules, aliases and continuous horizons with the same answers", (context) => {
+  // The CLI's list context draws extra patients from the local synthetic hospital, as in cli.test.ts.
+  const reason = dataReason("fixtures/synthetic-hospital", nativeInput);
+  if (reason) context.skip(reason);
   const dir = mkdtempSync(join(tmpdir(), "naloxone-cli-"));
   try {
     execFileSync(join(root, "world/node_modules/.bin/tsx"), [join(root, "world/src/cli.ts"),
