@@ -20,6 +20,7 @@ import { fakeWorld, tmp } from "./helpers.js";
 import { HILLCLIMB } from "../src/protocol.js";
 import { execFileSync } from "node:child_process";
 import { REPO_ROOT } from "../src/util.js";
+import { UnpricedGeometry } from "../src/geometry.js";
 
 const patch = [
   { op: "replace", path: "/screens/0/title", value: "Fixture improvement" },
@@ -752,3 +753,24 @@ it.each(["done-best", "done-first", "done-keep", "backstop-best", "backstop-firs
     await expect(runDays({...common,runId:"mismatch",hillclimb:{search:ending==="backstop-first"?"climb":"first"},
       llm:new ReplayLlm(result.dir)})).rejects.toThrow("Replay hillclimb configuration must match");
   },60000);
+
+it("refuses a candidate whose target scrolling cannot be priced, and keeps the night running", async () => {
+  const inner = stackingEhr();
+  const ehr = {...inner, simulate:async (input:Parameters<typeof inner.simulate>[0]) => {
+    if (input.program.screens[0]?.title === "Unpriced")
+      throw new UnpricedGeometry("Target scrolling requires complete admitted geometry: task t1, action 3 has no measured position");
+    return inner.simulate(input);
+  }};
+  const fixture = async (host:ClimbHost) => {
+    const unpriced = [{op:"replace",path:"/screens/0/title",value:"Unpriced"}];
+    expect(await host.execute(request("measure", unpriced))).toMatchObject({exit:1,
+      output:{reason:expect.stringContaining("Layout refused: Target scrolling requires complete admitted geometry")}});
+    // The cached refusal answers a repeat without replaying, and other candidates still measure.
+    expect(await host.execute(request("measure", unpriced))).toMatchObject({exit:1});
+    expect(await host.execute(request("measure", patch))).toMatchObject({output:{ships:true,net:6}});
+    expect(await host.execute(request("done", patch, "Priced patch"))).toMatchObject({exit:0,output:{ships:true}});
+  };
+  const result = await runDays({days:2,worldDir:await fakeWorld(2),runsRoot:await tmp("climb-unpriced"),runId:"unpriced",
+    nightMode:"hillclimb",screenMode:"lean",leanOptions,personas:["P1"],llm:new ScriptedLlm(),ehr,hillclimb:{fixture,search:"climb"}});
+  expect(result.timelines[0]?.nights[0]).toMatchObject({versionAfter:1});
+},60000);

@@ -23,7 +23,8 @@ export async function retryInfrastructure<T>(op:string,work:()=>Promise<T>,allEr
   try{nativeCancellation.getStore()?.throwIfAborted();return await work();}catch(error){
    nativeCancellation.getStore()?.throwIfAborted();
    if(error instanceof InfrastructureExhaustedError || error instanceof BackendRequestError)throw error;
-   if(error instanceof Error&&['ReplayDivergedError','ReplayMissingError'].includes(error.constructor.name))throw error;
+   // Deterministic outcomes are answers, not infrastructure faults: a retry repeats them.
+   if(error instanceof Error&&['ReplayDivergedError','ReplayMissingError','UnpricedGeometry'].includes(error.constructor.name))throw error;
    if(!allErrors&&!(error instanceof InfrastructureError))throw error;
    messages.push(errorMessage(error));
    if(context){

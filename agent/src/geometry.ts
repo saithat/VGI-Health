@@ -38,6 +38,9 @@ export function attachGeometry(result:DayResult,atlas:GeometryAtlas):DayResult{
   const cost=costs[t.task];return {...t,rawScrolls:t.rawScrolls??t.scrolls,mouseTravelPx:cost?.mouseTravelPx??null,scrollPx:cost?.scrollPx??null,...(cost?{scrolls:cost.scrolls}:{})};
  })};
 }
+/** A layout whose target scrolling cannot be priced from its geometry. Night
+ * measures refuse such a candidate; deployed layouts still fail the run. */
+export class UnpricedGeometry extends Error {}
 /** Specification (owner approved 2026-11-25): target-reveal counts are computed from
  * admitted geometry, then paid by the native simulator before each action.
  * A fixed point is required: time can change receipts, interruptions and paths.
@@ -50,7 +53,7 @@ export function geometryScrollPlan(result:DayResult, atlas:GeometryAtlas & {trac
   if('scroll' in row.event)continue;
   const index=indices.get(row.task)??0;indices.set(row.task,index+1);
   const step=steps[i];
-  if(!step || step.scrollPx===null)throw Error('Target scrolling requires complete admitted geometry');
+  if(!step || step.scrollPx===null)throw new UnpricedGeometry(`Target scrolling requires complete admitted geometry: task ${row.task}, action ${index + 1} (${JSON.stringify(row.event)}) has no measured position`);
   if(step.scrolls)plan.push({task:row.task,index,event:row.event,scrolls:step.scrolls});
  }
  return plan;
@@ -74,13 +77,13 @@ export async function convergeScrollGeometry(
     const scrolls=row.ops.filter(op=>op==='scroll').length;
     if(scrolls)paid.push({task:row.task,index,event:row.event,scrolls});
    }
-   if(stableStringify(paid)!==key)throw Error('Native target scrolling did not match admitted geometry');
+   if(stableStringify(paid)!==key)throw new UnpricedGeometry('Native target scrolling did not match admitted geometry');
    return measured.result;
   }
-  if(seen.has(key))throw Error('Geometry scroll plan oscillated; refusing unpriced replay');
+  if(seen.has(key))throw new UnpricedGeometry('Geometry scroll plan oscillated; refusing unpriced replay');
   seen.add(key);scrollPlan=next;
  }
- throw Error('Geometry scroll plan did not converge; refusing unpriced replay');
+ throw new UnpricedGeometry('Geometry scroll plan did not converge; refusing unpriced replay');
 }
 /** Native transcripts remain in the command journal; enriched results name their geometry atlas. */
 export function geometryEhr(inner:EhrClient,provider:GeometryProvider,dir:string,traceAware=false):EhrClient{

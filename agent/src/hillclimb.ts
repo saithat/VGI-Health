@@ -31,6 +31,7 @@ import { layoutRuleSchema } from "./layout-rules.js";
 import { designOf } from "./layout-design.js";
 import { screenAttribution } from "./lean-layout-prompt.js";
 import { LeanLayoutRefusal } from "./lean-layout-refusal.js";
+import { UnpricedGeometry } from "./geometry.js";
 import { RELEASE_IDS } from "./release-config.js";
 import {
 jsonPatchSchema,
@@ -271,7 +272,7 @@ export function climbingGate(
   type Checked = Awaited<ReturnType<typeof certifyPatch>>["check"];
   type ReplayCache = Map<
     string,
-    Awaited<ReturnType<typeof simulate>> | LeanLayoutRefusal
+    Awaited<ReturnType<typeof simulate>> | LeanLayoutRefusal | UnpricedGeometry
   >;
   const baseline: ReplayCache = new Map(),
     vendorCache: ReplayCache = new Map();
@@ -320,14 +321,17 @@ export function climbingGate(
     policy: "expert" | "bounded",
   ) {
     const hit = cache.get(key);
-    if (hit instanceof LeanLayoutRefusal) throw hit;
+    if (hit instanceof LeanLayoutRefusal || hit instanceof UnpricedGeometry) throw hit;
     if (hit) return hit;
     try {
       const replay = await simulate(program, schedule, policy);
       cache.set(key, replay);
       return replay;
     } catch (error) {
-      if (error instanceof LeanLayoutRefusal) cache.set(key, error);
+      // The deployed baseline is not the candidate: its geometry failure stops the night.
+      if (error instanceof UnpricedGeometry && cache === baseline)
+        throw Error(`Deployed layout: ${error.message}`);
+      if (error instanceof LeanLayoutRefusal || error instanceof UnpricedGeometry) cache.set(key, error);
       throw error;
     }
   }
@@ -650,6 +654,7 @@ export class ClimbHost {
         const reason = screenReason(error.message);
         return fail(reason);
       }
+      if (error instanceof UnpricedGeometry) return fail(`Layout refused: ${error.message}`);
       throw error;
     }
   }
