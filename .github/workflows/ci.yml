@@ -38,13 +38,15 @@ jobs:
       - name: World-to-Lean boundary tests (need the Lean build)
         env:
           VGI_REQUIRE_LEAN_TESTS: '1'
-        run: pnpm --filter world exec vitest run test/administration-outcomes.test.ts test/synthea.test.ts
+        run: |
+          pnpm --filter world exec tsx src/build-naloxone.ts "$TMPDIR/naloxone-tasks"
+          pnpm --filter world exec vitest run test/administration-outcomes.test.ts test/synthea.test.ts test/naloxone.test.ts --maxWorkers=2
       - name: Generate deterministic test inputs
         working-directory: lean
         run: |
           lake env lean --run Ehr/Tools/ExportContent.lean "$TMPDIR/ci-content"
           lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/commit-fixture.json"
-          tar -czf "$TMPDIR/ehr-test-inputs.tar.gz" -C "$PWD/.lake/build/bin" ehr ui-layout -C "$TMPDIR" ci-content/programs commit-fixture.json
+          tar -czf "$TMPDIR/ehr-test-inputs.tar.gz" -C "$PWD/.lake/build/bin" ehr ui-layout -C "$TMPDIR" ci-content/programs commit-fixture.json naloxone-tasks
       - uses: actions/upload-artifact@v4
         with:
           name: ehr
@@ -90,6 +92,8 @@ jobs:
       - run: pnpm --filter app --filter agent --filter world --filter @vgi/commit typecheck
 
   unit:
+    env:
+      VGI_NALOXONE_BIN: ${{ github.workspace }}/lean/.lake/build/bin/naloxone-tasks
     needs: lean
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -106,6 +110,7 @@ jobs:
           tar -xzf "$RUNNER_TEMP/ehr-artifact/ehr-test-inputs.tar.gz" -C "$TMPDIR"
           install -D -m 755 "$TMPDIR/ehr" lean/.lake/build/bin/ehr
           install -D -m 755 "$TMPDIR/ui-layout" lean/.lake/build/bin/ui-layout
+          install -D -m 755 "$TMPDIR/naloxone-tasks" lean/.lake/build/bin/naloxone-tasks
       - name: Install sandbox test runtime
         run: |
           sudo apt-get update -qq

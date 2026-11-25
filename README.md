@@ -134,6 +134,7 @@ the clinician’s completed days. [Reporting and audit reproduction](docs/method
 - Dataset notes use section-level template/copy/free-text effort with verified older N18 origin shares and explicit scenario operator costs ([methods and matched comparison](docs/methods/note-authoring.md)).
 - P5 inpatient rounds include scenario imaging orders with Synthetic Hospital priority ([methods](docs/methods/workflow-phases.md#inpatient-imaging)).
 - Library generation defaults to realistic workflows; explicit legacy mode reproduces preserved library snapshots byte-for-byte ([methods](docs/methods/workflow-phases.md#library-default-and-frozen-worlds)).
+- Generated naloxone offers use native clinical eligibility and carry the patient's answer, with prescription and education documentation on acceptance ([methods and diagnosis](docs/methods/naloxone-offers.md)).
 - Separate role profiles remain experimental: the pre-declared fit failed every holdout gate ([methods](docs/methods/role-calibration.md), [diagnosis](docs/audits/fit-diagnosis-20261110.md)).
 
 ## How to run

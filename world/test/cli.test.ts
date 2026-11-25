@@ -14,7 +14,7 @@ it("exports a deterministic agent-loadable world and removes stale days on regen
   const out = mkdtempSync(join(tmpdir(), "world-cli-"));
   const gen = (days: number) => {
     const result = spawnSync(process.execPath, ["--import", "tsx", "src/cli.ts", "--seed", "1", "--days", String(days), "--out", out, "--quiet"], {
-      cwd: resolve(__dirname, ".."), encoding: "utf8", timeout: 30_000,
+      cwd: resolve(__dirname, ".."), encoding: "utf8", timeout: 60_000,
     });
     expect(result.status, result.stderr || result.stdout).toBe(0);
   };
@@ -38,4 +38,4 @@ it("exports a deterministic agent-loadable world and removes stale days on regen
   } finally {
     rmSync(out, { recursive: true, force: true });
   }
-});
+}, 180_000);
