@@ -78,7 +78,7 @@ describe("spec review catalog", () => {
     for (const n of [
       "Ehr.Check.EntryWitness.accepted_actionableEntries",
       "Ehr.Check.ReviewTrace.accepted_clinicalScenarios",
-      "Ehr.Check.EntryWitness.Realized",
+      "Ehr.Check.EntryWitness.diagnose",
       "Ehr.Check.EntryWitness.control",
     ])
       expect(names).toContain(n);
@@ -87,7 +87,7 @@ describe("spec review catalog", () => {
       a.total,
     );
     expect(
-      a.items.find((i) => i.name === "Ehr.Check.EntryWitness.Realized")
+      a.items.find((i) => i.name === "Ehr.Check.EntryWitness.diagnose")
         ?.classification,
     ).toBe("trusted");
     expect(
