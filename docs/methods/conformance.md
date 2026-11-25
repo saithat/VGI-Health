@@ -175,7 +175,7 @@ All clinical catalog names below are in `Ehr.Check.ReviewTrace`; common primitiv
 | [ServiceEncounters](../../lean/Ehr/Check/ServiceEncounters.lean) | `serviceCases` |
 | [LandmarkEncounters](../../lean/Ehr/Check/LandmarkEncounters.lean) | `tourTargets`, `closedTour`, `tourScreens`, `landmarkCases` |
 | [ClinicalCorrections](../../lean/Ehr/Check/ClinicalCorrections.lean) | `refuseEntry`, `correctionCases` |
-| [PrescriptionEncounters](../../lean/Ehr/Check/PrescriptionEncounters.lean) | `prescriptionDisplay`, `prescriptionDetails`, `incompleteLine`, `refillCases`, `curesCases` |
+| [PrescriptionEncounters](../../lean/Ehr/Check/PrescriptionEncounters.lean) | `prescriptionPatient`, `prescriptionDisplay`, `prescriptionDetails`, `incompleteLine`, `refillCases`, `curesCases` |
 | [ReviewProbes](../../lean/Ehr/Check/ReviewProbes.lean) | `injectClick`, `automationCase`, `resetCase` |
 | [ClinicalScenarios](../../lean/Ehr/Check/ClinicalScenarios.lean) | `clinicalCases`, `certifyCases` |
 | [ClinicalScenarioSound](../../lean/Ehr/Check/ClinicalScenarioSound.lean) | `accepted_clinicalScenarios`, `tour_includes_destination` |

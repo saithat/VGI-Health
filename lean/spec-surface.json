@@ -418,6 +418,7 @@
     "Ehr.Check.ReviewTrace.prepare.match_1",
     "Ehr.Check.ReviewTrace.prescriptionDetails",
     "Ehr.Check.ReviewTrace.prescriptionDisplay",
+    "Ehr.Check.ReviewTrace.prescriptionPatient",
     "Ehr.Check.ReviewTrace.receiptCases",
     "Ehr.Check.ReviewTrace.receiptCases.match_1",
     "Ehr.Check.ReviewTrace.refillCases",
@@ -7254,9 +7255,9 @@
     },
     {
       "displayName": "Ehr.Check.ReviewTrace.curesCases",
-      "endLine": 96,
+      "endLine": 100,
       "file": "lean/Ehr/Check/PrescriptionEncounters.lean",
-      "line": 75,
+      "line": 79,
       "name": "Ehr.Check.ReviewTrace.curesCases"
     },
     {
@@ -7282,9 +7283,9 @@
     },
     {
       "displayName": "Ehr.Check.ReviewTrace.incompleteLine",
-      "endLine": 39,
+      "endLine": 43,
       "file": "lean/Ehr/Check/PrescriptionEncounters.lean",
-      "line": 25,
+      "line": 29,
       "name": "Ehr.Check.ReviewTrace.incompleteLine"
     },
     {
@@ -7338,17 +7339,24 @@
     },
     {
       "displayName": "Ehr.Check.ReviewTrace.prescriptionDetails",
-      "endLine": 23,
+      "endLine": 27,
       "file": "lean/Ehr/Check/PrescriptionEncounters.lean",
-      "line": 14,
+      "line": 18,
       "name": "Ehr.Check.ReviewTrace.prescriptionDetails"
     },
     {
       "displayName": "Ehr.Check.ReviewTrace.prescriptionDisplay",
-      "endLine": 12,
+      "endLine": 16,
+      "file": "lean/Ehr/Check/PrescriptionEncounters.lean",
+      "line": 12,
+      "name": "Ehr.Check.ReviewTrace.prescriptionDisplay"
+    },
+    {
+      "displayName": "Ehr.Check.ReviewTrace.prescriptionPatient",
+      "endLine": 10,
       "file": "lean/Ehr/Check/PrescriptionEncounters.lean",
       "line": 7,
-      "name": "Ehr.Check.ReviewTrace.prescriptionDisplay"
+      "name": "Ehr.Check.ReviewTrace.prescriptionPatient"
     },
     {
       "displayName": "Ehr.Check.ReviewTrace.receiptCases",
@@ -7366,9 +7374,9 @@
     },
     {
       "displayName": "Ehr.Check.ReviewTrace.refillCases",
-      "endLine": 73,
+      "endLine": 77,
       "file": "lean/Ehr/Check/PrescriptionEncounters.lean",
-      "line": 41,
+      "line": 45,
       "name": "Ehr.Check.ReviewTrace.refillCases"
     },
     {

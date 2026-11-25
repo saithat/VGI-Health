@@ -96,7 +96,7 @@ def metrics (task : String) (trace : List TraceEvent) (completed : Bool) : TaskM
     m := { m with
       clicks := m.clicks + activation t.event t.ops,
       keystrokes := m.keystrokes + typedKeys t.event t.ops,
-      -- New specification for owner review: include geometry-backed reveals
+      -- Owner approved 2026-11-25: include geometry-backed reveals
       -- carried on target events, as well as standalone reading scrolls.
       scrolls := m.scrolls + (t.ops.filter (· == .scroll)).length,
       popups := m.popups + (match t.event with | .ack _ => 1 | _ => 0),

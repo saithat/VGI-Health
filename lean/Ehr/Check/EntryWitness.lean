@@ -221,7 +221,7 @@ def openChart (i : InitInput) : Trial Unit := do
     let _ ← act i (.scroll selected.screen)
     require (Workspace.bound i.facts (← current)) "Bind the selected chart to the fixture source"
 
-/-- New specification for owner review. A whole native scenario starts at native init. -/
+/-- Specification (owner approved 2026-11-25). A whole native scenario starts at native init. -/
 def Realized (i : InitInput) (task : Trial Unit) : Prop :=
   ∃ t, task.holds (runInit i) () t
 

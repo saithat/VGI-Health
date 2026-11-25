@@ -4,11 +4,15 @@ import Ehr.Render.Fhir
 namespace Ehr.Check.ReviewTrace
 open Ehr Ehr.Props EntryWitness Ehr.Render
 
-/-- New specification for owner review. Exact synthetic FHIR bundle used to
-project the EPCS display by the native adapter. -/
+/-- Specification (owner approved 2026-11-25). The fixed synthetic patient for the
+EPCS scenario: one adult with a recorded weight. -/
+def prescriptionPatient : String :=
+  r#"{"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Patient","id":"heldout-A","name":[{"given":["Heldout"],"family":"heldout-A"}],"gender":"female","birthDate":"1984-01-02","identifier":[{"type":{"coding":[{"code":"MR"}]},"value":"heldout-A"}]}},{"resource":{"resourceType":"Observation","id":"heldout-A-weight","status":"final","subject":{"reference":"Patient/heldout-A"},"code":{"coding":[{"system":"http://loinc.org","code":"29463-7"}]},"effectiveDateTime":"2026-11-02T09:00:00Z","valueQuantity":{"value":70,"unit":"kg","code":"kg"}}}]}"#
+
+/-- The EPCS display: the fixed patient through the standard FHIR projection.
+Owner approved this split on 2026-11-25. -/
 def prescriptionDisplay : Except String Display := do
-  let bundle := Lean.Json.parse r#"{"resourceType":"Bundle","type":"collection","entry":[{"resource":{"resourceType":"Patient","id":"heldout-A","name":[{"given":["Heldout"],"family":"heldout-A"}],"gender":"female","birthDate":"1984-01-02","identifier":[{"type":{"coding":[{"code":"MR"}]},"value":"heldout-A"}]}},{"resource":{"resourceType":"Observation","id":"heldout-A-weight","status":"final","subject":{"reference":"Patient/heldout-A"},"code":{"coding":[{"system":"http://loinc.org","code":"29463-7"}]},"effectiveDateTime":"2026-11-02T09:00:00Z","valueQuantity":{"value":70,"unit":"kg","code":"kg"}}}]}"#
-  let projected ← Fhir.runFacts {bundle := ← bundle, context := { today := "2026-11-02", now := 600 }}
+  let projected ← Fhir.runFacts {bundle := ← Lean.Json.parse prescriptionPatient, context := { today := "2026-11-02", now := 600 }}
   return projected.display
 
 /-- New specification for owner review. The controlled order's details occur in

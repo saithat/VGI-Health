@@ -9,7 +9,7 @@ inductive InterruptionProfile
   | wardNurse | surgicalPhysician | clinicPrescriber | emergencyPhysician | inpatientPharmacy
   deriving DecidableEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
 
-/-- New specification for owner review: admitted pixel geometry supplies the
+/-- Specification (owner approved 2026-11-25): admitted pixel geometry supplies the
 number of target-reveal gestures before this exact task-local, non-scroll event.
 The host repeats simulation until the event-bound plan is unchanged. No price
 is supplied by the host: `klmFold` retains the existing scroll operator. -/

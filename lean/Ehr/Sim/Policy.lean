@@ -251,10 +251,10 @@ theorem emit_blocks_unanswered (ctx task r e ops)
 
 #print axioms emit_blocks_unanswered
 
-/-- New specification for owner review: price admitted target scrolling before
+/-- Specification (owner approved 2026-11-25): price admitted target scrolling before
 an action. `emit` and its information-safety theorem remain unchanged. -/
 def emitPlanned (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : List Op) : EpisodeResult :=
-  -- New specification for owner review: pay geometry-backed target scrolling
+  -- Owner approved 2026-11-25: pay geometry-backed target scrolling
   -- before the guarded event, so receipts, interruptions and workload see it.
   let index := (r.trace.filter fun t => match t.event with | .scroll _ => false | _ => true).length
   let reveal := (r.resumption.config.scrollPlan?.getD []).find? fun p =>

@@ -38,7 +38,7 @@ export function attachGeometry(result:DayResult,atlas:GeometryAtlas):DayResult{
   const cost=costs[t.task];return {...t,rawScrolls:t.rawScrolls??t.scrolls,mouseTravelPx:cost?.mouseTravelPx??null,scrollPx:cost?.scrollPx??null,...(cost?{scrolls:cost.scrolls}:{})};
  })};
 }
-/** New specification for owner review: target-reveal counts are computed from
+/** Specification (owner approved 2026-11-25): target-reveal counts are computed from
  * admitted geometry, then paid by the native simulator before each action.
  * A fixed point is required: time can change receipts, interruptions and paths.
  * Discovery passes are never returned as measured results. */
